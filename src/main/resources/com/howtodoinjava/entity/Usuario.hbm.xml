@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="com.howtodoinjava.entity.Usuario" table="usuario" schema="public">
+        <id name="login" type="string">
+            <column name="login" />
+            <generator class="assigned" />
+        </id>
+        <property name="nombre" type="string">
+            <column name="nombre" not-null="true" />
+        </property>
+        <property name="apellido" type="string">
+            <column name="apellido" not-null="true" />
+        </property>
+        <property name="correo" type="string">
+            <column name="correo" not-null="true" />
+        </property>
+        <property name="password" type="string">
+            <column name="password" not-null="true" />
+        </property>
+        <property name="admin" type="boolean">
+            <column name="admin" not-null="true" />
+        </property>
+        <set name="predicados" inverse="true">
+            <key>
+                <column name="loginusuario" not-null="true" />
+            </key>
+            <one-to-many class="com.howtodoinjava.entity.Predicado" />
+        </set>
+        <set name="terminos" inverse="true">
+            <key>
+                <column name="login" not-null="true" />
+            </key>
+            <one-to-many class="com.howtodoinjava.entity.Termino" />
+        </set>
+        <set name="dispones" inverse="true">
+            <key>
+                <column name="loginusuario" not-null="true" />
+            </key>
+            <one-to-many class="com.howtodoinjava.entity.Dispone" />
+        </set>
+        <set name="resuelves" inverse="true">
+            <key>
+                <column name="loginusuario" not-null="true" />
+            </key>
+            <one-to-many class="com.howtodoinjava.entity.Resuelve" />
+        </set>
+    </class>
+</hibernate-mapping>

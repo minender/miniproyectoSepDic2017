@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="com.howtodoinjava.entity.Predicado" table="predicado" schema="public">
+        <composite-id name="id" class="com.howtodoinjava.entity.PredicadoId">
+            <key-property name="id" type="int">
+                <column name="id" />
+            </key-property>
+            <key-property name="loginusuario" type="string">
+                <column name="loginusuario" />
+            </key-property>
+        </composite-id>
+        <many-to-one name="usuario" class="com.howtodoinjava.entity.Usuario" lazy="false" update="false" insert="false" fetch="select">
+            <column name="loginusuario" not-null="true" />
+        </many-to-one>
+        <property name="predicado" type="string">
+            <column name="predicado" not-null="true" />
+        </property>
+        <property name="alias" type="string">
+            <column name="alias" not-null="true" unique="true" />
+        </property>
+        <property name="predserializado" type="string">
+            <column name="predserializado" not-null="true" unique="true" />
+        </property>
+        <property name="numargumentos" type="int">
+            <column name="numargumentos" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

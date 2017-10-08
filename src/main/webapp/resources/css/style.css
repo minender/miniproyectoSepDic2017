@@ -1,0 +1,190 @@
+/*@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300);
+@import url(http://fonts.googleapis.com/css?family=Raleway:400,300);*/
+@media screen and (max-width: 900px) {
+    body > .navbar .brand {
+        padding-right: 0;
+        padding-left: 0;
+        margin-left: 20px;
+        float: right;
+        margin-right: 200px;
+        font-weight: bold;
+        color: #000;
+        text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.125);
+        -webkit-transition: all .2s linear;
+        -moz-transition: all .2s linear;
+        transition: all .2s linear;
+    }
+}
+
+.navbar-inner {
+  background-image: none !important;
+  background-color: #03A9F4 !important;
+}
+
+.nav>.active>a {
+  background-color: #0091EA !important;
+}
+
+.navbar .nav>li>a {
+  padding: 20px 15px !important;
+  font-size: 15px;
+  text-shadow: none !important;
+  color: #fff !important;
+  font-weight: bold;
+}
+
+.btn {
+  background-image: none !important;
+  background-color: #03A9F4 !important;
+  color: #fff !important;
+  text-shadow: none !important;  
+}
+
+#agregarTeorema {
+  width: 45%;
+  display: inline;
+}
+
+#row-fluid {
+  margin-top: 0 !important;
+}
+
+
+
+/*************************************/
+
+input[type="submit"], 
+input[type="reset"]{
+	border-radius: 5px;
+}
+
+body{
+	font-size: 12px;
+	font-family: 'Roboto', sans-serif;
+}
+b{
+	font-size: 12px;
+	padding:10px;
+	margin-top:10px
+}
+#nav
+{
+	padding:0;
+}
+
+#nav li 
+{
+	display:inline;
+}
+#nav li a 
+{   
+	padding: 10px 5% 10px 5%;
+	font-family: 'Open Sans', sans-serif;
+	font-size:16px;
+	text-decoration: none;
+	text-align:center;
+	background-color: #333333;
+	border-bottom:1px;
+	border-bottom-color:#000000;
+	border-bottom-style:solid;
+	border: 2px solid black;
+	color:#ccc;
+	transition: all 0.3s;
+	-webkit-transition: all 0.3s; /* Safari */
+}
+
+#nav li .active, #nav li a:hover
+{
+	background-color:#9B1C26;
+	padding: 10px 5% 15px 5%;
+	border-bottom:2px;
+	border-bottom-color:#000000;
+	border-bottom-style:solid;
+	color: white;
+}
+
+.table{
+	border: 1px #ccc solid;
+}
+.table th {
+	padding:2px;
+}
+.table td{
+	padding:4px;
+}
+body > .navbar .brand {
+	padding-right: 0;
+	padding-left: 0;
+	margin-left: 20px;
+	float: right;
+	font-weight: bold;
+	color: #000;
+	text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.125);
+	-webkit-transition: all .2s linear;
+	-moz-transition: all .2s linear;
+	transition: all .2s linear;
+}
+
+.accordion-heading .accordion-toggle {
+	display: block;
+	padding: 8px 15px;
+	background-color: #DDD;
+	color: rgb(151, 0, 0);
+	text-align: center;
+	text-decoration: none;
+}
+.accordion-heading .accordion-toggle:hover {
+	display: block;
+	padding: 8px 15px;
+	background-color: #ccc;
+	color: rgb(151, 0, 0);
+	text-align: center;
+	text-decoration: none;
+}
+
+.boton {
+	-moz-box-shadow:inset 0px 0px 0px 0px #999999;
+	-webkit-box-shadow:inset 0px 0px 0px 0px #999999;
+	box-shadow:inset 0px 0px 0px 0px #999999;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5808a), color-stop(1, #9b1c27) );
+	background:-moz-linear-gradient( center top, #f5808a 5%, #9b1c27 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5808a', endColorstr='#9b1c27');
+	background-color:#f5808a;
+	-webkit-border-top-left-radius:0px;
+	-moz-border-radius-topleft:0px;
+	border-top-left-radius:0px;
+	-webkit-border-top-right-radius:29px;
+	-moz-border-radius-topright:29px;
+	border-top-right-radius:29px;
+	-webkit-border-bottom-right-radius:29px;
+	-moz-border-radius-bottomright:29px;
+	border-bottom-right-radius:29px;
+	-webkit-border-bottom-left-radius:29px;
+	-moz-border-radius-bottomleft:29px;
+	border-bottom-left-radius:29px;
+	text-indent:0;
+	border:1px solid #9b1c27;
+	display:inline-block;
+	color:#ffffff;
+	font-family:arial;
+	font-size:15px;
+	font-weight:bold;
+	font-style:normal;
+	height:40px;
+	line-height:40px;
+	width:80px;
+	text-decoration:none;
+	text-align:center;
+}
+.boton:hover {
+	-moz-box-shadow: 0px -1px 7px 1px #999999;
+	-webkit-box-shadow: 0px -1px 7px 1px #999999;
+	box-shadow: 0px -1px 7px 1px #999999;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5808a), color-stop(1, #9b1c27) );
+	background:-moz-linear-gradient( center top, #f5808a 5%, #9b1c27 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5808a', endColorstr='#9b1c27');
+	background-color:#f5808a;
+}.boton:active {
+	position:relative;
+	top:1px;
+}

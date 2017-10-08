@@ -1,0 +1,32 @@
+Validar que cuando selecciones un teorema a demostrar se haya escojido primero el metodo de demostracion
+Poner una columna en teorema que diga cual es el operador que une el lado derecho e izquierdo del teorema (no siempre es ==)
+Olvidate de la table predicado todos los constraints estan mal usa en su lugar la tabla termino
+En teorema (enunciadoizq, enunciadoder) es unico hay que agregarle una coordenada con el operador que une los dos lados
+Decir que (teoserializadoizq, teoserializadoder) es unico no hace falta
+En metateorema decir (metateoserializadoizq, metateoserializadoder) es unico no es necesario
+Categoriaid no deberia estar en la tabla teorema sino en resuelve
+La entidad Categoria deberia ser debil de usuario
+El query de getTeoremasByCategoria deberia tomar el resuelve del usuario con la categoria en cuestion y hacer join con teorema
+quitar ocultartrue de teorema y metateorema
+Poner la columna esquema en metateorema
+El resuelve del usuario debe tener la lista de variables ligadas que debe usarse para invBD() en caso de logica de primer orden
+En getMetateorema del MetateoremaManager has lo mismo que en teorema que deserealizas de una vez los lados derecho e izquierdos
+(loginusuario,numeroteorema) debe ser unico en resuelve
+en ifer.jsp se usa el resuelveManager dentro de un ciclo para ver si el teorema esta resuelto o no, esto es ineficiente
+Al darle a demostrar deben aparecer los teoremas (no los axiomas) clickeables para escojer cual se va a demostrar
+Si ya hay una demostracion incompleta de ese teorema para ese usuario, se debe preguntar si empezar una nueva o seguir la vieja
+Metodo directo es empezar de toda la formula y llegar a algun teo o axioma
+Partir de un lado de la ecuacion debe pedir que se clickee el lado de la equacion de donde vamos a empezar
+Si un teorema no admite un metodo de demostracion debe la opcion estar inabilitada
+Al hacer el primer paso de la demostracion debe desaparecer la opcion de escojer el metodo de demostracion
+Debe haber un boton para eliminar el paso anterior
+Si se eliminan todos los pasos anteriores y se llega al inicio debe aparcer otra vez la opcion de escojer el metodo de demostracion
+En la lista de mis teoremas deben salir las instancias de demostraciones y la opcion de ver y borrar demostracion
+El espacio donde se despliega la demostracion deberia ser un iframe para que no se recarguen la lista de teo en cada post
+poner columna resuelto en la tabla solucion
+Has un orderby por numero de teorema a la lista de teoremas en los queries
+La impresion de la instanciacion no esta en latex
+El resuelve manager tiene un monton de metodos que obtienen el resuelve de la bd y no setean el atributo demopendiente y teoremaTer
+Si le das a inferir sin llenar el formulario no aparece nada en el lienzo de la emostracion
+Despues de cada inferen el formulario continua lleno con los datos del paso anterior hay que limpiar a menos que la inferencia no sea valida
+Implementar el click al metateorema en la vista demostracion

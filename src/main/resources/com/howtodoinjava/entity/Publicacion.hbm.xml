@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 27/06/2014 08:05:41 PM by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="com.howtodoinjava.entity.Publicacion" table="publicacion" schema="public">
+        <composite-id name="id" class="com.howtodoinjava.entity.PublicacionId">
+            <key-property name="alias" type="string">
+                <column name="alias" />
+            </key-property>
+            <key-property name="login" type="string">
+                <column name="login" />
+            </key-property>
+        </composite-id>
+        <many-to-one name="usuario" class="com.howtodoinjava.entity.Usuario" update="false" insert="false" fetch="select">
+            <column name="login" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>
