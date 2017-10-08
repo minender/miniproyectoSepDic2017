@@ -149,4 +149,23 @@ public class Solucion implements java.io.Serializable {
         this.arregloInferencias = newArray;
 
     }
+
+        public int retrocederPaso(){
+    
+        
+               
+        int tam = this.arregloInferencias.size();
+        
+        if(tam == 0){
+            return -1;
+        }
+        else{
+            this.deserialize();
+            this.arregloInferencias.remove(tam - 1);
+            this.serialize();            
+        }
+        
+        
+        return 0;
+    }
 }

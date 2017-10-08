@@ -182,7 +182,7 @@ public class InferController {
         return "infer";
     }
     
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST)
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir")
     public String infer(@Valid InfersForm infersForm, BindingResult bindingResult, @PathVariable String username, @PathVariable String nTeo, @PathVariable String nSol, ModelMap map)
     {
             if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
@@ -265,7 +265,7 @@ public class InferController {
             catch(RecognitionException e)
             {
                 String hdr = parser2.getErrorHeader(e);
-		String msg = parser2.getErrorMessage(e, TermParser.tokenNames);
+        String msg = parser2.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
                 map.addAttribute("infer",infersForm);
                 map.addAttribute("mensaje", hdr+" "+msg);
@@ -305,7 +305,7 @@ public class InferController {
             catch(RecognitionException e)
             {
                 String hdr = parser3.getErrorHeader(e);
-		String msg = parser3.getErrorMessage(e, TermParser.tokenNames);
+        String msg = parser3.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
                 map.addAttribute("infer",infersForm);
                 map.addAttribute("mensaje", hdr+" "+msg);
@@ -350,8 +350,15 @@ public class InferController {
             else
             {                
                 solucion = solucionManager.getSolucion(resuel.getDemopendiente());
-                PasoInferencia lastInfer = solucion.getArregloInferencias().get(solucion.getArregloInferencias().size()-1);
-                pasoAntTerm = lastInfer.getResult();       
+                int tam = solucion.getArregloInferencias().size();
+                if(tam > 0){
+                    PasoInferencia lastInfer = solucion.getArregloInferencias().get(solucion.getArregloInferencias().size()-1);
+                    pasoAntTerm = lastInfer.getResult();
+                }
+                else{
+                    pasoAntTerm = resuel.getTeorema().getTeoTerm();
+                }
+                       
                 paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);                
             }
             
@@ -385,24 +392,58 @@ public class InferController {
                 solucion.addArregloInferencias(paso);
                 solucionManager.updateSolucion(solucion);
             }
-
-            String formula = resuel.getTeorema().getTeoTerm().toStringInf();
-            infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
+            
             List<PasoInferencia> inferencias = solucion.getArregloInferencias();
-            String ultimaExp = "";
-            for (PasoInferencia x: inferencias) {
-                infersForm.setHistorial(infersForm.getHistorial()+ "$$" +
-                                        x.getExpresion().toStringInf()+" $$" + " $$ \\equiv< " + 
-                                        new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf() + 
-                                        " - " + x.getLeibniz().toStringInf() + 
-                                        " - " + x.getInstancia().toString()+" > $$");
-                ultimaExp = x.getResult().toStringInf();
+            String formula = resuel.getTeorema().getTeoTerm().toStringInf();
+            
+            infersForm.generarHistorial(formula, nTeo, pasoPost, valida, inferencias);
+
+            map.addAttribute("usuario", usuarioManager.getUsuario(username));
+            map.addAttribute("infer",infersForm);
+            map.addAttribute("mensaje",usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username)));
+            map.addAttribute("nStatement",infersForm.getnStatement());
+            map.addAttribute("instanciacion",infersForm.getInstanciacion());
+            map.addAttribute("leibniz",infersForm.getLeibniz());   
+            map.addAttribute("formula",infersForm.getHistorial());
+            map.addAttribute("categorias",categoriaManager.getAllCategorias());
+            map.addAttribute("resuelves", resuelveManager.getAllResuelveByUser(username));
+            map.addAttribute("guardarMenu","");
+            map.addAttribute("selecTeo",false);
+            map.addAttribute("nTeo",nTeo);
+            map.addAttribute("nSol",nSol);
+            map.addAttribute("admin","admin");
+            map.addAttribute("resuelveManager",resuelveManager);
+            map.addAttribute("listarTerminosMenu","");
+            map.addAttribute("verTerminosPublicosMenu","");
+            map.addAttribute("metateoremas",metateoremaManager);
+            map.addAttribute("misPublicacionesMenu","");
+            map.addAttribute("computarMenu","class=\"active\"");
+            map.addAttribute("perfilMenu","");
+            map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            return "infer";
+
+    }
+
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Retroceder")
+    public String retroceder( @ModelAttribute("infer")InfersForm infersForm ,@PathVariable String username, @PathVariable String nTeo, @PathVariable String nSol, ModelMap map)
+    {
+            if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+            {
+                return "redirect:/index";
             }
-            if (valida) {
-                infersForm.setHistorial(infersForm.getHistorial()+ "$$" +pasoPost + "$$");
-            } else {
-                infersForm.setHistorial(infersForm.getHistorial()+ "$$" +ultimaExp + "$$" + "$$" + pasoPost + "$$");
-            }
+            
+            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+            Solucion solucion = solucionManager.getSolucion(resuelve.getDemopendiente());
+            
+            solucion.retrocederPaso();
+            solucionManager.updateSolucion(solucion);
+            
+            List<PasoInferencia> inferencias = solucion.getArregloInferencias();
+            String formula = resuelve.getTeorema().getTeoTerm().toStringInf();
+            
+            infersForm.generarHistorial(formula, nTeo,inferencias);
 
             map.addAttribute("usuario", usuarioManager.getUsuario(username));
             map.addAttribute("infer",infersForm);

@@ -5,6 +5,10 @@
 package com.howtodoinjava.forms;
 
 import java.util.ArrayList;
+import com.howtodoinjava.lambdacalculo.App;
+import com.howtodoinjava.lambdacalculo.Const;
+import com.howtodoinjava.lambdacalculo.PasoInferencia;
+import java.util.List;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
@@ -129,6 +133,45 @@ public class InfersForm {
         }
         return true;
     }
+
+        public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, List<PasoInferencia> inferencias){
+        
+        
+        this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
+        
+        String ultimaExp = "";
+        for (PasoInferencia x: inferencias) {
+            this.setHistorial(this.getHistorial()+ "$$" +
+                                    x.getExpresion().toStringInf()+" $$" + " $$ \\equiv< " + 
+                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf() + 
+                                    " - " + x.getLeibniz().toStringInf() + 
+                                    " - " + x.getInstancia().toString()+" > $$");
+            ultimaExp = x.getResult().toStringInf();
+        }
+        if(valida) {
+            this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");
+        } else {
+            this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$" + "$$" + pasoPost + "$$");
+        }
+        
+    }
+    
+    public void generarHistorial(String formula, String nTeo, List<PasoInferencia> inferencias){
+        
+        
+        this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
+        String ultimaExp = "";
+        for (PasoInferencia x: inferencias) {
+            this.setHistorial(this.getHistorial()+ "$$" +
+                                    x.getExpresion().toStringInf()+" $$" + " $$ \\equiv< " + 
+                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf() + 
+                                    " - " + x.getLeibniz().toStringInf() + 
+                                    " - " + x.getInstancia()+" > $$");
+                ultimaExp = x.getResult().toStringInf();
+            }
+        
+        this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");
+        }
 
 
 }
