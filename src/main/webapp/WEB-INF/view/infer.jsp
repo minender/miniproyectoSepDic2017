@@ -16,7 +16,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
-                <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
         <script type="text/x-mathjax-config">
           MathJax.Hub.Config({
           tex2jax: {
@@ -59,7 +60,7 @@
             }
         </script>
 
-        <div style="float: right; width: 600px;">
+        <div style="float: right; width: 40%;">
 
           
           <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Método de demostración</h3>
@@ -189,30 +190,29 @@
             t.innerText="${pasoAnt}";
         </script>
 
-        <div style="width: 550px; height: 200px; overflow: scroll;">
-            <h5>${formula}</h5>
+        <div style="width: 60%; height: 400px; overflow: scroll;">
+            <h5 id="formula">${formula}</h5>
         </div>    
           <c:choose>
           <c:when test="${!selecTeo}">
-          <sf:form action="/Miniproyecto/infer/${usuario.getLogin()}/${nTeo}/${nSol}" method="POST" modelAttribute="infer">
+          <form id="inferForm" action="/Miniproyecto/infer/${usuario.getLogin()}/${nTeo}/${nSol}" method="POST" >
               <%--Paso anterior:<br><sf:input path="pasoAnt" id="pasoAnt_id" value="${pasoAnt}"/><sf:errors path="pasoAnt" cssClass="error" />--%>
               <br>
-              <sf:input type="hidden" name="solucionId" path="solucionId" id="solucionId" value="${solucionId}"/>
               <!--\cssId{eq}{\style{cursor:pointer;}{p\equiv q}}-->
               Teorema a usar:<br>
-              <sf:input path="nStatement" id="nStatement_id" value="${nStatement}"/><sf:errors path="nStatement" cssClass="error" />
+              <input name="nStatement" id="nStatement_id" value="${nStatement}"/>
               <%--<select style="width: auto; height: auto; border: none;" class="form-control" id="mensaje" name="nStatement">
                   <c:forEach items="${teoremas}" var="cat">
                       <option value="${cat.getId()}" >${cat.getCategoria().getNombre()} - ${cat.getEnunciadoizq()} == ${cat.getEnunciadoder()}</option>
                   </c:forEach>  
               </select>--%>
               <br>
-              Instanciación:<br><sf:input path="instanciacion" id="instanciacion_id" value="${instanciacion}"/><sf:errors path="instanciacion" cssClass="error" /></br>
-              Leibniz:<br><sf:input path="leibniz" id="leibniz_id" value="${leibniz}"/><sf:errors path="leibniz" cssClass="error" /></br>
-              <input class="btn" type="submit" name="submitBtn" value="Inferir"> <input class="btn" name="submitBtn" type="submit" value="Retroceder"> <input class="btn" type="button" value="limpiar" onclick="limpiar()">
-
-
-          </sf:form>
+              Instanciación:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
+              Leibniz:<br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
+              <br>
+              <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Inferir"/> <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Retroceder"> <input id="BtnLimpiar" class="btn" type="button" value="limpiar">
+              <input id="Btn" type="hidden" name="submitBtn" value=""/>
+          <form>
           </c:when>
           </c:choose>
           <%-- <a href="/Miniproyecto/perfil/${usuario.getLogin()}">Perfil</a>--%>

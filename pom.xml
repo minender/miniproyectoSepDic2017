@@ -17,6 +17,7 @@
   <properties>
     <org.springframework.version>4.3.11.RELEASE</org.springframework.version>
     <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+    <jackson.version>2.6.3</jackson.version>
   </properties>
   <dependencies>
     <dependency>
@@ -29,6 +30,18 @@
 	    Core utilities used by other modules.
 	    Define this if you use Spring Utility APIs (org.springframework.core.*/org.springframework.util.*)
 	-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        
 	<dependency>
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-core</artifactId>

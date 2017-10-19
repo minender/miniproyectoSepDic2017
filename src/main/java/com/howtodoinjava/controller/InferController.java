@@ -9,6 +9,7 @@ import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Usuario;
+import com.howtodoinjava.forms.InferResponse;
 import com.howtodoinjava.forms.InfersForm;
 import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Const;
@@ -39,6 +40,7 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -46,6 +48,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -183,9 +187,13 @@ public class InferController {
         return "infer";
     }
     
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir")
-    public String infer(@Valid InfersForm infersForm, BindingResult bindingResult, @PathVariable String username, @PathVariable String nTeo, @PathVariable String nSol, ModelMap map)
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir",produces= MediaType.APPLICATION_JSON_VALUE)
+    
+    public @ResponseBody InferResponse infer(@RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion, @PathVariable String username, 
+            @PathVariable String nTeo, @PathVariable String nSol)
     {
+        InferResponse response = new InferResponse();
+        
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUser(username);
         for (Resuelve r: resuelves)
         {
@@ -193,43 +201,9 @@ public class InferController {
             t.setTeoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{\\equiv}}"),t.getTeoDerTerm()),t.getTeoIzqTerm()));
             t.setMetateoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{\\equiv}}"),new Const("true ")),   new App(new App(new Const("\\equiv"),t.getTeoDerTerm()),t.getTeoIzqTerm())));
         }
-        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
-        {
-            return "redirect:/index";
-        }
-        if( bindingResult.hasErrors() )
-        {
-            map.addAttribute("usuario", usuarioManager.getUsuario(username));
-            map.addAttribute("mensaje","");
-            map.addAttribute("infer", infersForm);
-            map.addAttribute("nStatement",infersForm.getnStatement());
-            map.addAttribute("instanciacion",infersForm.getInstanciacion());
-            map.addAttribute("leibniz",infersForm.getLeibniz()); 
-            map.addAttribute("resuelves", resuelves);
-            map.addAttribute("formula",infersForm.getHistorial());
-            map.addAttribute("guardarMenu","");
-            map.addAttribute("selecTeo",false);
-            map.addAttribute("nTeo",nTeo);
-            map.addAttribute("nSol",nSol);
-            map.addAttribute("admin","admin");
-            map.addAttribute("listarTerminosMenu","");
-            map.addAttribute("verTerminosPublicosMenu","");
-            map.addAttribute("misPublicacionesMenu","");
-            map.addAttribute("computarMenu","class=\"active\"");
-            map.addAttribute("perfilMenu","");
-            map.addAttribute("resuelveManager",resuelveManager);
-            map.addAttribute("metateoremas",metateoremaManager);
-            map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
-            map.addAttribute("overflow","hidden");
-            map.addAttribute("anchuraDiv","1200px");
-            map.addAttribute("categorias",categoriaManager.getAllCategorias());
-            return "infer";
-        }
-
+        
         String pasoPost = "";
-        String nStatement =infersForm.getnStatement();
-        String instanciacion =infersForm.getInstanciacion();
-        String leibniz = infersForm.getLeibniz();
+
         TerminoId terminoid=new TerminoId();
         terminoid.setLogin(username);
 
@@ -273,32 +247,10 @@ public class InferController {
         catch(RecognitionException e)
         {
                 String hdr = parser2.getErrorHeader(e);
-        String msg = parser2.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
-                map.addAttribute("infer",infersForm);
-                map.addAttribute("mensaje", hdr+" "+msg);
-                map.addAttribute("nStatement",infersForm.getnStatement());
-                map.addAttribute("instanciacion",infersForm.getInstanciacion());
-                map.addAttribute("leibniz",infersForm.getLeibniz());
-                map.addAttribute("formula",infersForm.getHistorial());
-                map.addAttribute("resuelveManager",resuelveManager);
-                map.addAttribute("guardarMenu","");
-                map.addAttribute("selecTeo",false);
-                map.addAttribute("nTeo",nTeo);
-                map.addAttribute("nSol",nSol);
-                map.addAttribute("metateoremas",metateoremaManager);
-                map.addAttribute("categorias",categoriaManager.getAllCategorias());
-                map.addAttribute("resuelves", resuelves);
-                map.addAttribute("admin","admin");
-                map.addAttribute("listarTerminosMenu","");
-                map.addAttribute("verTerminosPublicosMenu","");
-                map.addAttribute("misPublicacionesMenu","");
-                map.addAttribute("computarMenu","class=\"active\"");
-                map.addAttribute("perfilMenu","");
-                map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                return "infer";
+                String msg = parser2.getErrorMessage(e, TermParser.tokenNames);
+                response.setErrorParser2(hdr + " " + msg);
+                
+                return response;
             }
             
             ANTLRStringStream in3 = new ANTLRStringStream(leibniz);
@@ -313,32 +265,10 @@ public class InferController {
             catch(RecognitionException e)
             {
                 String hdr = parser3.getErrorHeader(e);
-        String msg = parser3.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
-                map.addAttribute("infer",infersForm);
-                map.addAttribute("mensaje", hdr+" "+msg);
-                map.addAttribute("nStatement",infersForm.getnStatement());
-                map.addAttribute("instanciacion",infersForm.getInstanciacion());
-                map.addAttribute("leibniz",infersForm.getLeibniz());
-                map.addAttribute("resuelveManager",resuelveManager);
-                map.addAttribute("formula",infersForm.getHistorial());
-                map.addAttribute("guardarMenu","");
-                map.addAttribute("selecTeo",false);
-                map.addAttribute("nTeo",nTeo);
-                map.addAttribute("nSol",nSol);
-                map.addAttribute("admin","admin");
-                map.addAttribute("listarTerminosMenu","");
-                map.addAttribute("metateoremas",metateoremaManager);
-                map.addAttribute("categorias",categoriaManager.getAllCategorias());
-                map.addAttribute("resuelves", resuelves);
-                map.addAttribute("verTerminosPublicosMenu","");
-                map.addAttribute("misPublicacionesMenu","");
-                map.addAttribute("computarMenu","class=\"active\"");
-                map.addAttribute("perfilMenu","");
-                map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                return "infer";
+                String msg = parser3.getErrorMessage(e, TermParser.tokenNames);
+                response.setErrorParser3(hdr + " " + msg);
+                
+                return response;
             }
             
             term = term.sustParall((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1));
@@ -404,49 +334,23 @@ public class InferController {
             List<PasoInferencia> inferencias = solucion.getArregloInferencias();
             String formula = resuel.getTeorema().getTeoTerm().toStringInf();
             
-            infersForm.generarHistorial(formula, nTeo, pasoPost, valida, inferencias);
+            response.generarHistorial(formula, nTeo, pasoPost, valida, inferencias);
 
-            map.addAttribute("usuario", usuarioManager.getUsuario(username));
-            map.addAttribute("infer",infersForm);
-            map.addAttribute("mensaje",usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username)));
-            map.addAttribute("nStatement",infersForm.getnStatement());
-            map.addAttribute("instanciacion",infersForm.getInstanciacion());
-            map.addAttribute("leibniz",infersForm.getLeibniz());   
-            map.addAttribute("formula",infersForm.getHistorial());
-            map.addAttribute("categorias",categoriaManager.getAllCategorias());
-            map.addAttribute("resuelves", resuelves);
-            map.addAttribute("guardarMenu","");
-            map.addAttribute("selecTeo",false);
-            map.addAttribute("nTeo",nTeo);
-            map.addAttribute("nSol",nSol);
-            map.addAttribute("admin","admin");
-            map.addAttribute("resuelveManager",resuelveManager);
-            map.addAttribute("listarTerminosMenu","");
-            map.addAttribute("verTerminosPublicosMenu","");
-            map.addAttribute("metateoremas",metateoremaManager);
-            map.addAttribute("misPublicacionesMenu","");
-            map.addAttribute("computarMenu","class=\"active\"");
-            map.addAttribute("perfilMenu","");
-            map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
-            map.addAttribute("overflow","hidden");
-            map.addAttribute("anchuraDiv","1200px");
-            return "infer";
-
+        return response;
     }
-
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Retroceder")
-    public String retroceder( @ModelAttribute("infer")InfersForm infersForm ,@PathVariable String username, @PathVariable String nTeo, @PathVariable String nSol, ModelMap map)
-    {       
+    
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Retroceder",produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse retroceder( @RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion, @PathVariable String username, 
+            @PathVariable String nTeo, @PathVariable String nSol)
+    {   
+        InferResponse response = new InferResponse();
+        
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUser(username);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
             t.setTeoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{\\equiv}}"),t.getTeoDerTerm()),t.getTeoIzqTerm()));
             t.setMetateoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{\\equiv}}"),new Const("true ")),   new App(new App(new Const("\\equiv"),t.getTeoDerTerm()),t.getTeoIzqTerm())));
-        }
-        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
-        {
-            return "redirect:/index";
         }
 
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
@@ -458,33 +362,9 @@ public class InferController {
         List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         String formula = resuelve.getTeorema().getTeoTerm().toStringInf();
 
-        infersForm.generarHistorial(formula, nTeo,inferencias);
+        response.generarHistorial(formula, nTeo,inferencias);
 
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
-        map.addAttribute("infer",infersForm);
-        map.addAttribute("mensaje",usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username)));
-        map.addAttribute("nStatement",infersForm.getnStatement());
-        map.addAttribute("instanciacion",infersForm.getInstanciacion());
-        map.addAttribute("leibniz",infersForm.getLeibniz());   
-        map.addAttribute("formula",infersForm.getHistorial());
-        map.addAttribute("categorias",categoriaManager.getAllCategorias());
-        map.addAttribute("resuelves", resuelves);
-        map.addAttribute("guardarMenu","");
-        map.addAttribute("selecTeo",false);
-        map.addAttribute("nTeo",nTeo);
-        map.addAttribute("nSol",nSol);
-        map.addAttribute("admin","admin");
-        map.addAttribute("resuelveManager",resuelveManager);
-        map.addAttribute("listarTerminosMenu","");
-        map.addAttribute("verTerminosPublicosMenu","");
-        map.addAttribute("metateoremas",metateoremaManager);
-        map.addAttribute("misPublicacionesMenu","");
-        map.addAttribute("computarMenu","class=\"active\"");
-        map.addAttribute("perfilMenu","");
-        map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
-        map.addAttribute("overflow","hidden");
-        map.addAttribute("anchuraDiv","1200px");
-        return "infer";
+        return response;
     }
     
     public void setUsuarioManager(UsuarioManager usuarioManager) 

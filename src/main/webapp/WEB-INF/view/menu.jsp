@@ -24,4 +24,4 @@
     </div>
   </div>
 </div>
-<div class="row-fluid" style="margin-left: 50px; margin-top: 40px; height:552px; width: ${anchuraDiv}; overflow-y:${overflow};">
+<div class="row-fluid" style="margin-left: 50px; margin-top: 40px; width: ${anchuraDiv}; overflow-y:${overflow};">

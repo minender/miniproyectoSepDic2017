@@ -168,10 +168,8 @@ public class InfersForm {
                                     " - " + x.getLeibniz().toStringInf() + 
                                     " - " + x.getInstancia()+" > $$");
                 ultimaExp = x.getResult().toStringInf();
-            }
+        }
         
         this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");
-        }
-
-
+    }
 }
