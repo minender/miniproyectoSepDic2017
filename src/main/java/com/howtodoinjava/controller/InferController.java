@@ -480,11 +480,12 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid);
         String formulaDer = resuelve.getTeorema().getTeoDerTerm().toStringInf();
         String formulaIzq = resuelve.getTeorema().getTeoIzqTerm().toStringInf();
+        String operador = resuelve.getTeorema().getOperador();
         
         formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
         formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
         
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaIzq+"$ $\\equiv$ $" + formulaDer + "$</center> Proof: ";
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaIzq+"$ $"+ operador +"$ $" + formulaDer + "$</center> Proof: ";
         response.setHistorial(historial);  
 
         return response;
