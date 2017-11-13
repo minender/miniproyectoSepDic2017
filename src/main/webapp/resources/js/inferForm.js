@@ -1,9 +1,6 @@
 
 $(function() {
     var form = $('#inferForm');
-
-    
-    var resultado = $('#formula');
     
     $("#BtnInferir").click(function(ev){       
         ev.preventDefault();
@@ -15,8 +12,6 @@ $(function() {
             dataType: 'json',
             data: formData,
             success: function(data) {
-                alert(data.Parser2);
-                alert(data.Parser3);
                 if(data.errorParser2 !== null){
                     alert(data.Parser2);
                 }
@@ -27,6 +22,16 @@ $(function() {
                     
                     $('#formula').html(data.historial);
                     MathJax.Hub.Typeset();
+                    
+                    var nSol = $('#nSolucion').val();
+                    if(nSol==="new"){
+                        $('#nSolucion').val(data.nSol);
+                        nSol = $('#nSolucion').val();
+                        var url = $(form).attr('action');
+                        url = url.replace("new",nSol);
+                        $(form).attr('action',url);
+                        alert(url);
+                    }
                 }
                 
             }
@@ -47,6 +52,16 @@ $(function() {
 
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
+                if(data.cambiarMetodo === "1"){
+                    $("#metodosDemostracion").val("0");
+                    $("#metodosDiv").show();
+                    $('#inferForm').hide();
+                    $('#nStatement_id').val("");
+                    $('#instanciacion_id').val("");
+                    $('#leibniz_id').val("");
+                    $("#selectTeoInicial").val("1"); 
+                }
+                
             }
         });
     });

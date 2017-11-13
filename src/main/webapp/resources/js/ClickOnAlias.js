@@ -10,9 +10,9 @@ function clickAlias(Math1,alias,valorAlias)
    
     
     render.onclick = function (event) {
-      if (!event) {event = window.event}
+      if (!event) {event = window.event};
       var target = event.toElement || event.target;
-      while (target && (!target.id || target.id.substring(0,4) != 'agru' )) {target = target.parentNode}
+      while (target && (!target.id || target.id.substring(0,4) != 'agru' )) {target = target.parentNode};
       if(target)
       {
 
@@ -35,22 +35,74 @@ function clickAlias(Math1,alias,valorAlias)
 
         MathJax.Hub.Queue(["Text",math,newText]);
       }
-    }
+    };   
+}
+
+function teoremaClickeable(teoId){
+    
+    var data = {};
+    data["teoid"] = teoId;
+    var form = $('#inferForm');
+    $.ajax({
+        type: 'POST',
+        url: $(form).attr('action')+"/teoremaClickeablePL",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+
+            $('#formula').html(data.historial);
+            MathJax.Hub.Typeset();
+        }
+    });
+    
+    
+}
+
+function teoremaInicialMD(teoid){
+    var data = {};
+    data["teoid"] = teoid;
+    var form = $('#inferForm');
+    
+    $.ajax({
+        type: 'POST',
+        url: $(form).attr('action')+"/teoremaInicialMD",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+
+            $('#formula').html(data.historial);
+            MathJax.Hub.Typeset();
+        }
+    });
+    
+    $('#teoremaInicial').val(teoid);
     
 }
 
 function clickOperator(Math1,myField,teoid)
 {
-    var render=document.getElementById(Math1);
     
+    var render=document.getElementById(Math1);
     render.onclick = function (event) {
-      if (!event) {event = window.event}
-      var target = event.toElement || event.target;
-      while (target && (!target.id || target.id.substring(0,6) != 'click@' )) {target = target.parentNode}
-      if(target)
-      {
-         teoid+="";
-         parent.window.document.getElementById(myField).value = teoid;
-      }
-    }
+
+        var metodo = document.getElementById('metodosDemostracion').value;
+        if(metodo === "1"){
+            var selectTeoInicial = $("#selectTeoInicial").val(); 
+            if(selectTeoInicial==="1"){
+                
+                teoremaInicialMD(teoid);
+                $('#inferForm').show();
+                $("#selectTeoInicial").val("0");
+            }
+            else{
+                var inputStatement = document.getElementById(myField);
+                inputStatement.value = teoid;
+            }
+        }
+        else{
+            var inputStatement = document.getElementById(myField);
+            inputStatement.value = teoid;
+        }
+    };    
 }
+

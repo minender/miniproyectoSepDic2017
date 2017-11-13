@@ -18,6 +18,24 @@ public class InferResponse {
     private String historial;
     private String errorParser2;
     private String errorParser3;
+    private String cambiarMetodo;
+    private String nSol;
+
+    public String getnSol() {
+        return nSol;
+    }
+
+    public void setnSol(String nSol) {
+        this.nSol = nSol;
+    }
+
+    public String getCambiarMetodo() {
+        return cambiarMetodo;
+    }
+
+    public void setCambiarMetodo(String cambiarMetodo) {
+        this.cambiarMetodo = cambiarMetodo;
+    }
 
     public String getHistorial() {
         return historial;
@@ -77,9 +95,11 @@ public class InferResponse {
                                     " - " + x.getLeibniz().toStringInf() + 
                                     " - " + x.getInstancia()+" > $$");
                 ultimaExp = x.getResult().toStringInf();
-            }
+        }
+        if(!ultimaExp.equals("")){
+            this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");
+        }
         
-        this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");
     }
     
 }

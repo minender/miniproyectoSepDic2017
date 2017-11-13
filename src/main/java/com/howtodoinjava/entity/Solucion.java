@@ -152,20 +152,14 @@ public class Solucion implements java.io.Serializable {
 
         public int retrocederPaso(){
     
-        
-               
-        int tam = this.arregloInferencias.size();
-        
-        if(tam == 0){
-            return -1;
-        }
-        else{
+            int tam = this.arregloInferencias.size();
             this.deserialize();
-            this.arregloInferencias.remove(tam - 1);
+            if(tam>0){
+                this.arregloInferencias.remove(tam - 1);
+            }
+            
             this.serialize();            
-        }
-        
-        
-        return 0;
+         
+            return tam;
     }
 }
