@@ -21,9 +21,11 @@ function buscarSoluciones(idTeo){
             }
             if(i>0){
                 $("#panelSoluciones").show();
+                $('#formula').html("");
             }
             else{
                 alert("EL teorema seleccionado no tiene soluciones guardadas.");
+                $("#panelSoluciones").hide();
             }
         }
         

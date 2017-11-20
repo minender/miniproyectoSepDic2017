@@ -112,16 +112,7 @@
             </ul>
         </div>
         <div style="float:right; width: 80%; height: 60%; overflow: scroll;">
-            <h5 id="formula">Hibernate: select usuario0_.login as login0_0_, usuario0_.nombre as nombre0_0_, usuario0_.apellido as apellido0_0_, usuario0_.correo as correo0_0_, usuario0_.password as password0_0_, usuario0_.admin as admin0_0_ from public.usuario usuario0_ where usuario0_.login=?
-Hibernate: select teorema0_.id as id4_0_, teorema0_.categoriaid as categori2_4_0_, teorema0_.enunciadoizq as enunciad3_4_0_, teorema0_.enunciadoder as enunciad4_4_0_, teorema0_.teoserializadoizq as teoseria5_4_0_, teorema0_.teoserializadoder as teoseria6_4_0_, teorema0_.operador as operador4_0_, teorema0_.esquema as esquema4_0_ from public.teorema teorema0_ where teorema0_.id=?
-Hibernate: select categoria0_.id as id8_0_, categoria0_.nombre as nombre8_0_ from public.categoria categoria0_ where categoria0_.id=?
-Hibernate: select resuelve0_.id as id6_, resuelve0_.loginusuario as loginusu2_6_, resuelve0_.teoremaid as teoremaid6_, resuelve0_.nombreteorema as nombrete4_6_, resuelve0_.numeroteorema as numerote5_6_, resuelve0_.resuelto as resuelto6_ from public.resuelve resuelve0_ where resuelve0_.teoremaid=? and resuelve0_.loginusuario=?
-Hibernate: select usuario0_.login as login0_0_, usuario0_.nombre as nombre0_0_, usuario0_.apellido as apellido0_0_, usuario0_.correo as correo0_0_, usuario0_.password as password0_0_, usuario0_.admin as admin0_0_ from public.usuario usuario0_ where usuario0_.login=?
-Hibernate: select teorema0_.id as id4_0_, teorema0_.categoriaid as categori2_4_0_, teorema0_.enunciadoizq as enunciad3_4_0_, teorema0_.enunciadoder as enunciad4_4_0_, teorema0_.teoserializadoizq as teoseria5_4_0_, teorema0_.teoserializadoder as teoseria6_4_0_, teorema0_.operador as operador4_0_, teorema0_.esquema as esquema4_0_ from public.teorema teorema0_ where teorema0_.id=?
-Hibernate: select categoria0_.id as id8_0_, categoria0_.nombre as nombre8_0_ from public.categoria categoria0_ where categoria0_.id=?
-Hibernate: select resuelve0_.id as id6_, resuelve0_.loginusuario as loginusu2_6_, resuelve0_.teoremaid as teoremaid6_, resuelve0_.nombreteorema as nombrete4_6_, resuelve0_.numeroteorema as numerote5_6_, resuelve0_.resuelto as resuelto6_ from public.resuelve resuelve0_ where resuelve0_.teoremaid=? and resuelve0_.loginusuario=?
-Hibernate: select usuario0_.login as login0_0_, usuario0_.nombre as nombre0_0_, usuario0_.apellido as apellido0_0_, usuario0_.correo as correo0_0_, usuario0_.password as password0_0_, usuario0_.admin as admin0_0_ from public.usuario usuario0_ where usuario0_.login=?
-Hibernate: select teorema0_.id as id4_0_, teorema0_.categoriaid as categori2_4_0_, teorema0_.enunciadoizq a</h5>
+            <h5 id="formula"></h5>
         </div>
     </div>
     <tiles:insertDefinition name="footer" />
