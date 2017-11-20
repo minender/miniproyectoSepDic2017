@@ -7,6 +7,8 @@ package com.howtodoinjava.service;
 import com.howtodoinjava.dao.SolucionDAO;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,4 +71,25 @@ public class SolucionManagerImpl implements SolucionManager {
             sol.deserialize();
         return sols;
     }
+    
+    
+    @Override
+    @Transactional
+    public HashMap<String,Integer> getAllSolucionesIdByResuelve(int resuelveId){
+           
+        HashMap<String, Integer> listaSoluciones = new HashMap();
+        
+        List<Integer> idSoluciones = solucionDAO.getAllSolucionesIdByResuelve(resuelveId); 
+        String nombreSolucion;
+        int i = 1;
+        for (int id : idSoluciones){
+            
+            nombreSolucion = "Solucion " + i;
+            listaSoluciones.put(nombreSolucion,id);
+            i++;
+        }
+        
+        return listaSoluciones;
+    
+    };
 }

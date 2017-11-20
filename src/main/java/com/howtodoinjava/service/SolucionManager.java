@@ -7,6 +7,7 @@ package com.howtodoinjava.service;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
 import java.util.List;
+import java.util.HashMap;
 
 /**
  *
@@ -25,5 +26,7 @@ public interface SolucionManager {
     public Solucion getSolucion(int id);
     
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId);
+    
+    public HashMap<String,Integer> getAllSolucionesIdByResuelve(int resuelveId);
     
 }

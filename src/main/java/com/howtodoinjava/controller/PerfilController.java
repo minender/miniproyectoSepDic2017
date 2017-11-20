@@ -25,11 +25,13 @@ import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.forms.AgregarTeorema;
+import com.howtodoinjava.forms.InferResponse;
 import com.howtodoinjava.forms.InfersForm;
 import com.howtodoinjava.forms.InsertarEvaluar;
 import com.howtodoinjava.forms.ModificarAliasForm;
 import com.howtodoinjava.forms.ModificarForm;
 import com.howtodoinjava.forms.UsuarioGuardar;
+import com.howtodoinjava.forms.teoremasSolucion;
 import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Brackear;
 import com.howtodoinjava.lambdacalculo.Comprobacion;
@@ -54,7 +56,9 @@ import javax.validation.Valid;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping(value="/perfil")
@@ -130,6 +134,33 @@ public class PerfilController {
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         return "misTeoremas";
+    }
+    
+    @RequestMapping(value="/{username}/misTeoremas/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody teoremasSolucion listaSoluciones( @RequestParam(value="teoid") int teoid, @PathVariable String username)
+    {   
+        teoremasSolucion response = new teoremasSolucion();
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid);
+        Integer resuelveId = resuelve.getId();
+        
+        response.soluciones = solucionManager.getAllSolucionesIdByResuelve(resuelveId);
+        response.setIdTeo(teoid);
+        return response;
+    }
+    
+    @RequestMapping(value="/{username}/misTeoremas/buscarFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
+    {   
+        InferResponse response = new InferResponse();
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
+        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInf();
+        String nTeo = resuelve.getNumeroteorema();
+        Solucion solucion = solucionManager.getSolucion(idSol);
+        
+        List<PasoInferencia> inferencias = solucion.getArregloInferencias();
+        
+        response.generarHistorial(teoremaStr, nTeo,inferencias);
+        return response;
     }
     
     @RequestMapping(value="/{username}/guardarteo", method=RequestMethod.GET)

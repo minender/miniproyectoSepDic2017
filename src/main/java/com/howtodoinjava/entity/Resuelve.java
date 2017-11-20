@@ -58,7 +58,7 @@ public class Resuelve  implements java.io.Serializable {
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
    
     

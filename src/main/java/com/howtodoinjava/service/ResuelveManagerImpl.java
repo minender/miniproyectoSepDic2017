@@ -99,7 +99,15 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Override
     @Transactional
     public Resuelve getResuelveByUserAndTeorema(String userLogin,int teoremaID){
-        return resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID);
+        Resuelve resuel = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID);
+        if (resuel != null) {
+            Teorema teo = resuel.getTeorema();
+            teo.setTeoIzqTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoizq()));
+            teo.setTeoDerTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoder()));
+            teo.setTeoTerm(new App(new App(new Const(teo.getOperador()),teo.getTeoDerTerm()),teo.getTeoIzqTerm()));
+            resuel.setTeorema(teo);
+        }
+        return resuel;
     }
     
     @Override

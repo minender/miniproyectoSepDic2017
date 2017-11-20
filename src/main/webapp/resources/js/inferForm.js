@@ -30,7 +30,6 @@ $(function() {
                         var url = $(form).attr('action');
                         url = url.replace("new",nSol);
                         $(form).attr('action',url);
-                        alert(url);
                     }
                 }
                 

@@ -58,4 +58,10 @@ public class SolucionDaoImpl implements SolucionDAO{
         return this.sessionFactory.getCurrentSession().createQuery("FROM Solucion WHERE resuelve.id = :resuelveId").setParameter("resuelveId",resuelveId).list();
     }
     
+    @Override
+    @Transactional
+    public List<Integer> getAllSolucionesIdByResuelve(int resuelveId){
+        return this.sessionFactory.getCurrentSession().createQuery("Select id FROM Solucion WHERE resuelveid = :resuelveId and resuelto = 't' ").setParameter("resuelveId",resuelveId).list();
+    }
+    
 }
