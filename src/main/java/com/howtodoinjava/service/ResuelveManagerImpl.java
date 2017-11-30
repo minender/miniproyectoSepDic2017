@@ -81,8 +81,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                       resuelve.setDemopendiente(sol.getId());
                 }
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoIzqTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoizq()));
-                teo.setTeoDerTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoder()));
+                teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,9 +101,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
         Resuelve resuel = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID);
         if (resuel != null) {
             Teorema teo = resuel.getTeorema();
-            teo.setTeoIzqTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoizq()));
-            teo.setTeoDerTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoder()));
-            teo.setTeoTerm(new App(new App(new Const(teo.getOperador()),teo.getTeoDerTerm()),teo.getTeoIzqTerm()));
+            teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
             resuel.setTeorema(teo);
         }
         return resuel;
@@ -123,9 +120,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                     resuel.setDemopendiente(sol.getId());
             }
             Teorema teo = resuel.getTeorema();
-            teo.setTeoIzqTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoizq()));
-            teo.setTeoDerTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoder()));
-            teo.setTeoTerm(new App(new App(new Const(teo.getOperador()),teo.getTeoDerTerm()),teo.getTeoIzqTerm()));
+            teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
             resuel.setTeorema(teo);
         }
         return resuel;

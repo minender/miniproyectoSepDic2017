@@ -14,10 +14,25 @@ import java.util.List;
 public class Const extends Term
 {
     final String con;
+    final boolean funNotation;
+    final int preced;
+    final int asociat; //1:izquierda 2:derecha 0:sin regla de asociatividad
+    
     
     public Const(String cons)
     {
         con=cons;
+        funNotation = false;
+        preced = 0;
+        asociat = 0;
+    }
+    
+    public Const(String cons, boolean funNota, int prec, int asoc)
+    {
+        con=cons;
+        funNotation = funNota;
+        preced = prec;
+        asociat = asoc;
     }
 
     public String getCon() {
@@ -34,7 +49,10 @@ public class Const extends Term
         return this;
     }
     
-   
+   public Term type()
+   {
+       return null;
+   }
     
     public int setAlias(int currentAlia)
     {
@@ -114,12 +132,10 @@ public class Const extends Term
         return con;
     }
    
-        @Override
+    /*@Override
     public String toStringInFin() {
         String res;
-        System.out.println("++++++");
         System.out.println(con);
-        System.out.println("++++++");
         if (con.startsWith("\\equiv")) {
            res =" == ";
         }else if (con.startsWith("\\Rightarrow")){
@@ -138,11 +154,15 @@ public class Const extends Term
             res = con;
         }
         return res;
-    }     
+    } */    
         
     @Override
     public String toStringInf() {
         return con;
+    }
+    
+    public String toStringInfLabeled(int id){
+        return "\\cssId{"+id+"}{"+con+"}";
     }
 
     
@@ -185,7 +205,7 @@ public class Const extends Term
     }
 
     @Override
-    public Term sustParall(ArrayList<Var> Vars, ArrayList<Term> varsTerm) {
+    public Term sustParall(List<Var> Vars, List<Term> varsTerm) {
         return this;
     }
 

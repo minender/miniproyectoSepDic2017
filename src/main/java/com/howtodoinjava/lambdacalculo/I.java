@@ -34,7 +34,10 @@ public class I extends Term {
         return this;
     }
     
-   
+   public Term type()
+   {
+       return null;
+   }
     
     public int setAlias(int currentAlia)
     {
@@ -118,6 +121,10 @@ public class I extends Term {
     public String toStringInf() {
             return ""; //"|";
     }     
+    
+    public String toStringInfLabeled(int id){
+            return ""; //"|";
+    }
         
     
     public String toStringInFin() {
@@ -153,7 +160,7 @@ public class I extends Term {
     }
 
     @Override
-    public Term sustParall(ArrayList<Var> Vars, ArrayList<Term> varsTerm) {
+    public Term sustParall(List<Var> Vars, List<Term> varsTerm) {
         return this;
     }
 

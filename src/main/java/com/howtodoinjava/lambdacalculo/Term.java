@@ -79,7 +79,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract Term sust(Var x,Term t);
     
-    public abstract Term sustParall(ArrayList<Var>  Vars, ArrayList<Term> varsTerm);
+    public abstract Term sustParall(List<Var>  Vars, List<Term> varsTerm);
     
     public abstract int setAlias(int currentAlia);
     
@@ -97,12 +97,14 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract Term checkApp();
     
+    public abstract Term type();
+    
     @Override
     public abstract String toString();
     
     public abstract String toStringInf();
     
-    public abstract String toStringInFin();
+    public abstract String toStringInfLabeled(int id);
     
     public abstract ToString toStringAbrvV1(ToString toString);
     
@@ -123,7 +125,7 @@ public abstract class Term implements Cloneable, Serializable{
         return term;
     }
     
-    public String toStringFinalInf()
+    public String toStringInfFinal()
     {
         String term;
         String aux= this.toStringInf();
@@ -134,12 +136,14 @@ public abstract class Term implements Cloneable, Serializable{
         }return term;
     }
     
-    public String toStringFinalInFin()
-    {
+    public String toStringInfLabeledFinal(int id){
         String term;
-        String aux= this.toStringInf();
-        if(aux.startsWith("("))            
-            term = aux.substring(1, aux.length()-1);            
+        String aux= this.toStringInfLabeled(id);
+        int i=9;
+        while (aux.charAt(i)!='{')
+            i++;
+        if(aux.charAt(i+1)=='(')
+            term = "\\cssId{"+id+"}{"+aux.substring(i+2, aux.length()-2)+"}";
         else{
             term=aux;
         }return term;

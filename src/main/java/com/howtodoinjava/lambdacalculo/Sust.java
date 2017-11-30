@@ -39,6 +39,11 @@ public class Sust extends Term{
         return this;
     }  
     
+    public Term type()
+    {
+        return null;
+    }
+    
     public int setAlias(int currentAlia)
     {
         if(alias != null)
@@ -143,8 +148,23 @@ public class Sust extends Term{
         
         return "["+varss+" := "+termss+"]";
     }
+    
+    public String toStringInfLabeled(int id){
+        String varss = "";
+        String termss = "";
+        for (Var v : vars)
+            varss += v.toStringInf()+",";
+        
+        for (Term t : terms)
+            termss += t.toStringInf()+",";
+        
+         varss = varss.substring(0, varss.length()-1);
+         termss = termss.substring(0, termss.length()-1);
+        
+        return "\\cssId{"+id+"}{["+varss+" := "+termss+"]}";
+    }
 
-    public String toStringInFin() {
+    /*public String toStringInFin() {
         String varss = "";
         String termss = "";
         for (Var v : vars)
@@ -157,7 +177,7 @@ public class Sust extends Term{
          termss = termss.substring(0, termss.length()-1);
         
         return "["+varss+" := "+termss+"]";
-    }
+    }*/
     
     public ToString toStringAbrvV1(ToString toString)
     {
@@ -207,7 +227,7 @@ public class Sust extends Term{
     }
 
     @Override
-    public Term sustParall(ArrayList<Var> Vars, ArrayList<Term> varsTerm) {
+    public Term sustParall(List<Var> Vars, List<Term> varsTerm) {
         return this;
     }
 

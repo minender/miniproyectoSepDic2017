@@ -31,16 +31,16 @@ public class TeoremaManagerImpl implements TeoremaManager {
     @Transactional
     public Teorema addTeorema(Teorema teorema) {
         // Este teorema sera utilizado para ver si ya existe en la BD
-        Teorema teorema2 = this.getTeoremaByEnunciados(teorema.getEnunciadoizq().toString(), teorema.getEnunciadoder().toString());
+        Teorema teorema2 = this.getTeoremaByEnunciados(teorema.getEnunciado().toString());
         if (teorema2 != null) {
             return teorema2;
-        } else {
+        } /*else {
             // Este teorema sera utilizado para ver si el inverso ya existe en la BD
             Teorema teorema3 = this.getTeoremaByEnunciados(teorema.getEnunciadoder().toString(), teorema.getEnunciadoizq().toString());
             if (teorema3 != null) {
                 return teorema3;
             }
-        }
+        }*/
         teoremaDAO.addTeorema(teorema);
         return teorema;
     }
@@ -58,8 +58,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
     public Teorema getTeorema(int id) {
         Teorema teo = teoremaDAO.getTeorema(id);
         if (teo != null) {
-            teo.setTeoIzqTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoizq()));
-            teo.setTeoDerTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoder()));
+            teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
         }
         return teo;
     }
@@ -71,8 +70,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
         try {
             for (Teorema teo : teoList) {
                 //ter.setTermObject((Term)ToString.fromString(ter.getSerializado()));
-                teo.setTeoIzqTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoizq()));
-                teo.setTeoDerTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoder()));
+                teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,11 +80,10 @@ public class TeoremaManagerImpl implements TeoremaManager {
 
     @Override
     @Transactional
-    public Teorema getTeoremaByEnunciados(String enunciadoizq, String enunciadoder) {
-        Teorema teo = teoremaDAO.getTeoremaByEnunciados(enunciadoizq, enunciadoder);
+    public Teorema getTeoremaByEnunciados(String enunciado) {
+        Teorema teo = teoremaDAO.getTeoremaByEnunciados(enunciado);
         if (teo != null) {
-            teo.setTeoIzqTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoizq()));
-            teo.setTeoDerTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoder()));
+            teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
         }
         return teo;
     }
@@ -98,8 +95,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
         Teorema teorema;
         for (Resuelve res : resList) {
             teorema = res.getTeorema();
-            teorema.setTeoIzqTerm((Term) SerializationUtils.deserialize(teorema.getTeoserializadoizq()));
-            teorema.setTeoDerTerm((Term) SerializationUtils.deserialize(teorema.getTeoserializadoder()));
+            teorema.setTeoTerm((Term) SerializationUtils.deserialize(teorema.getTeoserializado()));
             teoList.add(teorema);
         }
 
@@ -121,8 +117,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
         List<Teorema> teos = teoremaDAO.getTeoremasByCategoria(categoriaId);
         if (teos != null) {
             for (Teorema teo : teos){
-               teo.setTeoIzqTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoizq()));
-               teo.setTeoDerTerm((Term) SerializationUtils.deserialize(teo.getTeoserializadoder()));
+               teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
             }
         }
         return teos;

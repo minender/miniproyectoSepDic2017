@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd">
 <hibernate-reverse-engineering>
-  <schema-selection match-catalog="aledania"/>
+  <schema-selection match-catalog="logica"/>
   <table-filter match-name="usuario"/>
   <table-filter match-name="categoria"/>
   <table-filter match-name="metateorema"/>
   <table-filter match-name="termino"/>
   <table-filter match-name="solucion"/>
   <table-filter match-name="teorema"/>
-  <table-filter match-name="employee"/>
   <table-filter match-name="predicado"/>
   <table-filter match-name="dispone"/>
   <table-filter match-name="resuelve"/>

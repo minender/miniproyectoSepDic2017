@@ -24,30 +24,21 @@ public class Teorema  implements java.io.Serializable {
     @SequenceGenerator(name="teorema_id_seq", sequenceName="teorema_id_seq")
      private int id;
      private Categoria categoria;
-     private String enunciadoizq;
-     private String enunciadoder;
-     private byte[] teoserializadoizq;
-     private byte[] teoserializadoder;
-     private Term teoIzqTerm;
-     private Term teoDerTerm;
+     private String enunciado;
+     private byte[] teoserializado;
      private Term teoTerm;
      private Term metateoTerm;
-     private String operador;
      private boolean esquema;
      private Set resuelves = new HashSet(0);
 
     public Teorema() {
     }
 
-    public Teorema(Categoria categoria, String enunciadoizq, String enunciadoder, Term teoIzqTerm, Term teoDerTerm, String operador, boolean esquema) {
+    public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema) {
         this.categoria = categoria;
-        this.enunciadoizq = enunciadoizq;
-        this.enunciadoder = enunciadoder;
-        this.teoserializadoizq = SerializationUtils.serialize(teoIzqTerm);
-        this.teoserializadoder = SerializationUtils.serialize(teoDerTerm);
-        this.teoIzqTerm = teoIzqTerm;
-        this.teoDerTerm = teoDerTerm;
-        this.operador = operador;
+        this.enunciado = enunciado;
+        this.teoserializado = SerializationUtils.serialize(teoTerm);
+        this.teoTerm = teoTerm;
         this.esquema = esquema;
     }
 
@@ -61,6 +52,7 @@ public class Teorema  implements java.io.Serializable {
 
     public void setTeoTerm(Term teoTerm) {
         this.teoTerm = teoTerm;
+        this.teoserializado = SerializationUtils.serialize(teoTerm);
     }
 
     public Term getTeoTerm() {
@@ -69,24 +61,6 @@ public class Teorema  implements java.io.Serializable {
     
     public int getId() {
         return this.id;
-    }
-
-    public Term getTeoIzqTerm() {
-        return teoIzqTerm;
-    }
-
-    public Term getTeoDerTerm() {
-        return teoDerTerm;
-    }
-
-    public void setTeoIzqTerm(Term teoIzqTerm) {
-        this.teoIzqTerm = teoIzqTerm;
-        this.teoserializadoizq = SerializationUtils.serialize(teoIzqTerm);
-    }
-
-    public void setTeoDerTerm(Term teoDerTerm) {
-        this.teoDerTerm = teoDerTerm;
-        this.teoserializadoder = SerializationUtils.serialize(teoDerTerm);
     }
     
     public void setId(int id) {
@@ -99,46 +73,24 @@ public class Teorema  implements java.io.Serializable {
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
-    public String getEnunciadoizq() {
-        return this.enunciadoizq;
-    }
     
-    public void setEnunciadoizq(String enunciadoizq) {
-        this.enunciadoizq = enunciadoizq;
+    public void setEnunciado(String enunciado) {
+        this.enunciado = enunciado;
     }
-    public String getEnunciadoder() {
-        return this.enunciadoder;
-    }
-    
-    public void setEnunciadoder(String enunciadoder) {
-        this.enunciadoder = enunciadoder;
-    }
-    public String getOperador() {
-        return this.operador;
-    }
-    
-    public void setOperador(String operador) {
-        this.operador = operador;
+    public String getEnunciado() {
+        return this.enunciado;
     }
 
-    public void setTeoserializadoizq(byte[] teoserializadoizq) {
-        this.teoserializadoizq = teoserializadoizq;
-    }
-
-    public void setTeoserializadoder(byte[] teoserializadoder) {
-        this.teoserializadoder = teoserializadoder;
+    public void setTeoserializado(byte[] teoserializado) {
+        this.teoserializado = teoserializado;
     }
 
     public void setResuelves(Set resuelves) {
         this.resuelves = resuelves;
     }
 
-    public byte[] getTeoserializadoizq() {
-        return teoserializadoizq;
-    }
-
-    public byte[] getTeoserializadoder() {
-        return teoserializadoder;
+    public byte[] getTeoserializado() {
+        return teoserializado;
     }
 
     public Set getResuelves() {
@@ -152,8 +104,5 @@ public class Teorema  implements java.io.Serializable {
     public void setEsquema(boolean esquema) {
         this.esquema = esquema;
     }
-    
-
 }
-
 

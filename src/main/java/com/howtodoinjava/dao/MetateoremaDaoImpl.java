@@ -50,10 +50,10 @@ public class MetateoremaDaoImpl implements MetateoremaDAO {
 	}
         
 	@Override
-        public Metateorema getMetateoremaByEnunciados(String enunciadoizq,String enunciadoder){
+        public Metateorema getMetateoremaByEnunciados(String enunciado){
             
-            String sql="FROM Metateorema WHERE enunciadoizq = :enunciadoizq AND enunciadoder = :enunciadoder";
-            List<Metateorema> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("enunciadoizq",enunciadoizq).setParameter("enunciadoder",enunciadoder).list();
+            String sql="FROM Metateorema WHERE enunciado = :enunciado";
+            List<Metateorema> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("enunciado",enunciado).list();
            
             if(list.isEmpty()) {
                 return null;

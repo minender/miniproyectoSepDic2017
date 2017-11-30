@@ -249,12 +249,9 @@ ALTER SEQUENCE solucion_id_seq OWNED BY solucion.id;
 
 CREATE TABLE teorema (
     id integer NOT NULL,
-    enunciadoizq text NOT NULL,
-    enunciadoder text NOT NULL,
-    teoserializadoizq bytea NOT NULL,
-    teoserializadoder bytea NOT NULL,
+    enunciado text NOT NULL,
+    teoserializado bytea NOT NULL,
     categoriaid integer NOT NULL,
-    operador text NOT NULL,
     esquema boolean NOT NULL
 );
 
@@ -267,12 +264,9 @@ ALTER TABLE teorema OWNER TO postgres;
 
 CREATE TABLE metateorema (
     id integer NOT NULL,
-    enunciadoizq text NOT NULL,
-    enunciadoder text NOT NULL,
-    metateoserializadoizq bytea NOT NULL,
-    metateoserializadoder bytea NOT NULL,
-    categoriaid integer NOT NULL,
-    ocultartrue boolean NOT NULL
+    enunciado text NOT NULL,
+    metateoserializado bytea NOT NULL,
+    categoriaid integer NOT NULL
 );
 
 

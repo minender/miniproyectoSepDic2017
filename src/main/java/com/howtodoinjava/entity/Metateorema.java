@@ -21,53 +21,34 @@ public class Metateorema  implements java.io.Serializable {
     @SequenceGenerator(name="metateorema_id_seq", sequenceName="metateorema_id_seq")
      private int id;
      private Categoria categoria;
-     private String enunciadoizq;
-     private String enunciadoder;
-     private byte[] metateoserializadoizq;
-     private byte[] metateoserializadoder;
-     private boolean ocultartrue;
+     private String enunciado;
+     private byte[] metateoserializado;
      private Set dispones = new HashSet(0);
 
     public Metateorema() {
     }
 
-    public Metateorema(int id, Categoria categoria, String enunciadoizq, String enunciadoder, byte[] metateoserializadoizq, byte[] metateoserializadoder, boolean ocultartrue) {
+    public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado) {
         this.id = id;
         this.categoria = categoria;
-        this.enunciadoizq = enunciadoizq;
-        this.enunciadoder = enunciadoder;
-        this.metateoserializadoizq = metateoserializadoizq;
-        this.metateoserializadoder = metateoserializadoder;
-        this.ocultartrue = ocultartrue;
+        this.enunciado = enunciado;
+        this.metateoserializado = metateoserializado;
     }
     
-    public Metateorema(Categoria categoria, String enunciadoizq, String enunciadoder, byte[] metateoserializadoizq, byte[] metateoserializadoder, boolean ocultartrue) {
+    public Metateorema(Categoria categoria, String enunciado, byte[] metateoserializado) {
         this.categoria = categoria;
-        this.enunciadoizq = enunciadoizq;
-        this.enunciadoder = enunciadoder;
-        this.metateoserializadoizq = metateoserializadoizq;
-        this.metateoserializadoder = metateoserializadoder;
-        this.ocultartrue = ocultartrue;
+        this.enunciado = enunciado;
+        this.metateoserializado = metateoserializado;
     }
 
 
-    public byte[] getMetateoserializadoizq() {
-        return metateoserializadoizq;
+    public byte[] getMetateoserializado() {
+        return metateoserializado;
     }
 
-    public byte[] getMetateoserializadoder() {
-        return metateoserializadoder;
+    public void setMetateoserializado(byte[] metateoserializado) {
+        this.metateoserializado = metateoserializado;
     }
-
-    public void setMetateoserializadoizq(byte[] metateoserializadoizq) {
-        this.metateoserializadoizq = metateoserializadoizq;
-    }
-
-    public void setMetateoserializadoder(byte[] metateoserializadoder) {
-        this.metateoserializadoder = metateoserializadoder;
-    }
-
-    
    
     public int getId() {
         return this.id;
@@ -83,27 +64,14 @@ public class Metateorema  implements java.io.Serializable {
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
-    public String getEnunciadoizq() {
-        return this.enunciadoizq;
+    public String getEnunciado() {
+        return this.enunciado;
     }
     
-    public void setEnunciadoizq(String enunciadoizq) {
-        this.enunciadoizq = enunciadoizq;
+    public void setEnunciado(String enunciado) {
+        this.enunciado = enunciado;
     }
-    public String getEnunciadoder() {
-        return this.enunciadoder;
-    }
-    
-    public void setEnunciadoder(String enunciadoder) {
-        this.enunciadoder = enunciadoder;
-    }
-    public boolean isOcultartrue() {
-        return this.ocultartrue;
-    }
-    
-    public void setOcultartrue(boolean ocultartrue) {
-        this.ocultartrue = ocultartrue;
-    }
+
     public Set getDispones() {
         return this.dispones;
     }
@@ -111,10 +79,5 @@ public class Metateorema  implements java.io.Serializable {
     public void setDispones(Set dispones) {
         this.dispones = dispones;
     }
-
-
-
-
 }
-
 

@@ -46,6 +46,11 @@ public class Var extends Term{
             return this;
     }
     
+    public Term type()
+    {
+        return null;
+    }
+    
     public int setAlias(int currentAlia)
     {
         if(alias != null)
@@ -145,7 +150,16 @@ public class Var extends Term{
         }
     }
     
-    @Override
+    public String toStringInfLabeled(int id){
+        if(alias == null ) {
+            char ascii = (char) indice; 
+            return "\\cssId{"+id+"}{"+ascii+"}";
+        }else {
+            return "\\cssId{"+id+"}{"+alias+"}";
+        }
+    }
+    
+    /*@Override
     public String toStringInFin() {
         if(alias == null ) {
             char ascii = (char) indice; 
@@ -153,7 +167,7 @@ public class Var extends Term{
         }else {
             return alias;
         }
-    }
+    }*/
     
     public ToString toStringAbrv(ToString toString)
     {
@@ -266,7 +280,7 @@ public class Var extends Term{
     }
 
     @Override
-    public Term sustParall(ArrayList<Var> Vars, ArrayList<Term> varsTerm) {
+    public Term sustParall(List<Var> Vars, List<Term> varsTerm) {
         Var var = null;
         int i= 0;
         for (Iterator<Var> it = Vars.iterator(); it.hasNext();) {

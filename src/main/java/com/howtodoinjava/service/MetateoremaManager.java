@@ -21,7 +21,7 @@ public interface MetateoremaManager {
     
     public List<Metateorema> getAllMetateoremas();
     
-    public Metateorema getMetateoremaByEnunciados(String enunciadoizq,String enunciadoder);
+    public Metateorema getMetateoremaByEnunciados(String enunciado);
     
     
 }

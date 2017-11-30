@@ -118,8 +118,8 @@ public class PerfilController {
         List<Teorema> teoremas = usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username));
         for (Teorema t: teoremas)
         {
-            t.setTeoTerm(new App(new App(new Const("\\equiv "),t.getTeoDerTerm()),t.getTeoIzqTerm()));
-            t.setMetateoTerm(new App(new App(new Const("\\equiv "),new Const("true ")),t.getTeoTerm()));
+            t.setTeoTerm(t.getTeoTerm());
+            t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),t.getTeoTerm()));
         }
         map.addAttribute("usuario", usuarioManager.getUsuario(username));
         map.addAttribute("guardarMenu","");
@@ -229,7 +229,7 @@ public class PerfilController {
 
                 teoTerm =parser.start_rule(terminoid2,terminoManager);
                 teoTerm.setAlias(0);
-                Term izq = null;
+                /*Term izq = null;
                 Term der = null;
                 boolean esEq = true;
                 Const relation=null;
@@ -247,7 +247,7 @@ public class PerfilController {
                 if (!esEq){
                     izq = teoTerm;
                     der = new Const("true");
-                }
+                }*/
                 
                 // ESTO DEBE MOSTRAR LAS CATEGORIAS
                 Categoria categoria;
@@ -255,13 +255,15 @@ public class PerfilController {
                 if (categoria == null) {
                     throw new CategoriaException("Ese numero de categoria no existe");
                 }
-
-                Teorema teoremaAdd = new Teorema(categoria,izq.traducBD().toStringFinal(),der.traducBD().toStringFinal(),izq,der,relation.getCon().trim(),false);
+                // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
+                Teorema teoremaAdd = new Teorema(categoria,teoTerm.traducBD().toStringFinal(),teoTerm,false);
                 Teorema teorema = teoremaManager.addTeorema(teoremaAdd); 
                 Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma());
                 Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
 
-                Metateorema metateoremaAdd = new Metateorema(teorema.getId(),categoria,teoTerm.traducBD().toStringFinal(),"true",SerializationUtils.serialize(teoTerm),SerializationUtils.serialize("true"),false);
+                // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
+                Term metateoTerm = new App(new App(new Const("\\equiv ",false,1,1),new Const("true")),teoTerm);
+                Metateorema metateoremaAdd = new Metateorema(teorema.getId(),categoria,metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm));
                 Metateorema metateorema = metateoremaManager.addMetateorema(metateoremaAdd);
                 
                 Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);

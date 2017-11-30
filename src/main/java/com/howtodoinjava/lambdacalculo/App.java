@@ -5,6 +5,7 @@
 package com.howtodoinjava.lambdacalculo;
 
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.List;
 
 /**
@@ -57,11 +58,11 @@ public class App extends Term{
     }
 
     @Override
-    public Term sustParall(ArrayList<Var> Vars, ArrayList<Term> varsTerm) {
+    public Term sustParall(List<Var> Vars, List<Term> varsTerm) {
         return new App(p.sustParall(Vars, varsTerm), q.sustParall(Vars, varsTerm));
     }
 
-@Override
+    @Override
     public Term checkApp() {
          
          Term termP = p.checkApp();
@@ -351,6 +352,11 @@ public class App extends Term{
         return currentAlia;
     }
     
+    public Term type()
+    {
+        return null;
+    }
+    
     public String toString()
     {
         String izq;
@@ -374,7 +380,7 @@ public class App extends Term{
         return "("+izq+" "+der+")";
     }
     
-    public String toStringInf()
+/*    public String toStringInf()
     {
         String izq; 
         String der; 
@@ -416,59 +422,163 @@ public class App extends Term{
             return p.alias+" "+q.alias;
         }    
     }
+*/
+
+    public String toStringInf()
+    {
+        /*if ( p instanceof Const )
+           return "("+p.toStringInf() +" "+ q.toStringInf()+")";
+        else if ( p instanceof App && ((App)p).p instanceof App )
+        {
+           Stack<String> stk = new Stack<String>();
+           stk.push(q.toStringInfFinal());
+           Term aux = p;
+           while ( aux instanceof App )
+           {
+              stk.add(((App)aux).q.toStringInfFinal());
+              aux = ((App)aux).p;
+           }
+           String termStr = aux.toStringInf()+" ( "+stk.pop();
+           while ( !stk.empty() )
+              termStr = termStr + " , " + stk.pop();
+           return termStr + " )";
+        }
+        else if ( p instanceof App )
+           return "("+q.toStringInf()+" "+((App)p).p.toStringInf()+" "+((App)p).q.toStringInf()+")";
+        else
+           return this.toString();
+           */
+        Const c1, c2;
+        if ( p instanceof Const && q instanceof App && ((App) q).p instanceof Const && 
+              (c1 = (Const)p) != null && (c2 = (Const)((App) q).p) != null &&
+             !c1.funNotation && ( c2.preced > c1.preced  || (c2.preced == c1.preced && c1.asociat == 2) )    ) 
+           // Const(Const p)
+           return "("+c1.toStringInf()+" "+q.toStringInfFinal()+")";
+        else if ( p instanceof Const && q instanceof App && ((App)q).p instanceof App && ((App)((App)q).p).p instanceof Const &&
+                  (c1 = (Const)p) != null && (c2 = (Const)((App)((App)q).p).p ) != null  && 
+                  !c1.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c1.asociat == 2) ))
+           // Const(Const p q)
+           return "("+c1.toStringInf() +" "+ q.toStringInfFinal()+")";
+        else if ( p instanceof App && q instanceof App && ((App)p).p instanceof Const && ((App)q).p instanceof Const &&
+                  (c1 = (Const)((App)p).p ) != null && (c2 = (Const)((App)q).p) != null && 
+                  !c2.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c2.asociat ==1)))
+           // Const p (Const q)
+           return "("+q.toStringInfFinal()+ (new App(new App(c1,((App)p).q),new Const(""))).toStringInfFinal()+")";
+        else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && ((App)((App)p).q).p instanceof Const &&
+                  (c1 = (Const)((App)p).p) != null && (c2 = (Const)((App)((App)p).q).p) != null)
+            return "("+new App(new App(c1,new Const("")),q).toStringInfFinal()+((App)p).q.toStringInfFinal()+")";
+        else if ( p instanceof Const )
+           // Const p
+           return "("+p.toStringInf()+q.toStringInf()+")";
+        else if ( p instanceof App && ((App)p).p instanceof App )
+           // (App p) q
+        {
+           Stack<String> stk = new Stack<String>();
+           stk.push(q.toStringInfFinal());
+           Term aux = p;
+           while ( aux instanceof App )
+           {
+              stk.add(((App)aux).q.toStringInfFinal());
+              aux = ((App)aux).p;
+           }
+           String termStr = aux.toStringInf()+" ( "+stk.pop();
+           while ( !stk.empty() )
+              termStr = termStr + " , " + stk.pop();
+           return termStr + " )";
+        }
+        else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && 
+                
+                  ((App)((App)p).q).p instanceof App && ((App)((App)((App)p).q).p).p instanceof Const && 
+                  (c1 = (Const)((App)p).p)!= null && (c2 = (Const)((App)((App)((App)p).q).p).p)!=null &&
+                  (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 2)))
+           // Const (Const p q) r
+           return "("+new App(new App(c1,new Const("")),q).toStringInfFinal()+((App)p).q.toStringInfFinal()+")";
+        else if ( p instanceof App && ((App)p).p instanceof Const && q instanceof App && ((App)q).p instanceof App &&
+                  ((App)((App)q).p).p instanceof Const && 
+                  (c1 = (Const)((App)p).p)!= null && (c2 = (Const)((App)((App)q).p).p) != null &&
+                  (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 1)))
+           // (Const p)(Const p q)
+           return "("+q.toStringInfFinal()+new App(new App(c1,((App)p).q),new Const("")).toStringInfFinal()+")";
+        else if ( p instanceof App && ((App)p).p instanceof Const )
+           // Const p q
+           return "("+q.toStringInf()+" "+((App)p).p.toStringInf()+" "+((App)p).q.toStringInf()+")";
+        else
+           return this.toString();
+
+    }   
     
-    public String toStringInFin() {
-        
-        String izq; 
-        String der; 
-        boolean pp =  p instanceof App;
-        boolean qq = q instanceof App;
-        System.out.println(pp +"+++++++++++++++++"+qq);
-        if( ((p.alias == null) && (q.alias == null) ) ) {      
-           if((p instanceof App) && (q instanceof App)){
-               System.out.println("+++++++++++++111111111111111+++++++++++++++++"); 
-               return q.toStringInFin()+" "+p.toStringInFin();  
-               
-           }else if(!(p instanceof App) && (q instanceof App)){
-                 System.out.println("++++++++++++++222222222222222222++++++++++++++++"); 
-                 if( ((App) q).p instanceof Const ){
-                     System.out.println("++++++++++2222aaaaaaaaaaaa++++++++++++++++++++"); 
-                     return p.toStringInFin()+" "+q.toStringInFin();
-                 }else{
-                     System.out.println("++++++++++++2222bbbbbb++++++++++++++++++"); 
-                     return p.toStringInFin()+" ("+q.toStringInFin()+")" ;
-                 } 
-                 
-           }else if( (p instanceof App) && !(q instanceof App)){ 
-                System.out.println("+++++++++++++++3333333333333+++++++++++++++"); 
-                String sim = ((App) p).p.toStringInFin();
-                if (((App) p).p instanceof Const ) {    
-                    System.out.println("+++aaaaaaaaaaaaaaaaaaaaaa+++++");
-                    if ( (((App) p).q instanceof Var) | (((App) p).q instanceof Bracket)){
-                        return q.toStringInFin()+" "+sim+" "+((App) p).q.toStringInFin();
-                    }else{
-                        return q.toStringInFin()+" "+sim+" ("+((App) p).q.toStringInFin()+")";
-                    }                       
-               }else{
-                    System.out.println("+++bbbbbbbbbbbbb+++++");
-                    return "("+q.toStringInFin()+" "+sim+" "+((App) p).q.toStringInFin()+")";
-               }
-           }else{
-                System.out.println("+++++++++++++44444444+++++++++++++++++"); 
-                return p.toStringInFin()+" "+q.toStringInFin();
-            }   
-           
-        }else if( (q.alias == null) &&  (p.alias != null)) {
-            return q.toStringInFin()+" "+p.alias;
-            
-        }else if( (q.alias != null) && (p.alias == null)) {
-            return q.alias +" "+p.toStringInFin();
-            
-        }else{ 
-            return p.alias+" "+q.alias;
-        }    
- }           
-    
+    public String toStringInfLabeled(int id)
+    {
+        Const c1, c2;
+        if ( p instanceof Const && q instanceof App && ((App) q).p instanceof Const && 
+              (c1 = (Const)p) != null && (c2 = (Const)((App) q).p) != null &&
+             !c1.funNotation && ( c2.preced > c1.preced  || (c2.preced == c1.preced && c1.asociat == 2) )    ) 
+           // Const(Const p)
+           return "\\cssId{"+id+"}{("+c1.toStringInf()+" "+q.toStringInfLabeledFinal(id+1)+")}";
+        else if ( p instanceof Const && q instanceof App && ((App)q).p instanceof App && ((App)((App)q).p).p instanceof Const &&
+                  (c1 = (Const)p) != null && (c2 = (Const)((App)((App)q).p).p ) != null  && 
+                  !c1.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c1.asociat == 2) ))
+           // Const(Const p q)
+           return "\\cssId{"+id+"}{("+c1.toStringInf() +" "+ q.toStringInfLabeledFinal(id+1)+")}";
+        else if ( p instanceof App && q instanceof App && ((App)p).p instanceof Const && ((App)q).p instanceof Const &&
+                  (c1 = (Const)((App)p).p ) != null && (c2 = (Const)((App)q).p) != null && 
+                  !c2.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c2.asociat ==1)))
+           // Const p (Const q)
+            if ((new App(new App(c1,((App)p).q),new Const(""))).toStringInfFinal().endsWith(")"))
+              return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+ ((App)p).q.toStringInfLabeled(id+1)+")}";
+            else
+              return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+ ((App)p).q.toStringInfLabeledFinal(id+1)+")}";
+        else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && ((App)((App)p).q).p instanceof Const &&
+                  (c1 = (Const)((App)p).p) != null && (c2 = (Const)((App)((App)p).q).p) != null)
+            if (new App(new App(c1,new Const("")),q).toStringInfFinal().startsWith("("))
+               return "\\cssId{"+id+"}{("+q.toStringInfLabeled(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}";
+            else
+               return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}"; 
+        else if ( p instanceof Const )
+           // Const p
+           return "\\cssId{"+id+"}{("+p.toStringInf()+q.toStringInfLabeled(id+1)+")}";
+        else if ( p instanceof App && ((App)p).p instanceof App )
+           // (App p) q
+        {
+           Stack<String> stk = new Stack<String>();
+           stk.push(q.toStringInfFinal());
+           Term aux = p;
+           while ( aux instanceof App )
+           {
+              stk.add(((App)aux).q.toStringInfFinal());
+              aux = ((App)aux).p;
+           }
+           String termStr = aux.toStringInf()+" ( "+stk.pop();
+           while ( !stk.empty() )
+              termStr = termStr + " , " + stk.pop();
+           return termStr + " )";
+        }
+        else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && 
+                
+                  ((App)((App)p).q).p instanceof App && ((App)((App)((App)p).q).p).p instanceof Const && 
+                  (c1 = (Const)((App)p).p)!= null && (c2 = (Const)((App)((App)((App)p).q).p).p)!=null &&
+                  (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 2)))
+           // Const (Const p q) r
+            if (new App(new App(c1,new Const("")),q).toStringInfFinal().startsWith("("))
+              return "\\cssId{"+id+"}{("+q.toStringInfLabeled(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}";
+            else
+              return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}";  
+        else if ( p instanceof App && ((App)p).p instanceof Const && q instanceof App && ((App)q).p instanceof App &&
+                  ((App)((App)q).p).p instanceof Const && 
+                  (c1 = (Const)((App)p).p)!= null && (c2 = (Const)((App)((App)q).p).p) != null &&
+                  (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 1)))
+           // (Const p)(Const p q)
+           if (new App(new App(c1,((App)p).q),new Const("")).toStringInfFinal().endsWith(")"))
+             return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeled(id+1)+")}";
+           else
+             return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}";
+        else if ( p instanceof App && ((App)p).p instanceof Const )
+           // Const p q
+           return "\\cssId{"+id+"}{("+q.toStringInfLabeled(id+1)+" "+((App)p).p.toStringInf()+" "+((App)p).q.toStringInfLabeled(id+1)+")}";
+        else
+           return this.toString();
+
+    }   
     
     public ToString toStringAbrv(ToString toString)
     {

@@ -33,6 +33,11 @@ public class Phi extends Term{
         return this;
     }
     
+    public Term type()
+    {
+        return null;
+    }
+    
     public int setAlias(int currentAlia)
     {
         if(alias != null)
@@ -116,6 +121,10 @@ public class Phi extends Term{
         return "\\Phi_{"+ind.toString()+"}";
     }
     
+    public String toStringInfLabeled(int id){
+        return "\\cssId{"+id+"}{\\Phi_{"+ind.toString()+"}}";
+    }
+    
     
     public String toStringInf() {
         return "\\Phi_{"+ind.toString()+"}";
@@ -164,7 +173,7 @@ public class Phi extends Term{
         return phi;
     }
 
-    public Term sustParall(ArrayList<Var> Vars, ArrayList<Term> varsTerm) {
+    public Term sustParall(List<Var> Vars, List<Term> varsTerm) {
         return this;
     }
 

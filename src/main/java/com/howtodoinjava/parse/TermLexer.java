@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 Term.g 2017-03-31 18:41:23
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 Term.g 2017-10-10 15:11:20
 package com.howtodoinjava.parse;
 
 import org.antlr.runtime.*;
@@ -579,7 +579,7 @@ public class TermLexer extends Lexer {
         try {
             int _type = X;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Term.g:156:2: ( 'X' NUMBER | 'x' NUMBER )
+            // Term.g:149:2: ( 'X' NUMBER | 'x' NUMBER )
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -597,7 +597,7 @@ public class TermLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // Term.g:157:4: 'X' NUMBER
+                    // Term.g:150:4: 'X' NUMBER
                     {
                     match('X'); 
                     mNUMBER(); 
@@ -605,7 +605,7 @@ public class TermLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // Term.g:159:5: 'x' NUMBER
+                    // Term.g:152:5: 'x' NUMBER
                     {
                     match('x'); 
                     mNUMBER(); 
@@ -627,8 +627,8 @@ public class TermLexer extends Lexer {
         try {
             int _type = INITIALDIGIT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Term.g:189:13: ( '1' .. '9' )
-            // Term.g:189:15: '1' .. '9'
+            // Term.g:183:13: ( '1' .. '9' )
+            // Term.g:183:15: '1' .. '9'
             {
             matchRange('1','9'); 
 
@@ -647,7 +647,7 @@ public class TermLexer extends Lexer {
         try {
             int _type = DIGIT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Term.g:191:6: ( '0' | INITIALDIGIT )
+            // Term.g:185:6: ( '0' | INITIALDIGIT )
             // Term.g:
             {
             if ( (input.LA(1)>='0' && input.LA(1)<='9') ) {
@@ -675,7 +675,7 @@ public class TermLexer extends Lexer {
         try {
             int _type = NUMBER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Term.g:193:7: ( '0' | INITIALDIGIT ( DIGIT )* )
+            // Term.g:187:7: ( '0' | INITIALDIGIT ( DIGIT )* )
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -693,17 +693,17 @@ public class TermLexer extends Lexer {
             }
             switch (alt3) {
                 case 1 :
-                    // Term.g:193:9: '0'
+                    // Term.g:187:9: '0'
                     {
                     match('0'); 
 
                     }
                     break;
                 case 2 :
-                    // Term.g:193:15: INITIALDIGIT ( DIGIT )*
+                    // Term.g:187:15: INITIALDIGIT ( DIGIT )*
                     {
                     mINITIALDIGIT(); 
-                    // Term.g:193:28: ( DIGIT )*
+                    // Term.g:187:28: ( DIGIT )*
                     loop2:
                     do {
                         int alt2=2;
@@ -716,7 +716,7 @@ public class TermLexer extends Lexer {
 
                         switch (alt2) {
                     	case 1 :
-                    	    // Term.g:193:29: DIGIT
+                    	    // Term.g:187:29: DIGIT
                     	    {
                     	    mDIGIT(); 
 
@@ -746,8 +746,8 @@ public class TermLexer extends Lexer {
         try {
             int _type = CAPITALLETTER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Term.g:195:14: ( 'A' .. 'Z' )
-            // Term.g:195:16: 'A' .. 'Z'
+            // Term.g:189:14: ( 'A' .. 'Z' )
+            // Term.g:189:16: 'A' .. 'Z'
             {
             matchRange('A','Z'); 
 
@@ -766,8 +766,8 @@ public class TermLexer extends Lexer {
         try {
             int _type = LETTER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Term.g:197:7: ( 'a' .. 'z' )
-            // Term.g:197:9: 'a' .. 'z'
+            // Term.g:191:7: ( 'a' .. 'z' )
+            // Term.g:191:9: 'a' .. 'z'
             {
             matchRange('a','z'); 
 
@@ -786,7 +786,7 @@ public class TermLexer extends Lexer {
         try {
             int _type = WORD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Term.g:199:5: ( CAPITALLETTER ( LETTER )+ | CAPITALLETTER )
+            // Term.g:193:5: ( CAPITALLETTER ( LETTER )+ | CAPITALLETTER )
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -807,10 +807,10 @@ public class TermLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // Term.g:199:9: CAPITALLETTER ( LETTER )+
+                    // Term.g:193:9: CAPITALLETTER ( LETTER )+
                     {
                     mCAPITALLETTER(); 
-                    // Term.g:199:23: ( LETTER )+
+                    // Term.g:193:23: ( LETTER )+
                     int cnt4=0;
                     loop4:
                     do {
@@ -824,7 +824,7 @@ public class TermLexer extends Lexer {
 
                         switch (alt4) {
                     	case 1 :
-                    	    // Term.g:199:24: LETTER
+                    	    // Term.g:193:24: LETTER
                     	    {
                     	    mLETTER(); 
 
@@ -844,7 +844,7 @@ public class TermLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // Term.g:201:9: CAPITALLETTER
+                    // Term.g:195:9: CAPITALLETTER
                     {
                     mCAPITALLETTER(); 
 
@@ -865,10 +865,10 @@ public class TermLexer extends Lexer {
         try {
             int _type = WHITESPACE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Term.g:203:11: ( ( ' ' | '\\r' )+ )
-            // Term.g:203:13: ( ' ' | '\\r' )+
+            // Term.g:197:11: ( ( ' ' | '\\r' )+ )
+            // Term.g:197:13: ( ' ' | '\\r' )+
             {
-            // Term.g:203:13: ( ' ' | '\\r' )+
+            // Term.g:197:13: ( ' ' | '\\r' )+
             int cnt6=0;
             loop6:
             do {

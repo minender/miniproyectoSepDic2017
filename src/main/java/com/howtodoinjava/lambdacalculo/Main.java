@@ -31,7 +31,7 @@ public class Main {
         //System.out.println(t1.toStringInFin());
         //System.out.println("+++++++++++++----------+++++++++++++++++");
         //System.out.println("++++++++++++++++++++++++++++++");
-        System.out.println(v.toStringFinalInFin());
+        System.out.println(v.toStringInfFinal());
         //System.out.println(v1.toString());
         //System.out.println(v1.toStringInFin());
         //System.out.println("++++++++++++---------------++++++++++++++++++");

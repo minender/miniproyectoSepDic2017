@@ -25,16 +25,16 @@ public class MetateoremaManagerImpl implements MetateoremaManager {
     @Transactional
     public Metateorema addMetateorema(Metateorema metateorema){
         // Este metateorema sera utilizado para ver si ya existe en la BD
-        Metateorema metateorema2 = this.getMetateoremaByEnunciados(metateorema.getEnunciadoizq().toString(), metateorema.getEnunciadoder().toString());
+        Metateorema metateorema2 = this.getMetateoremaByEnunciados(metateorema.getEnunciado().toString());
         if (metateorema2 != null) {
             return metateorema2;
-        } else {
+        } /*else {
             // Este metateorema sera utilizado para ver si el inverso ya existe en la BD
-            Metateorema metateorema3 = this.getMetateoremaByEnunciados(metateorema.getEnunciadoder().toString(), metateorema.getEnunciadoizq().toString());
+            Metateorema metateorema3 = this.getMetateoremaByEnunciados(metateorema.getEnunciado().toString());
             if (metateorema3 != null) {
                 return metateorema3;
             }
-        }
+        }*/
         metateoremaDAO.addMetateorema(metateorema);
         return metateorema;
     }
@@ -59,8 +59,8 @@ public class MetateoremaManagerImpl implements MetateoremaManager {
     
     @Override
     @Transactional
-    public Metateorema getMetateoremaByEnunciados(String enunciadoizq,String enunciadoder){
-        return metateoremaDAO.getMetateoremaByEnunciados(enunciadoizq,enunciadoder);
+    public Metateorema getMetateoremaByEnunciados(String enunciado){
+        return metateoremaDAO.getMetateoremaByEnunciados(enunciado);
     }
 
 }

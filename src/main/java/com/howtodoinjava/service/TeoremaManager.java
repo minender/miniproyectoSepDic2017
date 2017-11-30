@@ -22,7 +22,7 @@ public interface TeoremaManager {
     
     public List<Teorema> getAllTeoremas();
     
-    public Teorema getTeoremaByEnunciados(String enunciadoizq,String enunciadoder);
+    public Teorema getTeoremaByEnunciados(String enunciado);
     
     public List<Teorema> getTeoremaByResuelveList(List<Resuelve> resList);
     

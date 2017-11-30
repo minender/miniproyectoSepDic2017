@@ -51,10 +51,10 @@
                              <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
                           </a>
                              <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
-                          $${teo.getTeoTerm().toStringInf()}$
+                          $${teo.getTeoTerm().toStringInfFinal()}$
                           <span style="display: none;" id="${teo.getId()}">
                             <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><i class="fa fa-lock" aria-hidden="true" style="margin-right: 5px;"></i>
-                            $${teo.getMetateoTerm().toStringInf()}$
+                            $${teo.getMetateoTerm().toStringInfFinal()}$
                           </span>                       
                         </p> 
                       </li>
@@ -67,10 +67,11 @@
                               <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
                           </a>
                               <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
-                          <a href="javascript:buscarSoluciones(${teo.getId()});"style="cursor:pointer;" title="Haga click para ver las soluciones del teorema">$${teo.getTeoTerm().toStringInf()}$ </a>
+                          <a href="javascript:buscarSoluciones(${teo.getId()});"style="cursor:pointer;" title="Haga click para ver las soluciones del teorema">$${teo.getTeoTerm().toStringInfFinal()}$ </a>
                           <span style="display: none;" id="">
+
                               <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><i class="fa fa-unlock" aria-hidden="true" style="margin-right: 5px;"></i>
-                              $${teo.getMetateoTerm().toStringInf()}$
+                              $${teo.getMetateoTerm().toStringInfFinal()}$
                           </span>
                         </p>
                       </li>

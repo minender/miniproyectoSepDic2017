@@ -14,7 +14,7 @@ start_rule[TerminoId terminoid, TerminoManager terminoManager]   returns [Term v
 
 eq returns [Term value]: term eqtail          { Term aux=$term.value;
                                                 for(Iterator<Term> i = $eqtail.value.iterator(); i.hasNext();) 
-                                                   aux=new App(new App(new Const("\\equiv "),i.next()),aux);
+                                                   aux=new App(new App(new Const("\\equiv ",false,1,1),i.next()),aux);
                                                 $value=aux;
                                               };
 
@@ -34,16 +34,16 @@ disyconjtail returns [Term value]:
 
      ('==>'| '\\Rightarrow') disyconj tail2=disyconjtail{
                                                if ($tail2.value == null)
-                                                  $value = new App(new Const("\\Rightarrow "),$disyconj.value);
+                                                  $value = new App(new Const("\\Rightarrow ",false,2,2),$disyconj.value);
                                                else
-                                               $value=new App(new Const("\\Rightarrow "),new App($tail2.value,$disyconj.value));
+                                               $value=new App(new Const("\\Rightarrow ",false,2,2),new App($tail2.value,$disyconj.value));
                                               }
 
    |                                          {$value=null;};
 
 disyconj returns [Term value]: conc conctail  { Term aux=$conc.value;
                                                 for(Iterator<Term> i = $conctail.value.iterator(); i.hasNext();) 
-                                                   aux=new App(new App(new Const("\\Leftarrow "),i.next()),aux);
+                                                   aux=new App(new App(new Const("\\Leftarrow ",false,2,1),i.next()),aux);
                                                 $value=aux;
                                               };
 
@@ -60,9 +60,9 @@ conc returns [Term value]: neq disytail             { Term aux=$neq.value;
                                                      {
                                                         ParserPair pair = i.next();
                                                         if (pair.symbol.equals("\\vee "))
-                                                           aux=new App(new App(new Const(pair.symbol),pair.term),aux); 
+                                                           aux=new App(new App(new Const(pair.symbol,false,3,1),pair.term),aux); 
                                                         else if (pair.symbol.equals("\\wedge "))
-                                                           aux=new App(new App(new Const(pair.symbol),pair.term),aux); 
+                                                           aux=new App(new App(new Const(pair.symbol,false,3,1),pair.term),aux); 
                                                      }
                                                      $value=aux;
                                                    };
@@ -81,7 +81,7 @@ disytail returns [ArrayList<ParserPair> value]:
 
 neq returns [Term value]: neg neqtail         { Term aux=$neg.value;
                                                 for(Iterator<Term> i = $neqtail.value.iterator(); i.hasNext();) 
-                                                   aux=new App(new App(new Const("\\nequiv "),i.next()),aux);
+                                                   aux=new App(new App(new Const("\\nequiv ",false,4,1),i.next()),aux);
                                                 $value=aux;
                                               };
 
@@ -95,7 +95,7 @@ neqtail returns [ArrayList<Term> value]:
 
 neg returns [Term value]: 
 
-      ('!' | '\\neg') n=neg                   {$value=new App(new Const("\\neg "),$n.value);}
+      ('!' | '\\neg') n=neg                   {$value=new App(new Const("\\neg ",false,5,2),$n.value);}
 
      | CAPITALLETTER                          {$value = new Var((new Integer((int)$CAPITALLETTER.text.charAt(0))).intValue());}
 
@@ -114,7 +114,7 @@ neg returns [Term value]:
                                                $value = new App(capl,new Sust(vars, terms));
                                               } 
 
-     | WORD '(' arguments ')'                 {Term aux = new Const($WORD.text);
+     | WORD '(' arguments ')'                 {Term aux = new Const($WORD.text,true,-1,-1);
                                                for(Iterator<Var> i = $arguments.value.iterator(); i.hasNext();) 
                                                   aux=new App(aux,i.next());
                                                $value=aux;
@@ -122,7 +122,7 @@ neg returns [Term value]:
 
      | '(' eq ')'                             {$value=$eq.value;};
 
-instantiate returns [ArrayList<Object> value]: 
+instantiate[TerminoId terminoid, TerminoManager terminoManager] returns [ArrayList<Object> value]: 
 
      arguments ':=' explist                   {ArrayList<Object> arr=new ArrayList<Object>();
                                                arr.add($arguments.value);
@@ -175,7 +175,8 @@ arguments returns [ArrayList<Var> value]: LETTER ',' arg=arguments {ArrayList<Va
                                                              $value = list;
                                                            };
 
-lambda returns [Term value]: 'lambda' LETTER '.' eq        {Var v=new Var((new Integer($LETTER.text.charAt(0))).intValue());
+lambda[TerminoId terminoid, TerminoManager terminoManager] returns [Term value]: 
+                             'lambda' LETTER '.' eq        {Var v=new Var((new Integer($LETTER.text.charAt(0))).intValue());
                                                             $value = new Bracket(v,$eq.value);
                                                            };
 

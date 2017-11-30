@@ -78,15 +78,15 @@ public class EvaluarController {
     public String pruebaPredicadoView(@PathVariable String username, @PathVariable String id, ModelMap map) {
             
             
-            AgregarTeorema agregarTeorema = new AgregarTeorema("(p == p) == (q == q)", "45", "3.23", "El 3.23");
+            /*AgregarTeorema agregarTeorema = new AgregarTeorema("(p == p) == (q == q)", "45", "3.23", "El 3.23");
         
             Usuario user = usuarioManager.getUsuario(username);
             usuarioManager.getAllTeoremas(user);
-
+            */
             TerminoId terminoid2 = new TerminoId();
             terminoid2.setLogin(username);
 
-            ANTLRStringStream in = new ANTLRStringStream(agregarTeorema.getTeorema());
+            ANTLRStringStream in = new ANTLRStringStream("p \\/ q /\\(r ==> p /\\ (r \\/ q))");
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
@@ -97,7 +97,7 @@ public class EvaluarController {
                 teoTerm = parser.start_rule(terminoid2, terminoManager);
                 teoTerm.setAlias(0);
                 // inicializando pa q no ladille java
-                Term izq = null;
+                /*Term izq = null;
                 Term der = null;
                 boolean esEq = true;
                 Const relation = null;
@@ -105,7 +105,7 @@ public class EvaluarController {
                 try {
                     relation = (Const) ((App) ((App) teoTerm).p).p;
                     esEq = relation.getCon().trim().equals("\\equiv");
-                    izq = ((App) teoTerm).q;
+                    izq = teoTerm;
                     der = ((App) ((App) teoTerm).p).q;
                 } catch (java.lang.ClassCastException e) {
                     esEq = false;
@@ -118,7 +118,7 @@ public class EvaluarController {
 
             
                 // Este teorema sera utilizado para ver si ya existe en la BD
-                Teorema teorema2 = teoremaManager.getTeoremaByEnunciados(izq.toString(), der.toString());
+                Teorema teorema2 = teoremaManager.getTeoremaByEnunciados(izq.toString());
                 if (teorema2 != null) {
                     System.out.println("el teorema ya existe");
                 } else {
@@ -138,16 +138,16 @@ public class EvaluarController {
 //                    categoriaManager.addCategoria(categoria);
                 }
 
-//              public Teorema(Categoria categoria, String enunciadoizq, String enunciadoder, byte[] teoserializadoizq, byte[] teoserializadoder, boolean ocultartrue, boolean esquema) {
-                Teorema teorema = new Teorema(categoria, izq.traducBD().toStringFinal(), der.traducBD().toStringFinal(), izq, der, relation.getCon().trim(), false);
+//              Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
+                Teorema teorema = new Teorema(categoria, izq.traducBD().toStringFinal(), izq, false);
 //                teoremaManager.addTeorema(teorema);
 
 //                Resuelve resuelve = new Resuelve(user, teorema, agregarTeorema.getNombreTeorema(), agregarTeorema.getNumeroTeorema(), false);
                 Resuelve resuelve = new Resuelve(user, teorema, "", "Teo de prueba", false);
 //                resuelveManager.addResuelve(resuelve);
 
-                // public Metateorema(int id, Categoria categoria, String enunciadoizq, String enunciadoder, String metateoserializadoizq, String metateoserializadoder, boolean ocultartrue)                
-                Metateorema metateorema = new Metateorema(teorema.getId(), categoria, teoTerm.traducBD().toStringFinal(), "true", SerializationUtils.serialize(teoTerm), SerializationUtils.serialize("true"), false);
+                // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
+                Metateorema metateorema = new Metateorema(teorema.getId(), categoria, teoTerm.traducBD().toStringFinal(), SerializationUtils.serialize(teoTerm));
 //                metateoremaManager.addMetateorema(metateorema);
 
                 // public Dispone(int id, Usuario usuario, Metateorema metateorema, String numerometateorema, boolean resuelto)
@@ -156,11 +156,10 @@ public class EvaluarController {
                 
                 Teorema teo = teoremaManager.getTeorema(1);
                 
-                usuarioManager.getAllTeoremas(user);
-                map.addAttribute("id", izq.toStringInf());
-                map.addAttribute("usuario", teo.getTeoIzqTerm().toStringInf());
-                map.addAttribute("predicado", teo.getTeoDerTerm().toStringInf());
-                map.addAttribute("alias", teo.getId());
+                usuarioManager.getAllTeoremas(user);*/
+                map.addAttribute("id", id);
+                map.addAttribute("usuario", username);
+                map.addAttribute("alias", teoTerm.toStringInfLabeledFinal(0));
                 map.addAttribute("predserializado", categoriaManager.getAllCategorias().toString());
                 return "PagParaVerPredicado";
             }
