@@ -121,8 +121,9 @@ public class Phi extends Term{
         return "\\Phi_{"+ind.toString()+"}";
     }
     
-    public String toStringInfLabeled(int id){
-        return "\\cssId{"+id+"}{\\Phi_{"+ind.toString()+"}}";
+    public String toStringInfLabeled(Id id, int nivel){
+        id.id++;
+        return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{\\Phi_{"+ind.toString()+"}}}";
     }
     
     

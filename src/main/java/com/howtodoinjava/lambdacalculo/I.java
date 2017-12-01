@@ -122,7 +122,7 @@ public class I extends Term {
             return ""; //"|";
     }     
     
-    public String toStringInfLabeled(int id){
+    public String toStringInfLabeled(Id id, int nivel){
             return ""; //"|";
     }
         

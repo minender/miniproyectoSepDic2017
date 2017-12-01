@@ -20,6 +20,16 @@ public abstract class Term implements Cloneable, Serializable{
     
     public String alias;
     
+    protected static class Id
+    {
+        public int id;
+        
+        public Id()
+        {
+            id = 0;
+        }
+    }
+    
     protected static class ToString
     {
         public List<String> valores;
@@ -104,7 +114,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract String toStringInf();
     
-    public abstract String toStringInfLabeled(int id);
+    public abstract String toStringInfLabeled(Id id, int nivel);
     
     public abstract ToString toStringAbrvV1(ToString toString);
     
@@ -136,17 +146,27 @@ public abstract class Term implements Cloneable, Serializable{
         }return term;
     }
     
-    public String toStringInfLabeledFinal(int id){
+    public String toStringInfLabeled()
+    {
+        return this.toStringInfLabeledFinal(new Id(), 0);
+    }
+    
+    public String toStringInfLabeledFinal(Id id, int nivel){
         String term;
-        String aux= this.toStringInfLabeled(id);
-        int i=9;
+        String aux= this.toStringInfLabeled(id, nivel);
+        int i = 9;
+        while  (aux.charAt(i)!='{')
+            i++;
+        String initStr = aux.substring(0,i+1);
+        i=32;
         while (aux.charAt(i)!='{')
             i++;
         if(aux.charAt(i+1)=='(')
-            term = "\\cssId{"+id+"}{"+aux.substring(i+2, aux.length()-2)+"}";
+            term = initStr+"\\class{"+nivel+" terminoClick}{"+aux.substring(i+2, aux.length()-3)+"}}";
         else{
             term=aux;
-        }return term;
+        }
+        return term;
     }
     
     public void toStringAbrvFinal(ToString toString)

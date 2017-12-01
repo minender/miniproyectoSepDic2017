@@ -171,13 +171,14 @@ public class Bracket extends Term{
         }//.split("@")[0].replace("_", "\\_") +")";
     }
     
-    public String toStringInfLabeled(int id){
+    public String toStringInfLabeled(Id id, int nivel){
+        id.id++;
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
-            return "\\cssId{"+id+"}{(\\lambda "+x.toStringInfFinal()+"."+t.toStringInfFinal()+")}";
+            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal()+"."+t.toStringInfFinal()+")}}";
         }
         else {
-            return "\\cssId{"+id+"}{(\\lambda "+x.toStringInfFinal()+"."+t.alias +")}";
+            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal()+"."+t.alias +")}}";
         }
     }
     

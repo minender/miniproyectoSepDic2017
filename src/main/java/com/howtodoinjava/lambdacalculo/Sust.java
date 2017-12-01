@@ -149,7 +149,8 @@ public class Sust extends Term{
         return "["+varss+" := "+termss+"]";
     }
     
-    public String toStringInfLabeled(int id){
+    public String toStringInfLabeled(Id id, int nivel){
+        id.id++;
         String varss = "";
         String termss = "";
         for (Var v : vars)
@@ -161,7 +162,7 @@ public class Sust extends Term{
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
         
-        return "\\cssId{"+id+"}{["+varss+" := "+termss+"]}";
+        return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{["+varss+" := "+termss+"]}}";
     }
 
     /*public String toStringInFin() {

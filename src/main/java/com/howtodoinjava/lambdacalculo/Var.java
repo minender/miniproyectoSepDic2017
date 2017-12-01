@@ -150,12 +150,13 @@ public class Var extends Term{
         }
     }
     
-    public String toStringInfLabeled(int id){
+    public String toStringInfLabeled(Id id, int nivel){
+        id.id++;
         if(alias == null ) {
             char ascii = (char) indice; 
-            return "\\cssId{"+id+"}{"+ascii+"}";
+            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+ascii+"}}";
         }else {
-            return "\\cssId{"+id+"}{"+alias+"}";
+            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+alias+"}}";
         }
     }
     

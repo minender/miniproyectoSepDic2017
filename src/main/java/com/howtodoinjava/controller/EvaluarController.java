@@ -159,7 +159,7 @@ public class EvaluarController {
                 usuarioManager.getAllTeoremas(user);*/
                 map.addAttribute("id", id);
                 map.addAttribute("usuario", username);
-                map.addAttribute("alias", teoTerm.toStringInfLabeledFinal(0));
+                map.addAttribute("alias", teoTerm.toStringInfLabeled());
                 map.addAttribute("predserializado", categoriaManager.getAllCategorias().toString());
                 return "PagParaVerPredicado";
             }

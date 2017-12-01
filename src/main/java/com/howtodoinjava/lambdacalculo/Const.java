@@ -161,8 +161,9 @@ public class Const extends Term
         return con;
     }
     
-    public String toStringInfLabeled(int id){
-        return "\\cssId{"+id+"}{"+con+"}";
+    public String toStringInfLabeled(Id id, int nivel){
+        id.id++;
+        return "\\cssId{"+(id.id-1)+"}\\class{"+nivel+" terminoClick}{"+con+"}}";
     }
 
     

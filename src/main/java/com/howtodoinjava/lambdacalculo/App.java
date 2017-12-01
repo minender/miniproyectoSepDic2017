@@ -379,50 +379,6 @@ public class App extends Term{
         
         return "("+izq+" "+der+")";
     }
-    
-/*    public String toStringInf()
-    {
-        String izq; 
-        String der; 
-        boolean pp =  p instanceof App;
-        boolean qq = q instanceof App;
-        if( ((p.alias == null) && (q.alias == null) ) ) {      
-           if((p instanceof App) && (q instanceof App)){
-               return q.toStringInf()+" "+p.toStringInf();  
-               
-           }else if(!(p instanceof App) && (q instanceof App)){
-                 if( ((App) q).p instanceof Const ){
-                     return p.toStringInf()+" "+q.toStringInf();
-                 }else{
-                     return p.toStringInf()+" ("+q.toStringInf()+")" ;
-                 } 
-                 
-           }else if( (p instanceof App) && !(q instanceof App)){ 
-                String sim = ((App) p).p.toStringInf();
-                if (((App) p).p instanceof Const ) {    
-                    if ( (((App) p).q instanceof Var) | (((App) p).q instanceof Bracket)){
-                        return q.toStringInf()+" "+sim+" "+((App) p).q.toStringInf();
-                    }else{
-                        return q.toStringInf()+" "+sim+" ("+((App) p).q.toStringInf()+")";
-                    }                       
-               }else{
-                    return "("+q.toStringInf()+" "+sim+" "+((App) p).q.toStringInf()+")";
-               }
-           }else{
-                return p.toStringInf()+" "+q.toStringInf();
-            }   
-           
-        }else if( (q.alias == null) &&  (p.alias != null)) {
-            return q.toStringInf()+" "+p.alias;
-            
-        }else if( (q.alias != null) && (p.alias == null)) {
-            return q.alias +" "+p.toStringInf();
-            
-        }else{ 
-            return p.alias+" "+q.alias;
-        }    
-    }
-*/
 
     public String toStringInf()
     {
@@ -507,36 +463,37 @@ public class App extends Term{
 
     }   
     
-    public String toStringInfLabeled(int id)
+    public String toStringInfLabeled(Id id, int nivel)
     {
+        String term;
         Const c1, c2;
         if ( p instanceof Const && q instanceof App && ((App) q).p instanceof Const && 
               (c1 = (Const)p) != null && (c2 = (Const)((App) q).p) != null &&
              !c1.funNotation && ( c2.preced > c1.preced  || (c2.preced == c1.preced && c1.asociat == 2) )    ) 
            // Const(Const p)
-           return "\\cssId{"+id+"}{("+c1.toStringInf()+" "+q.toStringInfLabeledFinal(id+1)+")}";
+           term = "\\class{"+nivel+" terminoClick}{("+c1.toStringInf()+" "+q.toStringInfLabeledFinal(id,nivel+1)+")}";
         else if ( p instanceof Const && q instanceof App && ((App)q).p instanceof App && ((App)((App)q).p).p instanceof Const &&
                   (c1 = (Const)p) != null && (c2 = (Const)((App)((App)q).p).p ) != null  && 
                   !c1.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c1.asociat == 2) ))
            // Const(Const p q)
-           return "\\cssId{"+id+"}{("+c1.toStringInf() +" "+ q.toStringInfLabeledFinal(id+1)+")}";
+           term = "\\class{"+nivel+" terminoClick}{("+c1.toStringInf() +" "+ q.toStringInfLabeledFinal(id,nivel+1)+")}";
         else if ( p instanceof App && q instanceof App && ((App)p).p instanceof Const && ((App)q).p instanceof Const &&
                   (c1 = (Const)((App)p).p ) != null && (c2 = (Const)((App)q).p) != null && 
                   !c2.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c2.asociat ==1)))
            // Const p (Const q)
             if ((new App(new App(c1,((App)p).q),new Const(""))).toStringInfFinal().endsWith(")"))
-              return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+ ((App)p).q.toStringInfLabeled(id+1)+")}";
+              term = "\\class{"+nivel+" terminoClick}{("+q.toStringInfLabeledFinal(id,nivel+1)+" "+c1.toStringInf()+" "+ ((App)p).q.toStringInfLabeled(id,nivel+1)+")}";
             else
-              return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+ ((App)p).q.toStringInfLabeledFinal(id+1)+")}";
+              term = "\\class{"+nivel+" terminoClick}{("+q.toStringInfLabeledFinal(id,nivel+1)+" "+c1.toStringInf()+" "+ ((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";
         else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && ((App)((App)p).q).p instanceof Const &&
                   (c1 = (Const)((App)p).p) != null && (c2 = (Const)((App)((App)p).q).p) != null)
             if (new App(new App(c1,new Const("")),q).toStringInfFinal().startsWith("("))
-               return "\\cssId{"+id+"}{("+q.toStringInfLabeled(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}";
+               term = "\\class{"+nivel+" terminoClick}{("+q.toStringInfLabeled(id,nivel+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";
             else
-               return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}"; 
+               term = "\\class{"+nivel+" terminoClick}{("+q.toStringInfLabeledFinal(id,nivel+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}"; 
         else if ( p instanceof Const )
            // Const p
-           return "\\cssId{"+id+"}{("+p.toStringInf()+q.toStringInfLabeled(id+1)+")}";
+           term = "\\class{"+nivel+" terminoClick}{("+p.toStringInf()+q.toStringInfLabeled(id,nivel+1)+")}";
         else if ( p instanceof App && ((App)p).p instanceof App )
            // (App p) q
         {
@@ -560,24 +517,25 @@ public class App extends Term{
                   (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 2)))
            // Const (Const p q) r
             if (new App(new App(c1,new Const("")),q).toStringInfFinal().startsWith("("))
-              return "\\cssId{"+id+"}{("+q.toStringInfLabeled(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}";
+              term = "\\class{"+nivel+" terminoClick}{("+q.toStringInfLabeled(id,nivel+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";
             else
-              return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}";  
+              term = "\\class{"+nivel+" terminoClick}{("+q.toStringInfLabeledFinal(id,nivel+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";  
         else if ( p instanceof App && ((App)p).p instanceof Const && q instanceof App && ((App)q).p instanceof App &&
                   ((App)((App)q).p).p instanceof Const && 
                   (c1 = (Const)((App)p).p)!= null && (c2 = (Const)((App)((App)q).p).p) != null &&
                   (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 1)))
            // (Const p)(Const p q)
            if (new App(new App(c1,((App)p).q),new Const("")).toStringInfFinal().endsWith(")"))
-             return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeled(id+1)+")}";
+             term = "\\class{"+nivel+" terminoClick}{("+q.toStringInfLabeledFinal(id,nivel+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeled(id,nivel+1)+")}";
            else
-             return "\\cssId{"+id+"}{("+q.toStringInfLabeledFinal(id+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id+1)+")}";
+             term = "\\class{"+nivel+" terminoClick}{("+q.toStringInfLabeledFinal(id,nivel+1)+" "+c1.toStringInf()+" "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";
         else if ( p instanceof App && ((App)p).p instanceof Const )
            // Const p q
-           return "\\cssId{"+id+"}{("+q.toStringInfLabeled(id+1)+" "+((App)p).p.toStringInf()+" "+((App)p).q.toStringInfLabeled(id+1)+")}";
+           term = "\\class{"+nivel+" terminoClick}{("+q.toStringInfLabeled(id,nivel+1)+" "+((App)p).p.toStringInf()+" "+((App)p).q.toStringInfLabeled(id,nivel+1)+")}";
         else
-           return this.toString();
-
+           term = this.toString();
+        id.id++;
+        return "\\cssId{"+(id.id-1)+"}{"+term+"}";
     }   
     
     public ToString toStringAbrv(ToString toString)
