@@ -21,24 +21,45 @@ public class TypedApp extends App{
         if (t1Type instanceof Sust )
             ;
         else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
-            ;
+        {
+            try
+            {
+              String op = ((Const)((App)((App)t2Type).p).p).getCon().trim();
+              if (!op.equals("\\equiv") && !op.equals("="))
+                  throw new TypeVerificationException();
+            }
+            catch (ClassCastException e)
+            {
+                throw new TypeVerificationException();
+            }
+        }
         else if (t1Type instanceof App)
         {
-            Term t1Izq = ((App)t1Type).p;
-            if (!t1Izq.equals(t2Type)) //verificar que son eq, = o ==>
+            Term t1Izq = ((App)t1Type).q;
+            try
             {
-                try
-                {
-                  Term t1Der = ((App)((App)t1Type).p).q;
-                  Term t2Izq = ((App)t2Type).q;
-        
-                  if (!t1Der.equals(t2Izq))
-                    throw new TypeVerificationException();
-                }
-                catch (Exception e)
-                {
+              String op1 = ((Const)((App)((App)t1Type).p).p).getCon().trim();
+              if (!op1.equals("\\equiv") && !op1.equals("=") && !op1.equals("\\Rightarrow") && !op1.equals("\\Leftarrow"))
                   throw new TypeVerificationException();
-                }
+              if (!op1.equals("\\equiv") || !t1Izq.equals(t2Type)) 
+              {
+                Term t1Der = ((App)((App)t1Type).p).q;
+                Term t2Izq = ((App)t2Type).q;
+                String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
+        
+                boolean eqAndOp = op1.equals("\\equiv") && (op2.equals("\\equiv") 
+                        || op2.equals("\\Leftarrow") || op2.equals("\\Rightarrow"));
+                boolean leftAndOp = op1.equals("\\Leftarrow") && 
+                        (op2.equals("\\Leftarrow") || op2.equals("\\equiv"));
+                boolean rightAndOp = op1.equals("\\Rightarrow") && 
+                        (op2.equals("\\Rightarrow") || op2.equals("\\equiv"));
+                if (!((eqAndOp || leftAndOp || rightAndOp) && t1Der.equals(t2Izq)))
+                  throw new TypeVerificationException();
+              }
+            }
+            catch (ClassCastException e)
+            {
+              throw new TypeVerificationException();
             }
         }
         else
@@ -50,17 +71,29 @@ public class TypedApp extends App{
         Term pType = p.type();
         Term qType = q.type();
         if (pType instanceof Sust )
-            return qType.sustParall(((Sust)pType).vars, ((Sust)qType).terms);
+            return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms);
         else if (pType instanceof Bracket)
-            return (new App(pType, qType)).reducir();
+        {
+            Term t1 = new App(pType,((App)qType).q).reducir();
+            Term t2 = new App(pType,((App)((App)qType).p).q).reducir();
+            Term op2 = ((App)((App)qType).p).p; // incluir paridad aqui
+            return new App(new App(op2, t2),t1);
+        }
         else
         {
-           Term pIzq = ((App)p).q;
+           Term pIzq = ((App)pType).q; //((App)((App)pType).p).q;
            if (pIzq.equals(qType))
-               return ((App)((App)p)).q;
-           Term qDer = ((App)((App)q).p).q;
-        
-           return new App(new App(((App)((App)q).p).p, qDer), pIzq);
+               return ((App)((App)pType).p).q;
+           Term qDer = ((App)((App)qType).p).q;
+           Const op1 = (Const)((App)((App)pType).p).p;
+           Const op2 = (Const)((App)((App)qType).p).p;
+           
+           if (op1.equals(op2))
+               return new App(new App(op1, qDer), pIzq);
+           else if (op1.getCon().trim().equals("\\equiv"))
+               return new App(new App(op2, qDer), pIzq);
+           else
+               return new App(new App(op1, qDer), pIzq);
            // verificar si compartir terminos no trae problemas con reducir
         }
     }

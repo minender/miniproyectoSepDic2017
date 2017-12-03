@@ -77,22 +77,6 @@ ALTER TABLE categoria_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE categoria_id_seq OWNED BY categoria.id;
 
-
---
--- Name: employee; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE employee (
-    id integer NOT NULL,
-    email character varying(255),
-    firstname character varying(255),
-    lastname character varying(255),
-    telephone character varying(255)
-);
-
-
-ALTER TABLE employee OWNER TO postgres;
-
 --
 -- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -407,14 +391,6 @@ SELECT pg_catalog.setval('categoria_id_seq', 5, true);
 
 
 --
--- Data for Name: employee; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY employee (id, email, firstname, lastname, telephone) FROM stdin;
-\.
-
-
---
 -- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -515,14 +491,6 @@ ALTER TABLE ONLY categoria
 
 ALTER TABLE ONLY categoria
     ADD CONSTRAINT "categoria_UNIQUE" UNIQUE (nombre);
-
-
---
--- Name: employee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY employee
-    ADD CONSTRAINT employee_pkey PRIMARY KEY (id);
 
 
 --

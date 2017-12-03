@@ -9,18 +9,18 @@ package com.howtodoinjava.lambdacalculo;
  *
  * @author federico
  */
-public class TypedI extends Const{
+public class TypedS extends Const{
     
-    private final Sust instantiation_;
+    private final Term simetry_;
     
-    public TypedI(Sust instantiation)
+    public TypedS(Term simetry)
     {
-        super("I");
-        instantiation_ = instantiation;
+        super("S");
+        simetry_ = simetry;
     }
-
-   public Term type()
-   {
-       return instantiation_;
-   }
+    
+    public Term type()
+    {
+        return simetry_;
+    }
 }
