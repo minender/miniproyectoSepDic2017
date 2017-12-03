@@ -566,43 +566,11 @@ ALTER TABLE ONLY teorema
 
 
 --
--- Name: teorema_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY teorema
-    ADD CONSTRAINT "teorema_UNIQUE" UNIQUE (enunciadoizq, enunciadoder, operador);
-
-
---
--- Name: resuelve_teoremaSerializado_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
--- ALTER TABLE ONLY teorema
---    ADD CONSTRAINT "teorema_teoremaSerializado_UNIQUE" UNIQUE (teoserializadoizq, teoserializadoder);
-
-
---
 -- Name: metateorema_PK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY metateorema
     ADD CONSTRAINT "metateorema_PK" PRIMARY KEY (id);
-
-
---
--- Name: metateorema_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY metateorema
-    ADD CONSTRAINT "metateorema_UNIQUE" UNIQUE (enunciadoizq, enunciadoder);
-
-
---
--- Name: dispone_teoremaSerializado_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY metateorema
-    ADD CONSTRAINT "metateorema_metateoremaSerializado_UNIQUE" UNIQUE (metateoserializadoizq, metateoserializadoder);
 
 
 --

@@ -25,6 +25,15 @@ public class Resuelve  implements java.io.Serializable {
      private String nombreteorema;
      private String numeroteorema;
      private boolean resuelto;
+     private boolean esAxioma;
+
+    public boolean isEsAxioma() {
+        return esAxioma;
+    }
+
+    public void setEsAxioma(boolean esAxioma) {
+        this.esAxioma = esAxioma;
+    }
      private int demopendiente;
      private Set solucions = new HashSet(0);
 

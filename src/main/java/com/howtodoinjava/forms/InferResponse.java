@@ -20,6 +20,15 @@ public class InferResponse {
     private String errorParser3;
     private String cambiarMetodo;
     private String nSol;
+    private String lado;
+
+    public String getLado() {
+        return lado;
+    }
+
+    public void setLado(String lado) {
+        this.lado = lado;
+    }
 
     public String getnSol() {
         return nSol;

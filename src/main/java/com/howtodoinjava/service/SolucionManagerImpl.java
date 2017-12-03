@@ -7,7 +7,6 @@ package com.howtodoinjava.service;
 import com.howtodoinjava.dao.SolucionDAO;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

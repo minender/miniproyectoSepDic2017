@@ -31,6 +31,10 @@ $(function() {
                         url = url.replace("new",nSol);
                         $(form).attr('action',url);
                     }
+                    
+                    $('#nStatement_id').val("");
+                    $('#instanciacion_id').val("");
+                    $('#leibniz_id').val("");
                 }
                 
             }

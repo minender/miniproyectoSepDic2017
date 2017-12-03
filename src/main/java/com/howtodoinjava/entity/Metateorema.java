@@ -2,6 +2,7 @@ package com.howtodoinjava.entity;
 // Generated Mar 20, 2017 12:50:11 PM by Hibernate Tools 3.2.1.GA
 
 
+import com.howtodoinjava.lambdacalculo.Term;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -20,11 +21,21 @@ public class Metateorema  implements java.io.Serializable {
     @GeneratedValue( strategy= GenerationType.SEQUENCE, generator="metateorema_id_seq")
     @SequenceGenerator(name="metateorema_id_seq", sequenceName="metateorema_id_seq")
      private int id;
+     private Term teoTerm;
+
+
      private Categoria categoria;
      private String enunciado;
      private byte[] metateoserializado;
      private Set dispones = new HashSet(0);
+     
+    public Term getTeoTerm() {
+        return teoTerm;
+    }
 
+    public void setTeoTerm(Term teoTerm) {
+        this.teoTerm = teoTerm;
+    }
     public Metateorema() {
     }
 

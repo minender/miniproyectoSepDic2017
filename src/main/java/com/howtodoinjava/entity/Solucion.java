@@ -150,7 +150,7 @@ public class Solucion implements java.io.Serializable {
 
     }
 
-        public int retrocederPaso(){
+    public int retrocederPaso(){
     
             int tam = this.arregloInferencias.size();
             this.deserialize();

@@ -49,9 +49,14 @@ function teoremaClickeable(teoId){
         dataType: 'json',
         data: data,
         success: function(data) {
-
-            $('#formula').html(data.historial);
-            MathJax.Hub.Typeset();
+            if(data.lado === "0"){
+                alert("El teorema seleccionado no aplica para el metodo Partir de un lado.");
+                $("#metodosDiv").show();
+            }
+            else{
+                $('#formula').html(data.historial);
+                MathJax.Hub.Typeset();
+            }
         }
     });
     
@@ -75,8 +80,32 @@ function teoremaInicialMD(teoid){
         }
     });
     
-    $('#teoremaInicial').val(teoid);
+    $('#teoremaInicial').val(teoid.substring(3,teoid.length));
     
+}
+
+function metodoDF(teoid){
+    var data = {};
+    var form = $('#inferForm');
+    
+    $.ajax({
+        type: 'POST',
+        url: $(form).attr('action')+"/teoremaInicialDF",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+            if(data.lado === "0"){
+                alert("El teorema seleccionado no aplica para el metodo Debilitambien/Fortalecimiento.");
+                $("#metodosDiv").show();
+            }
+            else{
+                $('#formula').html(data.historial);
+                MathJax.Hub.Typeset();
+                $('#teoremaInicial').val(teoid + "-" + data.lado);
+                $("#inferForm").show();
+            }
+        }
+    });
 }
 
 function clickOperator(Math1,myField,teoid)
@@ -89,7 +118,6 @@ function clickOperator(Math1,myField,teoid)
         if(metodo === "1"){
             var selectTeoInicial = $("#selectTeoInicial").val(); 
             if(selectTeoInicial==="1"){
-                
                 teoremaInicialMD(teoid);
                 $('#inferForm').show();
                 $("#selectTeoInicial").val("0");

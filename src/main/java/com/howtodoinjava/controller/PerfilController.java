@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.util.SerializationUtils;
-
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
@@ -130,7 +129,6 @@ public class PerfilController {
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
         map.addAttribute("teoremas", teoremas);
         map.addAttribute("resuelveManager",resuelveManager);
-//        map.addAttribute("metateoremas",metateoremaManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         return "misTeoremas";
@@ -229,25 +227,6 @@ public class PerfilController {
 
                 teoTerm =parser.start_rule(terminoid2,terminoManager);
                 teoTerm.setAlias(0);
-                /*Term izq = null;
-                Term der = null;
-                boolean esEq = true;
-                Const relation=null;
-                
-                try {
-                    relation = (Const)((App)((App)teoTerm).p).p;
-                    esEq = relation.getCon().trim().equals("\\equiv");
-                    izq = ((App)teoTerm).q;
-                    der = ((App)((App)teoTerm).p).q;
-                } 
-                catch (java.lang.ClassCastException e) {
-                    esEq = false;
-                }
-                
-                if (!esEq){
-                    izq = teoTerm;
-                    der = new Const("true");
-                }*/
                 
                 // ESTO DEBE MOSTRAR LAS CATEGORIAS
                 Categoria categoria;
@@ -268,20 +247,8 @@ public class PerfilController {
                 
                 Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
                 Dispone dispone = disponeManager.addDispone(disponeAdd);
-                
-//                PasoInferencia paso = new PasoInferencia(teoTerm, null, null, null, "");
-//                Solucion solucion = new Solucion(resuelve,paso);
-//                solucion.setResuelve(resuelve);
-//                solucion.addArregloInferencias(paso);
-//                solucionManager.addSolucion(solucion);
-//             
-//                System.out.println("El serializado es: "+SerializationUtils.serialize(paso));
-//                solucion.addArregloInferencias(paso);
-//                solucionManager.addSolucion(solucion);
-                        
-                        
+                     
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
-                map.addAttribute("mensaje", "Su teorema ha sido guardado con exito");
                 map.addAttribute("guardarMenu","");
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
                 map.addAttribute("agregarTeoremaMenu","");
