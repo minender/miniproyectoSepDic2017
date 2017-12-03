@@ -69,15 +69,6 @@
         </c:choose>
       </c:otherwise>
     </c:choose>
-  <!--<a href="./">Perfil</a>-->
-<!--  <script>
-    cs=document.getElementById("selecCateg").value;
-    setCategoriaSeleccionada(document.getElementById("selecCateg").value);
-  </script>-->
-<!--  <script>
-    t=document.getElementById('termino_string');
-    t.innerText="${termino}";
-  </script>-->
     <tiles:insertDefinition name="footer" />
   </body>
 </html>

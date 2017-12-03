@@ -6,10 +6,12 @@ package com.howtodoinjava.service;
 
 import com.howtodoinjava.dao.MetateoremaDAO;
 import com.howtodoinjava.entity.Metateorema;
+import com.howtodoinjava.lambdacalculo.Term;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.SerializationUtils;
 
 /**
  *
@@ -48,7 +50,11 @@ public class MetateoremaManagerImpl implements MetateoremaManager {
     @Override
     @Transactional
     public Metateorema getMetateorema(int id){
-        return metateoremaDAO.getMetateorema(id);
+        Metateorema metaTeo = metateoremaDAO.getMetateorema(id);
+        if (metaTeo != null) {
+            metaTeo.setTeoTerm((Term) SerializationUtils.deserialize(metaTeo.getMetateoserializado()));
+        }
+        return metaTeo;
     }
     
     @Override

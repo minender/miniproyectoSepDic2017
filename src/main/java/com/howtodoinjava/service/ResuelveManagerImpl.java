@@ -12,7 +12,9 @@ import com.howtodoinjava.entity.Teorema;
 import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Const;
 import com.howtodoinjava.lambdacalculo.Term;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,12 +76,22 @@ public class ResuelveManagerImpl implements ResuelveManager {
         try {
             for (Resuelve resuelve : resuelves) {
                 List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelve.getId());
-                resuelve.setDemopendiente(-1);
+                resuelve.setDemopendiente(-1);                
+                
                 for (Solucion sol: sols)
                 {
                    if (!sol.isResuelto())
                       resuelve.setDemopendiente(sol.getId());
                 }
+                
+                if(resuelve.isResuelto()==true && resuelve.getDemopendiente()== -1){
+                    resuelve.setEsAxioma(true);
+                }
+                else{
+                    resuelve.setEsAxioma(false);
+                    
+                }
+                
                 Teorema teo = resuelve.getTeorema();
                 teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
             }

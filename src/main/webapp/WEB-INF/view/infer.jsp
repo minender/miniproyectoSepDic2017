@@ -64,13 +64,21 @@
                             $("#metodosDiv").hide();
                         }
                     }
-                    if(this.value==="2"){
+                    else if(this.value==="2"){
                         if(confirm("Esta seguro que desea utlizar el metodo partir de un lado ?")){
                             var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             alert('Seleccione el teorema con el cual va a empezar la demostracion.');
                             $("#metodosDiv").hide();
                             teoremaClickeable(nTeo);
+                        }
+                    }
+                    else if(this.value==="3"){
+                        if(confirm("Esta seguro que desea utlizar el metodo Debilitamiento/Fortalecimiento ?")){
+                            var nTeo = $("#nTeorema").val();
+                            $("#selectTeoInicial").val("0");
+                            $("#metodosDiv").hide();
+                            metodoDF(nTeo);
                         }
                     }
                 });
@@ -80,22 +88,22 @@
                     var data = {};
                     var form = $('#inferForm');
                     var teoId = $("#nTeorema").val();
+
                     data["teoid"] = teoId;
-                    alert(this.id);
                     if(this.id==='d'){
                         data["lado"] = "d";
                         $.ajax({
-                        type: 'POST',
-                        url: $(form).attr('action')+"/teoremaInicialPL",
-                        dataType: 'json',
-                        data: data,
-                        success: function(data) {
+                            type: 'POST',
+                            url: $(form).attr('action')+"/teoremaInicialPL",
+                            dataType: 'json',
+                            data: data,
+                            success: function(data) {
 
-                            $('#formula').html(data.historial);
-                            MathJax.Hub.Typeset();
-                            $('#teoremaInicial').val(teoId + "-d");
-                            $("#inferForm").show();
-                        }
+                                $('#formula').html(data.historial);
+                                MathJax.Hub.Typeset();
+                                $('#teoremaInicial').val(teoId + "-d");
+                                $("#inferForm").show();
+                            }
                         }); 
                     }
                     else if(this.id==='i'){
@@ -113,11 +121,9 @@
                             $("#inferForm").show();
                         }
                         });
-                    }    
+                    } 
                 });
-
-            });
-            
+            });   
 
         </script>
         <base href="/Miniproyecto/perfil/${usuario.login}/"/>
@@ -166,87 +172,75 @@
                     <c:forEach items="${resuelves}" var="resu">
                       <c:choose>
                         <c:when test="${resu.getTeorema().getCategoria().getId()==cat.getId()}">      
-                          <c:choose>
-                            <c:when test="${resu.isResuelto() == false}">
-                              <li style="list-style: none;">
-                                <h6 style="color: #000;">
-                                  <c:choose>
-                                  <c:when test="${!selecTeo}">
-                                  <a onclick="expandMeta('metaTeo${resu.getNumeroteorema()}')">
-                                      <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
-                                  </a>
-                                  </c:when>
-                                  </c:choose>                                      
-                                      <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
-                                 <span id="click${resu.getNumeroteorema()}">
-                                     <c:choose>
-                                     <c:when test="${selecTeo}">
+                            <li style="list-style: none;">
+                              <h6 style="color: #000;">
+                                <c:choose>
+                                <c:when test="${!selecTeo}">
+                                <c:choose>
+                                <c:when test="${resu.isResuelto()==true || resu.getNumeroteorema().equals(nTeo)}">
+                                <a onclick="expandMeta('metaTeo${resu.getNumeroteorema()}')">
+                                    <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
+                                </a>
+                                    <span id="click${resu.getNumeroteorema()}">
+                                    
+                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$    
 
-                                         <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$
-                                         <%--<a onclick="return confirm('${resu.getDemopendiente() != 1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() != 1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$--%>
-                                     </c:when>
-                                     <c:otherwise>
-                                     (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$    
-                                     </c:otherwise>
-                                     </c:choose>
-                                 </span>
-                                      <script>clickOperator('click${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
-                                 <span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
-                                     <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
-                                     <c:choose>
-                                     <c:when test="${selecTeo}">
-                                         <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) Metatheorem:</a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
-                                         <%--<a onclick="return confirm('${resu.getDemopendiente() != 1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() != 1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) Metatheorem:</a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$--%>
-                                     </c:when>
-                                     <c:otherwise>    
-                                         (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
-                                     </c:otherwise>
-                                     </c:choose>    
-                                     <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
-                                 </span>
-                                </h6>
-                              </li>
-                            </c:when>
-                            <c:otherwise>
-                              <li style="list-style: none;">
-                                <h6 style="color: #000;">
-                                  <c:choose>
-                                  <c:when test="${!selecTeo}">
-                                  <a onclick="expandMeta('metaTeo${resu.getNumeroteorema()}')">
-                                      <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
-                                  </a>
-                                  </c:when>
-                                  </c:choose>
-                                      <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 5px;"></i>
-                                  <span id="click${resu.getNumeroteorema()}">
-                                      <c:choose>
-                                      <c:when test="${selecTeo}">
-                                         <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$
-                                         <%--<a onclick="return confirm('${resu.getDemopendiente() != 1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() != 1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$--%>
-                                      </c:when>
-                                      <c:otherwise>
-                                         (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$
-                                      </c:otherwise>
-                                      </c:choose>    
-                                  </span>
-                                      <script>clickOperator('click${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
-                                  <span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
-                                      <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><i class="fa fa-unlock" aria-hidden="true" style="margin-right: 5px;"></i>
-                                      <c:choose>
-                                      <c:when test="${selecTeo}">
-                                        <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) Metatheorem:</a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
-                                        <%--<a onclick="return confirm('${resu.getDemopendiente() != 1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() != 1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) Metatheorem:</a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$--%>
-                                      </c:when>
-                                      <c:otherwise>  
-                                        (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
-                                      </c:otherwise>
-                                      </c:choose>    
-                                      <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
-                                  </span>
-                                </h6>
-                              </li>
-                            </c:otherwise>
-                          </c:choose>
+                                
+                                </span>
+                                    <script>clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}');</script>
+                                <span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
+                                   <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>                
+                                   
+                                    (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$  
+                                       
+                                   <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}');</script>
+                               </span>
+                               </c:when>
+                               </c:choose>
+                                </c:when>
+                                <c:otherwise>
+                                   <c:choose>
+                                    <c:when test="${resu.isResuelto()}">
+                                        <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
+                                    </c:otherwise>
+                                    </c:choose>
+                                        <span id="click${resu.getNumeroteorema()}">
+                                    
+                                        <c:choose>
+                                        <c:when test="${resu.isEsAxioma() != true}">
+
+                                            <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$
+                                        </c:when>
+                                        <c:otherwise>
+                                        (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$    
+                                        </c:otherwise>
+                                        </c:choose>
+
+                                        </span>
+                                            <script>clickOperator('click${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
+                                        <span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
+                                           <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+
+                                           <c:choose>
+                                                <c:when test="${resu.isResuelto()}">
+                                                    <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
+                                                </c:otherwise>
+                                            </c:choose>
+
+                                            (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$  
+
+                                           <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
+                                       </span>
+                                        </c:otherwise>
+                                        </c:choose>
+                              </h6>
+                            </li>
                         </c:when>
                       </c:choose>
                     </c:forEach>

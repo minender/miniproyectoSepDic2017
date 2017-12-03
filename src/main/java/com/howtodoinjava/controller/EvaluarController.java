@@ -4,20 +4,10 @@
  */
 package com.howtodoinjava.controller;
 
-import com.howtodoinjava.entity.Categoria;
-import com.howtodoinjava.entity.Dispone;
-import com.howtodoinjava.entity.Metateorema;
-import com.howtodoinjava.entity.Resuelve;
-import com.howtodoinjava.entity.Solucion;
-import com.howtodoinjava.entity.Teorema;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Usuario;
-import com.howtodoinjava.forms.AgregarTeorema;
 import com.howtodoinjava.forms.InsertarEvaluar;
-import com.howtodoinjava.lambdacalculo.App;
-import com.howtodoinjava.lambdacalculo.Const;
 import com.howtodoinjava.lambdacalculo.Corrida;
-import com.howtodoinjava.lambdacalculo.PasoInferencia;
 import com.howtodoinjava.lambdacalculo.Term;
 import com.howtodoinjava.lambdacalculo.Tripla;
 import com.howtodoinjava.parse.IsNotInDBException;
@@ -40,7 +30,6 @@ import org.antlr.runtime.RecognitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.SerializationUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,9 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.howtodoinjava.controller;
 
+import com.howtodoinjava.entity.Metateorema;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
@@ -60,8 +57,6 @@ public class InferController {
     private TerminoManager terminoManager;
     @Autowired
     private SolucionManager solucionManager;
-//    @Autowired
-//    private TeoremaManager teoremaManager;
     @Autowired
     private MetateoremaManager metateoremaManager;
     @Autowired
@@ -77,7 +72,6 @@ public class InferController {
         {
             return "redirect:/index";
         }
-//        List<Teorema> teoremas = usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username));
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUser(username);
         for (Resuelve r: resuelves)
         {
@@ -131,15 +125,31 @@ public class InferController {
         {
             Teorema t = r.getTeorema();
             Term term = t.getTeoTerm();
-            try
-            {
-              t.setTeoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{"+((Const)((App)((App)term).p).p).getCon()+"}}",false,1,1),((App)((App)term).p).q),((App)term).q));
+            if(r.isResuelto()==true || r.getNumeroteorema().equals(nTeo)){
+                
+                try
+                {
+                  t.setTeoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{"+((Const)((App)((App)term).p).p).getCon()+"}}",false,1,1),((App)((App)term).p).q),((App)term).q));
+                }
+                catch (java.lang.ClassCastException e)
+                {
+                    t.setTeoTerm(term);
+                }
+                t.setMetateoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{\\equiv}}",false,1,1),new Const("true ")), term));
             }
-            catch (java.lang.ClassCastException e)
-            {
-                t.setTeoTerm(term);
+            else{
+                
+                try
+                {
+                  t.setTeoTerm(new App(new App(new Const(((Const)((App)((App)term).p).p).getCon(),false,1,1),((App)((App)term).p).q),((App)term).q));
+                }
+                catch (java.lang.ClassCastException e)
+                {
+                    t.setTeoTerm(term);
+                }
+                t.setMetateoTerm(new App(new App(new Const("{\\equiv}}",false,1,1),new Const("true ")), term));
             }
-            t.setMetateoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{\\equiv}}",false,1,1),new Const("true ")), term));
+            
         }
         map.addAttribute("usuario", usuarioManager.getUsuario(username));
         InfersForm infersForm = new InfersForm();
@@ -151,7 +161,6 @@ public class InferController {
         map.addAttribute("instanciacion","");
         map.addAttribute("leibniz","");
         if (solId.equals("new")){
-           //map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:<center>$"+formula+"$</center>");
             map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");
             map.addAttribute("elegirMetodo","1");
         }
@@ -210,7 +219,6 @@ public class InferController {
         
         String pasoPost = "";
 
-//<<<<<<< Updated upstream
         TerminoId terminoid=new TerminoId();
         terminoid.setLogin(username);
 
@@ -218,24 +226,28 @@ public class InferController {
            instanciacion = "p:=p";
         if (leibniz.equals(""))
             leibniz = "lambda z.z";
+        
+        String tipoTeo = nStatement.substring(0, 2);
+        String numeroTeo = nStatement.substring(3, nStatement.length());
 
-
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nStatement);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
         Teorema teorema = resuelve.getTeorema();
+        int idTeorema = teorema.getId();
+        Metateorema metateorema = metateoremaManager.getMetateorema(idTeorema);
 
         Term term = null;
-        ObjectInputStream in;
+        ObjectInputStream in = null;
         try {
-            in = new ObjectInputStream(new ByteArrayInputStream(teorema.getTeoserializado()));
+            if(tipoTeo.equals("ST")){
+                in = new ObjectInputStream(new ByteArrayInputStream(teorema.getTeoserializado()));
+            }
+            else if(tipoTeo.equals("MT")){
+                in = new ObjectInputStream(new ByteArrayInputStream(metateorema.getMetateoserializado()));
+            }
+            
             term = (Term) in.readObject();
             in.close();
 
-            /*in = new ObjectInputStream(new ByteArrayInputStream(teorema.getTeoserializadoder()));
-            Term terDer = (Term) in.readObject();
-            in.close();
-
-            term = new App(new App((new Const(teorema.getOperador())) , terDer),terIzq);
-            */
         } catch (IOException ex) {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -254,31 +266,7 @@ public class InferController {
         }
         catch(RecognitionException e)
         {
-/*=======
-                in = new ObjectInputStream(new ByteArrayInputStream(teorema.getTeoserializadoder()));
-                Term terDer = (Term) in.readObject();
-                in.close();            
-                
-                term = new App(new App((new Const(teorema.getOperador(),false,1,1)) , terDer),terIzq);
-            } catch (IOException ex) {
-                Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-                        
-              
-            ANTLRStringStream in2 = new ANTLRStringStream(instanciacion);
-            TermLexer lexer2 = new TermLexer(in2);
-            CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
-            TermParser parser2 = new TermParser(tokens2);
-            ArrayList<Object> arr;
-            try
-            {
-               arr=parser2.instantiate(terminoid,terminoManager);
-            }
-            catch(RecognitionException e)
-            {
->>>>>>> Stashed changes*/
+
                 String hdr = parser2.getErrorHeader(e);
                 String msg = parser2.getErrorMessage(e, TermParser.tokenNames);
                 response.setErrorParser2(hdr + " " + msg);
@@ -436,32 +424,11 @@ public class InferController {
                 solucion.addArregloInferencias(paso);
                 solucionManager.updateSolucion(solucion);
             }
-//<<<<<<< Updated upstream
             
             List<PasoInferencia> inferencias = solucion.getArregloInferencias();
             String formula = resuel.getTeorema().getTeoTerm().toStringInfFinal();
             
             response.generarHistorial(formula, nTeo, pasoPost, valida, inferencias);
-//=======
-
-/*            String formula = resuel.getTeorema().getTeoTerm().toStringInfFinal();
-            infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
-            List<PasoInferencia> inferencias = solucion.getArregloInferencias();
-            String ultimaExp = "";
-            for (PasoInferencia x: inferencias) {
-                infersForm.setHistorial(infersForm.getHistorial()+ "$$" +
-                                        x.getExpresion().toStringInfFinal()+" $$" + " $$ \\equiv< " + 
-                                        new App(new App(new Const("\\equiv ",false,1,1),x.getTeoDer()), x.getTeoIzq()).toStringInfFinal() + 
-                                        " - " + x.getLeibniz().toStringInfFinal() + 
-                                        " - " + x.getInstancia().toString()+" > $$");
-                ultimaExp = x.getResult().toStringInfFinal();
-            }
-            if (valida) {
-                infersForm.setHistorial(infersForm.getHistorial()+ "$$" +pasoPost + "$$");
-            } else {
-                infersForm.setHistorial(infersForm.getHistorial()+ "$$" +ultimaExp + "$$" + "$$" + pasoPost + "$$");
-            }
->>>>>>> Stashed changes*/
 
         return response;
     }
@@ -508,7 +475,7 @@ public class InferController {
         Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         String formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().toStringInfFinal();
         
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
         String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
         
         String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<center>$"+formula+"$</center>";
@@ -522,11 +489,21 @@ public class InferController {
             @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
+      
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         
-        Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        String formulaAnterior = ((App)resuelveAnterior.getTeorema().getTeoTerm()).q.toStringInfFinal();
+        Teorema t = resuelve.getTeorema();
+        Term term = t.getTeoTerm();
+        String equiv = ((Const)((App)((App)term).p).p).getCon();
         
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid);
+        if(!equiv.startsWith("\\equiv")){
+            response.setLado("0");
+            return response;
+        }
+        else{
+            response.setLado("1");
+        }
+
         String formulaDer = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
         String formulaIzq = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
         String operador = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).p.toStringInfFinal();//resuelve.getTeorema().getOperador();
@@ -540,22 +517,54 @@ public class InferController {
         return response;
     }
     
-    @RequestMapping(value="/{username}/{nTeo:.+}/new/teoremaInicialPL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialPL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse teoremaInicialPL( @RequestParam(value="teoid") String teoId,@RequestParam(value="lado") String lado, @PathVariable String username, 
             @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
         
-        Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        String formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().toStringInfFinal();
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
         
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoId);
         String formula = "";
+        
         if(lado.equals("d")){
             formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
         }
         else if(lado.equals("i")){
             formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
+        }
+        
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<center>$"+formula+"$</center>";
+        response.setHistorial(historial);  
+
+        return response;
+    }
+    
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialDF", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse teoremaInicialDF(@PathVariable String username, @PathVariable String nTeo)
+    {   
+        InferResponse response = new InferResponse();
+        
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
+        
+        Teorema t = resuelve.getTeorema();
+        Term term = t.getTeoTerm();
+        String operador = ((Const)((App)((App)term).p).p).getCon();
+        
+        
+        String formula = "";
+        if(operador.startsWith("\\Lefttarrow")){
+            response.setLado("d");
+            formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
+        }
+        else if(operador.startsWith("\\Rightarrow")){
+            response.setLado("i");
+            formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
+        }
+        else{
+            response.setLado("0");
         }
         
         String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<center>$"+formula+"$</center>";
