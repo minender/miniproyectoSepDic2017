@@ -40,22 +40,15 @@
       <c:forEach items="${categorias}" var="cat"> 
         <li style="list-style: none; color: #03A9F4"><h3>${cat.getNombre()}</h3>
           <ul>
-            <c:forEach items="${teoremas}" var="teo">
+            <c:forEach items="${teoremas}" var="resu">
               <c:choose>
-                <c:when test="${teo.getCategoria().getId()==cat.getId()}">      
+                <c:when test="${resu.getTeorema().getCategoria().getId()==cat.getId()}">      
                   <c:choose>
-                    <c:when test="${resuelveManager.getResuelveByUserAndTeorema(usuario.login,teo.getId()).isResuelto() == false}">
+                    <c:when test="${!resu.isResuelto()}">
                       <li style="list-style: none;">
                         <p style="color: #000;">
-                          <a onclick="expandMeta(${teo.getId().toString()})">
-                             <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
-                          </a>
                              <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
-                          $${teo.getTeoTerm().toStringInfFinal()}$
-                          <span style="display: none;" id="${teo.getId()}">
-                            <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><i class="fa fa-lock" aria-hidden="true" style="margin-right: 5px;"></i>
-                            $${teo.getMetateoTerm().toStringInfFinal()}$
-                          </span>                       
+                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$                     
                         </p> 
                       </li>
                       
@@ -63,16 +56,26 @@
                     <c:otherwise>
                       <li style="list-style: none;">
                         <p style="color: #000;">
-                          <a onclick="expandMeta(${teo.getId().toString()})">
-                              <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
-                          </a>
-                              <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
-                          <a href="javascript:buscarSoluciones(${teo.getId()});"style="cursor:pointer;" title="Haga click para ver las soluciones del teorema">$${teo.getTeoTerm().toStringInfFinal()}$ </a>
-                          <span style="display: none;" id="">
+                            <c:choose>
+                            <c:when test="${!resu.isEsAxioma()}">
+                                <a style="text-decoration: none" onclick="expandMeta(${resu.getTeorema().getId()})">
+                                <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-right: 10px;"></i>
+                                </a>
+                                <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
 
-                              <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span><i class="fa fa-unlock" aria-hidden="true" style="margin-right: 5px;"></i>
-                              $${teo.getMetateoTerm().toStringInfFinal()}$
-                          </span>
+                                <a style="text-decoration: none" href="javascript:buscarSoluciones(${resu.getTeorema().getId()});"style="cursor:pointer;" title="Haga click para ver las soluciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$ </a>
+                                <span style="display: none;" id="${resu.getTeorema().getId()}">
+
+                                <br><span  style="margin-left: 53px;"></span>
+                                (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
+                                </span>
+                            </c:when>
+                            <c:otherwise>
+                                <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
+                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$                     
+                        
+                            </c:otherwise>
+                          </c:choose>
                         </p>
                       </li>
                     </c:otherwise>

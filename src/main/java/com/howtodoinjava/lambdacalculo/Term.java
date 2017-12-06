@@ -158,11 +158,11 @@ public abstract class Term implements Cloneable, Serializable{
         while  (aux.charAt(i)!='{')
             i++;
         String initStr = aux.substring(0,i+1);
-        i=32;
+        i=19;
         while (aux.charAt(i)!='{')
             i++;
         if(aux.charAt(i+1)=='(')
-            term = initStr+"\\class{"+nivel+" terminoClick}{"+aux.substring(i+2, aux.length()-3)+"}}";
+            term = initStr+"\\class{"+nivel+"}{"+aux.substring(i+2, aux.length()-3)+"}}";
         else{
             term=aux;
         }

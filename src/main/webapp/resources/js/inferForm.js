@@ -77,3 +77,40 @@ $(function() {
     });
     
 });
+
+function leibnizMouse(p1,p2){
+
+    alert(p1);
+    alert(p2);
+    var resp;
+    var nivel;
+    var padres = [];
+    
+    if(p1[0] == p2[0]){
+    	resp = p1[0];
+        alert(resp);
+        return;
+    }  
+	if(p1[1] <= p2[1]){
+    	nivel = p1[1];
+        padres[0] = p1[0];
+    	padres[1] = $("#" + p2[0]).parents("." + nivel).attr("id");
+    }
+    else{
+    	nivel = p2[1];
+        padres[0] = $("#" + p1[0]).parents("." + nivel).attr("id");
+    	padres[1] = p2[0];
+    }
+    alert(padres);
+    if(padres[0] == padres[1]){
+    	resp = padres[0];
+    	alert(resp);
+        return;
+    }
+    else{
+    	resp = $("#" + padres[0]).parent().attr("id");
+        alert(resp);
+        return;
+    }    
+}
+

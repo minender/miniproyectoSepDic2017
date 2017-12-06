@@ -129,16 +129,18 @@
                 
                 $("#formula").on("mousedown",".terminoClick",function(event){
                     var nivel = $(this).parent().attr('class');
+                    nivel = nivel.split(" ")[1];
                     var id = $(this).parent().attr("id");
                     p1 = [id,nivel];
                 });
                 $("#formula").on("mouseup",".terminoClick",function(event){
                     var nivel = $(this).parent().attr('class');
+                    nivel = nivel.split(" ")[1];
                     var id = $(this).parent().attr("id");
                     p2 = [id,nivel];
                     alert(p1);
                     alert(p2);
-                    //print(p1,p2);
+                    leibnizMouse(p1,p2)
                 });
             });   
 
@@ -194,7 +196,7 @@
                                 <c:choose>
                                 <c:when test="${!selecTeo}">
                                 <c:choose>
-                                <c:when test="${resu.isResuelto()==true || resu.getNumeroteorema().equals(nTeo)}">
+                                <c:when test="${resu.isResuelto() || resu.getNumeroteorema().equals(nTeo)}">
                                 <a onclick="expandMeta('metaTeo${resu.getNumeroteorema()}')">
                                     <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
                                 </a>
@@ -227,7 +229,7 @@
                                         <span id="click${resu.getNumeroteorema()}">
                                     
                                         <c:choose>
-                                        <c:when test="${resu.isEsAxioma() != true}">
+                                        <c:when test="${!resu.isEsAxioma()}">
 
                                             <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$
                                         </c:when>
