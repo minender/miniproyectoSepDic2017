@@ -123,6 +123,23 @@
                         });
                     } 
                 });
+                
+                var p1=[];
+                var p2=[];
+                
+                $("#formula").on("mousedown",".terminoClick",function(event){
+                    var nivel = $(this).parent().attr('class');
+                    var id = $(this).parent().attr("id");
+                    p1 = [id,nivel];
+                });
+                $("#formula").on("mouseup",".terminoClick",function(event){
+                    var nivel = $(this).parent().attr('class');
+                    var id = $(this).parent().attr("id");
+                    p2 = [id,nivel];
+                    alert(p1);
+                    alert(p2);
+                    //print(p1,p2);
+                });
             });   
 
         </script>

@@ -71,8 +71,7 @@ public class InferResponse {
     }
     
     public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, List<PasoInferencia> inferencias){
-        
-        
+             
         this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
         
         String ultimaExp = "";
@@ -88,8 +87,7 @@ public class InferResponse {
             this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");
         } else {
             this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$" + "$$" + pasoPost + "$$");
-        }
-        
+        }     
     }
     
     public void generarHistorial(String formula, String nTeo, List<PasoInferencia> inferencias){
