@@ -3,7 +3,6 @@
  * and open the template in the editor.
  */
 package com.howtodoinjava.service;
-
 import com.howtodoinjava.dao.TeoremaDAO;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Teorema;

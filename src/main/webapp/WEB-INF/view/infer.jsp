@@ -223,7 +223,7 @@
                                         <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
                                     </c:when>
                                     <c:otherwise>
-                                        <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
+                                        <i class="fa fa-lock" aria-hidden="true" style="margin-right: 15px;"></i>
                                     </c:otherwise>
                                     </c:choose>
                                         <span id="click${resu.getNumeroteorema()}">
@@ -317,9 +317,9 @@
           <form>
           </c:when>
           </c:choose>
-          <%-- <a href="/Miniproyecto/perfil/${usuario.getLogin()}">Perfil</a>--%>
           <br>
 
-          <tiles:insertDefinition name="footer" />
+    <tiles:insertDefinition name="footer" /> 
     </body>
+
 </html>

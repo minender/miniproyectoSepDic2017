@@ -79,9 +79,7 @@ function teoremaInicialMD(teoid){
             MathJax.Hub.Typeset();
         }
     });
-    
-    $('#teoremaInicial').val(teoid.substring(3,teoid.length));
-    
+    $('#teoremaInicial').val(teoid.substring(3,teoid.length));   
 }
 
 function metodoDF(teoid){

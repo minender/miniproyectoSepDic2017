@@ -231,7 +231,6 @@ public class InferController {
             @PathVariable String nTeo, @PathVariable String nSol, @RequestParam(value="teoremaInicial") String teoremaInicial )
     {
         InferResponse response = new InferResponse();
-        
         String pasoPost = "";
 
         TerminoId terminoid=new TerminoId();
@@ -336,7 +335,7 @@ public class InferController {
                     
                     String nTeoInicial = teoremaInicialInfo.get(0);
                     resuelInicial = resuelveManager.getResuelveByUserAndTeoNum(username,nTeoInicial);
-                    
+
                     if(teoremaInicialInfo.size() == 1){
                         
                         pasoAntTerm = resuelInicial.getTeorema().getTeoTerm();

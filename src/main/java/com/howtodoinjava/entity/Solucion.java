@@ -184,16 +184,23 @@ public class Solucion implements java.io.Serializable {
             }
             
             this.serialize();*/
-            if (typedTerm.type() == null)
+            System.out.println(typedTerm.toStringInfFinal());
+            if (typedTerm.type() == null){
+                System.out.println("0");
                 return 0;
+            }
             if (typedTerm instanceof App && ((App)typedTerm).p.containTypedA())
             {
                 typedTerm = ((App)typedTerm).p;
+                System.out.println(typedTerm.toStringInfFinal());
+                System.out.println("2");
                 return 2;
             }
             else
             {
                 typedTerm = ((App)typedTerm.type()).q;
+                System.out.println(typedTerm.toStringInfFinal());
+                System.out.println("1");
                 return 1;
             }
     }

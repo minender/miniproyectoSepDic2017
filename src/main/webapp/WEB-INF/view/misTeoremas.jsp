@@ -1,9 +1,4 @@
-<%-- 
-    Document   : misTeoremas
-    Created on : Apr 1, 2017, 11:23:16 PM
-    Author     : marylu
---%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
@@ -35,7 +30,6 @@
     <tiles:insertDefinition name="header" />
     <h1>Mis Teoremas</h1>
     <div id="teoremas" style="float: left; width: 35%;">
-    
     <ul>
       <c:forEach items="${categorias}" var="cat"> 
         <li style="list-style: none; color: #03A9F4"><h3>${cat.getNombre()}</h3>
@@ -46,8 +40,9 @@
                   <c:choose>
                     <c:when test="${!resu.isResuelto()}">
                       <li style="list-style: none;">
+                        <span class="glyphicon glyphicon-trash"></span>
                         <p style="color: #000;">
-                             <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
+                             <i class="fa fa-lock" aria-hidden="true" style="margin-right: 15px;"></i>
                           (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$                     
                         </p> 
                       </li>

@@ -17,11 +17,7 @@
           <li ${listarTerminosMenu}><a href="listar?comb=n">Mis Abreviaciones</a></li>
           <li ${guardarMenu}><a href="guardar">Agregar Abreviación</a></li>
           <li ${misTeoremasMenu}><a href="misTeoremas">Mis Teoremas</a></li>
-          <c:choose>
-              <c:when test="${usuario.isAdmin()}">
-                  <li ${agregarTeoremaMenu}><a href="guardarteo">Agregar Teorema</a></li>
-              </c:when>
-          </c:choose>
+          <li ${agregarTeoremaMenu}><a href="guardarteo">Agregar Teorema</a></li>
           <li ${perfilMenu}><a href="./">Mi Perfil</a></li>
           <li style="float: right;"><a href="close">Cerrar Sesi&oacute;n</a></li>
         </ul>
@@ -29,4 +25,4 @@
     </div>
   </div>
 </div>
-<div class="row-fluid" style="margin-left: 50px; margin-top: 40px; width: 100%;">
+<div class="row-fluid" style="margin-left: 50px; margin-top: 40px; width: 100%;height: 70%">

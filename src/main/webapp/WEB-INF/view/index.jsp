@@ -14,7 +14,7 @@
 
   <body>
     <div class="row-fluid" style="margin-left: 50px; height:552px; width: 1100px; overflow: hidden;">
-      <h1>Bienvenido a David</h1>
+      <h1>Bienvenido a L&oacutegica</h1>
       <h2 contenteditable="true">Inicie sesión o regístrese para continuar </h2>
       <center>
         <sf:form method="POST" modelAttribute="usuariolog">
@@ -27,5 +27,6 @@
         <a href="registro?new">Registrarse</a>
       </center>
     </div>
+    
   </body>
 </html>
