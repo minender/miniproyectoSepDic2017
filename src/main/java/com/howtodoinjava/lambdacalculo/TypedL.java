@@ -9,18 +9,18 @@ package com.howtodoinjava.lambdacalculo;
  *
  * @author federico
  */
-public class TypedI extends Const{
+public class TypedL extends Const{
     
-    private final Sust instantiation_;
+    private final Bracket lambda_;
     
-    public TypedI(Sust instantiation)
+    public TypedL(Bracket lambda)
     {
-        super("I");
-        instantiation_ = instantiation;
+        super("L");
+        lambda_ = lambda;
     }
-
-   public Term type()
-   {
-       return instantiation_;
-   }
+    
+    public Term type()
+    {
+        return lambda_;
+    }
 }

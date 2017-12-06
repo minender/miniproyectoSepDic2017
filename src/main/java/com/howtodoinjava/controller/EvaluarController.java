@@ -7,10 +7,22 @@ package com.howtodoinjava.controller;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.forms.InsertarEvaluar;
+import com.howtodoinjava.lambdacalculo.App;
+import com.howtodoinjava.lambdacalculo.Const;
+import com.howtodoinjava.lambdacalculo.Bracket;
+import com.howtodoinjava.lambdacalculo.TypedA;
+import com.howtodoinjava.lambdacalculo.TypedL;
+import com.howtodoinjava.lambdacalculo.TypedApp;
+import com.howtodoinjava.lambdacalculo.Corrida;
+import com.howtodoinjava.lambdacalculo.PasoInferencia;
+import com.howtodoinjava.lambdacalculo.Sust;
 import com.howtodoinjava.lambdacalculo.Corrida;
 import com.howtodoinjava.lambdacalculo.Term;
 import com.howtodoinjava.lambdacalculo.Tripla;
 import com.howtodoinjava.parse.IsNotInDBException;
+import com.howtodoinjava.lambdacalculo.TypeVerificationException;
+import com.howtodoinjava.lambdacalculo.TypedI;
+import com.howtodoinjava.lambdacalculo.Var;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.service.CategoriaManager;
@@ -21,6 +33,7 @@ import com.howtodoinjava.service.SolucionManager;
 import com.howtodoinjava.service.TeoremaManager;
 import com.howtodoinjava.service.TerminoManager;
 import com.howtodoinjava.service.UsuarioManager;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -75,16 +88,24 @@ public class EvaluarController {
             TerminoId terminoid2 = new TerminoId();
             terminoid2.setLogin(username);
 
-            ANTLRStringStream in = new ANTLRStringStream("p \\/ q /\\(r ==> p /\\ (r \\/ q))");
+            ANTLRStringStream in = new ANTLRStringStream("p,q:=p/\\r,r\\/r"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
-            Term teoTerm;
+            //Term teoTerm;
+            ANTLRStringStream in2 = new ANTLRStringStream("(p == q) == (q == p)"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
+            TermLexer lexer2 = new TermLexer(in2);
+            CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
+            TermParser parser2 = new TermParser(tokens2);
+            Term teoTerm2;
+            ArrayList<Object> teoTerm;
             try //si la sintanxis no es correcta ocurre una Exception
             {
 
-                teoTerm = parser.start_rule(terminoid2, terminoManager);
-                teoTerm.setAlias(0);
+                teoTerm = parser.instantiate(terminoid2, terminoManager);
+//                teoTerm.setAlias(0);
+                teoTerm2 = parser2.start_rule(terminoid2, terminoManager);
+                teoTerm2.setAlias(0);
                 // inicializando pa q no ladille java
                 /*Term izq = null;
                 Term der = null;
@@ -146,10 +167,28 @@ public class EvaluarController {
                 Teorema teo = teoremaManager.getTeorema(1);
                 
                 usuarioManager.getAllTeoremas(user);*/
+//                TypedL L = new TypedL((Bracket)teoTerm);
+                TypedI I = new TypedI(new Sust((ArrayList<Var>)teoTerm.get(0), (ArrayList<Term>)teoTerm.get(1)));
+                TypedA A = new TypedA(teoTerm2);
+                System.out.println((new TypedApp(I, A)).type().toStringInfFinal());
                 map.addAttribute("id", id);
                 map.addAttribute("usuario", username);
-                map.addAttribute("alias", teoTerm.toStringInfLabeled());
+                map.addAttribute("alias", I.type().toStringInfFinal());//(new TypedApp(I, A)).type().toStringInfFinal());//teoTerm.toStringInfLabeled());
                 map.addAttribute("predserializado", categoriaManager.getAllCategorias().toString());
+                return "PagParaVerPredicado";
+            }
+            catch (TypeVerificationException e)
+            {
+                map.addAttribute("usuario", usuarioManager.getUsuario(username));
+                map.addAttribute("alias", "TypeVerificationException");
+                map.addAttribute("agregarTeoremaMenu", "class=\"active\"");
+                map.addAttribute("listarTerminosMenu", "");
+                map.addAttribute("verTerminosPublicosMenu", "");
+                map.addAttribute("misPublicacionesMenu", "");
+                map.addAttribute("computarMenu", "");
+                map.addAttribute("perfilMenu", "");
+                map.addAttribute("overflow", "hidden");
+                map.addAttribute("anchuraDiv", "1100px");
                 return "PagParaVerPredicado";
             }
             catch (IsNotInDBException e) {

@@ -175,7 +175,7 @@ public class InferController {
                                         x.getExpresion().toStringInfFinal()+" $$" + " $$ \\equiv< " + 
                                         new App(new App(new Const("\\equiv ",false,1,1),x.getTeoDer()), x.getTeoIzq()).toStringInfFinal() + 
                                         " - " + x.getLeibniz().toStringInfFinal() + 
-                                        " - " + x.getInstancia().toString()+" > $$");
+                                        " - " + x.getInstancia()+" > $$");
                 ultimaExp = x.getResult().toStringInfFinal();
             }
             if(!ultimaExp.equals("")){
