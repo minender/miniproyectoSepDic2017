@@ -477,6 +477,7 @@ public class App extends Term{
              !c1.funNotation && ( c2.preced > c1.preced  || (c2.preced == c1.preced && c1.asociat == 2) )    ) 
            // Const(Const p)
            term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf()+"} "+q.toStringInfLabeledFinal(id,nivel+1)+")}";
+           // agregas lambda z. Const z, lambda z. Const (Const z) y lambda z.z dentro de un contexto E es decir
         else if ( p instanceof Const && q instanceof App && ((App)q).p instanceof App && ((App)((App)q).p).p instanceof Const &&
                   (c1 = (Const)p) != null && (c2 = (Const)((App)((App)q).p).p ) != null  && 
                   !c1.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c1.asociat == 2) ))
