@@ -28,7 +28,7 @@
       <c:when test="${modificar.intValue()==0}">
         <sf:form method="POST" modelAttribute="agregarTeorema">
           <c:choose>
-            <c:when test='${usuario.getLogin().equals(admin)}'>
+            <c:when test='${usuario.isAdmin()}'>
               <label style="display: -webkit-inline-box; margin-right: 4px;"><sf:checkbox path="axioma" style="margin: 0 4px 0 0;" value="false" />Axioma</label>
             </c:when>
           </c:choose>

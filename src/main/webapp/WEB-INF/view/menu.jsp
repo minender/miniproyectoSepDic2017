@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div class="page-header">
     <h1 style="color: #03A9F4; font-size: 70px; margin-left: 20px;">Logica<small>Demostraciones de Lógica Simbólica</small></h1>
 </div>
@@ -16,7 +17,11 @@
           <li ${listarTerminosMenu}><a href="listar?comb=n">Mis Abreviaciones</a></li>
           <li ${guardarMenu}><a href="guardar">Agregar Abreviación</a></li>
           <li ${misTeoremasMenu}><a href="misTeoremas">Mis Teoremas</a></li>
-          <li ${agregarTeoremaMenu}><a href="guardarteo">Agregar Teorema</a></li>
+          <c:choose>
+              <c:when test="${usuario.isAdmin()}">
+                  <li ${agregarTeoremaMenu}><a href="guardarteo">Agregar Teorema</a></li>
+              </c:when>
+          </c:choose>
           <li ${perfilMenu}><a href="./">Mi Perfil</a></li>
           <li style="float: right;"><a href="close">Cerrar Sesi&oacute;n</a></li>
         </ul>

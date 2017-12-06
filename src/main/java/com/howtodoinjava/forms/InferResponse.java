@@ -78,6 +78,7 @@ public class InferResponse {
         this.errorParser3 = errorParser3;
     }
     
+
     public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, Term typedTerm) {//List<PasoInferencia> inferencias){
         
         this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
@@ -140,7 +141,6 @@ public class InferResponse {
         } else {
             this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$" + "$$" + pasoPost + "$$");
         }
-        
     }
     
     public void generarHistorial(String user, String formula, String nTeo, Term typedTerm,  Boolean valida,ResuelveManager resuelveManager, DisponeManager disponeManager) {//List<PasoInferencia> inferencias){

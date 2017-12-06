@@ -486,10 +486,12 @@ public class InferController {
             
             /*if (izq.equals(pasoAntTerm)) {
                 pasoPostTerm = der;
-                pasoPost = der.toStringInfFinal();
+                //pasoPost = der.toStringInfFinal();
+                pasoPost = der.toStringInfLabeled();
             }else if(der.equals(pasoAntTerm)) {
                 pasoPostTerm = izq;
-                pasoPost = izq.toStringInfFinal();
+                //pasoPost = izq.toStringInfFinal();
+                pasoPost = izq.toStringInfLabeled();
             }else{
                 pasoPost = "Regla~de~inferencia~no~valida";
                 valida = false;
@@ -566,7 +568,8 @@ public class InferController {
         String formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().toStringInfFinal();
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
-        String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
+        //String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
+        String formula = resuelve.getTeorema().getTeoTerm().toStringInfLabeled();
         
         String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<center>$"+formula+"$</center>";
         response.setHistorial(historial);  
@@ -619,10 +622,12 @@ public class InferController {
         String formula = "";
         
         if(lado.equals("d")){
-            formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
+            //formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
+            formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfLabeled();
         }
         else if(lado.equals("i")){
-            formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
+            //formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
+            formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfLabeled();
         }
         
         String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<center>$"+formula+"$</center>";

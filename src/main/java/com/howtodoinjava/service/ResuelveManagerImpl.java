@@ -9,12 +9,8 @@ import com.howtodoinjava.dao.SolucionDAO;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
-import com.howtodoinjava.lambdacalculo.App;
-import com.howtodoinjava.lambdacalculo.Const;
 import com.howtodoinjava.lambdacalculo.Term;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,14 +73,16 @@ public class ResuelveManagerImpl implements ResuelveManager {
             for (Resuelve resuelve : resuelves) {
                 List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelve.getId());
                 resuelve.setDemopendiente(-1);                
-                
+                int numeroDeSols = 0;
                 for (Solucion sol: sols)
                 {
-                   if (!sol.isResuelto())
+                   if (!sol.isResuelto()){
                       resuelve.setDemopendiente(sol.getId());
+                   }
+                   numeroDeSols ++;
                 }
                 
-                if(resuelve.isResuelto()==true && resuelve.getDemopendiente()== -1){
+                if(resuelve.isResuelto() && numeroDeSols == 0){
                     resuelve.setEsAxioma(true);
                 }
                 else{

@@ -114,12 +114,20 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUser(username);
+        for (Resuelve r: resuelves)
+        {
+            Teorema t = r.getTeorema();
+            t.setTeoTerm(t.getTeoTerm());
+            t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
+        }
+        /*
         List<Teorema> teoremas = usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username));
         for (Teorema t: teoremas)
         {
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),t.getTeoTerm()));
-        }
+        }*/
         map.addAttribute("usuario", usuarioManager.getUsuario(username));
         map.addAttribute("guardarMenu","");
         map.addAttribute("listarTerminosMenu","");
@@ -127,7 +135,7 @@ public class PerfilController {
         map.addAttribute("agregarTeoremaMenu","");
         map.addAttribute("perfilMenu","");
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
-        map.addAttribute("teoremas", teoremas);
+        map.addAttribute("teoremas", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
@@ -140,6 +148,7 @@ public class PerfilController {
         teoremasSolucion response = new teoremasSolucion();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid);
         Integer resuelveId = resuelve.getId();
+        System.out.println(resuelveId);
         
         response.soluciones = solucionManager.getAllSolucionesIdByResuelve(resuelveId);
         response.setIdTeo(teoid);
