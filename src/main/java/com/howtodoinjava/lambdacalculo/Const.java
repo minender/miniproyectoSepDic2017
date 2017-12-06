@@ -183,6 +183,12 @@ public class Const extends Term
         return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+con+"}}";
     }
 
+    /*public Tripla toStringInfLabeled(Id id, int nivel, Tripla tri){
+        id.id++;
+        tri.term = "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+con+"}}";
+        tri.valores.add("lambda z.z");
+        return tri;
+    }*/
     
     public ToString toStringAbrvV1(ToString toString)
     {
