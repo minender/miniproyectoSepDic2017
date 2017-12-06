@@ -155,9 +155,10 @@ public class PerfilController {
         String nTeo = resuelve.getNumeroteorema();
         Solucion solucion = solucionManager.getSolucion(idSol);
         
-        List<PasoInferencia> inferencias = solucion.getArregloInferencias();
+        //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
+        Term typedTerm = solucion.getTypedTerm();
         
-        response.generarHistorial(teoremaStr, nTeo,inferencias);
+        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager);
         return response;
     }
     

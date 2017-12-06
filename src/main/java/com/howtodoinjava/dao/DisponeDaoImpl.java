@@ -74,4 +74,15 @@ public class DisponeDaoImpl implements DisponeDAO {
             return list.get(0);
         }
     }
+    
+    public Dispone getDisponeByUserAndMetaeorema(String userLogin, String metateorema){
+        String sql = "FROM Dispone WHERE metateorema.enunciado = :metateorema AND usuario.login = :userLogin";
+        List<Dispone> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("metateorema", metateorema).setParameter("userLogin", userLogin).list();
+
+        if (list.isEmpty()) {
+            return null;
+        } else {
+            return list.get(0);
+        }
+    }
 }

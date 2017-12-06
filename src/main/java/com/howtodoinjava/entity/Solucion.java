@@ -1,8 +1,11 @@
 package com.howtodoinjava.entity;
 // Generated Mar 20, 2017 12:50:11 PM by Hibernate Tools 3.2.1.GA
 
+import com.howtodoinjava.lambdacalculo.App;
+import com.howtodoinjava.lambdacalculo.Const;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
 import com.howtodoinjava.lambdacalculo.Term;
+import com.howtodoinjava.lambdacalculo.TypedA;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +28,7 @@ public class Solucion implements java.io.Serializable {
     private int id;
     private byte[] arregloSerializado;
     private List<PasoInferencia> arregloInferencias = new ArrayList<PasoInferencia>();
+    private Term typedTerm;
     private Resuelve resuelve;
     private boolean resuelto;
 
@@ -37,6 +41,26 @@ public class Solucion implements java.io.Serializable {
 
     public boolean isResuelto() {
         return resuelto;
+    }
+    
+    public void setTypedTerm(Term typedTerm)
+    {
+        this.typedTerm = typedTerm;
+    }
+    
+    public Term getTypedTerm()
+    {
+        return typedTerm;
+    }
+    
+    public Solucion(Term typeTerm) {
+        this.typedTerm = typeTerm;
+    }
+    
+    public Solucion(Resuelve resuelve, boolean resuelto, Term typeTerm) {
+        this.resuelve = resuelve;
+        this.resuelto = resuelto;
+        this.typedTerm = typeTerm;
     }
 
     public Solucion(PasoInferencia paso) {
@@ -131,7 +155,7 @@ public class Solucion implements java.io.Serializable {
     }
 
     public void deserialize() {
-        List<byte[]> theArray = new ArrayList<byte[]>();
+        /*List<byte[]> theArray = new ArrayList<byte[]>();
         theArray = (List<byte[]>) SerializationUtils.deserialize(this.arregloSerializado);
         List<PasoInferencia> newArray = new ArrayList<PasoInferencia>();
         
@@ -146,20 +170,31 @@ public class Solucion implements java.io.Serializable {
             paso.setResult((Term) SerializationUtils.deserialize(solIter.next()));            
             newArray.add(paso);
         }
-        this.arregloInferencias = newArray;
-
+        this.arregloInferencias = newArray;*/
+        Term term = (Term) SerializationUtils.deserialize(this.arregloSerializado);
+        this.typedTerm = term;
     }
 
     public int retrocederPaso(){
     
-            int tam = this.arregloInferencias.size();
+            /*int tam = this.arregloInferencias.size();
             this.deserialize();
             if(tam>0){
                 this.arregloInferencias.remove(tam - 1);
             }
             
-            this.serialize();            
-         
-            return tam;
+            this.serialize();*/
+            if (typedTerm.type() == null)
+                return 0;
+            if (typedTerm instanceof App && ((App)typedTerm).p.containTypedA())
+            {
+                typedTerm = ((App)typedTerm).p;
+                return 2;
+            }
+            else
+            {
+                typedTerm = ((App)typedTerm.type()).q;
+                return 1;
+            }
     }
 }

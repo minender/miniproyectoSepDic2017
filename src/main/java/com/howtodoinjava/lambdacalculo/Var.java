@@ -51,6 +51,11 @@ public class Var extends Term{
         return null;
     }
     
+    public boolean containTypedA()
+    {
+        return false;
+    }
+    
     public int setAlias(int currentAlia)
     {
         if(alias != null)

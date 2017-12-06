@@ -7,11 +7,13 @@ package com.howtodoinjava.service;
 import com.howtodoinjava.dao.SolucionDAO;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
+import com.howtodoinjava.lambdacalculo.Term;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.SerializationUtils;
 
 /**
  *
@@ -26,8 +28,9 @@ public class SolucionManagerImpl implements SolucionManager {
     
     @Override
     @Transactional
-    public void addSolucion(Solucion solucion){
-        solucionDAO.addSolucion(solucion);
+    public void addSolucion(Solucion sol){        
+        sol.setArregloSerializado(SerializationUtils.serialize(sol.getTypedTerm()));
+        solucionDAO.addSolucion(sol);
     }
     
     
@@ -42,8 +45,18 @@ public class SolucionManagerImpl implements SolucionManager {
     
     @Override
     @Transactional
-    public void updateSolucion(Solucion solucion){
-        solucionDAO.updateSolucion(solucion);
+    public void updateSolucion(int solucionId, Term typedTerm){
+        Solucion sol = solucionDAO.getSolucion(solucionId);
+        sol.setTypedTerm(typedTerm);
+        sol.setArregloSerializado(SerializationUtils.serialize(typedTerm));
+        solucionDAO.updateSolucion(sol);
+    }
+    
+    @Override
+    @Transactional
+    public void updateSolucion(Solucion sol){
+        sol.setArregloSerializado(SerializationUtils.serialize(sol.getTypedTerm()));
+        solucionDAO.updateSolucion(sol);
     }
     
     @Override

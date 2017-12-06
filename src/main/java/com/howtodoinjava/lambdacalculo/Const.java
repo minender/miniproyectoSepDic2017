@@ -38,6 +38,18 @@ public class Const extends Term
     public String getCon() {
         return con;
     }
+    
+    public boolean getFunNotation() {
+        return funNotation;
+    }
+    
+    public int getPreced() {
+        return preced;
+    }
+    
+    public int getAsociat() {
+        return asociat;
+    }
  
     public boolean occur(Var x)
     {
@@ -52,6 +64,11 @@ public class Const extends Term
    public Term type()
    {
        return null;
+   }
+   
+   public boolean containTypedA()
+   {
+       return this instanceof TypedA;
    }
     
     public int setAlias(int currentAlia)
@@ -163,7 +180,7 @@ public class Const extends Term
     
     public String toStringInfLabeled(Id id, int nivel){
         id.id++;
-        return "\\cssId{"+(id.id-1)+"}\\class{"+nivel+" terminoClick}{"+con+"}}";
+        return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+con+"}}";
     }
 
     

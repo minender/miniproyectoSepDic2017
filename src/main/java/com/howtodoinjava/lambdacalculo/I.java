@@ -38,6 +38,11 @@ public class I extends Term {
    {
        return null;
    }
+   
+   public boolean containTypedA()
+   {
+       return false;
+   }
     
     public int setAlias(int currentAlia)
     {

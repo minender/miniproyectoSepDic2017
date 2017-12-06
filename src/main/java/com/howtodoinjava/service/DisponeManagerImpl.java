@@ -68,4 +68,10 @@ public class DisponeManagerImpl implements DisponeManager {
     public Dispone getDisponeByUserAndMetateorema(String userLogin,int metateoremaID){
         return disponeDAO.getDisponeByUserAndMetaeorema(userLogin, metateoremaID);
     }
+    
+    @Override
+    @Transactional
+    public Dispone getDisponeByUserAndMetaeorema(String userLogin, String metateorema){
+        return disponeDAO.getDisponeByUserAndMetaeorema(userLogin, metateorema);
+    }
 }

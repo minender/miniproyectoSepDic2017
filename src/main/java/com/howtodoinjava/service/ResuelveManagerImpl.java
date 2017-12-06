@@ -121,6 +121,11 @@ public class ResuelveManagerImpl implements ResuelveManager {
     
     @Override
     @Transactional
+    public Resuelve getResuelveByUserAndTeorema(String userLogin,String teo){
+            return resuelveDAO.getResuelveByUserAndTeorema(userLogin, teo);
+    }
+    @Override
+    @Transactional
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum){
         Resuelve resuel = resuelveDAO.getResuelveByUserAndTeoNum(userLogin, teoNum);
         if (resuel != null) {

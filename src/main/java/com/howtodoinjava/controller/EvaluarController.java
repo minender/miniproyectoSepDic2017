@@ -93,7 +93,7 @@ public class EvaluarController {
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
             //Term teoTerm;
-            ANTLRStringStream in2 = new ANTLRStringStream("(p == q) == (q == p)"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
+            ANTLRStringStream in2 = new ANTLRStringStream("false"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
             TermLexer lexer2 = new TermLexer(in2);
             CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
             TermParser parser2 = new TermParser(tokens2);
@@ -168,16 +168,15 @@ public class EvaluarController {
                 
                 usuarioManager.getAllTeoremas(user);*/
 //                TypedL L = new TypedL((Bracket)teoTerm);
-                TypedI I = new TypedI(new Sust((ArrayList<Var>)teoTerm.get(0), (ArrayList<Term>)teoTerm.get(1)));
-                TypedA A = new TypedA(teoTerm2);
-                System.out.println((new TypedApp(I, A)).type().toStringInfFinal());
+                //TypedI I = new TypedI(new Sust((ArrayList<Var>)teoTerm.get(0), (ArrayList<Term>)teoTerm.get(1)));
+                //TypedA A = new TypedA(teoTerm2);
                 map.addAttribute("id", id);
                 map.addAttribute("usuario", username);
-                map.addAttribute("alias", I.type().toStringInfFinal());//(new TypedApp(I, A)).type().toStringInfFinal());//teoTerm.toStringInfLabeled());
+                map.addAttribute("alias", teoTerm2.toStringInfLabeled());//(new TypedApp(I, A)).type().toStringInfFinal());//teoTerm.toStringInfLabeled());
                 map.addAttribute("predserializado", categoriaManager.getAllCategorias().toString());
                 return "PagParaVerPredicado";
             }
-            catch (TypeVerificationException e)
+            /*catch (TypeVerificationException e)
             {
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
                 map.addAttribute("alias", "TypeVerificationException");
@@ -190,7 +189,7 @@ public class EvaluarController {
                 map.addAttribute("overflow", "hidden");
                 map.addAttribute("anchuraDiv", "1100px");
                 return "PagParaVerPredicado";
-            }
+            }*/
             catch (IsNotInDBException e) {
                 String hdr = parser.getErrorHeader(e);
                 String msg = parser.getErrorMessage(e, TermParser.tokenNames);

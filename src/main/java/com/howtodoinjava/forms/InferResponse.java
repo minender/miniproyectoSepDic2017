@@ -4,9 +4,17 @@
  * and open the template in the editor.
  */
 package com.howtodoinjava.forms;
+import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Const;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
+import com.howtodoinjava.lambdacalculo.Term;
+import com.howtodoinjava.lambdacalculo.TypedApp;
+import com.howtodoinjava.lambdacalculo.TypedI;
+import com.howtodoinjava.lambdacalculo.TypedL;
+import com.howtodoinjava.lambdacalculo.TypedS;
+import com.howtodoinjava.service.DisponeManager;
+import com.howtodoinjava.service.ResuelveManager;
 import java.util.List;
 
 /**
@@ -70,32 +78,88 @@ public class InferResponse {
         this.errorParser3 = errorParser3;
     }
     
-    public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, List<PasoInferencia> inferencias){
-        
+    public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, Term typedTerm) {//List<PasoInferencia> inferencias){
         
         this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
         
-        String ultimaExp = "";
-        for (PasoInferencia x: inferencias) {
-            this.setHistorial(this.getHistorial()+ "$$" +
+        String primExp = "";
+        String teo = "";
+        String leib = "";
+        String inst = "";
+        String hint = "";
+        /*for (PasoInferencia x: inferencias) {*/
+        if (typedTerm instanceof App)
+            if (((App)typedTerm).q instanceof App)
+                if (((App)((App)typedTerm).q).q instanceof App)
+                {
+                    teo = ((App)((App)((App)typedTerm).q).q).q.type().toStringInfFinal();
+                    inst = ((App)((App)((App)typedTerm).q).q).p.type().toStringInfFinal();
+                    leib = ((App)((App)typedTerm).q).p.type().toStringInfFinal();
+                }
+                else
+                {
+                    teo = ((App)((App)typedTerm).q).q.type().toStringInfFinal();
+                    if (((App)typedTerm).p instanceof TypedS)
+                      if (((App)((App)typedTerm).q).p instanceof TypedI)
+                      {
+                        inst = ((App)((App)typedTerm).q).p.type().toStringInfFinal();
+                        leib = "";
+                      }
+                      else
+                      {
+                        inst = "";
+                        leib = ((App)((App)typedTerm).q).p.type().toStringInfFinal();
+                      }
+                }
+            else
+            {
+                Term aux = typedTerm.type();
+                teo = aux.toStringInfFinal();
+                primExp = ((App)aux).q.toStringInfFinal();
+                pasoPost = ((App)((App)aux).p).q.toStringInfFinal();
+            }
+        else
+        {
+            Term aux = typedTerm.type();
+            teo = aux.toStringInfFinal();
+            primExp = ((App)aux).q.toStringInfFinal();
+            pasoPost = ((App)((App)aux).p).q.toStringInfFinal();
+        }
+        hint = "\\equiv<"+teo+"-"+inst+"-"+leib+">";
+            this.setHistorial("$$" + primExp + " $$" +
+                              " $$"+ hint +"$$"+this.getHistorial());
+            /*this.setHistorial(this.getHistorial()+ "$$" +
                                     x.getExpresion().toStringInfFinal()+" $$" + " $$ \\equiv< " + 
                                     new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInfFinal() + 
                                     " - " + x.getLeibniz().toStringInfFinal() + 
                                     " - " + x.getInstancia().toString()+" > $$");
             ultimaExp = x.getResult().toStringInfFinal();
-        }
+        }*/
         if(valida) {
             this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");
         } else {
-            this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$" + "$$" + pasoPost + "$$");
+            this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$" + "$$" + pasoPost + "$$");
         }
         
     }
     
-    public void generarHistorial(String formula, String nTeo, List<PasoInferencia> inferencias){
+    public void generarHistorial(String user, String formula, String nTeo, Term typedTerm,  Boolean valida,ResuelveManager resuelveManager, DisponeManager disponeManager) {//List<PasoInferencia> inferencias){
         
-        
-        this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
+        this.setHistorial("");
+        String header = "Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:";  
+        Term type = typedTerm.type();
+        if (type == null && !valida)
+        {
+            this.setHistorial(header+"$$"+typedTerm.toStringInfLabeled()+"$$"+"$$Regla~de~inferencia~no~valida$$");
+        }
+        else if(type == null && valida)
+        {
+            this.setHistorial(header+"$$"+typedTerm.toStringInfLabeled()+"$$");
+        }
+        else
+        {
+          String pasoPost= ((App)((App)type).p).q.toStringInfLabeled();
+        /*this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
         String ultimaExp = "";
         for (PasoInferencia x: inferencias) {
             this.setHistorial(this.getHistorial()+ "$$" +
@@ -107,8 +171,101 @@ public class InferResponse {
         }
         if(!ultimaExp.equals("")){
             this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");
+        }*/
+          String primExp = "";
+          String teo = "";
+          String leib = "";
+          String inst = "";
+          String hint = "";
+          Term iter = typedTerm;
+          Term ultInf = null;
+          while (!iter.equals(ultInf)) 
+          {
+            if (iter instanceof App && ((App)iter).p.containTypedA())
+            {
+              ultInf = ((App)iter).q;
+              iter = ((App)iter).p;
+            }
+            else
+              ultInf = iter;
+            if (ultInf instanceof App)
+              if (((App)ultInf).q instanceof App)
+                if (((App)((App)ultInf).q).q instanceof App)
+                {
+                    primExp = ((App)ultInf.type()).q.toStringInfFinal();
+                    teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
+                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInfFinal();
+                    inst = "~with~" + inst.substring(1, inst.length()-1);
+                    leib = ((App)((App)ultInf).q).p.type().toStringInfFinal();
+                    leib = "~and~" + leib;
+                }
+                else
+                {
+                    primExp = ((App)ultInf.type()).q.toStringInfFinal();
+                    teo = ((App)((App)ultInf).q).q.type().toStringFinal();
+                    if (((App)ultInf).p instanceof TypedS)
+                      if (((App)((App)ultInf).q).p instanceof TypedI)
+                      {
+                        inst = ((App)((App)ultInf).q).p.type().toStringInfFinal();
+                        inst = "~with~" + inst.substring(1, inst.length()-1);
+                      }
+                      else
+                      {
+                        leib = ((App)((App)ultInf).q).p.type().toStringInfFinal();
+                        leib = "~and~" + leib;
+                      }
+                    else
+                    {
+                        inst = ((App)((App)ultInf).q).p.type().toStringInfFinal();
+                        inst = "~with~" + inst.substring(1, inst.length()-1);
+                        leib = ((App)ultInf).p.type().toStringInfFinal();
+                        leib = "~and~" + leib;
+                    }
+                }
+              else
+              {
+                if (((App)ultInf).p instanceof TypedI)
+                {
+                    inst = ((App)ultInf).p.type().toStringInfFinal();
+                    inst = "~with~" + inst.substring(1, inst.length()-1);
+                }
+                else if (((App)ultInf).p instanceof TypedL)
+                    leib = "~and~" + ((App)ultInf).p.type().toStringInfFinal();
+                teo = ((App)ultInf).q.type().toStringFinal();
+                primExp = ((App)ultInf.type()).q.toStringInfFinal();
+              }
+            else
+            {
+              Term aux = ultInf.type();
+              teo = aux.toStringFinal();
+              primExp = ((App)aux).q.toStringInfFinal();
+            } 
+          
+            String op = ((Const)((App)((App)ultInf.type()).p).p).getCon().trim();
+            Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
+            if (theo == null)
+            {
+              teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
+              hint = op+"\\langle mt~("+teo+")"+inst+leib+"\\rangle";
+            }
+            else
+            {
+              teo = theo.getNumeroteorema();
+              hint = op+"\\langle st~("+teo+")"+inst+leib+"\\rangle";
+            }
+
+            this.setHistorial("$$" + primExp + " $$"+" $$"+ hint +"$$"+this.getHistorial());
+            primExp = "";
+            teo = "";
+            leib = "";
+            inst = "";
+            hint = "";
+          }
+          this.setHistorial(header+this.getHistorial()+"$$"+pasoPost+"$$");
+          if (!valida)
+            this.setHistorial(this.getHistorial()+"$$Regla~de~inferencia~no~valida$$");
+        //this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");
         }
-        
     }
     
 }

@@ -48,6 +48,11 @@ public class Bracket extends Term{
         return null;
     }
     
+    public boolean containTypedA()
+    {
+        return t.containTypedA();
+    }
+    
     public int setAlias(int currentAlia)
     {
         if(t.alias != null)

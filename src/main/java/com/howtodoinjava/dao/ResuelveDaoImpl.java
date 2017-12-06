@@ -86,8 +86,20 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     
     @Override
     @Transactional
+    public Resuelve getResuelveByUserAndTeorema(String userLogin,String teo){
+        String sql = "FROM Resuelve WHERE teorema.enunciado = :teo AND usuario.login = :userLogin";
+        List<Resuelve> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("teo",teo).setParameter("userLogin",userLogin).list();
+    
+        if (list.isEmpty()) {
+            return null;
+        } else {
+            return list.get(0);
+        }
+    }
+    
+    @Override
+    @Transactional
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum){
-
         String sql = "FROM Resuelve WHERE numeroteorema = :teoNum AND usuario.login = :userLogin";
         List<Resuelve> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("teoNum",teoNum).setParameter("userLogin",userLogin).list();
     
