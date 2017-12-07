@@ -179,7 +179,7 @@ public class InferResponse {
           String hint = "";
           Term iter = typedTerm;
           Term ultInf = null;
-          while (!iter.equals(ultInf)) 
+          while (iter!=ultInf) 
           {
             if (iter instanceof App && ((App)iter).p.containTypedA())
             {
