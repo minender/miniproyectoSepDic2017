@@ -160,7 +160,7 @@ public class PerfilController {
     {   
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
-        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInf();
+        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
         String nTeo = resuelve.getNumeroteorema();
         Solucion solucion = solucionManager.getSolucion(idSol);
         

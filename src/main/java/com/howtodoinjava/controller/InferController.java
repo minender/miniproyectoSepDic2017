@@ -5,6 +5,7 @@ import com.howtodoinjava.entity.Metateorema;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
+import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.forms.InferResponse;
@@ -440,7 +441,7 @@ public class InferController {
             //der = new App(leibnizTerm,der).reducir();
 
             boolean valida = true;
-            Term pasoPostTerm=null;
+            Term pasoPostTerm =null; // new TypedA(term);le asigne TypedA(term) para evitar problemas de compilacion por aputnadores a nulo en la linea 546
             Term infer = null;
             boolean exception = false;
             try
@@ -545,7 +546,7 @@ public class InferController {
             Term type = pasoPostTerm.type();
             String pasoPostStr = ((App)((App)type).p).q.toStringInfFinal();
             String teoremaIniStr = resuelInicial.getTeorema().getTeoTerm().toStringInfFinal();
-            String teoremaStr = teorema.getTeoTerm().toStringInfFinal();
+            String teoremaStr = resuel.getTeorema().getTeoTerm().toStringInfFinal();
             System.out.println(pasoPostStr);
             System.out.println(teoremaIniStr);
             System.out.println(teoremaStr);
@@ -554,16 +555,20 @@ public class InferController {
                         
                 if(teoremaStr.equals(teoremaIniStr)){
                     //buscar en bd
-                    List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(username);
+                    List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username);
                     String temp;
                     response.setResuelto("0");
+                    System.out.println("-----------");
                     for(Resuelve resu: resuelves){
                         temp = resu.getTeorema().getTeoTerm().toStringInfFinal();
+                        
+                        System.out.println(temp);
                         if(temp.equals(pasoPostStr) && !temp.equals(teoremaIniStr)){
                             response.setResuelto("1");
                             break;
                         }
                     }
+                    System.out.println("-----------");
                 }
                 else{
                     if(pasoPostStr.equals(teoremaStr)){
@@ -600,7 +605,7 @@ public class InferController {
             
             if(response.getResuelto().equals("1")){
                 solucion.setResuelto(true);
-                resuelve.setResuelto(true);
+                resuel.setResuelto(true);
                 resuelveManager.updateResuelve(resuel);
                 solucionManager.updateSolucion(solucion);
             }
