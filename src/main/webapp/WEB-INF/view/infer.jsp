@@ -140,8 +140,6 @@
                     nivel = nivel.split(" ")[1];
                     var id = $(this).parent().attr("id");
                     p2 = [id,nivel];
-                    alert(p1);
-                    alert(p2);
                     leibnizMouse(p1,p2)
                 });
             });   
