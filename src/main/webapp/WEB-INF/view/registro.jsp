@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Registro</title>
+    <title>L&oacute;gica | Registro</title>
   </head>
   <body>
     <div class="row-fluid" style="margin-left: 50px; height:552px; width: 1100px; overflow: hidden;">

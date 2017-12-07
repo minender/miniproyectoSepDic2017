@@ -98,6 +98,20 @@ public class ResuelveManagerImpl implements ResuelveManager {
         }
         return resuelves;
     }
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserResuelto(userLogin);
+        try {
+            for (Resuelve resuelve : resuelves) {
+                Teorema teo = resuelve.getTeorema();
+                teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resuelves;
+    }
     
     @Override
     @Transactional

@@ -103,6 +103,7 @@
                                 MathJax.Hub.Typeset();
                                 $('#teoremaInicial').val(teoId + "-d");
                                 $("#inferForm").show();
+                                $("#nuevoMetodo").val("1");
                             }
                         }); 
                     }
@@ -119,6 +120,7 @@
                             MathJax.Hub.Typeset();
                             $('#teoremaInicial').val(teoId + "-i");
                             $("#inferForm").show();
+                            $("#nuevoMetodo").val("1");
                         }
                         });
                     } 
@@ -138,8 +140,6 @@
                     nivel = nivel.split(" ")[1];
                     var id = $(this).parent().attr("id");
                     p2 = [id,nivel];
-                    alert(p1);
-                    alert(p2);
                     leibnizMouse(p1,p2)
                 });
             });   
@@ -152,7 +152,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         </style>
         <tiles:insertDefinition name="style" />
-        <title>David | Demostrar</title>
+        <title>L&oacute;gica | Demostrar</title>
     </head>
     <body>
         <tiles:insertDefinition name="header" />
@@ -223,7 +223,7 @@
                                         <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
                                     </c:when>
                                     <c:otherwise>
-                                        <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
+                                        <i class="fa fa-lock" aria-hidden="true" style="margin-right: 15px;"></i>
                                     </c:otherwise>
                                     </c:choose>
                                         <span id="click${resu.getNumeroteorema()}">
@@ -314,12 +314,13 @@
               <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Inferir"/> <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Retroceder"> <input id="BtnLimpiar" class="btn" type="button" value="limpiar">
               <input id="Btn" type="hidden" name="submitBtn" value=""/>
               <input type="hidden" id="teoremaInicial" name="teoremaInicial" value=""/>
-          <form>
+              <input type="hidden" id="nuevoMetodo" name="nuevoMetodo" value="0"/>
+          <form> 
           </c:when>
           </c:choose>
-          <%-- <a href="/Miniproyecto/perfil/${usuario.getLogin()}">Perfil</a>--%>
           <br>
 
-          <tiles:insertDefinition name="footer" />
+    <tiles:insertDefinition name="footer" /> 
     </body>
+
 </html>

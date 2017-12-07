@@ -31,10 +31,14 @@ $(function() {
                         url = url.replace("new",nSol);
                         $(form).attr('action',url);
                     }
-                    
+                    if(data.resuelto === "1"){
+                        alert("Felicidades ha resuelto al demostracion!!");
+                        window.location = $("#linkDemostrar").attr("href");
+                    }
                     $('#nStatement_id').val("");
                     $('#instanciacion_id').val("");
                     $('#leibniz_id').val("");
+                    $("#nuevoMetodo").val("0");
                 }
                 
             }
@@ -62,7 +66,8 @@ $(function() {
                     $('#nStatement_id').val("");
                     $('#instanciacion_id').val("");
                     $('#leibniz_id').val("");
-                    $("#selectTeoInicial").val("1"); 
+                    $("#selectTeoInicial").val("1");
+                    $("#nuevoMetodo").val("1");
                 }
                 
             }
@@ -70,7 +75,6 @@ $(function() {
     });
     
     $('#BtnLimpiar').click(function(){
-        
         $('#nStatement_id').val("");
         $('#instanciacion_id').val("");
         $('#leibniz_id').val("");
@@ -80,8 +84,8 @@ $(function() {
 
 function leibnizMouse(p1,p2){
 
-    alert(p1);
-    alert(p2);
+    //alert(p1);
+    //alert(p2);
     var resp;
     var nivel;
     var padres = [];
@@ -101,7 +105,7 @@ function leibnizMouse(p1,p2){
         padres[0] = $("#" + p1[0]).parents("." + nivel).attr("id");
     	padres[1] = p2[0];
     }
-    alert(padres);
+    //alert(padres);
     if(padres[0] == padres[1]){
     	resp = padres[0];
     	alert(resp);

@@ -62,6 +62,11 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     public List<Resuelve> getAllResuelveByUser(String userLogin){
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE usuario.login = :userLogin").setParameter("userLogin",userLogin).list();
     }
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin){
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE usuario.login = :userLogin AND resuelto = true").setParameter("userLogin",userLogin).list();
+    }
     
     @Override
     @Transactional

@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
-    <title>David|Agregar Abreviación</title>
+    <title>L&oacute;gica | Agregar Abreviación</title>
     <tiles:insertDefinition name="style" />
   </head>
   <body>

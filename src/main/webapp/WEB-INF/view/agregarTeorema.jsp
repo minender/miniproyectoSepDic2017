@@ -18,7 +18,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <title>David | Agregar Teorema</title>
+    <title>L&oacute;gica | Agregar Teorema</title>
     <tiles:insertDefinition name="style" />
   </head>
   <body>
