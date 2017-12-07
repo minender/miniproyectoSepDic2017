@@ -13,7 +13,7 @@
       </button>
       <div class="nav-collapse collapse">
         <ul class="nav">
-          <li ${computarMenu}><a href="../../infer/${usuario.login}">Demostrar</a></li>   
+          <li ${computarMenu}><a id="linkDemostrar" href="../../infer/${usuario.login}">Demostrar</a></li>   
           <li ${listarTerminosMenu}><a href="listar?comb=n">Mis Abreviaciones</a></li>
           <li ${guardarMenu}><a href="guardar">Agregar Abreviación</a></li>
           <li ${misTeoremasMenu}><a href="misTeoremas">Mis Teoremas</a></li>

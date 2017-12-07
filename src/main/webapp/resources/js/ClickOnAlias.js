@@ -77,9 +77,12 @@ function teoremaInicialMD(teoid){
 
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
+            $('#inferForm').show();
+            $("#nuevoMetodo").val("1");
+            $('#teoremaInicial').val(teoid.substring(3,teoid.length));
+            $("#selectTeoInicial").val("0");
         }
     });
-    $('#teoremaInicial').val(teoid.substring(3,teoid.length));   
 }
 
 function metodoDF(teoid){
@@ -101,9 +104,11 @@ function metodoDF(teoid){
                 MathJax.Hub.Typeset();
                 $('#teoremaInicial').val(teoid + "-" + data.lado);
                 $("#inferForm").show();
+                $("#nuevoMetodo").val("1");
             }
         }
     });
+    
 }
 
 function clickOperator(Math1,myField,teoid)
@@ -117,8 +122,6 @@ function clickOperator(Math1,myField,teoid)
             var selectTeoInicial = $("#selectTeoInicial").val(); 
             if(selectTeoInicial==="1"){
                 teoremaInicialMD(teoid);
-                $('#inferForm').show();
-                $("#selectTeoInicial").val("0");
             }
             else{
                 var inputStatement = document.getElementById(myField);

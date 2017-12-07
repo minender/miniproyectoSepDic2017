@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>David | Mis Teoremas</title>
+    <title>L&oacute;gica | Mis Teoremas</title>
     <tiles:insertDefinition name="style" />
   </head>
   <body>
@@ -40,7 +40,6 @@
                   <c:choose>
                     <c:when test="${!resu.isResuelto()}">
                       <li style="list-style: none;">
-                        <span class="glyphicon glyphicon-trash"></span>
                         <p style="color: #000;">
                              <i class="fa fa-lock" aria-hidden="true" style="margin-right: 15px;"></i>
                           (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$                     

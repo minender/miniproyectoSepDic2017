@@ -29,6 +29,15 @@ public class InferResponse {
     private String cambiarMetodo;
     private String nSol;
     private String lado;
+    private String resuelto;
+
+    public String getResuelto() {
+        return resuelto;
+    }
+
+    public void setResuelto(String resuelto) {
+        this.resuelto = resuelto;
+    }
 
     public String getLado() {
         return lado;
@@ -179,7 +188,7 @@ public class InferResponse {
           String hint = "";
           Term iter = typedTerm;
           Term ultInf = null;
-          while (!iter.equals(ultInf)) 
+          while (iter!=ultInf) 
           {
             if (iter instanceof App && ((App)iter).p.containTypedA())
             {

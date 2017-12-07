@@ -12,7 +12,7 @@
       <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
       <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
       <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
-      <title>David | Registrado</title>
+      <title>L&oacute;gica | Registrado</title>
     </head>
     <body>
       <div class="row-fluid" style="margin-left: 50px; height:552px; width: 1100px; overflow: hidden;">

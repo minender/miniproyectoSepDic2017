@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
-    <title>David | Mis Abreviaciones</title>
+    <title>L&oacute;gica | Mis Abreviaciones</title>
   </head>
   <body>
     <c:choose>

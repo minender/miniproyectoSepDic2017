@@ -31,10 +31,14 @@ $(function() {
                         url = url.replace("new",nSol);
                         $(form).attr('action',url);
                     }
-                    
+                    if(data.resuelto === "1"){
+                        alert("Felicidades ha resuelto al demostracion!!");
+                        window.location = $("#linkDemostrar").attr("href");
+                    }
                     $('#nStatement_id').val("");
                     $('#instanciacion_id').val("");
                     $('#leibniz_id').val("");
+                    $("#nuevoMetodo").val("0");
                 }
                 
             }
@@ -62,7 +66,8 @@ $(function() {
                     $('#nStatement_id').val("");
                     $('#instanciacion_id').val("");
                     $('#leibniz_id').val("");
-                    $("#selectTeoInicial").val("1"); 
+                    $("#selectTeoInicial").val("1");
+                    $("#nuevoMetodo").val("1");
                 }
                 
             }
@@ -70,7 +75,6 @@ $(function() {
     });
     
     $('#BtnLimpiar').click(function(){
-        
         $('#nStatement_id').val("");
         $('#instanciacion_id').val("");
         $('#leibniz_id').val("");
