@@ -32,3 +32,11 @@ Categoriaid no deberia estar en la tabla teorema sino en resuelve
 La entidad Categoria deberia ser debil de usuario
 El query de getTeoremasByCategoria deberia tomar el resuelve del usuario con la categoria en cuestion y hacer join con teorema
 Poner la columna esquema en metateorema (estudiar mas bien si se quita en teorema)
+
+
+identacion de los hint 
+verificar en casos de fortalecimeinto que finalice con implicacion correspondinte(operador)
+los metodos fotalecimiento y debilitamiento ( reutilizar partir de un lado )
+bug de bienvenido despues de agregar
+paridad de expresiones
+metateorema de asociatividad

@@ -542,14 +542,13 @@ public class InferController {
                 solucion.setTypedTerm(pasoPostTerm);
                 solucionManager.updateSolucion(solucion);
             }
-            
+            response.setResuelto("0");
+            if (valida){
             Term type = pasoPostTerm.type();
             String pasoPostStr = ((App)((App)type).p).q.toStringInfFinal();
             String teoremaIniStr = resuelInicial.getTeorema().getTeoTerm().toStringInfFinal();
             String teoremaStr = resuel.getTeorema().getTeoTerm().toStringInfFinal();
-            System.out.println(pasoPostStr);
-            System.out.println(teoremaIniStr);
-            System.out.println(teoremaStr);
+     
             
             if(teoremaInicialInfo.size() == 1){
                         
@@ -557,8 +556,6 @@ public class InferController {
                     //buscar en bd
                     List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username);
                     String temp;
-                    response.setResuelto("0");
-                    System.out.println("-----------");
                     for(Resuelve resu: resuelves){
                         temp = resu.getTeorema().getTeoTerm().toStringInfFinal();
                         
@@ -568,7 +565,6 @@ public class InferController {
                             break;
                         }
                     }
-                    System.out.println("-----------");
                 }
                 else{
                     if(pasoPostStr.equals(teoremaStr)){
@@ -609,7 +605,7 @@ public class InferController {
                 resuelveManager.updateResuelve(resuel);
                 solucionManager.updateSolucion(solucion);
             }
-            
+            }
             //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
             String formula = resuel.getTeorema().getTeoTerm().toStringInfFinal();
             
