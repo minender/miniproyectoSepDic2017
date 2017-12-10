@@ -362,6 +362,14 @@ public class App extends Term{
         return p.containTypedA() || q.containTypedA();
     }
     
+    public Term leibniz(int z, Term subterm)
+    {
+       if (this == subterm)
+           return new Var(z);
+       else
+           return new App(p.leibniz(z, subterm),q.leibniz(z, subterm));
+    }
+    
     public String toString()
     {
         String izq;
@@ -468,7 +476,7 @@ public class App extends Term{
 
     }   
     
-    public String toStringInfLabeled(Id id, int nivel)
+    public String toStringInfLabeled(int z, Term t, List<String> l, Id id, int nivel)
     {
         String term;
         Const c1, c2;
@@ -476,30 +484,30 @@ public class App extends Term{
               (c1 = (Const)p) != null && (c2 = (Const)((App) q).p) != null &&
              !c1.funNotation && ( c2.preced > c1.preced  || (c2.preced == c1.preced && c1.asociat == 2) )    ) 
            // Const(Const p)
-           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf()+"} "+q.toStringInfLabeledFinal(id,nivel+1)+")}";
+           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf()+"} "+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
            // agregas lambda z. Const z, lambda z. Const (Const z) y lambda z.z dentro de un contexto E es decir
         else if ( p instanceof Const && q instanceof App && ((App)q).p instanceof App && ((App)((App)q).p).p instanceof Const &&
                   (c1 = (Const)p) != null && (c2 = (Const)((App)((App)q).p).p ) != null  && 
                   !c1.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c1.asociat == 2) ))
            // Const(Const p q)
-           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf() +"} "+ q.toStringInfLabeledFinal(id,nivel+1)+")}";
+           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf() +"} "+ q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
         else if ( p instanceof App && q instanceof App && ((App)p).p instanceof Const && ((App)q).p instanceof Const &&
                   (c1 = (Const)((App)p).p ) != null && (c2 = (Const)((App)q).p) != null && 
                   !c2.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c2.asociat ==1)))
            // Const p (Const q)
             if ((new App(new App(c1,((App)p).q),new Const(""))).toStringInfFinal().endsWith(")"))
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+ ((App)p).q.toStringInfLabeled(id,nivel+1)+")}";
+              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+ ((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
             else
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+ ((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";
+              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+ ((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
         else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && ((App)((App)p).q).p instanceof Const &&
                   (c1 = (Const)((App)p).p) != null && (c2 = (Const)((App)((App)p).q).p) != null)
             if (new App(new App(c1,new Const("")),q).toStringInfFinal().startsWith("("))
-               term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";
+               term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
             else
-               term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}"; 
+               term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}"; 
         else if ( p instanceof Const )
            // Const p
-           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+p.toStringInf()+"}"+q.toStringInfLabeled(id,nivel+1)+")}";
+           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+p.toStringInf()+"}"+q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
         else if ( p instanceof App && ((App)p).p instanceof App )
            // (App p) q
         {
@@ -514,7 +522,8 @@ public class App extends Term{
            String termStr = aux.toStringInf()+" ( "+stk.pop();
            while ( !stk.empty() )
               termStr = termStr + " , " + stk.pop();
-           return termStr + " )";
+           term = termStr + " )";
+           return term;
         }
         else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && 
                 
@@ -523,25 +532,27 @@ public class App extends Term{
                   (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 2)))
            // Const (Const p q) r
             if (new App(new App(c1,new Const("")),q).toStringInfFinal().startsWith("("))
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";
+              term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
             else
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";  
+              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";  
         else if ( p instanceof App && ((App)p).p instanceof Const && q instanceof App && ((App)q).p instanceof App &&
                   ((App)((App)q).p).p instanceof Const && 
                   (c1 = (Const)((App)p).p)!= null && (c2 = (Const)((App)((App)q).p).p) != null &&
                   (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 1)))
            // (Const p)(Const p q)
            if (new App(new App(c1,((App)p).q),new Const("")).toStringInfFinal().endsWith(")"))
-             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeled(id,nivel+1)+")}";
+             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
            else
-             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(id,nivel+1)+")}";
+             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf()+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
         else if ( p instanceof App && ((App)p).p instanceof Const )
            // Const p q
-           term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(id,nivel+1)+" \\class{terminoClick}{"+((App)p).p.toStringInf()+"} "+((App)p).q.toStringInfLabeled(id,nivel+1)+")}";
+           term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+((App)p).p.toStringInf()+"} "+((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
         else
            term = this.toString();
+        term = "\\cssId{"+id.id+"}{"+term+"}";
+        l.add(t.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
         id.id++;
-        return "\\cssId{"+(id.id-1)+"}{"+term+"}";
+        return term;
     }   
     
     public ToString toStringAbrv(ToString toString)

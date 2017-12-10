@@ -26,7 +26,7 @@
         <p> ${id}  </p>
         <p> ${usuario}  </p>
         <p> ${predicado}  </p>
-        <p> $${alias}$  </p>
+        <p> ${alias}  </p>
         <p> ${predserializado}  </p>
         
     </body>

@@ -56,6 +56,14 @@ public class Var extends Term{
         return false;
     }
     
+    public Term leibniz(int z, Term subterm)
+    {
+       if (this == subterm)
+           return new Var(z);
+       else
+           return this;
+    }
+    
     public int setAlias(int currentAlia)
     {
         if(alias != null)
@@ -155,8 +163,9 @@ public class Var extends Term{
         }
     }
     
-    public String toStringInfLabeled(Id id, int nivel){
+    public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
         id.id++;
+        leibniz.add(t.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
         if(alias == null ) {
             char ascii = (char) indice; 
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+ascii+"}}";
@@ -296,7 +305,13 @@ public class Var extends Term{
             i++;
         }
         if (this.occur(var) && (varsTerm.size() ==  Vars.size())) 
-            return varsTerm.get(i);
+            try{
+              return (Term)varsTerm.get(i).clone();
+            }
+            catch(CloneNotSupportedException e){
+              System.out.println(e);
+              return null;
+            }
         else 
             return this;
         

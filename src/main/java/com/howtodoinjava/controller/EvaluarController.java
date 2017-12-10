@@ -93,7 +93,7 @@ public class EvaluarController {
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
             //Term teoTerm;
-            ANTLRStringStream in2 = new ANTLRStringStream("false"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
+            ANTLRStringStream in2 = new ANTLRStringStream("p \\/ q /\\(r ==> p /\\ (r \\/ q))");
             TermLexer lexer2 = new TermLexer(in2);
             CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
             TermParser parser2 = new TermParser(tokens2);

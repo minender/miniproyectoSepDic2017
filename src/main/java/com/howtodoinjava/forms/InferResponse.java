@@ -159,11 +159,11 @@ public class InferResponse {
         Term type = typedTerm.type();
         if (type == null && !valida)
         {
-            this.setHistorial(header+"$$"+typedTerm.toStringInfLabeled()+"$$"+"$$Regla~de~inferencia~no~valida$$");
+            this.setHistorial(header+typedTerm.toStringInfLabeled()+"$$Regla~de~inferencia~no~valida$$");
         }
         else if(type == null && valida)
         {
-            this.setHistorial(header+"$$"+typedTerm.toStringInfLabeled()+"$$");
+            this.setHistorial(header+typedTerm.toStringInfLabeled());
         }
         else
         {
@@ -270,7 +270,7 @@ public class InferResponse {
             inst = "";
             hint = "";
           }
-          this.setHistorial(header+this.getHistorial()+"$$"+pasoPost+"$$");
+          this.setHistorial(header+this.getHistorial()+pasoPost);
           if (!valida)
             this.setHistorial(this.getHistorial()+"$$Regla~de~inferencia~no~valida$$");
         //this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");

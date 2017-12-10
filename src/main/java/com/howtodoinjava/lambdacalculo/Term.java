@@ -71,6 +71,11 @@ public abstract class Term implements Cloneable, Serializable{
             
             term=aux;
         }
+        
+        public String toString()
+        {
+            return term;
+        }
     }
     
     public abstract Term bracketAbsSH(Var x);
@@ -111,12 +116,14 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract boolean containTypedA();
     
+    public abstract Term leibniz(int z, Term subterm);
+    
     @Override
     public abstract String toString();
     
     public abstract String toStringInf();
     
-    public abstract String toStringInfLabeled(Id id, int nivel);
+    public abstract String toStringInfLabeled(int z, Term initTerm, List<String> leibniz, Id id, int nivel);
     
     public abstract ToString toStringAbrvV1(ToString toString);
     
@@ -150,12 +157,21 @@ public abstract class Term implements Cloneable, Serializable{
     
     public String toStringInfLabeled()
     {
-        return this.toStringInfLabeledFinal(new Id(), 0);
+        List<String> l = new LinkedList<String>();
+        int z = this.maxVar()+1;
+        if (z <= 122)
+            z = 122;
+        String st = "$$"+this.toStringInfLabeledFinal(z, this, l, new Id(), 0)+"$$\n";
+        st+="<script>\nvar leibniz=[";
+        for(String it: l)
+            st+="\n\"lambda "+new Var(z).toStringInf()+"."+it+"\",";
+        st = st.substring(0, st.length()-1)+"];\n</script>";
+        return st;
     }
     
-    public String toStringInfLabeledFinal(Id id, int nivel){
+    public String toStringInfLabeledFinal(int z, Term initTerm, List<String> leibniz, Id id, int nivel){
         String term;
-        String aux= this.toStringInfLabeled(id, nivel);
+        String aux= this.toStringInfLabeled(z, initTerm, leibniz, id, nivel);
         int i = 9;
         while  (aux.charAt(i)!='{')
             i++;
