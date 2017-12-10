@@ -53,6 +53,14 @@ public class Bracket extends Term{
         return t.containTypedA();
     }
     
+    public Term leibniz(int z, Term subterm)
+    {
+       if (this == subterm)
+           return new Var(z);
+       else
+           return new Bracket(x,t.leibniz(z, subterm));
+    }
+    
     public int setAlias(int currentAlia)
     {
         if(t.alias != null)
@@ -176,8 +184,9 @@ public class Bracket extends Term{
         }//.split("@")[0].replace("_", "\\_") +")";
     }
     
-    public String toStringInfLabeled(Id id, int nivel){
+    public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
         id.id++;
+        leibniz.add(t.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal()+"."+t.toStringInfFinal()+")}}";

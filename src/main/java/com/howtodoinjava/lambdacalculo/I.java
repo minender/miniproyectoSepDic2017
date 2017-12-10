@@ -43,6 +43,14 @@ public class I extends Term {
    {
        return false;
    }
+   
+   public Term leibniz(int z, Term subterm)
+   {
+       if (this == subterm)
+           return new Var(z);
+       else
+           return this;
+   }
     
     public int setAlias(int currentAlia)
     {
@@ -127,7 +135,7 @@ public class I extends Term {
             return ""; //"|";
     }     
     
-    public String toStringInfLabeled(Id id, int nivel){
+    public String toStringInfLabeled(int z, Term t, List<String> l, Id id, int nivel){
             return ""; //"|";
     }
         

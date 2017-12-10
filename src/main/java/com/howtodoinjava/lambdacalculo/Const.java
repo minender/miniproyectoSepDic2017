@@ -70,6 +70,14 @@ public class Const extends Term
    {
        return this instanceof TypedA;
    }
+   
+   public Term leibniz(int z, Term subterm)
+   {
+       if (this == subterm)
+           return new Var(z);
+       else
+           return this;
+   }
     
     public int setAlias(int currentAlia)
     {
@@ -178,9 +186,11 @@ public class Const extends Term
         return con;
     }
     
-    public String toStringInfLabeled(Id id, int nivel){
+    public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
+        String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}";
+        leibniz.add(t.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
         id.id++;
-        return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+con+"}}";
+        return term;
     }
 
     /*public Tripla toStringInfLabeled(Id id, int nivel, Tripla tri){

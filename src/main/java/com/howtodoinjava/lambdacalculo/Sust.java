@@ -49,6 +49,19 @@ public class Sust extends Term{
         return false;
     }
     
+    public Term leibniz(int z, Term subterm)
+    {
+       if (this == subterm)
+           return new Var(z);
+       else
+       {
+           List<Term> list = new ArrayList();
+           for (Term t: terms)
+               list.add(t.leibniz(z, subterm));
+           return new Sust(vars,list);
+       }
+    }
+    
     public int setAlias(int currentAlia)
     {
         if(alias != null)
@@ -154,7 +167,7 @@ public class Sust extends Term{
         return "["+varss+" := "+termss+"]";
     }
     
-    public String toStringInfLabeled(Id id, int nivel){
+    public String toStringInfLabeled(int z, Term init, List<String> leibniz, Id id, int nivel){
         id.id++;
         String varss = "";
         String termss = "";
@@ -166,6 +179,7 @@ public class Sust extends Term{
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
+         leibniz.add(init.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
         
         return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{["+varss+" := "+termss+"]}}";
     }

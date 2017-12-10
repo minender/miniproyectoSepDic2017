@@ -663,7 +663,7 @@ public class InferController {
         //String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
         String formula = resuelve.getTeorema().getTeoTerm().toStringInfLabeled();
         
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<center>$"+formula+"$</center>";
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof: "+formula;
         response.setHistorial(historial);  
 
         return response;
@@ -722,7 +722,7 @@ public class InferController {
             formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfLabeled();
         }
         
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<center>$"+formula+"$</center>";
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof: "+formula;
         response.setHistorial(historial);  
 
         return response;

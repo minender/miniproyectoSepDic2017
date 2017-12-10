@@ -43,6 +43,14 @@ public class Phi extends Term{
         return false;
     }
     
+    public Term leibniz(int z, Term subterm)
+   {
+       if (this == subterm)
+           return new Var(z);
+       else
+           return this;
+   }
+    
     public int setAlias(int currentAlia)
     {
         if(alias != null)
@@ -126,9 +134,11 @@ public class Phi extends Term{
         return "\\Phi_{"+ind.toString()+"}";
     }
     
-    public String toStringInfLabeled(Id id, int nivel){
+    public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
+        String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{\\Phi_{"+ind.toString()+"}}}";
+        leibniz.add(t.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
         id.id++;
-        return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{\\Phi_{"+ind.toString()+"}}}";
+        return term;
     }
     
     
