@@ -178,6 +178,7 @@ public class InferController {
         if (solId.equals("new")){
             map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");
             map.addAttribute("elegirMetodo","1");
+            map.addAttribute("teoInicial", "");
         }
         else
         {
@@ -186,20 +187,7 @@ public class InferController {
             InferResponse response = new InferResponse();
             Term typedTerm = solucion.getTypedTerm();
             response.generarHistorial(username,formula, nTeo, typedTerm, true, resuelveManager, disponeManager);
-            /*List<PasoInferencia> inferencias = solucion.getArregloInferencias();
-            String ultimaExp = "";
-            for (PasoInferencia x: inferencias) {
-                infersForm.setHistorial(infersForm.getHistorial()+ "$$" +
-                                        x.getExpresion().toStringInfFinal()+" $$" + " $$ \\equiv< " + 
-                                        new App(new App(new Const("\\equiv ",false,1,1),x.getTeoDer()), x.getTeoIzq()).toStringInfFinal() + 
-                                        " - " + x.getLeibniz().toStringInfFinal() + 
-                                        " - " + x.getInstancia()+" > $$");
-                ultimaExp = x.getResult().toStringInfFinal();
-            }
-            if(!ultimaExp.equals("")){
-                infersForm.setHistorial(infersForm.getHistorial()+ "$$" +ultimaExp+ "$$");
-            }*/
-            //if(inferencias.size()==0){
+
             if (typedTerm == null){
                 map.addAttribute("elegirMetodo","1");
             }else{
@@ -207,7 +195,9 @@ public class InferController {
             }
             
             map.addAttribute("formula",response.getHistorial());
+            map.addAttribute("teoInicial", solucion.getNteoinicial());
         }
+        
         map.addAttribute("guardarMenu","");
         map.addAttribute("selecTeo",false);
         map.addAttribute("nSol",solId);
@@ -441,7 +431,7 @@ public class InferController {
             //der = new App(leibnizTerm,der).reducir();
 
             boolean valida = true;
-            Term pasoPostTerm =null; // new TypedA(term);le asigne TypedA(term) para evitar problemas de compilacion por aputnadores a nulo en la linea 546
+            Term pasoPostTerm =null;
             Term infer = null;
             boolean exception = false;
             try
@@ -531,6 +521,7 @@ public class InferController {
                 // paso.setResult(pasoPostTerm);
                 // solucion = new Solucion(resuel,false,paso);
                 solucion = new Solucion(resuel,false,pasoPostTerm);
+                solucion.setNteoinicial(teoremaInicial);
                 solucionManager.addSolucion(solucion);
                 nSol = ""+solucion.getId();
                 response.setnSol(nSol);
@@ -544,67 +535,76 @@ public class InferController {
             }
             response.setResuelto("0");
             if (valida){
-            Term type = pasoPostTerm.type();
-            String pasoPostStr = ((App)((App)type).p).q.toStringInfFinal();
-            String teoremaIniStr = resuelInicial.getTeorema().getTeoTerm().toStringInfFinal();
-            String teoremaStr = resuel.getTeorema().getTeoTerm().toStringInfFinal();
-     
-            
-            if(teoremaInicialInfo.size() == 1){
-                        
-                if(teoremaStr.equals(teoremaIniStr)){
-                    //buscar en bd
-                    List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username);
-                    String temp;
-                    for(Resuelve resu: resuelves){
-                        temp = resu.getTeorema().getTeoTerm().toStringInfFinal();
-                        
-                        System.out.println(temp);
-                        if(temp.equals(pasoPostStr) && !temp.equals(teoremaIniStr)){
+                Term type = pasoPostTerm.type();
+                Term teoremaTerm = resuel.getTeorema().getTeoTerm();
+                String pasoPostStr = ((App)((App)type).p).q.toStringInfFinal();
+                String teoremaIniStr = resuelInicial.getTeorema().getTeoTerm().toStringInfFinal();
+                String teoremaStr = resuel.getTeorema().getTeoTerm().toStringInfFinal();
+
+                System.out.println((((App)type).q).toStringInfFinal());
+                
+                if(teoremaInicialInfo.size() == 1){
+
+                    if(teoremaStr.equals(teoremaIniStr)){
+                        //buscar en bd
+                        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username);
+                        String temp;
+                        for(Resuelve resu: resuelves){
+                            temp = resu.getTeorema().getTeoTerm().toStringInfFinal();
+
+                            System.out.println(temp);
+                            if(temp.equals(pasoPostStr) && !temp.equals(teoremaIniStr)){
+                                response.setResuelto("1");
+                                break;
+                            }
+                        }
+                    }
+                    else{
+                        if(pasoPostStr.equals(teoremaStr)){
                             response.setResuelto("1");
-                            break;
+                        }
+                        else{
+                            response.setResuelto("0");
                         }
                     }
                 }
                 else{
-                    if(pasoPostStr.equals(teoremaStr)){
-                        response.setResuelto("1");
-                    }
-                    else{
-                        response.setResuelto("0");
-                    }
-                }
-            }
-            else{
-                String formulaDer = ((App)((App) teorema.getTeoTerm()).p).q.toStringInfFinal();
-                String formulaIzq = ((App)teorema.getTeoTerm()).q.toStringInfFinal();
-                
-                if(teoremaInicialInfo.get(1).equals("d")){
+                    
+                    /*String formulaDer = ((App)((App) teorema.getTeoTerm()).p).q.toStringInfFinal();
+                    String formulaIzq = ((App)teorema.getTeoTerm()).q.toStringInfFinal();
 
-                    if(pasoPostStr.equals(formulaIzq)){
-                        response.setResuelto("1");
-                    }
-                    else{
-                        response.setResuelto("0");
-                    }
-                }
-                else if (teoremaInicialInfo.get(1).equals("i")){
+                    if(teoremaInicialInfo.get(1).equals("d")){
 
-                    if(pasoPostStr.equals(formulaDer)){
+                        if(pasoPostStr.equals(formulaIzq)){
+                            response.setResuelto("1");
+                        }
+                        else{
+                            response.setResuelto("0");
+                        }
+                    }
+                    else if (teoremaInicialInfo.get(1).equals("i")){
+
+                        if(pasoPostStr.equals(formulaDer)){
+                            response.setResuelto("1");
+                        }
+                        else{
+                            response.setResuelto("0");
+                        }
+                    }*/
+                    if(teoremaTerm.equals(type)){
                         response.setResuelto("1");
                     }
                     else{
                         response.setResuelto("0");
-                    }
+                    }            
                 }
-            }
-            
-            if(response.getResuelto().equals("1")){
-                solucion.setResuelto(true);
-                resuel.setResuelto(true);
-                resuelveManager.updateResuelve(resuel);
-                solucionManager.updateSolucion(solucion);
-            }
+
+                if(response.getResuelto().equals("1")){
+                    solucion.setResuelto(true);
+                    resuel.setResuelto(true);
+                    resuelveManager.updateResuelve(resuel);
+                    solucionManager.updateSolucion(solucion);
+                }
             }
             //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
             String formula = resuel.getTeorema().getTeoTerm().toStringInfFinal();

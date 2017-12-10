@@ -40,3 +40,7 @@ los metodos fotalecimiento y debilitamiento ( reutilizar partir de un lado )
 bug de bienvenido despues de agregar
 paridad de expresiones
 metateorema de asociatividad
+
+
+
+

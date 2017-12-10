@@ -313,7 +313,7 @@
               <br>
               <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Inferir"/> <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Retroceder"> <input id="BtnLimpiar" class="btn" type="button" value="limpiar">
               <input id="Btn" type="hidden" name="submitBtn" value=""/>
-              <input type="hidden" id="teoremaInicial" name="teoremaInicial" value=""/>
+              <input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>
               <input type="hidden" id="nuevoMetodo" name="nuevoMetodo" value="0"/>
           <form> 
           </c:when>

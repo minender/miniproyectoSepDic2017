@@ -200,7 +200,8 @@ CREATE TABLE solucion (
     id integer NOT NULL,
     resuelveid integer NOT NULL,
     resuelto boolean DEFAULT false NOT NULL,
-    arregloserializado bytea NOT NULL
+    arregloserializado bytea NOT NULL,
+    nteoinicial varchar(20)
 );
 
 

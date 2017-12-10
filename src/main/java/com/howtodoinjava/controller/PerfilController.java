@@ -3,7 +3,6 @@
  * and open the template in the editor.
  */
 package com.howtodoinjava.controller;
-
 import com.howtodoinjava.entity.Categoria;
 import com.howtodoinjava.entity.Dispone;
 import com.howtodoinjava.entity.Metateorema;
@@ -268,7 +267,6 @@ public class PerfilController {
                 map.addAttribute("perfilMenu","class=\"active\"");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
-
                 return "perfil";
             }
             catch(NullPointerException e)

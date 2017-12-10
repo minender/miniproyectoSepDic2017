@@ -31,6 +31,15 @@ public class Solucion implements java.io.Serializable {
     private Term typedTerm;
     private Resuelve resuelve;
     private boolean resuelto;
+    private String nteoinicial;
+
+    public String getNteoinicial() {
+        return nteoinicial;
+    }
+
+    public void setNteoinicial(String nteoinicial) {
+        this.nteoinicial = nteoinicial;
+    }
 
     public Solucion() {
     }
