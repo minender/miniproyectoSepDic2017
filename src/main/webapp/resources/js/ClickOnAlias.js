@@ -85,18 +85,43 @@ function teoremaInicialMD(teoid){
     });
 }
 
-function metodoDF(teoid){
+function metodoD(teoid){
     var data = {};
     var form = $('#inferForm');
     
     $.ajax({
         type: 'POST',
-        url: $(form).attr('action')+"/teoremaInicialDF",
+        url: $(form).attr('action')+"/teoremaInicialD",
         dataType: 'json',
         data: data,
         success: function(data) {
             if(data.lado === "0"){
-                alert("El teorema seleccionado no aplica para el metodo Debilitambien/Fortalecimiento.");
+                alert("El teorema seleccionado no aplica para el metodo Debilitambien.");
+                $("#metodosDiv").show();
+            }
+            else{
+                $('#formula').html(data.historial);
+                MathJax.Hub.Typeset();
+                $('#teoremaInicial').val(teoid + "-" + data.lado);
+                $("#inferForm").show();
+                $("#nuevoMetodo").val("1");
+            }
+        }
+    });
+    
+}
+function metodoF(teoid){
+    var data = {};
+    var form = $('#inferForm');
+    
+    $.ajax({
+        type: 'POST',
+        url: $(form).attr('action')+"/teoremaInicialF",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+            if(data.lado === "0"){
+                alert("El teorema seleccionado no aplica para el metodo Fortalecimiento.");
                 $("#metodosDiv").show();
             }
             else{

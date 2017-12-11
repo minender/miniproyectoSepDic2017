@@ -682,8 +682,8 @@ public class InferController {
         return response;
     }
     
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialDF", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialDF(@PathVariable String username, @PathVariable String nTeo)
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse teoremaInicialD(@PathVariable String username, @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
         
@@ -698,17 +698,50 @@ public class InferController {
         String formula = "";
         if(operador.startsWith("\\Lefttarrow")){
             response.setLado("d");
-            formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
+            formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfLabeled();
         }
         else if(operador.startsWith("\\Rightarrow")){
             response.setLado("i");
-            formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
+            formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfLabeled();
         }
         else{
             response.setLado("0");
         }
         
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<center>$"+formula+"$</center>";
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:"+formula;
+        response.setHistorial(historial);  
+
+        return response;
+    }
+    
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialF", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse teoremaInicialF(@PathVariable String username, @PathVariable String nTeo)
+    {   
+        InferResponse response = new InferResponse();
+        
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
+        
+        Teorema t = resuelve.getTeorema();
+        Term term = t.getTeoTerm();
+        String operador = ((Const)((App)((App)term).p).p).getCon();
+        
+        
+        String formula = "";
+        if(operador.startsWith("\\Lefttarrow")){
+            response.setLado("i");
+            formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfLabeled();
+
+        }
+        else if(operador.startsWith("\\Rightarrow")){
+            response.setLado("d");
+            formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfLabeled();
+        }
+        else{
+            response.setLado("0");
+        }
+        
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:"+formula;
         response.setHistorial(historial);  
 
         return response;

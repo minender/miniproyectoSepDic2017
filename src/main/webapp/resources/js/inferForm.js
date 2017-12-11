@@ -32,7 +32,7 @@ $(function() {
                         $(form).attr('action',url);
                     }
                     if(data.resuelto === "1"){
-                        alert("Felicidades ha resuelto al demostracion!!");
+                        alert("Felicidades ha resuelto lA demostracion!!");
                         window.location = $("#linkDemostrar").attr("href");
                     }
                     $('#nStatement_id').val("");
@@ -84,8 +84,6 @@ $(function() {
 
 function leibnizMouse(p1,p2){
 
-    //alert(p1);
-    //alert(p2);
     var resp;
     var nivel;
     var padres = [];
@@ -106,14 +104,12 @@ function leibnizMouse(p1,p2){
         padres[0] = $("#" + p1[0]).parents("." + nivel).attr("id");
     	padres[1] = p2[0];
     }
-    //alert(padres);
     if(padres[0] == padres[1]){
     	resp = padres[0];
     }
     else{
     	resp = $("#" + padres[0]).parent().attr("id");      
     }
-    alert(resp);
     $('#leibniz_id').val(leibniz[resp]);
     return;
 }

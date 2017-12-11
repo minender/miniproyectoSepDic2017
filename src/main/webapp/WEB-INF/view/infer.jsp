@@ -65,7 +65,7 @@
                         }
                     }
                     else if(this.value==="2"){
-                        if(confirm("Esta seguro que desea utlizar el metodo partir de un lado ?")){
+                        if(confirm("Esta seguro que desea utlizar el metodo partir de un lado?")){
                             var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             alert('Seleccione el teorema con el cual va a empezar la demostracion.');
@@ -74,11 +74,19 @@
                         }
                     }
                     else if(this.value==="3"){
-                        if(confirm("Esta seguro que desea utlizar el metodo Debilitamiento/Fortalecimiento ?")){
+                        if(confirm("Esta seguro que desea utlizar el metodo Debilitamiento?")){
                             var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             $("#metodosDiv").hide();
-                            metodoDF(nTeo);
+                            metodoD(nTeo);
+                        }
+                    }
+                    else if(this.value==="4"){
+                        if(confirm("Esta seguro que desea utlizar el metodo Fortalecimiento?")){
+                            var nTeo = $("#nTeorema").val();
+                            $("#selectTeoInicial").val("0");
+                            $("#metodosDiv").hide();
+                            metodoF(nTeo);
                         }
                     }
                 });
@@ -128,19 +136,29 @@
                 
                 var p1=[];
                 var p2=[];
+                var idt1;
+                var idt2;
                 
                 $("#formula").on("mousedown",".terminoClick",function(event){
                     var nivel = $(this).parent().attr('class');
                     nivel = nivel.split(" ")[1];
                     var id = $(this).parent().attr("id");
+                    idt1=this.id;
                     p1 = [id,nivel];
                 });
                 $("#formula").on("mouseup",".terminoClick",function(event){
-                    var nivel = $(this).parent().attr('class');
-                    nivel = nivel.split(" ")[1];
-                    var id = $(this).parent().attr("id");
-                    p2 = [id,nivel];
-                    leibnizMouse(p1,p2)
+                    idt2=this.id;
+                    if(idt1 === idt2){
+                        $('#leibniz_id').val(leibniz[idt1]);
+                    }
+                    else{
+                         var nivel = $(this).parent().attr('class');
+                        nivel = nivel.split(" ")[1];
+                        var id = $(this).parent().attr("id");
+                        p2 = [id,nivel];
+                        leibnizMouse(p1,p2)
+                    }
+
                 });
             });   
 
@@ -175,10 +193,11 @@
                 <option value="0">Seleccione un método</option>>
                 <option value="1">Método Directo</option>
                 <option value="2">Partir de un lado de la ecuación</option>
-                <option value="3">Debilitamiento/Fortalecimiento</option>
-                <option value="4">Asumir el antecedente</option>
-                <option value="5">Prueba por casos</option>
-                <option value="6">Prueba por contradicción</option>
+                <option value="3">Debilitamiento</option>
+                <option value="4">Fortalecimiento</option>
+                <option value="5">Asumir el antecedente</option>
+                <option value="6">Prueba por casos</option>
+                <option value="7">Prueba por contradicción</option>
 
               </select>
           </div>
