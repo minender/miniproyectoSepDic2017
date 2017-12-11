@@ -93,9 +93,10 @@ function leibnizMouse(p1,p2){
     if(p1[0] == p2[0]){
     	resp = p1[0];
         alert(resp);
+        $('#leibniz_id').val(leibniz[resp]);
         return;
     }  
-	if(p1[1] <= p2[1]){
+    if(p1[1] <= p2[1]){
     	nivel = p1[1];
         padres[0] = p1[0];
     	padres[1] = $("#" + p2[0]).parents("." + nivel).attr("id");
@@ -108,13 +109,12 @@ function leibnizMouse(p1,p2){
     //alert(padres);
     if(padres[0] == padres[1]){
     	resp = padres[0];
-    	alert(resp);
-        return;
     }
     else{
-    	resp = $("#" + padres[0]).parent().attr("id");
-        alert(resp);
-        return;
-    }    
+    	resp = $("#" + padres[0]).parent().attr("id");      
+    }
+    alert(resp);
+    $('#leibniz_id').val(leibniz[resp]);
+    return;
 }
 

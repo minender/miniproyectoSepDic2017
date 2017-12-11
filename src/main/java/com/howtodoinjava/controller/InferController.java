@@ -426,9 +426,6 @@ public class InferController {
                        
                // paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);                
             }
-            
-            //izq = new App(leibnizTerm,izq).reducir();
-            //der = new App(leibnizTerm,der).reducir();
 
             boolean valida = true;
             Term pasoPostTerm =null;
@@ -503,19 +500,6 @@ public class InferController {
                 }
             }
             
-            /*if (izq.equals(pasoAntTerm)) {
-                pasoPostTerm = der;
-                //pasoPost = der.toStringInfFinal();
-                pasoPost = der.toStringInfLabeled();
-            }else if(der.equals(pasoAntTerm)) {
-                pasoPostTerm = izq;
-                //pasoPost = izq.toStringInfFinal();
-                pasoPost = izq.toStringInfLabeled();
-            }else{
-                pasoPost = "Regla~de~inferencia~no~valida";
-                valida = false;
-            }*/
-            
             if (resuel.getDemopendiente() == -1 && valida)
             {
                 // paso.setResult(pasoPostTerm);
@@ -528,8 +512,6 @@ public class InferController {
             }
             else if (valida)
             {
-                // paso.setResult(pasoPostTerm);
-                // solucion.addArregloInferencias(paso);
                 solucion.setTypedTerm(pasoPostTerm);
                 solucionManager.updateSolucion(solucion);
             }
@@ -540,8 +522,6 @@ public class InferController {
                 String pasoPostStr = ((App)((App)type).p).q.toStringInfFinal();
                 String teoremaIniStr = resuelInicial.getTeorema().getTeoTerm().toStringInfFinal();
                 String teoremaStr = resuel.getTeorema().getTeoTerm().toStringInfFinal();
-
-                System.out.println((((App)type).q).toStringInfFinal());
                 
                 if(teoremaInicialInfo.size() == 1){
 
@@ -551,8 +531,6 @@ public class InferController {
                         String temp;
                         for(Resuelve resu: resuelves){
                             temp = resu.getTeorema().getTeoTerm().toStringInfFinal();
-
-                            System.out.println(temp);
                             if(temp.equals(pasoPostStr) && !temp.equals(teoremaIniStr)){
                                 response.setResuelto("1");
                                 break;
@@ -569,28 +547,7 @@ public class InferController {
                     }
                 }
                 else{
-                    
-                    /*String formulaDer = ((App)((App) teorema.getTeoTerm()).p).q.toStringInfFinal();
-                    String formulaIzq = ((App)teorema.getTeoTerm()).q.toStringInfFinal();
 
-                    if(teoremaInicialInfo.get(1).equals("d")){
-
-                        if(pasoPostStr.equals(formulaIzq)){
-                            response.setResuelto("1");
-                        }
-                        else{
-                            response.setResuelto("0");
-                        }
-                    }
-                    else if (teoremaInicialInfo.get(1).equals("i")){
-
-                        if(pasoPostStr.equals(formulaDer)){
-                            response.setResuelto("1");
-                        }
-                        else{
-                            response.setResuelto("0");
-                        }
-                    }*/
                     if(teoremaTerm.equals(type)){
                         response.setResuelto("1");
                     }
@@ -606,11 +563,8 @@ public class InferController {
                     solucionManager.updateSolucion(solucion);
                 }
             }
-            //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
+
             String formula = resuel.getTeorema().getTeoTerm().toStringInfFinal();
-            
-            //response.generarHistorial(formula, nTeo, pasoPost, 
-            //                          valida, pasoPostTerm);//inferencias);
             response.generarHistorial(username,formula, nTeo,valida?pasoPostTerm:pasoAntTerm,valida,
                                       resuelveManager,disponeManager);
 
