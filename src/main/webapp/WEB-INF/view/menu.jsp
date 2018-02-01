@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div class="page-header">
-    <h1 style="color: #03A9F4; font-size: 70px; margin-left: 20px;">Logica<small>Demostraciones de Lógica Simbólica</small></h1>
+    <h1 style="color: #03A9F4; font-size: 70px; margin-left: 20px;">L&oacute;gica<small>Demostraciones de Lógica Simbólica</small></h1>
 </div>
 
 <div class="navbar navbar-default ">

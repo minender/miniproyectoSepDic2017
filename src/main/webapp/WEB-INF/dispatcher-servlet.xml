@@ -104,6 +104,9 @@
     <bean id="categoriaDAO" class="com.howtodoinjava.dao.CategoriaDaoImpl"></bean>
     <bean id="categoriaManager" class="com.howtodoinjava.service.CategoriaManagerImpl">
     </bean>
+    <bean id="materiaDAO" class="com.howtodoinjava.dao.MateriaDaoImpl"></bean>
+    <bean id="materiaManager" class="com.howtodoinjava.service.MateriaManagerImpl">
+    </bean>
     <bean id="teoremaDAO" class="com.howtodoinjava.dao.TeoremaDaoImpl"></bean>
     <bean id="teoremaManager" class="com.howtodoinjava.service.TeoremaManagerImpl">
     </bean>

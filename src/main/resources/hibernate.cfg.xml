@@ -17,5 +17,6 @@
     <mapping resource="com/howtodoinjava/entity/Categoria.hbm.xml"/>
     <mapping resource="com/howtodoinjava/entity/Metateorema.hbm.xml"/>
     <mapping resource="com/howtodoinjava/entity/Dispone.hbm.xml"/>
+    <mapping resource="com/howtodoinjava/entity/Materia.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

@@ -47,13 +47,14 @@ public class TypedApp extends App{
                 Term t2Izq = ((App)t2Type).q;
                 String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
         
-                boolean eqAndOp = op1.equals("\\equiv") && (op2.equals("\\equiv") 
+                boolean eq = op1.equals("=") && op2.equals("=");
+                boolean eqAndOp = op1.equals("\\equiv") && (op2.equals("\\equiv")
                         || op2.equals("\\Leftarrow") || op2.equals("\\Rightarrow"));
                 boolean leftAndOp = op1.equals("\\Leftarrow") && 
                         (op2.equals("\\Leftarrow") || op2.equals("\\equiv"));
                 boolean rightAndOp = op1.equals("\\Rightarrow") && 
                         (op2.equals("\\Rightarrow") || op2.equals("\\equiv"));
-                if (!((eqAndOp || leftAndOp || rightAndOp) && t1Der.equals(t2Izq)))
+                if (!((eq || eqAndOp || leftAndOp || rightAndOp) && t1Der.equals(t2Izq)))
                   throw new TypeVerificationException();
               }
             }

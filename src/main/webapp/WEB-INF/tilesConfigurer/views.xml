@@ -11,6 +11,8 @@
    <definition name="perfil" extends="template">
      <put-attribute name="body" value="/WEB-INF/view/perfil_body.jsp" />
    </definition>
+   <definition name="registro" template="/WEB-INF/view/registro.jsp">
+   </definition>
    <definition name="header" template="/WEB-INF/view/menu.jsp">
    </definition>
    <definition name="headerEval" template="/WEB-INF/view/menuEval.jsp">

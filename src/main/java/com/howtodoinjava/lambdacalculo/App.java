@@ -438,7 +438,7 @@ public class App extends Term{
             return "("+new App(new App(c1,new Const("")),q).toStringInfFinal()+((App)p).q.toStringInfFinal()+")";
         else if ( p instanceof Const )
            // Const p
-           return "("+p.toStringInf()+q.toStringInf()+")";
+           return "("+p.toStringInf()+" "+q.toStringInf()+")";
         else if ( p instanceof App && ((App)p).p instanceof App )
            // (App p) q
         {

@@ -5,6 +5,7 @@
 package com.howtodoinjava.controller;
 import com.howtodoinjava.entity.Categoria;
 import com.howtodoinjava.entity.Dispone;
+import com.howtodoinjava.entity.Materia;
 import com.howtodoinjava.entity.Metateorema;
 import com.howtodoinjava.entity.Publicacion;
 import com.howtodoinjava.entity.PublicacionId;
@@ -28,6 +29,7 @@ import com.howtodoinjava.forms.InfersForm;
 import com.howtodoinjava.forms.InsertarEvaluar;
 import com.howtodoinjava.forms.ModificarAliasForm;
 import com.howtodoinjava.forms.ModificarForm;
+import com.howtodoinjava.forms.Registro;
 import com.howtodoinjava.forms.UsuarioGuardar;
 import com.howtodoinjava.forms.teoremasSolucion;
 import com.howtodoinjava.lambdacalculo.App;
@@ -35,20 +37,31 @@ import com.howtodoinjava.lambdacalculo.Brackear;
 import com.howtodoinjava.lambdacalculo.Comprobacion;
 import com.howtodoinjava.lambdacalculo.Const;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
+import com.howtodoinjava.lambdacalculo.Sust;
 import com.howtodoinjava.service.TerminoManager;
 import com.howtodoinjava.service.UsuarioManager;
 import com.howtodoinjava.lambdacalculo.Term;
 import com.howtodoinjava.lambdacalculo.Tokenizar;
+import com.howtodoinjava.lambdacalculo.TypeVerificationException;
+import com.howtodoinjava.lambdacalculo.TypedA;
+import com.howtodoinjava.lambdacalculo.TypedApp;
+import com.howtodoinjava.lambdacalculo.TypedI;
+import com.howtodoinjava.lambdacalculo.TypedS;
+import com.howtodoinjava.lambdacalculo.Var;
 import com.howtodoinjava.parse.IsNotInDBException;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
+import com.howtodoinjava.service.MateriaManager;
 import com.howtodoinjava.service.MetateoremaManager;
 import com.howtodoinjava.service.ResuelveManager;
 import com.howtodoinjava.service.SolucionManager;
 import com.howtodoinjava.service.TeoremaManager;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.antlr.runtime.ANTLRStringStream;
@@ -80,6 +93,8 @@ public class PerfilController {
     private SolucionManager solucionManager;
     @Autowired
     private HttpSession session;
+    @Autowired
+    private MateriaManager materiaManager;
     
     @RequestMapping(value="/{username}/close", method=RequestMethod.GET)
     public String closeSesion(@PathVariable String username, ModelMap map){
@@ -107,13 +122,31 @@ public class PerfilController {
         return "perfil";
     }
     
+    @RequestMapping(value="/{username}/editar", method=RequestMethod.GET)
+    public String editarView(@PathVariable String username, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        List<Materia> list = materiaManager.getAllMaterias();
+        Usuario user = usuarioManager.getUsuario(username);
+        map.addAttribute("usuario",user);
+        map.addAttribute("registro",new Registro(user.getNombre(), user.getApellido(), 
+                                    user.getCorreo(), user.getLogin(), 
+                                    user.getMateria().getId(), "", ""));
+        map.addAttribute("materias", list);
+        map.addAttribute("valueSubmit", "Editar");
+        map.addAttribute("showlink", "0");
+        return "editPerfil";
+    }
+    
     @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.GET)
     public String misTeoremasView(@PathVariable String username, ModelMap map) {
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUser(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
@@ -147,7 +180,6 @@ public class PerfilController {
         teoremasSolucion response = new teoremasSolucion();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid);
         Integer resuelveId = resuelve.getId();
-        System.out.println(resuelveId);
         
         response.soluciones = solucionManager.getAllSolucionesIdByResuelve(resuelveId);
         response.setIdTeo(teoid);
@@ -165,6 +197,49 @@ public class PerfilController {
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term typedTerm = solucion.getTypedTerm();
+        
+        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager);
+        return response;
+    }
+    
+    @RequestMapping(value="/{username}/misTeoremas/buscarMetaFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse buscarMetaFormula(@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
+    {
+        InferResponse response = new InferResponse();
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
+        Term teo = resuelve.getTeorema().getTeoTerm();
+        String teoremaStr = new App(new App(new Const("\\equiv",false,1,1),new Const("true")),resuelve.getTeorema().getTeoTerm()).toStringInfFinal();
+        String nTeo = resuelve.getNumeroteorema();
+        Term A1 = new TypedA( new App(new App(new Const("\\equiv",false,1,1), new App(new App(new Const("\\equiv",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const("\\equiv",false,1,1),new Var(113)),new Var(112))) );
+        Term A2 = new TypedA( new App(new App(new Const("\\equiv",false,1,1),new Var(113)),
+                                     new App(new App(new Const("\\equiv",false,1,1),new Var(113)),
+                                                               new Const("true"))));
+        Term A3 = new TypedA(teo);
+        List<Var> list1 = new ArrayList<Var>();
+        list1.add(new Var(112));
+        list1.add(new Var(113));
+        List<Term> list2 = new ArrayList<Term>();
+        list2.add(teo);
+        list2.add(new Const("true"));
+        Term I1 = new TypedI(new Sust(list1,list2));
+        
+        List<Var> lis1 = new ArrayList<Var>();
+        lis1.add(new Var(113));
+        List<Term> lis2 = new ArrayList<Term>();
+        lis2.add(teo);
+        Term I2 = new TypedI(new Sust(lis1,lis2));
+        
+        Term typedTerm = null;
+        try {
+          if (teo.equals(new Const("true")))
+            typedTerm = new TypedApp(I2,A2);
+          else
+            typedTerm = new TypedApp(new TypedApp(I1,A1), new TypedApp(I2,A2));
+          typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),A3);
+        }
+        catch (TypeVerificationException e){
+            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+        }
         
         response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager);
         return response;

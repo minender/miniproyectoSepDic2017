@@ -71,10 +71,6 @@ public class Categoria  implements java.io.Serializable {
     public void setMetateoremas(Set metateoremas) {
         this.metateoremas = metateoremas;
     }
-
-
-
-
 }
 
 

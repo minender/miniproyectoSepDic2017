@@ -57,11 +57,11 @@
                                 </a>
                                 <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
 
-                                <a style="text-decoration: none" href="javascript:buscarSoluciones(${resu.getTeorema().getId()});"style="cursor:pointer;" title="Haga click para ver las soluciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$ </a>
+                                <a style="text-decoration: none" href="javascript:buscarSoluciones(${resu.getTeorema().getId()});"style="cursor:pointer;" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$
                                 <span style="display: none;" id="${resu.getTeorema().getId()}">
 
                                 <br><span  style="margin-left: 53px;"></span>
-                                (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
+                                <a style="text-decoration: none" href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});"style="cursor:pointer;" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) Metatheorem: </a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
                                 </span>
                             </c:when>
                             <c:otherwise>

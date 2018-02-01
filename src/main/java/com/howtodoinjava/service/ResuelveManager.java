@@ -27,6 +27,8 @@ public interface ResuelveManager {
     
     public List<Resuelve> getAllResuelveByUser(String userLogin);
     
+    public List<Resuelve> getAllResuelveByUserWithSol(String userLogin);
+    
     public List<Resuelve> getAllResuelveByUserResuelto(String userLogin);
 
     public List<Resuelve> getResuelveByTeorema(int teoremaID);

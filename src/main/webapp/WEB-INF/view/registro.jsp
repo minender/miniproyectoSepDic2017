@@ -3,7 +3,7 @@
     Created on : 09/03/2014, 03:56:16 AM
     Author     : federico
 --%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
@@ -24,18 +24,32 @@
     <div class="row-fluid" style="margin-left: 50px; height:552px; width: 1100px; overflow: hidden;">
       <h1>Llene el siguiente formulario:</h1>
       <center>
-        <sf:form method="POST" modelAttribute="usuario">
+        <sf:form method="POST" modelAttribute="registro">
           <table>
-            <tr><td>Nombre:</td><td><sf:input path="nombre" id="usuario_nombre"/><br/><sf:errors path="nombre" cssClass="error" /></td></tr>
-            <tr><td>Apellido:</td><td><sf:input path="apellido"  id="usuario_apellido"/></td></tr>
-            <tr><td>Correo:</td><td><sf:input path="correo" id="usuario_correo"/></td></tr>
-            <tr><td>Nonbre de Usuario:</td><td><sf:input path="login" id="usuario_login"/><sf:errors path="login" cssClass="error" /></td></tr>
-            <tr><td>Clave:</td><td><sf:password path="password" showPassword="true" id="usuario_password"/></td></tr>
-            <tr><td>Confirme su clave:</td><td><input type="password" name="password2"></td></tr>
+            <tr><td>Nombre:</td><td><sf:input path="nombre" id="registro_nombre"/><sf:errors path="nombre" cssClass="error" /></td></tr>
+            <tr><td>Apellido:</td><td><sf:input path="apellido"  id="registro_apellido"/><sf:errors path="apellido" cssClass="error" /></td></tr>
+            <tr><td>Correo:</td><td><sf:input path="correo" id="registro_correo"/><sf:errors path="correo" cssClass="error" /></td></tr>
+            <tr><td>Nombre de Usuario:</td><td><sf:input path="login" id="registro_login"/><sf:errors path="login" cssClass="error" /></td></tr>
+            <tr><td>Materia:</td>
+                <td><sf:select path="materiaid" id="registro_materiaid">
+                   <sf:option value="0" label="Seleccione una materia"/>
+                   <c:forEach items="${materias}" var="materia">
+                       <sf:option value="${materia.id}" label="${materia.nombre}"/>
+                   </c:forEach>
+                  </sf:select>
+                <sf:errors path="materiaid" cssClass="error"/></td>
+            </tr>
+            <tr><td>Clave:</td><td><sf:password path="password" showPassword="true" id="usuario_password"/><sf:errors path="password" cssClass="error" /></td></tr>
+            <tr><td>Confirme su clave:</td><td><sf:password path="passwordConf" showPassword="true" id="registro_passwordConf"/><sf:errors path="passwordConf" cssClass="error" /></td></tr>
           </table>
-          <input class="btn" type="submit" value="Registrarse">
+          <input class="btn" type="submit" value="${valueSubmit}">
         </sf:form>
-        <a href="/Miniproyecto/index">Iniciar Seci&oacute;n</a>
+         <c:choose>
+           <c:when test="${showlink=='1'}">
+             <a href="/Miniproyecto/index">Iniciar Seci&oacute;n</a>
+           </c:when>
+         </c:choose>
+       
       </center>
     </div>
   </body>

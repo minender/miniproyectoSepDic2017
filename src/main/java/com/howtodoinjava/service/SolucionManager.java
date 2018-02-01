@@ -18,7 +18,7 @@ public interface SolucionManager {
         
     public void addSolucion(Solucion solucion);
 
-    public void addPaso(int solucionId, PasoInferencia paso);
+    //public void addPaso(int solucionId, PasoInferencia paso);
     
     public void updateSolucion(int solucionId, Term infer);
     

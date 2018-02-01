@@ -154,7 +154,11 @@ public class Const extends Term
     
     public String toString()
     {
-        return con;
+        Term typ = this.type();
+        if (typ == null)
+          return con;
+        else
+          return con+"^{"+typ.toStringFinal()+"}";
     }
    
     /*@Override

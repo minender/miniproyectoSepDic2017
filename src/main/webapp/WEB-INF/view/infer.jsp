@@ -29,15 +29,6 @@
         </script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         <script type="text/javascript">
-            function limpiar()
-            {
-                var texArea=document.getElementById("asdasd");
-                if(texArea.value != "")
-                {
-                    if(confirm("Seguro que desea borrar el contenido del área de texto"))
-                        texArea.value="";
-                }
-            }
             
             $(function(){
                 
@@ -51,6 +42,7 @@
                         $("#selectTeoInicial").val("0");
                         $("#inferForm").show();
                         $("#metodosDiv").hide();
+                        $("#currentTeo").hide();
                     </c:otherwise>
                 </c:choose>
                     
@@ -58,34 +50,39 @@
                 $("#metodosDemostracion").change(function(){
                     
                     if(this.value==="1"){
-                        if(confirm("Esta seguro que desea utlizar el metodo directo ?")){
+                        if(confirm("¿Esta seguro que desea utilizar el metodo directo?")){
                             $("#selectTeoInicial").val("1");
                             alert('Seleccione el teorema con el cual va a empezar la demostracion.');
+                            $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
+                            $(".operator").css({"cursor":"","color":""});
                             $("#metodosDiv").hide();
                         }
                     }
                     else if(this.value==="2"){
-                        if(confirm("Esta seguro que desea utlizar el metodo partir de un lado?")){
+                        if(confirm("¿Esta seguro que desea utilizar el metodo partir de un lado?")){
                             var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
-                            alert('Seleccione el teorema con el cual va a empezar la demostracion.');
+                            alert('Seleccione el lado de donde empezará la demostración.');
                             $("#metodosDiv").hide();
+                            $("#currentTeo").hide();
                             teoremaClickeable(nTeo);
                         }
                     }
                     else if(this.value==="3"){
-                        if(confirm("Esta seguro que desea utlizar el metodo Debilitamiento?")){
+                        if(confirm("¿Esta seguro que desea utilizar el metodo Debilitamiento?")){
                             var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             $("#metodosDiv").hide();
+                            $("#currentTeo").hide();
                             metodoD(nTeo);
                         }
                     }
                     else if(this.value==="4"){
-                        if(confirm("Esta seguro que desea utlizar el metodo Fortalecimiento?")){
+                        if(confirm("¿Esta seguro que desea utilizar el metodo Fortalecimiento?")){
                             var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             $("#metodosDiv").hide();
+                            $("#currentTeo").hide();
                             metodoF(nTeo);
                         }
                     }
@@ -109,7 +106,7 @@
 
                                 $('#formula').html(data.historial);
                                 MathJax.Hub.Typeset();
-                                $('#teoremaInicial').val(teoId + "-d");
+                                $('#teoremaInicial').val(teoId + "@d");
                                 $("#inferForm").show();
                                 $("#nuevoMetodo").val("1");
                             }
@@ -126,7 +123,7 @@
 
                             $('#formula').html(data.historial);
                             MathJax.Hub.Typeset();
-                            $('#teoremaInicial').val(teoId + "-i");
+                            $('#teoremaInicial').val(teoId + "@i");
                             $("#inferForm").show();
                             $("#nuevoMetodo").val("1");
                         }
@@ -192,7 +189,7 @@
               <select class="form-control" id="metodosDemostracion">
                 <option value="0">Seleccione un método</option>>
                 <option value="1">Método Directo</option>
-                <option value="2">Partir de un lado de la ecuación</option>
+                <option value="2">Partir de un lado</option>
                 <option value="3">Debilitamiento</option>
                 <option value="4">Fortalecimiento</option>
                 <option value="5">Asumir el antecedente</option>
@@ -210,42 +207,56 @@
                     <c:forEach items="${resuelves}" var="resu">
                       <c:choose>
                         <c:when test="${resu.getTeorema().getCategoria().getId()==cat.getId()}">      
-                            <li style="list-style: none;">
+                            <li ${!selecTeo && resu.getNumeroteorema().equals(nTeo)?"id=currentTeo":""} style="list-style: none;">
                               <h6 style="color: #000;">
                                 <c:choose>
-                                <c:when test="${!selecTeo}">
-                                <c:choose>
-                                <c:when test="${resu.isResuelto() || resu.getNumeroteorema().equals(nTeo)}">
-                                <a onclick="expandMeta('metaTeo${resu.getNumeroteorema()}')">
-                                    <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
-                                </a>
-                                    <span id="click${resu.getNumeroteorema()}">
-                                    
-                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$    
+                                 <c:when test="${!selecTeo}">
+                                  <c:choose>
+                                   <c:when test="${resu.isResuelto() || resu.getNumeroteorema().equals(nTeo)}">
+                                       <c:choose>
+                                         <c:when test="${resu.getNumeroteorema().equals(nTeo)}">
+                                            <a >
+                                              <i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
+                                            </a>
+                                         </c:when>
+                                         <c:otherwise>
+                                            <a onclick="expandMeta('metaTeo${resu.getNumeroteorema()}')" >
+                                              <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
+                                            </a>
+                                         </c:otherwise>
+                                       </c:choose>
 
-                                
-                                </span>
-                                    <script>clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}');</script>
+                                    
+ <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().toStringInfFinal()}$</span>
+
+                                    <script>clickTeoremaInicial('ST-${resu.getNumeroteorema()}');
+                                            clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}');
+                                    </script>
+                               <c:choose>
+                                <c:when test="${!resu.getNumeroteorema().equals(nTeo)}">
                                 <span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
                                    <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>                
                                    
-                                    (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$  
+ <span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) Metatheorem:</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$</span>  
                                        
-                                   <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}');</script>
+                                   <script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
+                                           clickOperator('clickmeta${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}');
+                                   </script>
                                </span>
                                </c:when>
-                               </c:choose>
-                                </c:when>
-                                <c:otherwise>
+                              </c:choose>
+                                   </c:when>
+                                  </c:choose>
+                                 </c:when>
+                                 <c:otherwise>
                                    <c:choose>
                                     <c:when test="${resu.isResuelto()}">
                                         <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
-                                    </c:when>
-                                    <c:otherwise>
+                                     </c:when>
+                                     <c:otherwise>
                                         <i class="fa fa-lock" aria-hidden="true" style="margin-right: 15px;"></i>
-                                    </c:otherwise>
+                                     </c:otherwise>
                                     </c:choose>
-                                        <span id="click${resu.getNumeroteorema()}">
                                     
                                         <c:choose>
                                         <c:when test="${!resu.isEsAxioma()}">
@@ -257,9 +268,7 @@
                                         </c:otherwise>
                                         </c:choose>
 
-                                        </span>
-                                            <script>clickOperator('click${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
-                                        <span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
+                                        <%--<span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
                                            <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
 
                                            <c:choose>
@@ -274,7 +283,7 @@
                                             (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$  
 
                                            <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
-                                       </span>
+                                       </span>--%>
                                         </c:otherwise>
                                         </c:choose>
                               </h6>
@@ -300,14 +309,9 @@
 
             };
         
-            function getMetateo(id) {
+            //function getMetateo(id) {
             
-            }
-        </script>
-
-        <script>
-            t=document.getElementById('pasoAnt');
-            t.innerText="${pasoAnt}";
+            //}
         </script>
 
         <div style="width: 60%; height: 400px; overflow: scroll;">
@@ -327,7 +331,7 @@
                   </c:forEach>  
               </select>--%>
               <br>
-              Instanciación:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
+              Sustitución:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
               Leibniz:<br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
               <br>
               <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Inferir"/> <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Retroceder"> <input id="BtnLimpiar" class="btn" type="button" value="limpiar">

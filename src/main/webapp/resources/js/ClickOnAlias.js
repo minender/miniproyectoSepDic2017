@@ -79,8 +79,11 @@ function teoremaInicialMD(teoid){
             MathJax.Hub.Typeset();
             $('#inferForm').show();
             $("#nuevoMetodo").val("1");
-            $('#teoremaInicial').val(teoid.substring(3,teoid.length));
+            $('#teoremaInicial').val(teoid);
             $("#selectTeoInicial").val("0");
+            $(".teoIdName").css({"cursor":"","color":""});
+            $(".operator").css({"cursor":"pointer","color":"#08c"});
+            $("#currentTeo").hide();
         }
     });
 }
@@ -102,7 +105,7 @@ function metodoD(teoid){
             else{
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
-                $('#teoremaInicial').val(teoid + "-" + data.lado);
+                $('#teoremaInicial').val(teoid + "@" + data.lado);
                 $("#inferForm").show();
                 $("#nuevoMetodo").val("1");
             }
@@ -127,7 +130,7 @@ function metodoF(teoid){
             else{
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
-                $('#teoremaInicial').val(teoid + "-" + data.lado);
+                $('#teoremaInicial').val(teoid + "@" + data.lado);
                 $("#inferForm").show();
                 $("#nuevoMetodo").val("1");
             }
@@ -136,17 +139,52 @@ function metodoF(teoid){
     
 }
 
+function clickTeoremaInicial(teoid)
+{
+    var id = "";
+    if (teoid.substring(0,3)==="ST-")
+    {
+        id = 'teoIdName'+teoid.substring(3);
+    }
+    else if (teoid.substring(0,3)==="MT-")
+    {
+        id = 'metateoIdName'+teoid.substring(3);
+    }
+    document.getElementById(id).onclick = function(event){
+       var selectTeoInicial = $("#selectTeoInicial").val();
+       if (selectTeoInicial==="1")
+       {
+           teoremaInicialMD(teoid);
+       }
+    };
+}
+
 function clickOperator(Math1,myField,teoid)
 {
     
     var render=document.getElementById(Math1);
     render.onclick = function (event) {
-
+    var targetString = "";
+    if (teoid.substring(0,3)==="ST-")
+    {
+        targetString = 'click@'+teoid.substring(3);
+    }
+    else if (teoid.substring(0,3)==="MT-")
+    {
+        targetString = 'clickmeta@'+teoid.substring(3);
+    }
+    if (!event) {event = window.event};
+      var target = event.toElement || event.target;
+      while (target && (!target.id || 
+                         target.id !=targetString))
+      {target = target.parentNode};
+      if(target)
+      {
         var metodo = document.getElementById('metodosDemostracion').value;
         if(metodo === "1"){
             var selectTeoInicial = $("#selectTeoInicial").val(); 
             if(selectTeoInicial==="1"){
-                teoremaInicialMD(teoid);
+                ;//teoremaInicialMD(teoid);
             }
             else{
                 var inputStatement = document.getElementById(myField);
@@ -157,6 +195,7 @@ function clickOperator(Math1,myField,teoid)
             var inputStatement = document.getElementById(myField);
             inputStatement.value = teoid;
         }
+      }
     };    
 }
 

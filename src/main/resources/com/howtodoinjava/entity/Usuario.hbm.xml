@@ -20,6 +20,9 @@
         <property name="password" type="string">
             <column name="password" not-null="true" />
         </property>
+        <many-to-one name="materia" class="com.howtodoinjava.entity.Materia" lazy="false" fetch="select">
+            <column name="materiaid" not-null="true" />
+        </many-to-one>
         <property name="admin" type="boolean">
             <column name="admin" not-null="true" />
         </property>

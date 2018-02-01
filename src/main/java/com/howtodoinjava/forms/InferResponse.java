@@ -152,22 +152,61 @@ public class InferResponse {
         }
     }
     
-    public void generarHistorial(String user, String formula, String nTeo, Term typedTerm,  Boolean valida,ResuelveManager resuelveManager, DisponeManager disponeManager) {//List<PasoInferencia> inferencias){
+    public void generarHistorial(String user, String formula, String nTeo, Term typedTerm,  Boolean valida, ResuelveManager resuelveManager, DisponeManager disponeManager) {//List<PasoInferencia> inferencias){
         
         this.setHistorial("");
-        String header = "Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:";  
+        String header = "Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:<br>";  
         Term type = typedTerm.type();
         if (type == null && !valida)
         {
-            this.setHistorial(header+typedTerm.toStringInfLabeled()+"$$Regla~de~inferencia~no~valida$$");
+            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled()+"$$Regla~de~inferencia~no~valida$$");
         }
         else if(type == null && valida)
         {
-            this.setHistorial(header+typedTerm.toStringInfLabeled());
+            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled()+"</center>");
         }
         else
         {
-          String pasoPost= ((App)((App)type).p).q.toStringInfLabeled();
+          boolean equanimity;
+          try{
+            if (!(((TypedApp)typedTerm).p instanceof TypedS) && ((App)((TypedApp)typedTerm).p.type()).q.equals(((TypedApp)typedTerm).q.type()))
+                equanimity = true;
+            else
+                equanimity = false;
+          }
+          catch (ClassCastException e){
+              equanimity = false;
+          }
+          
+          String equanimityHint = "";
+          Term goal = null;
+          if (equanimity)
+          {
+              goal = (((TypedApp)typedTerm).q).type();
+              typedTerm = ((TypedApp)typedTerm).p;
+              type = typedTerm.type();
+              Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, goal.toStringFinal());
+              if (eqHintResuel == null)
+              {
+                  equanimityHint = disponeManager.getDisponeByUserAndMetaeorema(user, goal.toStringFinal()).getNumerometateorema();
+                  equanimityHint = "~~~-~mt~("+equanimityHint+")";
+              }
+              else
+              {    
+                equanimityHint = eqHintResuel.getNumeroteorema();
+                equanimityHint = "~~~-~st~("+equanimityHint+")";
+              }
+          }
+
+          String pasoPost="";
+          if (equanimity && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedS)
+          {
+            typedTerm = ((TypedApp)typedTerm).q;
+            type = typedTerm.type();
+            pasoPost= ((App)((App)type).p).q.toStringInfFinal()+equanimityHint+"$";
+          }
+          else
+            pasoPost= ((App)((App)type).p).q.toStringInfLabeled();
         /*this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
         String ultimaExp = "";
         for (PasoInferencia x: inferencias) {
@@ -181,36 +220,38 @@ public class InferResponse {
         if(!ultimaExp.equals("")){
             this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");
         }*/
-          String primExp = "";
-          String teo = "";
-          String leib = "";
-          String inst = "";
-          String hint = "";
-          Term iter = typedTerm;
-          Term ultInf = null;
-          while (iter!=ultInf) 
-          {
-            if (iter instanceof App && ((App)iter).p.containTypedA())
+            String primExp = "";
+            String teo = "";
+            String leib = "";
+            String inst = "";
+            String hint = "";
+            Term iter = typedTerm;
+            Term ultInf = null;
+            while (iter!=ultInf) 
             {
-              ultInf = ((App)iter).q;
-              iter = ((App)iter).p;
-            }
-            else
-              ultInf = iter;
-            if (ultInf instanceof App)
-              if (((App)ultInf).q instanceof App)
-                if (((App)((App)ultInf).q).q instanceof App)
-                {
-                    primExp = ((App)ultInf.type()).q.toStringInfFinal();
+              if (iter instanceof App && ((App)iter).p.containTypedA())
+              {
+                ultInf = ((App)iter).q;
+                iter = ((App)iter).p;
+              }
+              else
+                ultInf = iter;
+              if (ultInf instanceof App)
+                if (((App)ultInf).q instanceof App)
+                  if (((App)((App)ultInf).q).q instanceof App)
+                  {
+                    Term aux = ((App)ultInf.type()).q;
+                    primExp = aux.toStringInfFinal()+(aux.equals(goal)?equanimityHint:"");
                     teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
                     inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInfFinal();
                     inst = "~with~" + inst.substring(1, inst.length()-1);
                     leib = ((App)((App)ultInf).q).p.type().toStringInfFinal();
                     leib = "~and~" + leib;
-                }
-                else
-                {
-                    primExp = ((App)ultInf.type()).q.toStringInfFinal();
+                  }
+                  else
+                  {
+                    Term aux = ((App)ultInf.type()).q;
+                    primExp = aux.toStringInfFinal()+(aux.equals(goal)?equanimityHint:"");
                     teo = ((App)((App)ultInf).q).q.type().toStringFinal();
                     if (((App)ultInf).p instanceof TypedS)
                       if (((App)((App)ultInf).q).p instanceof TypedI)
@@ -230,50 +271,51 @@ public class InferResponse {
                         leib = ((App)ultInf).p.type().toStringInfFinal();
                         leib = "~and~" + leib;
                     }
+                  }
+                else
+                {
+                  if (((App)ultInf).p instanceof TypedI)
+                  {
+                    inst = ((App)ultInf).p.type().toStringInfFinal();
+                    inst = "~with~" + inst.substring(1, inst.length()-1);
+                  }
+                  else if (((App)ultInf).p instanceof TypedL)
+                    leib = "~and~" + ((App)ultInf).p.type().toStringInfFinal();
+                  teo = ((App)ultInf).q.type().toStringFinal();
+                  Term aux = ((App)ultInf.type()).q;
+                  primExp = aux.toStringInfFinal()+(aux.equals(goal)?equanimityHint:"");
                 }
               else
               {
-                if (((App)ultInf).p instanceof TypedI)
-                {
-                    inst = ((App)ultInf).p.type().toStringInfFinal();
-                    inst = "~with~" + inst.substring(1, inst.length()-1);
-                }
-                else if (((App)ultInf).p instanceof TypedL)
-                    leib = "~and~" + ((App)ultInf).p.type().toStringInfFinal();
-                teo = ((App)ultInf).q.type().toStringFinal();
-                primExp = ((App)ultInf.type()).q.toStringInfFinal();
-              }
-            else
-            {
-              Term aux = ultInf.type();
-              teo = aux.toStringFinal();
-              primExp = ((App)aux).q.toStringInfFinal();
-            } 
+                Term aux = ultInf.type();
+                teo = aux.toStringFinal();
+                primExp = ((App)aux).q.toStringInfFinal()+(aux.equals(goal)?equanimityHint:"");
+              } 
           
-            String op = ((Const)((App)((App)ultInf.type()).p).p).getCon().trim();
-            Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
-            if (theo == null)
-            {
-              teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
-              hint = op+"\\langle mt~("+teo+")"+inst+leib+"\\rangle";
+              String op = ((Const)((App)((App)ultInf.type()).p).p).getCon().trim();
+              Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
+              if (theo == null)
+              {
+                teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
+                hint = op+"~~~~\\langle mt~("+teo+")"+inst+leib+"\\rangle";
+              }
+              else
+              {
+                teo = theo.getNumeroteorema();
+                hint = op+"~~~~\\langle st~("+teo+")"+inst+leib+"\\rangle";
+              }
+              this.setHistorial("~~~~~~" + primExp +" \\\\"+ hint +"\\\\"+this.getHistorial());
+              primExp = "";
+              teo = "";
+              leib = "";
+              inst = "";
+              hint = "";
             }
-            else
-            {
-              teo = theo.getNumeroteorema();
-              hint = op+"\\langle st~("+teo+")"+inst+leib+"\\rangle";
-            }
-
-            this.setHistorial("$$" + primExp + " $$"+" $$"+ hint +"$$"+this.getHistorial());
-            primExp = "";
-            teo = "";
-            leib = "";
-            inst = "";
-            hint = "";
-          }
-          this.setHistorial(header+this.getHistorial()+pasoPost);
-          if (!valida)
-            this.setHistorial(this.getHistorial()+"$$Regla~de~inferencia~no~valida$$");
+            this.setHistorial(header+"<center>$"+this.getHistorial()+"~~~~~~"+pasoPost+"</center>");
+            if (!valida)
+              this.setHistorial("$"+this.getHistorial()+"$"+"$$Regla~de~inferencia~no~valida$$");
         //this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");
+          
         }
     }
     

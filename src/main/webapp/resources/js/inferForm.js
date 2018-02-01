@@ -32,7 +32,7 @@ $(function() {
                         $(form).attr('action',url);
                     }
                     if(data.resuelto === "1"){
-                        alert("Felicidades ha resuelto lA demostracion!!");
+                        alert("Felicidades ha encontrado una demostracion al teorema!!");
                         window.location = $("#linkDemostrar").attr("href");
                     }
                     $('#nStatement_id').val("");
@@ -68,6 +68,7 @@ $(function() {
                     $('#leibniz_id').val("");
                     $("#selectTeoInicial").val("1");
                     $("#nuevoMetodo").val("1");
+                    $("#currentTeo").show();
                 }
                 
             }
@@ -90,7 +91,6 @@ function leibnizMouse(p1,p2){
     
     if(p1[0] == p2[0]){
     	resp = p1[0];
-        alert(resp);
         $('#leibniz_id').val(leibniz[resp]);
         return;
     }  

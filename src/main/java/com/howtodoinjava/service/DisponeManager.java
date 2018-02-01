@@ -33,4 +33,5 @@ public interface DisponeManager {
     
     public Dispone getDisponeByUserAndMetaeorema(String userLogin, String metateorema);
     
+    public Dispone getDisponeByUserAndTeoNum(String userLogin,String metateoNum);
 }

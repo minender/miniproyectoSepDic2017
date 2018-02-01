@@ -6,10 +6,13 @@ package com.howtodoinjava.service;
 
 import com.howtodoinjava.dao.DisponeDAO;
 import com.howtodoinjava.entity.Dispone;
+import com.howtodoinjava.entity.Metateorema;
+import com.howtodoinjava.lambdacalculo.Term;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.SerializationUtils;
 
 /**
  *
@@ -73,5 +76,18 @@ public class DisponeManagerImpl implements DisponeManager {
     @Transactional
     public Dispone getDisponeByUserAndMetaeorema(String userLogin, String metateorema){
         return disponeDAO.getDisponeByUserAndMetaeorema(userLogin, metateorema);
+    }
+    
+    @Override
+    @Transactional
+    public Dispone getDisponeByUserAndTeoNum(String userLogin,String metateoNum)
+    {
+        Dispone dispone = disponeDAO.getDisponeByUserAndTeoNum(userLogin, metateoNum);
+        if (dispone != null) {
+            Metateorema teo = dispone.getMetateorema();
+            teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getMetateoserializado()));
+            dispone.setMetateorema(teo);
+        }
+        return dispone;
     }
 }

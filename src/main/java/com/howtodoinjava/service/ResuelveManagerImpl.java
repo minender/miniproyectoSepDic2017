@@ -64,10 +64,17 @@ public class ResuelveManagerImpl implements ResuelveManager {
     public List<Resuelve> getAllResuelve(){
         return resuelveDAO.getAllResuelve();
     }
-    
+
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUser(String userLogin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin);
+        return resuelves;
+    }
+    
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserWithSol(String userLogin){
         List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin);
         try {
             for (Resuelve resuelve : resuelves) {

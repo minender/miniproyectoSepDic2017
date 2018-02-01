@@ -1,6 +1,7 @@
 package com.howtodoinjava.controller;
 
 import com.howtodoinjava.dao.ResuelveDAO;
+import com.howtodoinjava.entity.Dispone;
 import com.howtodoinjava.entity.Metateorema;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Solucion;
@@ -78,8 +79,6 @@ public class InferController {
     private CategoriaManager categoriaManager;
     @Autowired
     private DisponeManager disponeManager;
-    @Autowired
-    private ResuelveDAO resuelveDAO;
     
     @RequestMapping(value="/{username}", method=RequestMethod.GET)
     public String selectTeoView(@PathVariable String username, ModelMap map) {
@@ -87,7 +86,7 @@ public class InferController {
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUser(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
@@ -101,7 +100,7 @@ public class InferController {
         map.addAttribute("mensaje","");
         map.addAttribute("nStatement","");
         map.addAttribute("instanciacion","");
-        map.addAttribute("leibniz","");    
+        map.addAttribute("leibniz","");
         map.addAttribute("formula","");
         map.addAttribute("guardarMenu","");
         map.addAttribute("selecTeo",true);
@@ -112,14 +111,14 @@ public class InferController {
         map.addAttribute("misPublicacionesMenu","");
         map.addAttribute("computarMenu","class=\"active\"");
         map.addAttribute("perfilMenu","");
-        map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
+        //map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","100%");
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
         map.addAttribute("resuelves", resuelves);
         map.addAttribute("metateoremas",metateoremaManager);
         map.addAttribute("resuelveManager",resuelveManager);
-        map.addAttribute("makeTerm",new MakeTerm());
+        //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
 
@@ -135,7 +134,7 @@ public class InferController {
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
         
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUser(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
@@ -144,17 +143,17 @@ public class InferController {
                 
                 try
                 {
-                  t.setTeoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{"+((Const)((App)((App)term).p).p).getCon()+"}}",((Const)((App)((App)term).p).p).getFunNotation(),((Const)((App)((App)term).p).p).getPreced(),((Const)((App)((App)term).p).p).getAsociat()),((App)((App)term).p).q),((App)term).q));
+                  t.setTeoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{"+((Const)((App)((App)term).p).p).getCon()+"}}}",((Const)((App)((App)term).p).p).getFunNotation(),((Const)((App)((App)term).p).p).getPreced(),((Const)((App)((App)term).p).p).getAsociat()),((App)((App)term).p).q),((App)term).q));
                 }
                 catch (java.lang.ClassCastException e)
                 {
                     t.setTeoTerm(term);
                 }
-                t.setMetateoTerm(new App(new App(new Const("\\cssId{click@"+r.getNumeroteorema()+"}{\\style{cursor:pointer; color:#08c;}{\\equiv}}",false,1,1),new Const("true ")), term));
+                t.setMetateoTerm(new App(new App(new Const("\\cssId{clickmeta@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{\\equiv}}}",false,1,1),new Const("true ")), term));
             }
             else{
-                
-                try
+                ;
+                /*try
                 {
                   t.setTeoTerm(new App(new App(new Const(((Const)((App)((App)term).p).p).getCon(),false,1,1),((App)((App)term).p).q),((App)term).q));
                 }
@@ -162,7 +161,7 @@ public class InferController {
                 {
                     t.setTeoTerm(term);
                 }
-                t.setMetateoTerm(new App(new App(new Const("{\\equiv}}",false,1,1),new Const("true ")), term));
+                t.setMetateoTerm(new App(new App(new Const("{\\equiv}}",false,1,1),new Const("true ")), term));*/
             }
             
         }
@@ -195,7 +194,17 @@ public class InferController {
             }
             
             map.addAttribute("formula",response.getHistorial());
-            map.addAttribute("teoInicial", solucion.getNteoinicial());
+            Term type = solucion.getTypedTerm().type();
+            String teoInicial;
+            if (type == null)
+                teoInicial = solucion.getTypedTerm().toStringFinal();
+            else
+              teoInicial = ((App)type).q.toStringFinal();
+            Resuelve res = resuelveManager.getResuelveByUserAndTeorema(username, teoInicial);
+            if (res != null)
+               map.addAttribute("teoInicial", res.getNumeroteorema());
+            else
+               map.addAttribute("teoInicial", "");
         }
         
         map.addAttribute("guardarMenu","");
@@ -208,34 +217,42 @@ public class InferController {
         map.addAttribute("misPublicacionesMenu","");
         map.addAttribute("computarMenu","class=\"active\"");
         map.addAttribute("perfilMenu","");
-        map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
+        //map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
         map.addAttribute("resuelves", resuelves);
         map.addAttribute("metateoremas",metateoremaManager);
         map.addAttribute("resuelveManager",resuelveManager);
-        map.addAttribute("makeTerm",new MakeTerm());
+        //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
     
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir",produces= MediaType.APPLICATION_JSON_VALUE)
-    
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir",produces= MediaType.APPLICATION_JSON_VALUE)    
     public @ResponseBody InferResponse infer(@RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion, @PathVariable String username, 
             @PathVariable String nTeo, @PathVariable String nSol, @RequestParam(value="teoremaInicial") String teoremaInicial, @RequestParam(value="nuevoMetodo") String nuevoMetodo )
     {
         InferResponse response = new InferResponse();
         String pasoPost = "";
         
-        Resuelve resuelInicial;
         ArrayList<String> teoremaInicialInfo = new ArrayList();
 
-        for (String retval: teoremaInicial.split("-")) {
+        for (String retval: teoremaInicial.split("@")) {
             teoremaInicialInfo.add(retval);
         }
 
+        Resuelve resuelInicial = null;
+        Dispone disponeInicial = null;
         String nTeoInicial = teoremaInicialInfo.get(0);
-        resuelInicial = resuelveManager.getResuelveByUserAndTeoNum(username,nTeoInicial);
+        if ("ST-".equals(nTeoInicial.substring(0,3)))
+        {
+          resuelInicial = resuelveManager.getResuelveByUserAndTeoNum(username,nTeoInicial.substring(3,nTeoInicial.length()));
+        }
+        else if ("MT-".equals(nTeoInicial.substring(0,3)))
+        {
+          disponeInicial = disponeManager.getDisponeByUserAndTeoNum(username,nTeoInicial.substring(3,nTeoInicial.length()));
+        }
+        
         
         TerminoId terminoid=new TerminoId();
         terminoid.setLogin(username);
@@ -332,8 +349,10 @@ public class InferController {
                 else{
 
                     if(teoremaInicialInfo.size() == 1){
-                        
-                        pasoAntTerm = resuelInicial.getTeorema().getTeoTerm();
+                        if (resuelInicial != null)
+                          pasoAntTerm = resuelInicial.getTeorema().getTeoTerm();
+                        else if (disponeInicial != null)
+                          pasoAntTerm = disponeInicial.getMetateorema().getTeoTerm();
                  //       paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
                     }
                     else{
@@ -360,8 +379,10 @@ public class InferController {
                 if(nuevoMetodo.equals("1")){
                     
                     if(teoremaInicialInfo.size() == 1){
-                        
-                        pasoAntTerm = resuelInicial.getTeorema().getTeoTerm();
+                        if (resuelInicial != null)
+                          pasoAntTerm = resuelInicial.getTeorema().getTeoTerm();
+                        else if (disponeInicial != null)
+                          pasoAntTerm = disponeInicial.getMetateorema().getTeoTerm();
                  //       paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
                     }
                     else{
@@ -381,50 +402,6 @@ public class InferController {
                 else{
                     pasoAntTerm = solucion.getTypedTerm();
                 }
-                //new TypedA(new App(new App(new Const("\\equiv ",false,1,1),pasoAntTerm),pasoAntTerm)
-                /*int tam = solucion.getArregloInferencias().size();
-                if(tam > 0){
-                    PasoInferencia lastInfer = solucion.getArregloInferencias().get(solucion.getArregloInferencias().size()-1);
-                    pasoAntTerm = lastInfer.getResult();
-                }
-                else
-                {
-                    
-                    if(teoremaInicial.equals("")){
-                    
-                        pasoAntTerm = resuel.getTeorema().getTeoTerm();
-                    }
-                    else{
-                        Resuelve resuelInicial;
-                        ArrayList<String> teoremaInicialInfo = new ArrayList();
-
-                        for (String retval: teoremaInicial.split("-")) {
-                            teoremaInicialInfo.add(retval);
-                        }
-
-                        String nTeoInicial = teoremaInicialInfo.get(0);
-                        resuelInicial = resuelveManager.getResuelveByUserAndTeoNum(username,nTeoInicial);
-
-                        if(teoremaInicialInfo.size() == 1){
-
-                            pasoAntTerm = resuelInicial.getTeorema().getTeoTerm();
-                        }
-                        else{
-                            if(teoremaInicialInfo.get(1).equals("d")){
-
-                                pasoAntTerm = ((App)((App)resuelInicial.getTeorema().getTeoTerm()).p).q;
-                            }
-                            else if (teoremaInicialInfo.get(1).equals("i")){
-
-                                pasoAntTerm = ((App)resuelInicial.getTeorema().getTeoTerm()).q;
-                            }
-
-                        }
-
-                    }
-                }*/
-                       
-               // paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);                
             }
 
             boolean valida = true;
@@ -463,9 +440,17 @@ public class InferController {
                 }
                 if (pasoAntTerm.type() == null)
                 {
+                    try{
                     new TypedApp(new TypedA(new App(new App(new Const("\\equiv ",false,1,1),
                             pasoAntTerm),pasoAntTerm)),infer); // si no da excepcion la inferencia 
                                                              //es valida con respecto a la primera exp
+                    }
+                    catch (TypeVerificationException e)
+                    {
+                        new TypedApp(new TypedA(new App(new App(new Const("=",false,1,1),
+                            pasoAntTerm),pasoAntTerm)),infer); // si no da excepcion la inferencia 
+                                                             //es valida con respecto a la primera exp
+                    }
                     pasoPostTerm = infer;                                                             
                 }
                 else
@@ -480,9 +465,17 @@ public class InferController {
                     infer = new TypedApp(new TypedS(infer.type()), infer);
                     if (pasoAntTerm.type() == null)
                     {
-                       new TypedApp(new TypedA(new App(new App(new Const("\\equiv ",false,1,1),
+                       try {
+                         new TypedApp(new TypedA(new App(new App(new Const("\\equiv ",false,1,1),
                             pasoAntTerm),pasoAntTerm)),infer); // si no da excepcion la inferencia 
                                                              //es valida con respecto a la primera exp
+                       }
+                       catch (TypeVerificationException ex)
+                       {
+                          new TypedApp(new TypedA(new App(new App(new Const("=",false,1,1),
+                             pasoAntTerm),pasoAntTerm)),infer); // si no da excepcion la inferencia 
+                                                             //es valida con respecto a la primera exp    
+                       }
                        pasoPostTerm = infer;
                     }
                     else
@@ -505,7 +498,7 @@ public class InferController {
                 // paso.setResult(pasoPostTerm);
                 // solucion = new Solucion(resuel,false,paso);
                 solucion = new Solucion(resuel,false,pasoPostTerm);
-                solucion.setNteoinicial(teoremaInicial);
+                //solucion.setNteoinicial(teoremaInicial);
                 solucionManager.addSolucion(solucion);
                 nSol = ""+solucion.getId();
                 response.setnSol(nSol);
@@ -519,42 +512,70 @@ public class InferController {
             if (valida){
                 Term type = pasoPostTerm.type();
                 Term teoremaTerm = resuel.getTeorema().getTeoTerm();
-                String pasoPostStr = ((App)((App)type).p).q.toStringInfFinal();
-                String teoremaIniStr = resuelInicial.getTeorema().getTeoTerm().toStringInfFinal();
-                String teoremaStr = resuel.getTeorema().getTeoTerm().toStringInfFinal();
+                Term pasoPostExp = ((App)((App)type).p).q;
+                Term expIniTerm = null; 
+                if (resuelInicial != null)
+                   expIniTerm = resuelInicial.getTeorema().getTeoTerm();
+                else if (disponeInicial != null)
+                   expIniTerm = disponeInicial.getMetateorema().getTeoTerm();
+                //String teoremaIniStr = pasoAntTerm.toStringInfFinal();
+                //teoremaIniStr = resuelInicial.getTeorema().getTeoTerm().toStringInfFinal();
+                    
+                Term stTeorema = resuel.getTeorema().getTeoTerm();
                 
                 if(teoremaInicialInfo.size() == 1){
 
-                    if(teoremaStr.equals(teoremaIniStr)){
+                    if(stTeorema.equals(expIniTerm)){
                         //buscar en bd
                         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username);
-                        String temp;
+                        Term temp;
                         for(Resuelve resu: resuelves){
-                            temp = resu.getTeorema().getTeoTerm().toStringInfFinal();
-                            if(temp.equals(pasoPostStr) && !temp.equals(teoremaIniStr)){
-                                response.setResuelto("1");
+                            temp = resu.getTeorema().getTeoTerm();
+                            Term mt = new App(new App(new Const("\\equiv"),new Const("true")),resu.getTeorema().getTeoTerm());
+                            if(!temp.equals(stTeorema) &&
+                                  (temp.equals(pasoPostExp) ||
+                                       (mt.equals(pasoPostExp) && !mt.equals(stTeorema))
+                                  ) 
+                              )
+                            {
+                                System.out.println(resu.getNumeroteorema());
+                           //     response.setResuelto("1");
+                                try{
+                                  solucion.setTypedTerm(new TypedApp(new TypedApp(new TypedS(type), solucion.getTypedTerm()),new TypedA( ((App)((App)type).p).q))); 
+                                  type = solucion.getTypedTerm().type();
+                                }
+                                catch (TypeVerificationException e){
+                                     Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                                }
                                 break;
                             }
                         }
                     }
                     else{
-                        if(pasoPostStr.equals(teoremaStr)){
-                            response.setResuelto("1");
+                        if(pasoPostExp.equals(stTeorema)){
+                           // response.setResuelto("1");
+                            try{
+                               solucion.setTypedTerm(new TypedApp(solucion.getTypedTerm(), new TypedA(((App)type).q)));
+                               type = solucion.getTypedTerm().type();
+                            }
+                            catch (TypeVerificationException e){
+                               Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                            }
                         }
-                        else{
+                        /*else{
                             response.setResuelto("0");
-                        }
+                        }*/
                     }
+                }
+                //else{
+
+                if(teoremaTerm.equals(type)){
+                        response.setResuelto("1");
                 }
                 else{
-
-                    if(teoremaTerm.equals(type)){
-                        response.setResuelto("1");
-                    }
-                    else{
                         response.setResuelto("0");
-                    }            
-                }
+                }            
+                //}
 
                 if(response.getResuelto().equals("1")){
                     solucion.setResuelto(true);
@@ -613,11 +634,20 @@ public class InferController {
         Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         String formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().toStringInfFinal();
         
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
-        //String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
-        String formula = resuelve.getTeorema().getTeoTerm().toStringInfLabeled();
+        String formula = "";
+        if (teoid.substring(0, 3).equals("ST-"))
+        {
+          Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
+          //String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
+          formula = resuelve.getTeorema().getTeoTerm().toStringInfLabeled();
+        }
+        else if (teoid.substring(0, 3).equals("MT-"))
+        {
+          Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
+          formula = dispone.getMetateorema().getTeoTerm().toStringInfLabeled();            
+        }
         
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof: "+formula;
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  
 
         return response;
@@ -635,7 +665,7 @@ public class InferController {
         Term term = t.getTeoTerm();
         String equiv = ((Const)((App)((App)term).p).p).getCon();
         
-        if(!equiv.startsWith("\\equiv")){
+        if(!equiv.startsWith("\\equiv") && !equiv.startsWith("=")){
             response.setLado("0");
             return response;
         }
@@ -676,7 +706,7 @@ public class InferController {
             formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfLabeled();
         }
         
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof: "+formula;
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  
 
         return response;
@@ -708,7 +738,7 @@ public class InferController {
             response.setLado("0");
         }
         
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:"+formula;
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  
 
         return response;
@@ -741,7 +771,7 @@ public class InferController {
             response.setLado("0");
         }
         
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:"+formula;
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  
 
         return response;

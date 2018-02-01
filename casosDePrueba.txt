@@ -1,0 +1,25 @@
+Verificar que el select de materia en registro avisa de un error si haces submit sin escoger materia
+Verificar si hay mensaje de error si haces submit en registro si no coinciden las contraseñas
+Verificar si hay mensaje de error si haces submit con un login de usuario ya existente en registro
+Verificar si hay mensaje de error si dejas nombre o apellido o correo o login o password o confirmacion de password en blanco al hacer submit en registro
+Verificar si hay un mensaje de erro si no colocas un email valido al hacer submit en registro
+Probar todas las combinaciones simultareas de los errores anteriores, en particular las que involucran que la contraseña no coincida
+
+En una demostracion hay dos momentos que funcionan de forma distinta: Cuando haces el primer paso de inferencia y cuando haces la inferencia i con i>1, en cada uno de estos casos aparte de ver si se imprime bien debes probrar que funcione el subrayado
+
+Suponemos que ya se selecciono la primera expresion para empezar a demostrar, entonces:
+Hacer una inferencia invalida en el primer paso varias veces y luego hacer una inferencia correcta
+Hacer inferencias correctas varias veces (veces>0) y luego una mala varias veces y luego una buena
+Hacer la primera inferencia mala varias veces y luego ir atras un paso
+Hacer una inferencia buena, luego ir atras un paso atras, luego hacer una inferencia buena
+Hacer una inferencia buena, luego ir atras un paso, hacer varias inferencias invalidas y luego una buena
+Hacer una inferencia buena, luego ir atras un paso, hacer varias inferencias invalidas y luego hacer un paso atras
+Hacer dos o mas inferencias buenas, luego ir un paso atras, luego hacer una inferencia buena
+Hacer dos o mas inferencias buenas, luego ir atras un paso, hacer varias inferencias invalidas y luego una buena
+Hacer dos o mas inferencias buenas, luego ir atras un paso, hacer varias inferencias invalidas y luego hacer un paso atras
+Hacer varias inferencias correctas y luego ir atras en todas
+Hacer una inferencia buena, luego ir atras un paso
+Hacer dos o mas inferencias buenas, luego ir atras un paso
+Despues de retroceder todos los pasos, se puede escoger el metodo, si se escoge M. Directo debe aparecer el teorema actual en lista
+
+Todos los casos anteriores debes validarlos tambien saliendo de la vista y buscando la solucion en BD al volver a la vista

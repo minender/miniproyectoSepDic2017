@@ -19,8 +19,9 @@
         <property name="resuelto" type="boolean">
             <column name="resuelto" not-null="true" />
         </property>   
-        <property name="nteoinicial" type="string">
+        <!--<property name="nteoinicial" type="string">
             <column name="nteoinicial" not-null="false" />
-        </property>      
+        </property>
+        -->
     </class>
 </hibernate-mapping>

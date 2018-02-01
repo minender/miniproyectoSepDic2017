@@ -18,6 +18,7 @@ import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.service.UsuarioManager;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import org.apache.commons.codec.digest.DigestUtils;
 
 @Controller
 @RequestMapping(value="/index")
@@ -42,8 +43,10 @@ public class IndexController {
     {
 
         Usuario usreal=usuarioManager.getUsuario(usuariolog.getLogin());
+        String randomchars = "hdfGLd6J4$&(3nd^{bHGF@fs";
+        String pass = DigestUtils.sha512Hex(usuariolog.getPassword()+randomchars);
         if(usreal != null && usreal.getPassword() != null && 
-                usreal.getPassword().equals(usuariolog.getPassword()) )
+                usreal.getPassword().equals(pass) )
         {
             session.setAttribute("user", usreal);
             return "redirect:/perfil/"+usreal.getLogin();

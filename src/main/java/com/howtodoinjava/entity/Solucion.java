@@ -27,19 +27,19 @@ public class Solucion implements java.io.Serializable {
     @SequenceGenerator(name = "solucion_id_seq", sequenceName = "solucion_id_seq")
     private int id;
     private byte[] arregloSerializado;
-    private List<PasoInferencia> arregloInferencias = new ArrayList<PasoInferencia>();
+    //private List<PasoInferencia> arregloInferencias = new ArrayList<PasoInferencia>();
     private Term typedTerm;
     private Resuelve resuelve;
     private boolean resuelto;
-    private String nteoinicial;
+//    private String nteoinicial;
 
-    public String getNteoinicial() {
+    /*public String getNteoinicial() {
         return nteoinicial;
     }
 
     public void setNteoinicial(String nteoinicial) {
         this.nteoinicial = nteoinicial;
-    }
+    }*/
 
     public Solucion() {
     }
@@ -72,7 +72,7 @@ public class Solucion implements java.io.Serializable {
         this.typedTerm = typeTerm;
     }
 
-    public Solucion(PasoInferencia paso) {
+   /* public Solucion(PasoInferencia paso) {
         this.arregloInferencias.add(paso);
         this.resuelto = false;
 //        this.arregloSerializado = SerializationUtils.serialize(this.arregloInferencias);
@@ -99,7 +99,7 @@ public class Solucion implements java.io.Serializable {
         this.serialize();
 //        this.deserialize();
 
-    }
+    }*/
     
 
     public void setId(int id) {
@@ -110,12 +110,12 @@ public class Solucion implements java.io.Serializable {
         this.arregloSerializado = arregloSerializado;
     }
 
-    public void setArregloInferencias(List<PasoInferencia> arregloInferencias) {
+    /*public void setArregloInferencias(List<PasoInferencia> arregloInferencias) {
         this.arregloInferencias = arregloInferencias;
 //        this.arregloSerializado = SerializationUtils.serialize(arregloInferencias);
         this.serialize();
 //        this.deserialize();
-    }
+    }*/
 
     public void setResuelve(Resuelve resuelve) {
         this.resuelve = resuelve;
@@ -129,15 +129,15 @@ public class Solucion implements java.io.Serializable {
         return arregloSerializado;
     }
 
-    public List<PasoInferencia> getArregloInferencias() {
+    /*public List<PasoInferencia> getArregloInferencias() {
         return arregloInferencias;
-    }
+    }*/
 
     public Resuelve getResuelve() {
         return resuelve;
     }
 
-    public void addArregloInferencias(PasoInferencia paso) {
+    /*public void addArregloInferencias(PasoInferencia paso) {
         this.deserialize();
         List<PasoInferencia> newArray;// = new ArrayList<PasoInferencia>();
         newArray = getArregloInferencias();
@@ -161,7 +161,7 @@ public class Solucion implements java.io.Serializable {
 
         this.arregloSerializado = SerializationUtils.serialize(newArray);
 
-    }
+    }*/
 
     public void deserialize() {
         /*List<byte[]> theArray = new ArrayList<byte[]>();
@@ -193,23 +193,23 @@ public class Solucion implements java.io.Serializable {
             }
             
             this.serialize();*/
-            System.out.println(typedTerm.toStringInfFinal());
+     //       System.out.println(typedTerm.toStringInfFinal());
             if (typedTerm.type() == null){
-                System.out.println("0");
+     //           System.out.println("0");
                 return 0;
             }
             if (typedTerm instanceof App && ((App)typedTerm).p.containTypedA())
             {
                 typedTerm = ((App)typedTerm).p;
-                System.out.println(typedTerm.toStringInfFinal());
-                System.out.println("2");
+     //           System.out.println(typedTerm.toStringInfFinal());
+     //           System.out.println("2");
                 return 2;
             }
             else
             {
                 typedTerm = ((App)typedTerm.type()).q;
-                System.out.println(typedTerm.toStringInfFinal());
-                System.out.println("1");
+     //           System.out.println(typedTerm.toStringInfFinal());
+     //           System.out.println("1");
                 return 1;
             }
     }
