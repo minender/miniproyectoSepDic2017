@@ -41,6 +41,8 @@ Debes poner los condicionales que impidan ejecutar los controladores de los ajax
 Cambiar el formato de "-" de lo que va en input teoremaInicial cuando empiezas de un lado por "@" prohibir @ en el num del teorema
 Hay que arreglar el .equals de los const que verifique igualdad de precedencia asociatividad etc
 Haciendo una segunda demostracion solo deben aparecer en la lista de teoremas a usar, axiomas y teoremas en que existe por lo menos una demostracion que no usa el teorema actual
+cuando el teorema del hint tenga nombre poner antes del (id) su nombre, si no tiene nombre pon st o mt
+Protege los teoremas demostrados de hackers con un if al inicio de inferir y retroceder para no hacer nada si la sol esta resuelta
 
 identacion de los hint (listo)
 verificar en casos de fortalecimeinto que finalice con implicacion correspondinte(operador)

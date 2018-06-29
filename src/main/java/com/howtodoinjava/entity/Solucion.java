@@ -195,7 +195,7 @@ public class Solucion implements java.io.Serializable {
             this.serialize();*/
      //       System.out.println(typedTerm.toStringInfFinal());
             if (typedTerm.type() == null){
-     //           System.out.println("0");
+                typedTerm=null;
                 return 0;
             }
             if (typedTerm instanceof App && ((App)typedTerm).p.containTypedA())

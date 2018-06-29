@@ -67,6 +67,7 @@ import javax.validation.Valid;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -136,8 +137,66 @@ public class PerfilController {
                                     user.getMateria().getId(), "", ""));
         map.addAttribute("materias", list);
         map.addAttribute("valueSubmit", "Editar");
-        map.addAttribute("showlink", "0");
+        map.addAttribute("isRegistro", "0");
         return "editPerfil";
+    }
+    
+    @RequestMapping(value="/{username}/editar", method=RequestMethod.POST)
+    public String editar(@PathVariable String username, @Valid Registro registro, BindingResult bindingResult, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        
+        Usuario user = usuarioManager.getUsuario(username);
+        if( bindingResult.hasErrors() )
+        {
+            if (!registro.getPassword().equals(registro.getPasswordConf()))
+               bindingResult.rejectValue("passwordConf","error.registro","La contraseña no coinciden");
+            List<Materia> list = materiaManager.getAllMaterias();
+//                map.addAttribute("registro", registro);
+            map.addAttribute("usuario",user);
+            map.addAttribute("materias", list);
+            map.addAttribute("valueSubmit", "Editar");
+            map.addAttribute("isRegistro", "0");
+            return "editPerfil";
+        }
+        else{
+            if (!registro.getPassword().equals(registro.getPasswordConf()))
+            {
+               if (!registro.getPassword().equals(registro.getPasswordConf()))
+                  bindingResult.rejectValue("passwordConf","error.registro","La contraseña no coinciden");
+               List<Materia> list = materiaManager.getAllMaterias();
+//                  map.addAttribute("registro", registro);
+               map.addAttribute("usuario",user);
+               map.addAttribute("materias", list);
+               map.addAttribute("valueSubmit", "Editar");
+               map.addAttribute("isRegistro", "0");
+               return "editPerfil";
+            }
+
+            Materia materia = materiaManager.getMateria(registro.getMateriaid());
+            String randomchars = "hdfGLd6J4$&(3nd^{bHGF@fs";
+            String pass = DigestUtils.sha512Hex(registro.getPassword()+randomchars);
+            user.setNombre(registro.getNombre());
+            user.setApellido(registro.getApellido());
+            user.setCorreo(registro.getCorreo());
+            user.setPassword(pass);
+            user.setMateria(materia);
+
+            usuarioManager.updateUsuario(user);
+        }  
+                       
+        map.addAttribute("usuario", user);
+        map.addAttribute("mensaje","");
+        map.addAttribute("guardarMenu","");
+        map.addAttribute("listarTerminosMenu","");
+        map.addAttribute("misTeoremasMenu","");        
+        map.addAttribute("agregarTeoremaMenu","");        
+        map.addAttribute("perfilMenu","class=\"active\"");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1200px");
+        return "perfil";
     }
     
     @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.GET)

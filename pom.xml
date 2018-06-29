@@ -266,8 +266,8 @@
     
         <dependency>
         <groupId>org.antlr</groupId>
-        <artifactId>antlr-runtime</artifactId>
-        <version>3.2</version>
+        <artifactId>antlr4</artifactId>
+        <version>4.7.1</version>
        <type>jar</type>
       </dependency>
       

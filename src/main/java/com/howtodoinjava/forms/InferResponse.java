@@ -156,8 +156,13 @@ public class InferResponse {
         
         this.setHistorial("");
         String header = "Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:<br>";  
-        Term type = typedTerm.type();
-        if (type == null && !valida)
+        
+        Term type = typedTerm==null?null:typedTerm.type();
+        if (typedTerm==null)
+        {
+            this.setHistorial(header);
+        }
+        else if (type == null && !valida)
         {
             this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled()+"$$Regla~de~inferencia~no~valida$$");
         }
@@ -297,12 +302,12 @@ public class InferResponse {
               if (theo == null)
               {
                 teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
-                hint = op+"~~~~\\langle mt~("+teo+")"+inst+leib+"\\rangle";
+                hint = op+"~~~~~~\\langle mt~("+teo+")"+inst+leib+"\\rangle";
               }
               else
               {
                 teo = theo.getNumeroteorema();
-                hint = op+"~~~~\\langle st~("+teo+")"+inst+leib+"\\rangle";
+                hint = op+"~~~~~~\\langle st~("+teo+")"+inst+leib+"\\rangle";
               }
               this.setHistorial("~~~~~~" + primExp +" \\\\"+ hint +"\\\\"+this.getHistorial());
               primExp = "";

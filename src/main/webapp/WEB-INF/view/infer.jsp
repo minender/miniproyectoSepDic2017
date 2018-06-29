@@ -60,30 +60,30 @@
                     }
                     else if(this.value==="2"){
                         if(confirm("¿Esta seguro que desea utilizar el metodo partir de un lado?")){
-                            var nTeo = $("#nTeorema").val();
+                            //$("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             alert('Seleccione el lado de donde empezará la demostración.');
                             $("#metodosDiv").hide();
                             $("#currentTeo").hide();
-                            teoremaClickeable(nTeo);
+                            teoremaClickeable();
                         }
                     }
                     else if(this.value==="3"){
                         if(confirm("¿Esta seguro que desea utilizar el metodo Debilitamiento?")){
-                            var nTeo = $("#nTeorema").val();
+                            //var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             $("#metodosDiv").hide();
                             $("#currentTeo").hide();
-                            metodoD(nTeo);
+                            metodoD();
                         }
                     }
                     else if(this.value==="4"){
                         if(confirm("¿Esta seguro que desea utilizar el metodo Fortalecimiento?")){
-                            var nTeo = $("#nTeorema").val();
+                            //var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             $("#metodosDiv").hide();
                             $("#currentTeo").hide();
-                            metodoF(nTeo);
+                            metodoF();
                         }
                     }
                 });
@@ -92,9 +92,10 @@
                 $('#formula').on('click','.teoremaClick',function(event){
                     var data = {};
                     var form = $('#inferForm');
-                    var teoId = $("#nTeorema").val();
+                    //var teoSol = $("#nSolucion").val();
+                    //var teoId = $("#nTeorema").val();
 
-                    data["teoid"] = teoId;
+                    //data["teoSol"] = teoSol;
                     if(this.id==='d'){
                         data["lado"] = "d";
                         $.ajax({
@@ -106,9 +107,20 @@
 
                                 $('#formula').html(data.historial);
                                 MathJax.Hub.Typeset();
-                                $('#teoremaInicial').val(teoId + "@d");
+                                //$('#teoremaInicial').val("ST-"+teoId + "@d");
                                 $("#inferForm").show();
-                                $("#nuevoMetodo").val("1");
+                                //$("#nuevoMetodo").val("1");
+                                var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+                                if(nSol==="new"){
+                                   //$('#nSolucion').val(data.nSol);
+                                   //nSol = $('#nSolucion').val();
+                                   var url = $(form).attr('action');
+                                   url = url.substring(0,url.length-3)+data.nSol;
+                                   $(form).attr('action',url);
+                                }
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
                             }
                         }); 
                     }
@@ -123,9 +135,20 @@
 
                             $('#formula').html(data.historial);
                             MathJax.Hub.Typeset();
-                            $('#teoremaInicial').val(teoId + "@i");
+                            //$('#teoremaInicial').val("ST-"+teoId + "@i");
                             $("#inferForm").show();
-                            $("#nuevoMetodo").val("1");
+                            //$("#nuevoMetodo").val("1");
+                            var nSol = $(form).attr('action').split('/')[5];//$('#nSolucion').val();
+                            if(nSol==="new"){
+                                //$('#nSolucion').val(data.nSol);
+                                //nSol = $('#nSolucion').val();
+                                var url = $(form).attr('action');
+                                url = url.substring(0,url.length-3)+nSol;
+                                $(form).attr('action',url);
+                            }
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                          alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
                         }
                         });
                     } 
@@ -172,8 +195,8 @@
     <body>
         <tiles:insertDefinition name="header" />
         <input id="selectTeoInicial" value="" type="hidden"/>
-        <input id="nTeorema" value="${nTeo}" type="hidden"/>
-        <input id="nSolucion" value="${nSol}" type="hidden"/>
+        <%--<input id="nTeorema" value="${nTeo}" type="hidden"/>
+        <input id="nSolucion" value="${nSol}" type="hidden"/>--%>
         <script>
             function insertAtCursor(myField, myValue) 
             {            
@@ -334,10 +357,12 @@
               Sustitución:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
               Leibniz:<br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
               <br>
-              <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Inferir"/> <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Retroceder"> <input id="BtnLimpiar" class="btn" type="button" value="limpiar">
+              <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Inferir"/> 
+              <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Retroceder"> 
+              <input id="BtnLimpiar" class="btn" type="button" value="limpiar">
               <input id="Btn" type="hidden" name="submitBtn" value=""/>
-              <input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>
-              <input type="hidden" id="nuevoMetodo" name="nuevoMetodo" value="0"/>
+              <%--<input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>
+              <input type="hidden" id="nuevoMetodo" name="nuevoMetodo" value="0"/>--%>
           <form> 
           </c:when>
           </c:choose>

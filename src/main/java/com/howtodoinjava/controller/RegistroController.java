@@ -37,7 +37,7 @@ public class RegistroController {
             map.addAttribute("registro",new Registro());
             map.addAttribute("materias", list);
             map.addAttribute("valueSubmit", "Registrarse");
-            map.addAttribute("showlink", "1");
+            map.addAttribute("isRegistro", "1");
             return "registro";
         }
         
@@ -55,7 +55,7 @@ public class RegistroController {
 //                map.addAttribute("registro", registro);
                 map.addAttribute("materias", list);
                 map.addAttribute("valueSubmit", "Registrarse");
-                map.addAttribute("showlink", "1");
+                map.addAttribute("isRegistro", "1");
                 return "registro";
             }
             else{
@@ -70,7 +70,7 @@ public class RegistroController {
 //                  map.addAttribute("registro", registro);
                   map.addAttribute("materias", list);
                   map.addAttribute("valueSubmit", "Registrarse");
-                  map.addAttribute("showlink", "1");
+                  map.addAttribute("isRegistro", "1");
                   return "registro";
                 }
 
