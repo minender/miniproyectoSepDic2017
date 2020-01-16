@@ -31,4 +31,6 @@ public interface DisponeDAO {
     public Dispone getDisponeByUserAndMetaeorema(String userLogin, int metateoremaID);
     
     public Dispone getDisponeByUserAndMetaeorema(String userLogin, String metateorema);
+    
+    public Dispone getDisponeByUserAndTeoNum(String userLogin,String metateoNum);
 }

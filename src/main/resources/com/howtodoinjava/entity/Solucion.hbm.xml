@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
-    <class name="com.howtodoinjava.entity.Solucion" table="solucion" schema="public">
+    <class name="com.howtodoinjava.entity.Solucion" table="solucion" schema="userdb">
         <id name="id" type="int">
             <column name="id" />
             <generator class="sequence">
@@ -19,8 +19,9 @@
         <property name="resuelto" type="boolean">
             <column name="resuelto" not-null="true" />
         </property>   
-        <property name="nteoinicial" type="string">
+        <!--<property name="nteoinicial" type="string">
             <column name="nteoinicial" not-null="false" />
-        </property>      
+        </property>
+        -->
     </class>
 </hibernate-mapping>

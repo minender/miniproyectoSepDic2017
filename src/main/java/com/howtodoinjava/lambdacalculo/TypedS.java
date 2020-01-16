@@ -16,12 +16,13 @@ public class TypedS extends Const{
     public TypedS(Term simetry) throws TypeVerificationException, ClassCastException
     {
         super("S");
-        if (!((Const)((App)((App)simetry).p).p).getCon().trim().equals("\\equiv"))
+        String con = ((Const)((App)((App)simetry).p).p).getCon().trim();
+        if (!con.equals("\\equiv") && !con.equals("="))
            throw new TypeVerificationException();
         Term t1 = ((App)simetry).q;
         Term t2 = ((App)((App)simetry).p).q;
         simetry_ = new App(new App(new Const("\\equiv ",false,1,1),
-                   new App(new App(new Const("\\equiv ",false,1,1),t1),t2)),simetry);
+                   new App(new App(new Const(con,false,1,1),t1),t2)),simetry);
     }
     
     public Term type()

@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
-    <class name="com.howtodoinjava.entity.Predicado" table="predicado" schema="public">
+    <class name="com.howtodoinjava.entity.Predicado" table="predicado" schema="userdb">
         <composite-id name="id" class="com.howtodoinjava.entity.PredicadoId">
             <key-property name="id" type="int">
                 <column name="id" />

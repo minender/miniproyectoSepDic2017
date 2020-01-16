@@ -1,33 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script>
-    <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-        processEscapes: true
-      }
-    });
-    </script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/buscarSoluciones.js"></script>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>L&oacute;gica | Mis Teoremas</title>
-    <tiles:insertDefinition name="style" />
-  </head>
+  <tiles:insertDefinition name="header" />
   <body>
-    
-    <tiles:insertDefinition name="header" />
+    <tiles:insertDefinition name="nav" />
     <h1>Mis Teoremas</h1>
     <div id="teoremas" style="float: left; width: 35%;">
     <ul>
@@ -57,11 +35,11 @@
                                 </a>
                                 <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
 
-                                <a style="text-decoration: none" href="javascript:buscarSoluciones(${resu.getTeorema().getId()});"style="cursor:pointer;" title="Haga click para ver las soluciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$ </a>
+                                <a style="text-decoration: none" href="javascript:buscarSoluciones(${resu.getTeorema().getId()});"style="cursor:pointer;" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$
                                 <span style="display: none;" id="${resu.getTeorema().getId()}">
 
                                 <br><span  style="margin-left: 53px;"></span>
-                                (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
+                                <a style="text-decoration: none" href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});"style="cursor:pointer;" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) Metatheorem: </a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
                                 </span>
                             </c:when>
                             <c:otherwise>

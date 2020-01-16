@@ -105,4 +105,3 @@ public class Teorema  implements java.io.Serializable {
         this.esquema = esquema;
     }
 }
-

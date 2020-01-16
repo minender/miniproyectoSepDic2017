@@ -4,9 +4,9 @@
   <session-factory>
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
     <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-    <property name="hibernate.connection.url">jdbc:postgresql://127.0.0.1:5432/logica</property>
-    <property name="hibernate.connection.username">postgres</property>
-    <property name="hibernate.connection.password">12345</property>
+    <property name="hibernate.connection.url">jdbc:postgresql://127.0.0.1:5432/namedb</property>
+    <property name="hibernate.connection.username">userdb</property>
+    <property name="hibernate.connection.password">password</property>
     <mapping resource="com/howtodoinjava/entity/Usuario.hbm.xml"/>
     <mapping resource="com/howtodoinjava/entity/Termino.hbm.xml"/>
     <mapping resource="com/howtodoinjava/entity/Publicacion.hbm.xml"/>
@@ -17,5 +17,6 @@
     <mapping resource="com/howtodoinjava/entity/Categoria.hbm.xml"/>
     <mapping resource="com/howtodoinjava/entity/Metateorema.hbm.xml"/>
     <mapping resource="com/howtodoinjava/entity/Dispone.hbm.xml"/>
+    <mapping resource="com/howtodoinjava/entity/Materia.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

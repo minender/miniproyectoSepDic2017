@@ -27,6 +27,12 @@ public class UsuarioManagerImpl implements UsuarioManager {
     public void addUsuario(Usuario usuario) {
         usuarioDAO.addUsuario(usuario);
     }
+    
+    @Override
+    @Transactional
+    public void updateUsuario(Usuario usuario) {
+        usuarioDAO.updateUsuario(usuario);
+    }
 
     @Override
     @Transactional

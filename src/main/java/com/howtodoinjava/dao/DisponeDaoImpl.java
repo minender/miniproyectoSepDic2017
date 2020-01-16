@@ -63,6 +63,8 @@ public class DisponeDaoImpl implements DisponeDAO {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Dispone WHERE metateorema.id = :metateoremaID").setParameter("metateoremaID", metateoremaID).list();
     }
 
+    @Override
+    @Transactional
     public Dispone getDisponeByUserAndMetaeorema(String userLogin, int metateoremaID) {
 
         String sql = "FROM Dispone WHERE metateorema.id = :metateoremaID AND usuario.login = :userLogin";
@@ -75,6 +77,8 @@ public class DisponeDaoImpl implements DisponeDAO {
         }
     }
     
+    @Override
+    @Transactional
     public Dispone getDisponeByUserAndMetaeorema(String userLogin, String metateorema){
         String sql = "FROM Dispone WHERE metateorema.enunciado = :metateorema AND usuario.login = :userLogin";
         List<Dispone> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("metateorema", metateorema).setParameter("userLogin", userLogin).list();
@@ -85,4 +89,17 @@ public class DisponeDaoImpl implements DisponeDAO {
             return list.get(0);
         }
     }
+    
+    @Override
+    @Transactional
+    public Dispone getDisponeByUserAndTeoNum(String userLogin,String metateoNum){
+        String sql = "FROM Dispone WHERE numerometateorema = :metateoNum AND usuario.login = :userLogin";
+        List<Dispone> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("metateoNum",metateoNum).setParameter("userLogin",userLogin).list();
+    
+        if (list.isEmpty()) {
+            return null;
+        } else {
+            return list.get(0);
+        }
+    }    
 }

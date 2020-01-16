@@ -5,63 +5,40 @@
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
---
--- Name: logica; Type: DATABASE; Schema: -; Owner: postgres
---
+CREATE SCHEMA userdb;
 
-CREATE DATABASE logica WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
-
-
-ALTER DATABASE logica OWNER TO postgres;
-
-\connect logica
-
-SET statement_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
---
+ALTER SCHEMA userdb OWNER TO postgres;
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
---
-
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
-SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+
 --
--- Name: categoria; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: categoria; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-CREATE TABLE categoria (
+CREATE TABLE userdb.categoria (
     id integer NOT NULL,
     nombre text NOT NULL
 );
 
 
-ALTER TABLE categoria OWNER TO postgres;
+ALTER TABLE userdb.categoria OWNER TO userdb;
 
 --
--- Name: categoria_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: categoria_id_seq; Type: SEQUENCE; Schema: userdb; Owner: userdb
 --
 
-CREATE SEQUENCE categoria_id_seq
+CREATE SEQUENCE userdb.categoria_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -69,19 +46,35 @@ CREATE SEQUENCE categoria_id_seq
     CACHE 1;
 
 
-ALTER TABLE categoria_id_seq OWNER TO postgres;
+ALTER TABLE userdb.categoria_id_seq OWNER TO userdb;
 
 --
--- Name: categoria_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: categoria_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: userdb
 --
 
-ALTER SEQUENCE categoria_id_seq OWNED BY categoria.id;
+ALTER SEQUENCE userdb.categoria_id_seq OWNED BY userdb.categoria.id;
+
 
 --
--- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: dispone; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-CREATE SEQUENCE hibernate_sequence
+CREATE TABLE userdb.dispone (
+    id integer NOT NULL,
+    numerometateorema text,
+    resuelto boolean DEFAULT false NOT NULL,
+    loginusuario text NOT NULL,
+    metateoremaid integer NOT NULL
+);
+
+
+ALTER TABLE userdb.dispone OWNER TO userdb;
+
+--
+-- Name: dispone_id_seq; Type: SEQUENCE; Schema: userdb; Owner: userdb
+--
+
+CREATE SEQUENCE userdb.dispone_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -89,13 +82,102 @@ CREATE SEQUENCE hibernate_sequence
     CACHE 1;
 
 
-ALTER TABLE hibernate_sequence OWNER TO postgres;
+ALTER TABLE userdb.dispone_id_seq OWNER TO userdb;
 
 --
--- Name: predicado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: dispone_id_seq; Type: SEQUENCE OWNED BY; Schema: userdb; Owner: userdb
 --
 
-CREATE TABLE predicado (
+ALTER SEQUENCE userdb.dispone_id_seq OWNED BY userdb.dispone.id;
+
+
+--
+-- Name: hibernate_sequence; Type: SEQUENCE; Schema: userdb; Owner: userdb
+--
+
+CREATE SEQUENCE userdb.hibernate_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE userdb.hibernate_sequence OWNER TO userdb;
+
+--
+-- Name: materia; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+CREATE TABLE userdb.materia (
+    id integer NOT NULL,
+    nombre text NOT NULL
+);
+
+
+ALTER TABLE userdb.materia OWNER TO userdb;
+
+--
+-- Name: materia_id_seq; Type: SEQUENCE; Schema: userdb; Owner: userdb
+--
+
+CREATE SEQUENCE userdb.materia_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE userdb.materia_id_seq OWNER TO userdb;
+
+--
+-- Name: materia_id_seq; Type: SEQUENCE OWNED BY; Schema: userdb; Owner: userdb
+--
+
+ALTER SEQUENCE userdb.materia_id_seq OWNED BY userdb.materia.id;
+
+
+--
+-- Name: metateorema; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+CREATE TABLE userdb.metateorema (
+    id integer NOT NULL,
+    enunciado text NOT NULL,
+    metateoserializado bytea NOT NULL,
+    categoriaid integer NOT NULL
+);
+
+
+ALTER TABLE userdb.metateorema OWNER TO userdb;
+
+--
+-- Name: metateorema_id_seq; Type: SEQUENCE; Schema: userdb; Owner: userdb
+--
+
+CREATE SEQUENCE userdb.metateorema_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE userdb.metateorema_id_seq OWNER TO userdb;
+
+--
+-- Name: metateorema_id_seq; Type: SEQUENCE OWNED BY; Schema: userdb; Owner: userdb
+--
+
+ALTER SEQUENCE userdb.metateorema_id_seq OWNED BY userdb.metateorema.id;
+
+
+--
+-- Name: predicado; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+CREATE TABLE userdb.predicado (
     id text NOT NULL,
     predicado text NOT NULL,
     alias text NOT NULL,
@@ -105,25 +187,25 @@ CREATE TABLE predicado (
 );
 
 
-ALTER TABLE predicado OWNER TO postgres;
+ALTER TABLE userdb.predicado OWNER TO userdb;
 
 --
--- Name: publicacion; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: publicacion; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-CREATE TABLE publicacion (
+CREATE TABLE userdb.publicacion (
     alias text,
     login text
 );
 
 
-ALTER TABLE publicacion OWNER TO postgres;
+ALTER TABLE userdb.publicacion OWNER TO userdb;
 
 --
--- Name: resuelve; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: resuelve; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-CREATE TABLE resuelve (
+CREATE TABLE userdb.resuelve (
     id integer NOT NULL,
     nombreteorema text,
     numeroteorema text NOT NULL,
@@ -133,28 +215,13 @@ CREATE TABLE resuelve (
 );
 
 
-ALTER TABLE resuelve OWNER TO postgres;
+ALTER TABLE userdb.resuelve OWNER TO userdb;
 
 --
--- Name: dispone; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: resuelve_id_seq; Type: SEQUENCE; Schema: userdb; Owner: userdb
 --
 
-CREATE TABLE dispone (
-    id integer NOT NULL,
-    numerometateorema text,
-    resuelto boolean DEFAULT false NOT NULL,
-    loginusuario text NOT NULL,
-    metateoremaid integer NOT NULL
-);
-
-
-ALTER TABLE dispone OWNER TO postgres;
-
---
--- Name: resuelve_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE resuelve_id_seq
+CREATE SEQUENCE userdb.resuelve_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -162,56 +229,34 @@ CREATE SEQUENCE resuelve_id_seq
     CACHE 1;
 
 
-ALTER TABLE resuelve_id_seq OWNER TO postgres;
+ALTER TABLE userdb.resuelve_id_seq OWNER TO userdb;
 
 --
--- Name: resuelve_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: resuelve_id_seq; Type: SEQUENCE OWNED BY; Schema: userdb; Owner: userdb
 --
 
-ALTER SEQUENCE resuelve_id_seq OWNED BY resuelve.id;
-
-
---
--- Name: dispone_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE dispone_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE dispone_id_seq OWNER TO postgres;
-
---
--- Name: dispone_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE dispone_id_seq OWNED BY dispone.id;
+ALTER SEQUENCE userdb.resuelve_id_seq OWNED BY userdb.resuelve.id;
 
 
 --
--- Name: solucion; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: solucion; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-CREATE TABLE solucion (
+CREATE TABLE userdb.solucion (
     id integer NOT NULL,
     resuelveid integer NOT NULL,
     resuelto boolean DEFAULT false NOT NULL,
-    arregloserializado bytea NOT NULL,
-    nteoinicial varchar(20)
+    arregloserializado bytea
 );
 
 
-ALTER TABLE solucion OWNER TO postgres;
+ALTER TABLE userdb.solucion OWNER TO userdb;
 
 --
--- Name: solucion_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: solucion_id_seq; Type: SEQUENCE; Schema: userdb; Owner: userdb
 --
 
-CREATE SEQUENCE solucion_id_seq
+CREATE SEQUENCE userdb.solucion_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -219,20 +264,20 @@ CREATE SEQUENCE solucion_id_seq
     CACHE 1;
 
 
-ALTER TABLE solucion_id_seq OWNER TO postgres;
+ALTER TABLE userdb.solucion_id_seq OWNER TO userdb;
 
 --
--- Name: solucion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: solucion_id_seq; Type: SEQUENCE OWNED BY; Schema: userdb; Owner: userdb
 --
 
-ALTER SEQUENCE solucion_id_seq OWNED BY solucion.id;
+ALTER SEQUENCE userdb.solucion_id_seq OWNED BY userdb.solucion.id;
 
 
 --
--- Name: teorema; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: teorema; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-CREATE TABLE teorema (
+CREATE TABLE userdb.teorema (
     id integer NOT NULL,
     enunciado text NOT NULL,
     teoserializado bytea NOT NULL,
@@ -241,27 +286,13 @@ CREATE TABLE teorema (
 );
 
 
-ALTER TABLE teorema OWNER TO postgres;
+ALTER TABLE userdb.teorema OWNER TO userdb;
 
 --
--- Name: metateorema; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: teorema_id_seq; Type: SEQUENCE; Schema: userdb; Owner: userdb
 --
 
-CREATE TABLE metateorema (
-    id integer NOT NULL,
-    enunciado text NOT NULL,
-    metateoserializado bytea NOT NULL,
-    categoriaid integer NOT NULL
-);
-
-
-ALTER TABLE metateorema OWNER TO postgres;
-
---
--- Name: teorema_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE teorema_id_seq
+CREATE SEQUENCE userdb.teorema_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -269,41 +300,20 @@ CREATE SEQUENCE teorema_id_seq
     CACHE 1;
 
 
-ALTER TABLE teorema_id_seq OWNER TO postgres;
+ALTER TABLE userdb.teorema_id_seq OWNER TO userdb;
 
 --
--- Name: teorema_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: teorema_id_seq; Type: SEQUENCE OWNED BY; Schema: userdb; Owner: userdb
 --
 
-ALTER SEQUENCE teorema_id_seq OWNED BY teorema.id;
-
-
---
--- Name: metateorema_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE metateorema_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE metateorema_id_seq OWNER TO postgres;
-
---
--- Name: metateorema_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE metateorema_id_seq OWNED BY metateorema.id;
+ALTER SEQUENCE userdb.teorema_id_seq OWNED BY userdb.teorema.id;
 
 
 --
--- Name: termino; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: termino; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-CREATE TABLE termino (
+CREATE TABLE userdb.termino (
     combinador text NOT NULL,
     serializado bytea NOT NULL,
     alias text NOT NULL,
@@ -311,71 +321,72 @@ CREATE TABLE termino (
 );
 
 
-ALTER TABLE termino OWNER TO postgres;
+ALTER TABLE userdb.termino OWNER TO userdb;
 
 --
--- Name: usuario; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: usuario; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-CREATE TABLE usuario (
+CREATE TABLE userdb.usuario (
     login text NOT NULL,
     nombre text NOT NULL,
     apellido text NOT NULL,
     correo text NOT NULL,
     password text NOT NULL,
+    materiaid integer NOT NULL,
     admin boolean DEFAULT false NOT NULL
 );
 
 
-ALTER TABLE usuario OWNER TO postgres;
+ALTER TABLE userdb.usuario OWNER TO userdb;
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: userdb; Owner: userdb
 --
 
-ALTER TABLE ONLY categoria ALTER COLUMN id SET DEFAULT nextval('categoria_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY resuelve ALTER COLUMN id SET DEFAULT nextval('resuelve_id_seq'::regclass);
+ALTER TABLE ONLY userdb.categoria ALTER COLUMN id SET DEFAULT nextval('userdb.categoria_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: userdb; Owner: userdb
 --
 
-ALTER TABLE ONLY dispone ALTER COLUMN id SET DEFAULT nextval('dispone_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY teorema ALTER COLUMN id SET DEFAULT nextval('teorema_id_seq'::regclass);
+ALTER TABLE ONLY userdb.dispone ALTER COLUMN id SET DEFAULT nextval('userdb.dispone_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: userdb; Owner: userdb
 --
 
-ALTER TABLE ONLY metateorema ALTER COLUMN id SET DEFAULT nextval('metateorema_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY solucion ALTER COLUMN id SET DEFAULT nextval('solucion_id_seq'::regclass);
+ALTER TABLE ONLY userdb.metateorema ALTER COLUMN id SET DEFAULT nextval('userdb.metateorema_id_seq'::regclass);
 
 
 --
--- Data for Name: categoria; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: id; Type: DEFAULT; Schema: userdb; Owner: userdb
 --
 
-COPY categoria (id, nombre) FROM stdin;
+ALTER TABLE ONLY userdb.resuelve ALTER COLUMN id SET DEFAULT nextval('userdb.resuelve_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: userdb; Owner: userdb
+--
+
+ALTER TABLE ONLY userdb.solucion ALTER COLUMN id SET DEFAULT nextval('userdb.solucion_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: userdb; Owner: userdb
+--
+
+ALTER TABLE ONLY userdb.teorema ALTER COLUMN id SET DEFAULT nextval('userdb.teorema_id_seq'::regclass);
+
+
+--
+-- Data for Name: categoria; Type: TABLE DATA; Schema: userdb; Owner: userdb
+--
+
+COPY userdb.categoria (id, nombre) FROM stdin;
 1	Equivalencia
 2	Negación
 3	Disyunción
@@ -385,299 +396,367 @@ COPY categoria (id, nombre) FROM stdin;
 
 
 --
--- Name: categoria_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: categoria_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-SELECT pg_catalog.setval('categoria_id_seq', 5, true);
-
-
---
--- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('hibernate_sequence', 1, false);
+SELECT pg_catalog.setval('userdb.categoria_id_seq', 5, true);
 
 
 --
--- Data for Name: predicado; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: dispone; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY predicado (id, predicado, alias, predserializado, loginusuario, numargumentos) FROM stdin;
+COPY userdb.dispone (id, numerometateorema, resuelto, loginusuario, metateoremaid) FROM stdin;
 \.
 
 
 --
--- Data for Name: publicacion; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: dispone_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-COPY publicacion (alias, login) FROM stdin;
+SELECT pg_catalog.setval('userdb.dispone_id_seq', 1, false);
+
+
+--
+-- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
+--
+
+SELECT pg_catalog.setval('userdb.hibernate_sequence', 1, false);
+
+
+--
+-- Data for Name: materia; Type: TABLE DATA; Schema: userdb; Owner: userdb
+--
+
+COPY userdb.materia (id, nombre) FROM stdin;
+1	Lógica Simbólica Ene-Mar 2018
 \.
 
 
 --
--- Name: resuelve_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: materia_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-SELECT pg_catalog.setval('resuelve_id_seq', 1, false);
-
-
---
--- Name: dispone_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('dispone_id_seq', 1, false);
+SELECT pg_catalog.setval('userdb.materia_id_seq', 1, true);
 
 
 --
--- Data for Name: solucion; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: metateorema; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY solucion (id, resuelveid,arregloserializado) FROM stdin;
+COPY userdb.metateorema (id, enunciado, metateoserializado, categoriaid) FROM stdin;
 \.
 
 
 --
--- Name: teorema_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: metateorema_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-SELECT pg_catalog.setval('teorema_id_seq', 1, false);
-
-
---
--- Name: metateorema_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('metateorema_id_seq', 1, false);
+SELECT pg_catalog.setval('userdb.metateorema_id_seq', 1, false);
 
 
 --
--- Data for Name: termino; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: predicado; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY termino (combinador, serializado, alias, login) FROM stdin;
+COPY userdb.predicado (id, predicado, alias, predserializado, loginusuario, numargumentos) FROM stdin;
 \.
 
 
 --
--- Data for Name: usuario; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: publicacion; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY usuario (login, nombre, apellido, correo, password, admin) FROM stdin;
-					f
-ascander	Ascander	Suarez	dede@efef.com	2718281	f
-etahhan	Elias	Tahhan	etahhan@gmail.com	2718281	f
-travis	travis	travis	correo@demasiadofalso.falso	2718281	f
-ascander2	Ascander	Suarez	federico.flaviani@gmail.com	2718281	f
-bigconde	Fernando	Flaviani	fflaviani60@yahoo.es	2718281	f
-traka	traka	bol	trakatraka@bol.falso	trakatraka	f
-minender	Federico	Flaviani	federico.flaviani@gmail.com	2718281	f
-migsar	migsar	migsar	migsar@gmail.com	migsar	f
-federico	Federico	Flaviani	federico.flaviani@gmail.com	2718281	t
-admin	admin	admin	correo@demasiadofalso.com	12345	t
-publico	publico	publico	correo@demasiadofalso.com	publico	f
+COPY userdb.publicacion (alias, login) FROM stdin;
 \.
 
 
 --
--- Name: categoria_PK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Data for Name: resuelve; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-ALTER TABLE ONLY categoria
+COPY userdb.resuelve (id, nombreteorema, numeroteorema, resuelto, loginusuario, teoremaid) FROM stdin;
+\.
+
+
+--
+-- Name: resuelve_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
+--
+
+SELECT pg_catalog.setval('userdb.resuelve_id_seq', 1, false);
+
+
+--
+-- Data for Name: solucion; Type: TABLE DATA; Schema: userdb; Owner: userdb
+--
+
+COPY userdb.solucion (id, resuelveid, resuelto, arregloserializado) FROM stdin;
+\.
+
+
+--
+-- Name: solucion_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
+--
+
+SELECT pg_catalog.setval('userdb.solucion_id_seq', 1, false);
+
+
+--
+-- Data for Name: teorema; Type: TABLE DATA; Schema: userdb; Owner: userdb
+--
+
+COPY userdb.teorema (id, enunciado, teoserializado, categoriaid, esquema) FROM stdin;
+\.
+
+
+--
+-- Name: teorema_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
+--
+
+SELECT pg_catalog.setval('userdb.teorema_id_seq', 1, false);
+
+
+--
+-- Data for Name: termino; Type: TABLE DATA; Schema: userdb; Owner: userdb
+--
+
+COPY userdb.termino (combinador, serializado, alias, login) FROM stdin;
+\.
+
+
+--
+-- Data for Name: usuario; Type: TABLE DATA; Schema: userdb; Owner: userdb
+--
+
+COPY userdb.usuario (login, nombre, apellido, correo, password, materiaid, admin) FROM stdin;
+admin	Admin	Admin	correodem@asiado.falso	1f0d65c78b2350520c7bb6409104226063e3d9b05cb0a31ba497f489f98ef6bb8c92cd81ba298543d4fb1b293e139d12f4a7110adb157c75075d8a582e1fe97d	1	t
+AdminTeoremas	Admin	Teoremas	admin@teoremas.gries	4b39bf2b2076bb3aec161cfd09ca0614a65f3c0adadb80ff443b8434237ad0a2745018653685a9811f2335dd0b314427ff7568592cd3856ef67ddb0315da4627	1	t
+\.
+
+
+--
+-- Name: categoria_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+ALTER TABLE ONLY userdb.categoria
     ADD CONSTRAINT "categoria_PK" PRIMARY KEY (id);
 
 
 --
--- Name: categoria_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: categoria_UNIQUE; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-ALTER TABLE ONLY categoria
+ALTER TABLE ONLY userdb.categoria
     ADD CONSTRAINT "categoria_UNIQUE" UNIQUE (nombre);
 
 
 --
--- Name: predicado_PK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: dispone_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-ALTER TABLE ONLY predicado
-    ADD CONSTRAINT "predicado_PK" PRIMARY KEY (id, loginusuario);
-
-
---
--- Name: predicado_alias_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY predicado
-    ADD CONSTRAINT "predicado_alias_UNIQUE" UNIQUE (alias);
-
-
---
--- Name: predicado_predSerializado_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY predicado
-    ADD CONSTRAINT "predicado_predSerializado_UNIQUE" UNIQUE (predserializado);
-
-
---
--- Name: resuelve_PK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY resuelve
-    ADD CONSTRAINT "resuelve_PK" PRIMARY KEY (id);
-
-
---
--- Name: resuelve_teorema_y_usuario_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY resuelve
-    ADD CONSTRAINT "resuelve_teorema_y_usuario_UNIQUE" UNIQUE (loginusuario, teoremaid);
-
-
---
--- Name: dispone_PK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY dispone
+ALTER TABLE ONLY userdb.dispone
     ADD CONSTRAINT "dispone_PK" PRIMARY KEY (id);
 
 
 --
--- Name: dispone_metateorema_y_usuario_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: dispone_metateorema_y_usuario_UNIQUE; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-ALTER TABLE ONLY dispone
+ALTER TABLE ONLY userdb.dispone
     ADD CONSTRAINT "dispone_metateorema_y_usuario_UNIQUE" UNIQUE (loginusuario, metateoremaid);
 
 
 --
--- Name: solucion_PK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: materia_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-ALTER TABLE ONLY solucion
-    ADD CONSTRAINT "solucion_PK" PRIMARY KEY (id);
-
-
---
--- Name: teorema_PK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY teorema
-    ADD CONSTRAINT "teorema_PK" PRIMARY KEY (id);
+ALTER TABLE ONLY userdb.materia
+    ADD CONSTRAINT "materia_PK" PRIMARY KEY (id);
 
 
 --
--- Name: metateorema_PK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: materia_UNIQUE; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-ALTER TABLE ONLY metateorema
+ALTER TABLE ONLY userdb.materia
+    ADD CONSTRAINT "materia_UNIQUE" UNIQUE (nombre);
+
+
+--
+-- Name: metateorema_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+ALTER TABLE ONLY userdb.metateorema
     ADD CONSTRAINT "metateorema_PK" PRIMARY KEY (id);
 
 
 --
--- Name: termino_PK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: predicado_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-ALTER TABLE ONLY termino
+ALTER TABLE ONLY userdb.predicado
+    ADD CONSTRAINT "predicado_PK" PRIMARY KEY (id, loginusuario);
+
+
+--
+-- Name: predicado_alias_UNIQUE; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+ALTER TABLE ONLY userdb.predicado
+    ADD CONSTRAINT "predicado_alias_UNIQUE" UNIQUE (alias);
+
+
+--
+-- Name: predicado_predSerializado_UNIQUE; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+ALTER TABLE ONLY userdb.predicado
+    ADD CONSTRAINT "predicado_predSerializado_UNIQUE" UNIQUE (predserializado);
+
+
+--
+-- Name: resuelve_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+ALTER TABLE ONLY userdb.resuelve
+    ADD CONSTRAINT "resuelve_PK" PRIMARY KEY (id);
+
+
+--
+-- Name: resuelve_teorema_y_usuario_UNIQUE; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+ALTER TABLE ONLY userdb.resuelve
+    ADD CONSTRAINT "resuelve_teorema_y_usuario_UNIQUE" UNIQUE (loginusuario, teoremaid);
+
+
+--
+-- Name: solucion_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+ALTER TABLE ONLY userdb.solucion
+    ADD CONSTRAINT "solucion_PK" PRIMARY KEY (id);
+
+
+--
+-- Name: teorema_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+ALTER TABLE ONLY userdb.teorema
+    ADD CONSTRAINT "teorema_PK" PRIMARY KEY (id);
+
+
+--
+-- Name: termino_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
+--
+
+ALTER TABLE ONLY userdb.termino
     ADD CONSTRAINT "termino_PK" PRIMARY KEY (alias, login);
 
 
 --
--- Name: termino_UNIQUE; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: termino_UNIQUE; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-ALTER TABLE ONLY termino
+ALTER TABLE ONLY userdb.termino
     ADD CONSTRAINT "termino_UNIQUE" UNIQUE (combinador, login);
 
 
 --
--- Name: usuario_pk; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: usuario_pk; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
 --
 
-ALTER TABLE ONLY usuario
+ALTER TABLE ONLY userdb.usuario
     ADD CONSTRAINT usuario_pk PRIMARY KEY (login);
 
 
 --
--- Name: predicado_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: dispone_metateorema_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
 --
 
-ALTER TABLE ONLY predicado
-    ADD CONSTRAINT "predicado_FK" FOREIGN KEY (loginusuario) REFERENCES usuario(login);
-
-
---
--- Name: resuelve_teorema_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY resuelve
-    ADD CONSTRAINT "resuelve_teorema_FK" FOREIGN KEY (teoremaid) REFERENCES teorema(id);
+ALTER TABLE ONLY userdb.dispone
+    ADD CONSTRAINT "dispone_metateorema_FK" FOREIGN KEY (metateoremaid) REFERENCES userdb.metateorema(id);
 
 
 --
--- Name: resuelve_usuario_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: dispone_usuario_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
 --
 
-ALTER TABLE ONLY resuelve
-    ADD CONSTRAINT "resuelve_usuario_FK" FOREIGN KEY (loginusuario) REFERENCES usuario(login);
-
-
---
--- Name: solucion_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY solucion
-    ADD CONSTRAINT "solucion_FK" FOREIGN KEY (resuelveid) REFERENCES resuelve(id);
+ALTER TABLE ONLY userdb.dispone
+    ADD CONSTRAINT "dispone_usuario_FK" FOREIGN KEY (loginusuario) REFERENCES userdb.usuario(login);
 
 
 --
--- Name: dispone_metateorema_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: metateorema_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
 --
 
-ALTER TABLE ONLY dispone
-    ADD CONSTRAINT "dispone_metateorema_FK" FOREIGN KEY (metateoremaid) REFERENCES metateorema(id);
-
-
---
--- Name: dispone_usuario_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY dispone
-    ADD CONSTRAINT "dispone_usuario_FK" FOREIGN KEY (loginusuario) REFERENCES usuario(login);
+ALTER TABLE ONLY userdb.metateorema
+    ADD CONSTRAINT "metateorema_FK" FOREIGN KEY (categoriaid) REFERENCES userdb.categoria(id);
 
 
 --
--- Name: teorema_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: predicado_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
 --
 
-ALTER TABLE ONLY teorema
-    ADD CONSTRAINT "teorema_FK" FOREIGN KEY (categoriaid) REFERENCES categoria(id);
-
-
---
--- Name: metateorema_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY metateorema
-    ADD CONSTRAINT "metateorema_FK" FOREIGN KEY (categoriaid) REFERENCES categoria(id);
+ALTER TABLE ONLY userdb.predicado
+    ADD CONSTRAINT "predicado_FK" FOREIGN KEY (loginusuario) REFERENCES userdb.usuario(login);
 
 
 --
--- Name: termino_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: resuelve_teorema_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
 --
 
-ALTER TABLE ONLY termino
-    ADD CONSTRAINT "termino_FK" FOREIGN KEY (login) REFERENCES usuario(login);
+ALTER TABLE ONLY userdb.resuelve
+    ADD CONSTRAINT "resuelve_teorema_FK" FOREIGN KEY (teoremaid) REFERENCES userdb.teorema(id);
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
+-- Name: resuelve_usuario_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
 --
 
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
+ALTER TABLE ONLY userdb.resuelve
+    ADD CONSTRAINT "resuelve_usuario_FK" FOREIGN KEY (loginusuario) REFERENCES userdb.usuario(login);
+
+
+--
+-- Name: solucion_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
+--
+
+ALTER TABLE ONLY userdb.solucion
+    ADD CONSTRAINT "solucion_FK" FOREIGN KEY (resuelveid) REFERENCES userdb.resuelve(id);
+
+
+--
+-- Name: teorema_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
+--
+
+ALTER TABLE ONLY userdb.teorema
+    ADD CONSTRAINT "teorema_FK" FOREIGN KEY (categoriaid) REFERENCES userdb.categoria(id);
+
+
+--
+-- Name: termino_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
+--
+
+ALTER TABLE ONLY userdb.termino
+    ADD CONSTRAINT "termino_FK" FOREIGN KEY (login) REFERENCES userdb.usuario(login);
+
+
+--
+-- Name: usuario_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
+--
+
+ALTER TABLE ONLY userdb.usuario
+    ADD CONSTRAINT "usuario_FK" FOREIGN KEY (materiaid) REFERENCES userdb.materia(id);
+
+
+--
+-- Name: userdb; Type: ACL; Schema: -; Owner: userdb
+--
+
+GRANT ALL ON SCHEMA userdb TO userdb;
 REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
 
 
 --

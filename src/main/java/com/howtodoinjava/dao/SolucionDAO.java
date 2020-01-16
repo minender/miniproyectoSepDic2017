@@ -27,7 +27,3 @@ public interface SolucionDAO {
     public List<Integer> getAllSolucionesIdByResuelve(int resuelveId);
     
 }
-
-
-
-

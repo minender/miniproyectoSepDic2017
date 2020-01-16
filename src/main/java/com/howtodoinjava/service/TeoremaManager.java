@@ -28,7 +28,3 @@ public interface TeoremaManager {
     
     public List<Teorema> getTeoremasByCategoria(int categoriaId);
 }
-
-
-
-

@@ -38,10 +38,10 @@ function clickAlias(Math1,alias,valorAlias)
     };   
 }
 
-function teoremaClickeable(teoId){
+function teoremaClickeable(/*teoId*/){
     
     var data = {};
-    data["teoid"] = teoId;
+    //data["teoid"] = teoId;
     var form = $('#inferForm');
     $.ajax({
         type: 'POST',
@@ -66,8 +66,9 @@ function teoremaClickeable(teoId){
 function teoremaInicialMD(teoid){
     var data = {};
     data["teoid"] = teoid;
+    //var teoSol = $("#nSolucion").val();
+    //data["teoSol"] = teoSol;
     var form = $('#inferForm');
-    
     $.ajax({
         type: 'POST',
         url: $(form).attr('action')+"/teoremaInicialMD",
@@ -78,15 +79,31 @@ function teoremaInicialMD(teoid){
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
             $('#inferForm').show();
-            $("#nuevoMetodo").val("1");
-            $('#teoremaInicial').val(teoid.substring(3,teoid.length));
+            //$("#nuevoMetodo").val("1");
+            //$('#teoremaInicial').val(teoid);
             $("#selectTeoInicial").val("0");
-        }
+            $(".teoIdName").css({"cursor":"","color":""});
+            $(".operator").css({"cursor":"pointer","color":"#08c"});
+            $("#currentTeo").hide();
+            var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+            if(nSol==="new"){
+               //$('#nSolucion').val(data.nSol);
+               //nSol = $('#nSolucion').val();
+               var url = $(form).attr('action');
+               url = url.substring(0,url.length-3)+data.nSol;
+               $(form).attr('action',url);
+            }
+        },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            }
     });
 }
 
-function metodoD(teoid){
+function metodoD(/*teoid*/){
     var data = {};
+    //var teoSol = $("#nSolucion").val();
+    //data["teoSol"] = teoSol;
     var form = $('#inferForm');
     
     $.ajax({
@@ -102,16 +119,26 @@ function metodoD(teoid){
             else{
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
-                $('#teoremaInicial').val(teoid + "-" + data.lado);
+                //$('#teoremaInicial').val(teoid + "@" + data.lado);
                 $("#inferForm").show();
-                $("#nuevoMetodo").val("1");
+                //$("#nuevoMetodo").val("1");
+                var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+                if(nSol==="new"){
+                    //$('#nSolucion').val(data.nSol);
+                    //nSol = $('#nSolucion').val();
+                    var url = $(form).attr('action');
+                    url = url.substring(0,url.length-3)+data.nSol;
+                    $(form).attr('action',url);
+                }
             }
         }
     });
     
 }
-function metodoF(teoid){
+function metodoF(/*teoid*/){
     var data = {};
+    //var teoSol = $("#nSolucion").val();
+    //data["teoSol"] = teoSol;
     var form = $('#inferForm');
     
     $.ajax({
@@ -127,13 +154,41 @@ function metodoF(teoid){
             else{
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
-                $('#teoremaInicial').val(teoid + "-" + data.lado);
+                //$('#teoremaInicial').val(teoid + "@" + data.lado);
                 $("#inferForm").show();
-                $("#nuevoMetodo").val("1");
+                //$("#nuevoMetodo").val("1");
+                var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+                if(nSol==="new"){
+                    //$('#nSolucion').val(data.nSol);
+                    //nSol = $('#nSolucion').val();
+                    var url = $(form).attr('action');
+                    url = url.substring(0,url.length-3)+data.nSol;
+                    $(form).attr('action',url);
+                }
             }
         }
     });
     
+}
+
+function clickTeoremaInicial(teoid)
+{
+    var id = "";
+    if (teoid.substring(0,3)==="ST-")
+    {
+        id = 'teoIdName'+teoid.substring(3);
+    }
+    else if (teoid.substring(0,3)==="MT-")
+    {
+        id = 'metateoIdName'+teoid.substring(3);
+    }
+    document.getElementById(id).onclick = function(event){
+       var selectTeoInicial = $("#selectTeoInicial").val();
+       if (selectTeoInicial==="1")
+       {
+           teoremaInicialMD(teoid);
+       }
+    };
 }
 
 function clickOperator(Math1,myField,teoid)
@@ -141,12 +196,27 @@ function clickOperator(Math1,myField,teoid)
     
     var render=document.getElementById(Math1);
     render.onclick = function (event) {
-
+    var targetString = "";
+    if (teoid.substring(0,3)==="ST-")
+    {
+        targetString = 'click@'+teoid.substring(3);
+    }
+    else if (teoid.substring(0,3)==="MT-")
+    {
+        targetString = 'clickmeta@'+teoid.substring(3);
+    }
+    if (!event) {event = window.event};
+      var target = event.toElement || event.target;
+      while (target && (!target.id || 
+                         target.id !=targetString))
+      {target = target.parentNode};
+      if(target)
+      {
         var metodo = document.getElementById('metodosDemostracion').value;
         if(metodo === "1"){
             var selectTeoInicial = $("#selectTeoInicial").val(); 
             if(selectTeoInicial==="1"){
-                teoremaInicialMD(teoid);
+                ;//teoremaInicialMD(teoid);
             }
             else{
                 var inputStatement = document.getElementById(myField);
@@ -157,6 +227,7 @@ function clickOperator(Math1,myField,teoid)
             var inputStatement = document.getElementById(myField);
             inputStatement.value = teoid;
         }
+      }
     };    
 }
 

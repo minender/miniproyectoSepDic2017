@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
-    <class name="com.howtodoinjava.entity.Metateorema" table="metateorema" schema="public">
+    <class name="com.howtodoinjava.entity.Metateorema" table="metateorema" schema="userdb">
         <id name="id" type="int">
             <column name="id" />
             <generator class="assigned"/>

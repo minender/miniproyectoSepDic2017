@@ -3,12 +3,12 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
-    <class name="com.howtodoinjava.entity.Categoria" table="categoria" schema="public">
+    <class name="com.howtodoinjava.entity.Categoria" table="categoria" schema="userdb">
         <id name="id" type="int">
             <column name="id" />
             <generator class="sequence">
                 <param name="sequence">categoria_id_seq</param>
-            </generator> 
+            </generator>
         </id>
         <property name="nombre" type="string">
             <column name="nombre" not-null="true" unique="true" />

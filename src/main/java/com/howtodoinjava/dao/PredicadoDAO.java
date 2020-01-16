@@ -22,7 +22,3 @@ public interface PredicadoDAO {
     public List<Predicado> getAllPredicadosByUser(String userLogin);
     
 }
-
-
-
-

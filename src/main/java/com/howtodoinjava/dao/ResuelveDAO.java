@@ -36,4 +36,3 @@ public interface ResuelveDAO {
 
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum);
 }
-

@@ -10,7 +10,8 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <!DOCTYPE html>
 <html>
-  <head>
+    <tiles:insertDefinition name="header" />
+  <%--<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
@@ -20,37 +21,79 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <title>L&oacute;gica | Agregar Teorema</title>
     <tiles:insertDefinition name="style" />
-  </head>
+  </head>--%>
   <body>
-    <tiles:insertDefinition name="header" />
-    <h1>Introduzca el teorema que desea agregar</h1>
+    <tiles:insertDefinition name="nav" />
+    <h1>Enter the theorem that you want to save</h1>
     <c:choose>
       <c:when test="${modificar.intValue()==0}">
         <sf:form method="POST" modelAttribute="agregarTeorema">
           <c:choose>
             <c:when test='${usuario.isAdmin()}'>
-              <label style="display: -webkit-inline-box; margin-right: 4px;"><sf:checkbox path="axioma" style="margin: 0 4px 0 0;" value="false" />Axioma</label>
+              <div class="form-group row ">
+               <div class="col-lg-3">
+                <sf:checkbox path="axioma" value="false" />
+                <label for="axioma" class="col-lg-1 col-form-label">Axiom</label>
+               </div>
+              </div>
             </c:when>
           </c:choose>
-          <label style="display: -webkit-inline-box"><input type="checkbox" style="margin: 0 4px 0 0;" value="" >Es Esquema</label>
-          <br>
-          Teorema:<br><sf:input path="teorema" value="${teorema}"/><sf:errors path="teorema" cssClass="error" /><br/>
-          Tipo: <br>
-          <select class="form-control" id="selecTipo" name="tipoSeleccionado">
-            <option value="">Lógica Propocisional</option>
-            <option value="">Lógica de Predicado</option>
-          </select><br>
-          Categoría:<br>
-          <select class="form-control" id="selecCateg" name="categoriaSeleccionada">
-            <c:forEach items="${categoria}" var="cat">
-              <option value="${cat.getId()}" <c:choose><c:when test='${cat.getId()==selected}'>selected="selected"</c:when></c:choose>${selected}>${cat.getId()} - ${cat.getNombre()}</option>
-            </c:forEach>  
-          </select><br>
-<%--          Número de Categoria:<br><sf:input path="categoria" value="${categoria}"/><sf:errors path="categoria" cssClass="error" /><br/>--%>
-          Número de Teorema:<br><sf:input path="numeroTeorema" value="${numeroTeorema}"/><sf:errors path="numeroTeorema" cssClass="error" /><br/>
-          Nombre de Teorema (Opcional):<br><sf:input path="nombreTeorema" value="${nombreTeorema}"/><sf:errors path="nombreTeorema" cssClass="error" /><br/>
-          <input class="btn" type="submit" value="Guardar">
-        </sf:form><br>${mensaje}
+          <div class="form-group row ">
+            <div class="col-lg-3">
+               <input type="checkbox" value="">
+               <label for="es_esquema" class="col-lg-1 col-form-label">Scheme</label>
+            </div>
+          </div>
+              
+          <div class="form-group row">
+              <label for="teorema" class="col-lg-1 col-form-label">Theorem:</label>
+            <div class="col-lg-3">
+               <sf:input path="teorema" id="teorema" value="${teorema}" class="form-control"/><sf:errors path="teorema" cssClass="error" /><br/>
+            </div>
+           </div>
+          
+          <div class="form-group row">
+              <label for="tipo" class="col-lg-1 col-form-label">Type:</label>
+              <div class="col-lg-3">
+                <select class="form-control" id="selecTipo" name="tipoSeleccionado">
+                  <option value="">Lógica Propocisional</option>
+                  <option value="">Lógica de Predicado</option>
+                </select>
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="categoria" class="col-lg-1 col-form-label">Category:</label>
+              <div class="col-lg-3">
+                <select class="form-control" id="selecCateg" name="categoriaSeleccionada">
+                 <c:forEach items="${categoria}" var="cat">
+                  <option value="${cat.getId()}" <c:choose><c:when test='${cat.getId()==selected}'>selected="selected"</c:when></c:choose>${selected}>${cat.getId()} - ${cat.getNombre()}</option>
+                 </c:forEach>  
+                </select>  
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="numeroT" class="col-lg-1 col-form-label">Theorem Number:</label>
+              <div class="col-lg-3">
+                <sf:input class="form-control" path="numeroTeorema" value="${numeroTeorema}"/><sf:errors path="numeroTeorema" cssClass="error" />  
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="nombreT" class="col-lg-1 col-form-label">Theorem Name (Optional):</label>
+              <div class="col-lg-3">
+                <sf:input class="form-control" path="nombreTeorema" value="${nombreTeorema}"/><sf:errors path="nombreTeorema" cssClass="error" />
+              </div>
+          </div>
+          <div class="row " >
+               <div class="offset-lg-1 col-lg-3">
+                   <button type="submit" class="btn btn-default">Save</button>
+               </div>
+          </div>
+          <div class="row " >
+               <div class="offset-lg-1 col-lg-3">
+                   &nbsp;
+               </div>
+          </div>
+        </sf:form>${mensaje}
       </c:when>
       <c:otherwise>
         <c:choose>

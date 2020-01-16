@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
-    <class name="com.howtodoinjava.entity.Usuario" table="usuario" schema="public">
+    <class name="com.howtodoinjava.entity.Usuario" table="usuario" schema="userdb">
         <id name="login" type="string">
             <column name="login" />
             <generator class="assigned" />
@@ -20,6 +20,9 @@
         <property name="password" type="string">
             <column name="password" not-null="true" />
         </property>
+        <many-to-one name="materia" class="com.howtodoinjava.entity.Materia" lazy="false" fetch="select">
+            <column name="materiaid" not-null="true" />
+        </many-to-one>
         <property name="admin" type="boolean">
             <column name="admin" not-null="true" />
         </property>

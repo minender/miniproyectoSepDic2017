@@ -29,4 +29,3 @@ public interface TeoremaDAO {
 //
 //    public List<Teorema> getPublicTeoremas(Categoria categoria);
 }
-

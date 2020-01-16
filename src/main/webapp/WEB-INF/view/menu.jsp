@@ -1,4 +1,24 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<div class="container-fluid">
+        <nav class="row navbar navbar-expand-lg navbar-dark bg-blue">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#options">
+                <span class="navbar-toggler-icon"></span>    
+            </button>
+          <div class="collapse navbar-collapse" id="options">
+          <ul class="navbar-nav nav-fill w-100">
+            <li class="nav-item ${perfilMenu}"><a href="${fromEvalError}home" class="nav-link">Profile</a></li>
+	    <li class="nav-item ${guardarMenu}" ><a href="${fromEvalError}guardar" class="nav-link">Agregar Abreviación</a></li>
+            <li class="nav-item ${listarTerminosMenu}"><a href="${fromEvalError}listar?comb=n" class="nav-link">Mis Abreviaciones</a></li>
+            <li class="nav-item ${misTeoremasMenu}"><a href="${fromEvalError}misTeoremas" class="nav-link">Mis Teoremas</a></li>
+            <li class="nav-item ${agregarTeoremaMenu}"><a href="${fromEvalError}guardarteo" class="nav-link">Agregar Teorema</a></li>
+            <li class="nav-item ${computarMenu}"><a href="${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Demostrar</a></li>
+            <li class="nav-item ${theoMenu}" ><a href="${fromEvalError}theo" class="nav-link">Theoretical Basis</a></li>
+            <li class="nav-item ${helpMenu}" ><a href="${fromEvalError}help" class="nav-link">Help</a></li>
+            <li class="nav-item" ><a href="${fromEvalError}close" class="nav-link">Sign Out</a></li>
+          </ul>
+          </div>
+        </nav>
+
+<%--
 <div class="page-header">
     <h1 style="color: #03A9F4; font-size: 70px; margin-left: 20px;">Logica<small>Demostraciones de Lógica Simbólica</small></h1>
 </div>
@@ -13,7 +33,7 @@
       </button>
       <div class="nav-collapse collapse">
         <ul class="nav">
-          <li ${computarMenu}><a id="linkDemostrar" href="../../infer/${usuario.login}">Demostrar</a></li>   
+          <li ${computarMenu}><a href="../../infer/${usuario.login}">Demostrar</a></li>   
           <li ${listarTerminosMenu}><a href="listar?comb=n">Mis Abreviaciones</a></li>
           <li ${guardarMenu}><a href="guardar">Agregar Abreviación</a></li>
           <li ${misTeoremasMenu}><a href="misTeoremas">Mis Teoremas</a></li>
@@ -25,4 +45,5 @@
     </div>
   </div>
 </div>
-<div class="row-fluid" style="margin-left: 50px; margin-top: 40px; width: 100%;height: 70%">
+<div class="row-fluid" style="margin-left: 50px; margin-top: 40px; height:552px; width: ${anchuraDiv}; overflow-y:${overflow};">
+--%>

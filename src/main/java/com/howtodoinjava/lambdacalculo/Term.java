@@ -161,7 +161,7 @@ public abstract class Term implements Cloneable, Serializable{
         int z = this.maxVar()+1;
         if (z <= 122)
             z = 122;
-        String st = "$$"+this.toStringInfLabeledFinal(z, this, l, new Id(), 0)+"$$\n";
+        String st = this.toStringInfLabeledFinal(z, this, l, new Id(), 0)+"$\n";
         st+="<script>\nvar leibniz=[";
         for(String it: l)
             st+="\n\"lambda "+new Var(z).toStringInf()+"."+it+"\",";

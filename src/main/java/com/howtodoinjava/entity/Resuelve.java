@@ -122,5 +122,3 @@ public class Resuelve  implements java.io.Serializable {
 
 
 }
-
-

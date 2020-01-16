@@ -23,22 +23,22 @@ $(function() {
                     $('#formula').html(data.historial);
                     MathJax.Hub.Typeset();
                     
-                    var nSol = $('#nSolucion').val();
+                    /*var nSol = $('#nSolucion').val();
                     if(nSol==="new"){
                         $('#nSolucion').val(data.nSol);
                         nSol = $('#nSolucion').val();
                         var url = $(form).attr('action');
                         url = url.replace("new",nSol);
                         $(form).attr('action',url);
-                    }
+                    }*/
                     if(data.resuelto === "1"){
-                        alert("Felicidades ha resuelto lA demostracion!!");
+                        alert("Felicidades ha encontrado una demostracion al teorema!!");
                         window.location = $("#linkDemostrar").attr("href");
                     }
                     $('#nStatement_id').val("");
                     $('#instanciacion_id').val("");
                     $('#leibniz_id').val("");
-                    $("#nuevoMetodo").val("0");
+                    //$("#nuevoMetodo").val("0");
                 }
                 
             }
@@ -49,7 +49,6 @@ $(function() {
         ev.preventDefault();
         $("#Btn").val("Retroceder");
         var formData = form.serialize();
-        
         $.ajax({
             type: 'POST',
             url: $(form).attr('action'),
@@ -67,10 +66,14 @@ $(function() {
                     $('#instanciacion_id').val("");
                     $('#leibniz_id').val("");
                     $("#selectTeoInicial").val("1");
-                    $("#nuevoMetodo").val("1");
+                    //$("#nuevoMetodo").val("1");
+                    $("#currentTeo").show();
                 }
                 
-            }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+    }
         });
     });
     
@@ -90,7 +93,6 @@ function leibnizMouse(p1,p2){
     
     if(p1[0] == p2[0]){
     	resp = p1[0];
-        alert(resp);
         $('#leibniz_id').val(leibniz[resp]);
         return;
     }  

@@ -9,22 +9,24 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <!DOCTYPE html>
 <html>
-  <head>
+  <%--<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script>
     <%--<script src="${pageContext.request.contextPath}/static/js/jquery.jslatex.packed.js"></script>--%>
     <%--<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>--%>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+   <%-- <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
     <title>L&oacute;gica | Mis Abreviaciones</title>
   </head>
+  --%>
+  <tiles:insertDefinition name="header" />
   <body>
     <c:choose>
       <c:when test="${perfil.intValue()==1}">
-        <tiles:insertDefinition name="header" />
+        <tiles:insertDefinition name="nav" />
         <h1>${titulo}</h1>
       </c:when>
     </c:choose>

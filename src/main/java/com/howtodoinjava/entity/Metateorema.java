@@ -91,4 +91,3 @@ public class Metateorema  implements java.io.Serializable {
         this.dispones = dispones;
     }
 }
-

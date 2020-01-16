@@ -18,6 +18,11 @@ public class UsuarioDaoImpl implements UsuarioDAO  {
 	public void addUsuario(Usuario usuario) {
 		this.sessionFactory.getCurrentSession().save(usuario);
 	}
+        
+        @Override
+        public void updateUsuario(Usuario usuario) {
+		this.sessionFactory.getCurrentSession().update(usuario);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

@@ -35,13 +35,13 @@ public class SolucionManagerImpl implements SolucionManager {
     
     
     
-    @Override
+    /*@Override
     @Transactional
     public void addPaso(int solucionId, PasoInferencia paso){
         Solucion sol = solucionDAO.getSolucion(solucionId);
         sol.addArregloInferencias(paso);
         solucionDAO.updateSolucion(sol);
-    }
+    }*/
     
     @Override
     @Transactional
@@ -96,7 +96,7 @@ public class SolucionManagerImpl implements SolucionManager {
         int i = 1;
         for (int id : idSoluciones){
             
-            nombreSolucion = "Solucion " + i;
+            nombreSolucion = "Proof " + i;
             listaSoluciones.put(nombreSolucion,id);
             i++;
         }

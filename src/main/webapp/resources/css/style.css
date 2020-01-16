@@ -1,6 +1,6 @@
 /*@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300);
 @import url(http://fonts.googleapis.com/css?family=Raleway:400,300);*/
-@media screen and (max-width: 900px) {
+/*@media screen and (max-width: 900px) {
     body > .navbar .brand {
         padding-right: 0;
         padding-left: 0;
@@ -14,7 +14,7 @@
         -moz-transition: all .2s linear;
         transition: all .2s linear;
     }
-}
+}*/
 
 .navbar-inner {
   background-image: none !important;
@@ -60,7 +60,7 @@ input[type="reset"]{
 
 body{
 	font-size: 12px;
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Raleway', sans-serif;
 }
 b{
 	font-size: 12px;
@@ -106,7 +106,7 @@ b{
 .table{
 	border: 1px #ccc solid;
 }
-.table th {
+.table th{
 	padding:2px;
 }
 .table td{
@@ -124,7 +124,10 @@ body > .navbar .brand {
 	-moz-transition: all .2s linear;
 	transition: all .2s linear;
 }
-
+.navbar .nav>li>a {
+	float: none;
+	padding: 19px 10px 20px 30px !important;
+}
 .accordion-heading .accordion-toggle {
 	display: block;
 	padding: 8px 15px;
@@ -187,4 +190,74 @@ body > .navbar .brand {
 }.boton:active {
 	position:relative;
 	top:1px;
+}
+
+.error {
+    color: #ff0000;
+}
+
+div.main-center {
+    padding-top: 50px;
+}
+
+ul.help {
+    list-style-type:square;
+}
+
+.footer-login-span {
+    border-right: 1px #ccc solid; 
+    padding-right: 10px;
+}
+
+footer {
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+}
+
+.footer-div {
+    border:1px #ccc solid; 
+    padding:10px;
+    background-color: #ffffff;
+}
+
+.description-index{
+    padding:30px;
+    margin:30px;
+}
+
+div#render {
+    overflow-x: scroll;
+    margin-left:0px;
+    margin-right:0px;
+}
+
+article{
+    height: 40px;
+    overflow:hidden;
+    transition: height 2s;
+    -webkit-transition: height 2s;
+}
+article.misTerminos{
+    /*height:250px;*/
+    height:74.4%;
+    outline: none;
+}
+article.predefinidos{
+    /*height:290px;*/
+    height: 86.3%;
+    outline: none;
+}
+article.publicos{
+    /*height:210px;*/
+    height:62.5%;
+    outline: none;
+}
+iframe{
+    -webkit-overflow-scrolling: touch !important; /*for safari in ipod and ipad*/
+    overflow-y:scroll !important;
+}
+
+.bg-blue{
+    background-color: #03A9F4 !important;
 }
