@@ -9,7 +9,7 @@
         <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
         <c:choose>
-          <c:when test='${!perfilMenu.equals("active")}'>
+          <c:when test='${!perfilMenu.equals("active") && !agregarTeoremaMenu.equals("active")}'>
             <script type="text/x-mathjax-config">
               MathJax.Hub.Config({
               tex2jax: {
@@ -21,6 +21,11 @@
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/limpiar.js"></script>
+          </c:when>
+        </c:choose>
+        <c:choose>
+          <c:when test='${misTeoremasMenu.equals("active")}'>
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
           </c:when>
         </c:choose>
         <%--<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >--%>

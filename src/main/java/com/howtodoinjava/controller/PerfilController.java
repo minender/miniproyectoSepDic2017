@@ -235,7 +235,7 @@ public class PerfilController {
         map.addAttribute("usuario", usuarioManager.getUsuario(username));
         map.addAttribute("guardarMenu","");
         map.addAttribute("listarTerminosMenu","");
-        map.addAttribute("misTeoremasMenu","class=\"active\"");
+        map.addAttribute("misTeoremasMenu","active");
         map.addAttribute("agregarTeoremaMenu","");
         map.addAttribute("perfilMenu","");
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
@@ -331,7 +331,7 @@ public class PerfilController {
         map.addAttribute("numeroTeorema","");
         map.addAttribute("mensaje", "");
         map.addAttribute("admin","admin");
-        map.addAttribute("agregarTeoremaMenu","class=\"active\"");
+        map.addAttribute("agregarTeoremaMenu","active");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         
@@ -361,7 +361,7 @@ public class PerfilController {
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
                 map.addAttribute("mensaje", "");
                 map.addAttribute("admin","admin");
-                map.addAttribute("agregarTeoremaMenu","class=\"active\"");
+                map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "agregarTeorema";
@@ -411,7 +411,7 @@ public class PerfilController {
                 map.addAttribute("listarTerminosMenu","");
                 map.addAttribute("misTeoremasMenu","");        
                 map.addAttribute("agregarTeoremaMenu","");
-                map.addAttribute("perfilMenu","class=\"active\"");
+                map.addAttribute("perfilMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "perfil";
@@ -427,7 +427,7 @@ public class PerfilController {
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
                 map.addAttribute("mensaje", "No se puede ingresar su teorema porque es invalido");
                 map.addAttribute("admin","admin");
-                map.addAttribute("agregarTeoremaMenu","class=\"active\"");
+                map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "agregarTeorema";
@@ -442,7 +442,7 @@ public class PerfilController {
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
                 map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
                 map.addAttribute("admin","admin");
-                map.addAttribute("agregarTeoremaMenu","class=\"active\"");
+                map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1100px");
                 return "agregarTeorema";
@@ -460,7 +460,7 @@ public class PerfilController {
                 map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
                 map.addAttribute("admin","admin");
                 map.addAttribute("guardarMenu","");
-                map.addAttribute("agregarTeoremaMenu","class=\"active\"");
+                map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "agregarTeorema";
@@ -478,7 +478,7 @@ public class PerfilController {
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
                 map.addAttribute("admin","admin");
-                map.addAttribute("agregarTeoremaMenu","class=\"active\"");
+                map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "agregarTeorema";
@@ -539,7 +539,7 @@ public class PerfilController {
                 map.addAttribute("alias",usuarioGuardar.getAlias());
                 map.addAttribute("mensaje", "");
                 map.addAttribute("admin","admin");
-                map.addAttribute("guardarMenu","class=\"active\"");
+                map.addAttribute("guardarMenu","active");
                 map.addAttribute("listarTerminosMenu","");
                 map.addAttribute("verTerminosPublicosMenu","");
                 map.addAttribute("misPublicacionesMenu","");
@@ -619,7 +619,7 @@ public class PerfilController {
                     map.addAttribute("verTerminosPublicosMenu","");
                     map.addAttribute("misPublicacionesMenu","");
                     map.addAttribute("computarMenu","");
-                    map.addAttribute("perfilMenu","class=\"active\"");
+                    map.addAttribute("perfilMenu","active");
                     map.addAttribute("overflow","hidden");
                     map.addAttribute("anchuraDiv","1200px");
                     return "introducirTermino";
@@ -633,7 +633,7 @@ public class PerfilController {
                     map.addAttribute("termino",programa);
                     map.addAttribute("admin","admin");
                     map.addAttribute("alias",alias);
-                    map.addAttribute("guardarMenu","class=\"active\"");
+                    map.addAttribute("guardarMenu","active");
                     map.addAttribute("listarTerminosMenu","");
                     map.addAttribute("verTerminosPublicosMenu","");
                     map.addAttribute("misPublicacionesMenu","");
@@ -653,7 +653,7 @@ public class PerfilController {
                 map.addAttribute("termino",programa);
                 map.addAttribute("admin","admin");
                 map.addAttribute("alias",alias);
-                map.addAttribute("guardarMenu","class=\"active\"");
+                map.addAttribute("guardarMenu","active");
                 map.addAttribute("listarTerminosMenu","");
                 map.addAttribute("verTerminosPublicosMenu","");
                 map.addAttribute("misPublicacionesMenu","");
@@ -674,7 +674,7 @@ public class PerfilController {
                 map.addAttribute("termino",programa);
                 map.addAttribute("admin","admin");
                 map.addAttribute("alias",alias);
-                map.addAttribute("guardarMenu","class=\"active\"");
+                map.addAttribute("guardarMenu","active");
                 map.addAttribute("listarTerminosMenu","");
                 map.addAttribute("verTerminosPublicosMenu","");
                 map.addAttribute("misPublicacionesMenu","");
@@ -695,7 +695,7 @@ public class PerfilController {
                 map.addAttribute("termino",programa);
                 map.addAttribute("admin","admin");
                 map.addAttribute("alias",alias);
-                map.addAttribute("guardarMenu","class=\"active\"");
+                map.addAttribute("guardarMenu","active");
                 map.addAttribute("listarTerminosMenu","");
                 map.addAttribute("verTerminosPublicosMenu","");
                 map.addAttribute("misPublicacionesMenu","");
@@ -812,7 +812,7 @@ public class PerfilController {
                 map.addAttribute("verTerminosPublicosMenu","");
                 map.addAttribute("misPublicacionesMenu","");
                 map.addAttribute("computarMenu","");
-                map.addAttribute("perfilMenu","class=\"active\"");
+                map.addAttribute("perfilMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "perfil";
@@ -906,7 +906,7 @@ public class PerfilController {
                 map.addAttribute("verTerminosPublicosMenu","");
                 map.addAttribute("misPublicacionesMenu","");
                 map.addAttribute("computarMenu","");
-                map.addAttribute("perfilMenu","class=\"active\"");
+                map.addAttribute("perfilMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "perfil";
@@ -979,7 +979,7 @@ public class PerfilController {
         map.addAttribute("click","no");
         map.addAttribute("publicaciones",new Integer(0));
         map.addAttribute("guardarMenu","");
-        map.addAttribute("listarTerminosMenu","class=\"active\"");
+        map.addAttribute("listarTerminosMenu","active");
         map.addAttribute("verTerminosPublicosMenu","");
         map.addAttribute("misPublicacionesMenu","");
         map.addAttribute("computarMenu","");
@@ -1015,7 +1015,7 @@ public class PerfilController {
         map.addAttribute("guardarMenu","");
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("verTerminosPublicosMenu","");
-        map.addAttribute("misPublicacionesMenu","class=\"active\"");
+        map.addAttribute("misPublicacionesMenu","active");
         map.addAttribute("computarMenu","");
         map.addAttribute("perfilMenu","");
         map.addAttribute("overflow","scroll");
@@ -1074,7 +1074,7 @@ public class PerfilController {
         map.addAttribute("publicaciones",new Integer(0));
         map.addAttribute("guardarMenu","");
         map.addAttribute("listarTerminosMenu","");
-        map.addAttribute("verTerminosPublicosMenu","class=\"active\"");
+        map.addAttribute("verTerminosPublicosMenu","active");
         map.addAttribute("misPublicacionesMenu","");
         map.addAttribute("computarMenu","");
         map.addAttribute("perfilMenu","");
@@ -1186,7 +1186,7 @@ public class PerfilController {
             map.addAttribute("mensaje", "No se puede publicar su t&eacute;rmino ya que ya existe un t&eacute;rmino p&uacute;blico con el alias "+publicacionId.getAlias());
             map.addAttribute("publicaciones",new Integer(0));
             map.addAttribute("guardarMenu","");
-            map.addAttribute("listarTerminosMenu","class=\"active\"");
+            map.addAttribute("listarTerminosMenu","active");
             map.addAttribute("verTerminosPublicosMenu","");
             map.addAttribute("misPublicacionesMenu","");
             map.addAttribute("computarMenu","");
@@ -1217,7 +1217,7 @@ public class PerfilController {
             map.addAttribute("mensaje", "No se puede publicar su t&eacute;rmino ya que es alpha equivalente al t&eacute;rmino p&uacute;blico ya existente "+e.alias);
             map.addAttribute("publicaciones",new Integer(0));
             map.addAttribute("guardarMenu","");
-            map.addAttribute("listarTerminosMenu","class=\"active\"");
+            map.addAttribute("listarTerminosMenu","active");
             map.addAttribute("verTerminosPublicosMenu","");
             map.addAttribute("misPublicacionesMenu","");
             map.addAttribute("computarMenu","");
@@ -1244,7 +1244,7 @@ public class PerfilController {
         map.addAttribute("verTerminosPublicosMenu","");
         map.addAttribute("misPublicacionesMenu","");
         map.addAttribute("computarMenu","");
-        map.addAttribute("perfilMenu","class=\"active\"");
+        map.addAttribute("perfilMenu","active");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         
@@ -1270,7 +1270,7 @@ public class PerfilController {
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("verTerminosPublicosMenu","");
         map.addAttribute("misPublicacionesMenu","");
-        map.addAttribute("computarMenu","class=\"active\"");
+        map.addAttribute("computarMenu","active");
         map.addAttribute("perfilMenu","");
         map.addAttribute("hrefAMiMismo","href=ingresar#!");
         map.addAttribute("overflow","hidden");
