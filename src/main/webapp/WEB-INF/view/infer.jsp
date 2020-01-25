@@ -188,11 +188,25 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
+        <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">-->
         </style>
         <tiles:insertDefinition name="style" />
         <title>L&oacute;gica | Demostrar</title>
     </head>
     <body>
+        <div id="modalLoading" class="modal">
+            <center>
+                <div class="box-loading">
+                  <div class="lds-ring">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                <center>Loading</center>
+                </div>
+            </center>
+        </div>
         <tiles:insertDefinition name="nav" />
         <input id="selectTeoInicial" value="" type="hidden"/>
         <%--<input id="nTeorema" value="${nTeo}" type="hidden"/>
@@ -345,6 +359,14 @@
           <form id="inferForm" action="/Miniproyecto/infer/${usuario.getLogin()}/${nTeo}/${nSol}" method="POST" style="display:none">
               <%--Paso anterior:<br><sf:input path="pasoAnt" id="pasoAnt_id" value="${pasoAnt}"/><sf:errors path="pasoAnt" cssClass="error" />--%>
               <br>
+              <!--<div class="nn-box-loading">
+                  <div class="loader">
+                      <i class="fa fa-paper-plane"></i>
+                  </div>
+                  <span translate>Loading</span>
+              </div>
+              -->
+         
               <!--\cssId{eq}{\style{cursor:pointer;}{p\equiv q}}-->
               Teorema a usar:<br>
               <input name="nStatement" id="nStatement_id" value="${nStatement}"/>
@@ -366,7 +388,7 @@
           <form> 
           </c:when>
           </c:choose>
-          <br>
+              <br><br><br>
 
     <tiles:insertDefinition name="footer" /> 
     </body>

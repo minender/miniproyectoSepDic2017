@@ -6,12 +6,14 @@ $(function() {
         ev.preventDefault();
         $("#Btn").val("Inferir");
         var formData = form.serialize();
+        $("#modalLoading").css('display','inline-block');
         $.ajax({
             url: $(form).attr('action'),
             type: 'POST',
             dataType: 'json',
             data: formData,
             success: function(data) {
+                $("#modalLoading").css('display','none');
                 if(data.errorParser2 !== null){
                     alert(data.Parser2);
                 }
@@ -19,7 +21,6 @@ $(function() {
                     alert(data.Parser3);
                 }
                 else{
-                    
                     $('#formula').html(data.historial);
                     MathJax.Hub.Typeset();
                     
@@ -41,6 +42,10 @@ $(function() {
                     //$("#nuevoMetodo").val("0");
                 }
                 
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              $("#modalLoading").css('display','none');
+              alert("Status: " + textStatus); alert("Error: " + errorThrown);
             }
         });
     });
@@ -49,13 +54,14 @@ $(function() {
         ev.preventDefault();
         $("#Btn").val("Retroceder");
         var formData = form.serialize();
+        $("#modalLoading").css('display','inline-block');
         $.ajax({
             type: 'POST',
             url: $(form).attr('action'),
             dataType: 'json',
             data: formData,
             success: function(data) {
-
+                $("#modalLoading").css('display','none');
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
                 if(data.cambiarMetodo === "1"){
@@ -72,6 +78,7 @@ $(function() {
                 
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              $("#modalLoading").css('display','none');
               alert("Status: " + textStatus); alert("Error: " + errorThrown); 
     }
         });

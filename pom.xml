@@ -19,6 +19,7 @@
   <properties>
     <org.springframework.version>4.3.18.RELEASE</org.springframework.version>
     <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+    <jackson.version>2.6.3</jackson.version>
   </properties>
   <dependencies>
     <dependency>
@@ -32,6 +33,22 @@
 	    Core utilities used by other modules.
 	    Define this if you use Spring Utility APIs (org.springframework.core.*/org.springframework.util.*)
 	-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+            <!--<scope>system</scope>
+            <systemPath>/home/federico/NetBeansProjects/Logica/lib/jackson-core-2.6.3.jar</systemPath>-->
+        </dependency>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <!--<scope>system</scope>
+            <systemPath>/home/federico/NetBeansProjects/Logica/lib/jackson-databind-2.6.3.jar</systemPath>-->
+        </dependency>
+        
 	<dependency>
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-core</artifactId>
@@ -298,8 +315,8 @@
     
         <dependency>
         <groupId>org.antlr</groupId>
-        <artifactId>antlr-runtime</artifactId>
-        <version>3.2</version>
+        <artifactId>antlr4</artifactId>
+        <version>4.7.1</version>
        <type>jar</type>
        <!--<scope>system</scope>
        <systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/antlr-runtime-3.2.jar</systemPath>-->
@@ -350,8 +367,8 @@
       <artifactId>javax.servlet</artifactId>
       <version>2.4.0.v200706111738</version>
       <type>jar</type>
-      <scope>system</scope>
-      <systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/javax.servlet-2.4.0.v200706111738.jar</systemPath>
+      <!--<scope>system</scope>
+      <systemPath>/home/federico/NetBeansProjects/Logica/lib/javax.servlet-2.4.0.v200706111738.jar</systemPath>-->
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
