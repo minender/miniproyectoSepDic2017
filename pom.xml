@@ -19,7 +19,7 @@
   <properties>
     <org.springframework.version>4.3.18.RELEASE</org.springframework.version>
     <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
-    <jackson.version>2.6.3</jackson.version>
+    <jackson.version>2.10.2</jackson.version>
   </properties>
   <dependencies>
     <dependency>
