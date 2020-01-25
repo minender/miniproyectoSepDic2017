@@ -44,5 +44,10 @@ public class UsuarioDaoImpl implements UsuarioDAO  {
                     this.sessionFactory.getCurrentSession().delete(usuario);
             }
 	}
+        
+        @Override
+        public List<Usuario> getStudents(){
+            return this.sessionFactory.getCurrentSession().createQuery("FROM Usuario WHERE admin = 'false'").list();
+        }
 
 }

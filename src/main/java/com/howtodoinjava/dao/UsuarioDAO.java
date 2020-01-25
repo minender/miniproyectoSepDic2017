@@ -10,4 +10,5 @@ public interface UsuarioDAO
     public List<Usuario> getAllUsuarios();
     public void deleteUsuario(Integer usuarioId);
     public Usuario getUsuario(String login);
+    public List<Usuario> getStudents();
 }
