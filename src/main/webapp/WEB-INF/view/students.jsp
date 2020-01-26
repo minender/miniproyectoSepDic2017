@@ -13,10 +13,52 @@
   <tiles:insertDefinition name="header" />
   <body>
   <tiles:insertDefinition name="nav" />
+  <div class="container">
     <h1>Students List</h1>
-    <c:forEach var="student" items="${studentsList}">
-        <p>${student.nombre} ${student.apellido}</p> 
-        </c:forEach>
+
+    <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Nombre de la asignatura</th>
+    </tr>
+  </thead>
+  <tbody>
+      <c:forEach var="materia" items="${materiasList}">
+        <tr>
+            <td data-toggle="collapse" href="#studentsList" aria-expanded="false" aria-controls="studentsList">
+                <p>
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#studentsList" aria-expanded="false" aria-controls="studentsList">
+                    ${materia.nombre} 
+                </button>          
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="studentsList" class="collapse">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Apellido</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="student" items="${studentsList}">
+                                <tr>
+                                    <td>${student.nombre}</td>
+                                    <td>${student.apellido}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </c:forEach>
+  </tbody>
+</table>
+</div>
   <tiles:insertDefinition name="footer" />
   </body>
 </html>

@@ -140,9 +140,10 @@ public class PerfilController {
         }
         
         List<Usuario> studentsList = usuarioManager.getStudents();
-        System.out.println(studentsList);
-        
+        List<Materia> materiasList = materiaManager.getAllMaterias();
+                
         map.addAttribute("studentsList",studentsList);
+        map.addAttribute("materiasList",materiasList);
         map.addAttribute("usuario", usr);
         map.addAttribute("mensaje","");
         map.addAttribute("guardarMenu","");
