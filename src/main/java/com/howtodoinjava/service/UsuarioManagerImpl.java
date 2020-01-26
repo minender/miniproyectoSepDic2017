@@ -91,6 +91,12 @@ public class UsuarioManagerImpl implements UsuarioManager {
         }
     }
     
+    @Override
+    @Transactional
+    public List<Usuario> getStudents(){
+        return usuarioDAO.getStudents();
+    }
+    
     
     //@Override
     //@Transactional

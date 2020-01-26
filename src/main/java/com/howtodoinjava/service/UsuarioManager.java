@@ -12,4 +12,5 @@ public interface UsuarioManager {
     public void deleteUsuario(Integer usuarioId);
     public void deleteTeorema(Usuario usuario, Teorema teorema);
     public List<Teorema> getAllTeoremas(Usuario usuario);
+    public List<Usuario> getStudents();
 }
