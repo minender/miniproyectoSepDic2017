@@ -111,19 +111,54 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        Usuario usr = usuarioManager.getUsuario(username);
+        
+        map.addAttribute("usuario", usr);
         map.addAttribute("mensaje","");
         map.addAttribute("guardarMenu","");
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("misTeoremasMenu","");        
         map.addAttribute("agregarTeoremaMenu","");        
         map.addAttribute("perfilMenu","active");
-        map.addAttribute("theoMenu","");
+        map.addAttribute("students","");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         map.addAttribute("helpMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
         return "perfil";
     }
+    
+    @RequestMapping(value="/{username}/students", method=RequestMethod.GET)
+    public String studentView(@PathVariable String username, ModelMap map){
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
+        if (!usr.isAdmin()){
+            return "redirect:/index";
+        }
+        
+        List<Usuario> studentsList = usuarioManager.getStudents();
+        List<Materia> materiasList = materiaManager.getAllMaterias();
+                
+        map.addAttribute("studentsList",studentsList);
+        map.addAttribute("materiasList",materiasList);
+        map.addAttribute("usuario", usr);
+        map.addAttribute("mensaje","");
+        map.addAttribute("guardarMenu","");
+        map.addAttribute("listarTerminosMenu","");
+        map.addAttribute("misTeoremasMenu","");        
+        map.addAttribute("agregarTeoremaMenu","");        
+        map.addAttribute("perfilMenu","");
+        map.addAttribute("students","active");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("helpMenu","");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1100px");
+        return "students";
+    }
+
     
     @RequestMapping(value="/{username}/editar", method=RequestMethod.GET)
     public String editarView(@PathVariable String username, ModelMap map) {
@@ -141,7 +176,7 @@ public class PerfilController {
         map.addAttribute("valueSubmit", "Edit");
         map.addAttribute("isRegistro", "0");
         map.addAttribute("perfilMenu","active");
-        map.addAttribute("theoMenu","");
+        map.addAttribute("students","");
         map.addAttribute("helpMenu","");
         return "editPerfil";
     }
@@ -165,7 +200,7 @@ public class PerfilController {
             map.addAttribute("valueSubmit", "Edit");
             map.addAttribute("isRegistro", "0");
             map.addAttribute("perfilMenu","active");
-            map.addAttribute("theoMenu","");
+            map.addAttribute("students","");
             map.addAttribute("helpMenu","");
             return "editPerfil";
         }
@@ -181,7 +216,7 @@ public class PerfilController {
                map.addAttribute("valueSubmit", "Edit");
                map.addAttribute("isRegistro", "0");
                map.addAttribute("perfilMenu","active");
-               map.addAttribute("theoMenu","");
+               map.addAttribute("students","");
                map.addAttribute("helpMenu","");
                return "editPerfil";
             }
@@ -205,7 +240,7 @@ public class PerfilController {
         map.addAttribute("misTeoremasMenu","");        
         map.addAttribute("agregarTeoremaMenu","");        
         map.addAttribute("perfilMenu","active");
-        map.addAttribute("theoMenu","");
+        map.addAttribute("students","");
         map.addAttribute("helpMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
@@ -534,7 +569,7 @@ public class PerfilController {
         map.addAttribute("misPublicacionesMenu","");
         map.addAttribute("computarMenu","");
         map.addAttribute("perfilMenu","");
-        map.addAttribute("theoMenu","");
+        map.addAttribute("students","");
         map.addAttribute("helpMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");

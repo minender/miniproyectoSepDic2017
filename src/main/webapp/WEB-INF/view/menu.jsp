@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div class="container-fluid">
         <nav class="row navbar navbar-expand-lg navbar-dark bg-blue">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#options">
@@ -11,7 +12,15 @@
             <li class="nav-item ${misTeoremasMenu}"><a href="misTeoremas" class="nav-link">Mis Teoremas</a></li>
             <li class="nav-item ${agregarTeoremaMenu}"><a href="guardarteo" class="nav-link">Agregar Teorema</a></li>
             <li class="nav-item ${computarMenu}"><a href="${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Demostrar</a></li>
-            <li class="nav-item ${theoMenu}" ><a href="theo" class="nav-link">Theoretical Basis</a></li>
+            <c:choose>
+                <c:when test="${isAdmin.intValue()==1}">
+                    <li class="nav-item ${students}" ><a href="students" class="nav-link">Students</a></li>
+                </c:when>    
+                <c:otherwise>
+                
+                </c:otherwise>
+            </c:choose>
+            <li class="nav-item ${theoMenu}" ><a href="theo" class="nav-link">Theories</a></li>
             <li class="nav-item ${helpMenu}" ><a href="help" class="nav-link">Help</a></li>
             <li class="nav-item" ><a href="close" class="nav-link">Sign Out</a></li>
           </ul>
