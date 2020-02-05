@@ -39,7 +39,7 @@ DIGIT=8
 '=='=11
 ':='=34
 'exists'=32
-'\\nequiv'=22
+'\\not\\equiv'=22
 'forall'=28
 '\\equiv'=12
 '\\wedge'=20

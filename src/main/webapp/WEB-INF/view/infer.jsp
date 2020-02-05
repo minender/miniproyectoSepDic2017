@@ -194,7 +194,7 @@
         <title>L&oacute;gica | Demostrar</title>
     </head>
     <body>
-        <div id="modalLoading" class="modal">
+        <div id="modalLoading" class="modal" >
             <center>
                 <div class="box-loading">
                   <div class="lds-ring">
@@ -388,7 +388,6 @@
           <form> 
           </c:when>
           </c:choose>
-              <br><br><br>
 
     <tiles:insertDefinition name="footer" /> 
     </body>

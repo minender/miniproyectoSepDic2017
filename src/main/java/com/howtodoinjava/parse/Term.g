@@ -81,13 +81,13 @@ disytail returns [ArrayList<ParserPair> value]:
 
 neq returns [Term value]: neg neqtail         { Term aux=$neg.value;
                                                 for(Iterator<Term> i = $neqtail.value.iterator(); i.hasNext();) 
-                                                   aux=new App(new App(new Const("\\nequiv ",false,4,1),i.next()),aux);
+                                                   aux=new App(new App(new Const("\\not\\equiv ",false,4,1),i.next()),aux);
                                                 $value=aux;
                                               };
 
 neqtail returns [ArrayList<Term> value]:
 
-    ('!=='| '\\nequiv') neg tail6=neqtail {ArrayList<Term> aux=$tail6.value; 
+    ('!=='| '\\not\\equiv') neg tail6=neqtail {ArrayList<Term> aux=$tail6.value; 
                                                aux.add(0,$neg.value); $value=aux;
                                               }
 

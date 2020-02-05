@@ -212,6 +212,29 @@ public class PerfilController {
         return "perfil";
     }
     
+    @RequestMapping(value="/{username}/help", method=RequestMethod.GET)
+    public String showHelp(@PathVariable String username, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        
+        Usuario user = usuarioManager.getUsuario(username);
+
+        map.addAttribute("usuario", user);
+        map.addAttribute("logout","logout");
+        map.addAttribute("sesion","login");
+        map.addAttribute("guardarMenu","");
+        map.addAttribute("listarTerminosMenu","");
+        map.addAttribute("verTerminosPublicosMenu","");
+        map.addAttribute("misPublicacionesMenu","");
+        map.addAttribute("computarMenu","");
+        map.addAttribute("perfilMenu","");
+        map.addAttribute("theoMenu","");
+        map.addAttribute("helpMenu","active");
+        return "help";
+    }
+    
     @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.GET)
     public String misTeoremasView(@PathVariable String username, ModelMap map) {
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
@@ -280,19 +303,19 @@ public class PerfilController {
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
-        String teoremaStr = new App(new App(new Const("\\equiv",false,1,1),new Const("true")),resuelve.getTeorema().getTeoTerm()).toStringInfFinal();
+        String teoremaStr = new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),resuelve.getTeorema().getTeoTerm()).toStringInfFinal();
         String nTeo = resuelve.getNumeroteorema();
-        Term A1 = new TypedA( new App(new App(new Const("\\equiv",false,1,1), new App(new App(new Const("\\equiv",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const("\\equiv",false,1,1),new Var(113)),new Var(112))) );
-        Term A2 = new TypedA( new App(new App(new Const("\\equiv",false,1,1),new Var(113)),
-                                     new App(new App(new Const("\\equiv",false,1,1),new Var(113)),
-                                                               new Const("true"))));
+        Term A1 = new TypedA( new App(new App(new Const("\\equiv ",false,1,1), new App(new App(new Const("\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const("\\equiv ",false,1,1),new Var(113)),new Var(112))) );
+        Term A2 = new TypedA( new App(new App(new Const("\\equiv ",false,1,1),new Var(113)),
+                                     new App(new App(new Const("\\equiv ",false,1,1),new Var(113)),
+                                                               new Const("true "))));
         Term A3 = new TypedA(teo);
         List<Var> list1 = new ArrayList<Var>();
         list1.add(new Var(112));
         list1.add(new Var(113));
         List<Term> list2 = new ArrayList<Term>();
         list2.add(teo);
-        list2.add(new Const("true"));
+        list2.add(new Const("true "));
         Term I1 = new TypedI(new Sust(list1,list2));
         
         List<Var> lis1 = new ArrayList<Var>();
@@ -303,7 +326,7 @@ public class PerfilController {
         
         Term typedTerm = null;
         try {
-          if (teo.equals(new Const("true")))
+          if (teo.equals(new Const("true ")))
             typedTerm = new TypedApp(I2,A2);
           else
             typedTerm = new TypedApp(new TypedApp(I1,A1), new TypedApp(I2,A2));

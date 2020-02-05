@@ -35,7 +35,7 @@ DIGIT=10
 '\\Rightarrow'=15
 '=='=12
 ':='=33
-'\\nequiv'=23
+'\\not\\equiv'=23
 '\\equiv'=13
 '\\wedge'=21
 '\\/'=18

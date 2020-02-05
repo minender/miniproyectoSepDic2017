@@ -293,10 +293,10 @@ public class FOSchemeLexer extends Lexer {
         try {
             int _type = T__22;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // FOScheme.g:14:7: ( '\\\\nequiv' )
-            // FOScheme.g:14:9: '\\\\nequiv'
+            // FOScheme.g:14:7: ( '\\\\not\\\\equiv' )
+            // FOScheme.g:14:9: '\\\\not\\\\equiv'
             {
-            match("\\nequiv"); 
+            match("\\not\\equiv"); 
 
 
             }

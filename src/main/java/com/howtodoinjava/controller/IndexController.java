@@ -32,7 +32,6 @@ public class IndexController {
     @RequestMapping(method=RequestMethod.GET)
     public String createLoginForm(ModelMap map)
     {
-        
         map.addAttribute("usuariolog",new Usuario());
         map.addAttribute("mensaje", "");
         return "index";
@@ -59,16 +58,11 @@ public class IndexController {
         }
 
     }
-
-
-    @RequestMapping(value="/{username}", method=RequestMethod.GET)
-    public String showUsuarioProfile(@PathVariable String username, ModelMap map) {
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
-        return "registrado";
-    }
     
-    public void setUsuarioManager(UsuarioManager usuarioManager) 
-    {
-            this.usuarioManager = usuarioManager;
+    @RequestMapping(value="/help", method=RequestMethod.GET)
+    public String showHelp(ModelMap map) {
+        map.addAttribute("logout","logout");
+        map.addAttribute("sesion","logout");
+        return "help";
     }
 }

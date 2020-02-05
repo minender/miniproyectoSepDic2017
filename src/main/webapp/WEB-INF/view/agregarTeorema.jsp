@@ -24,13 +24,15 @@
   </head>--%>
   <body>
     <tiles:insertDefinition name="nav" />
-    <h1>Enter the theorem that you want to save</h1>
+    <div class="row justify-content-center">
+      <h1>Enter the theorem that you want to save</h1>
+    </div>
     <c:choose>
       <c:when test="${modificar.intValue()==0}">
         <sf:form method="POST" modelAttribute="agregarTeorema">
           <c:choose>
             <c:when test='${usuario.isAdmin()}'>
-              <div class="form-group row ">
+              <div class="form-group row justify-content-center">
                <div class="col-lg-3">
                 <sf:checkbox path="axioma" value="false" />
                 <label for="axioma" class="col-lg-1 col-form-label">Axiom</label>
@@ -38,21 +40,15 @@
               </div>
             </c:when>
           </c:choose>
-          <div class="form-group row ">
-            <div class="col-lg-3">
-               <input type="checkbox" value="">
-               <label for="es_esquema" class="col-lg-1 col-form-label">Scheme</label>
-            </div>
-          </div>
               
-          <div class="form-group row">
+          <div class="form-group row justify-content-center">
               <label for="teorema" class="col-lg-1 col-form-label">Theorem:</label>
             <div class="col-lg-3">
                <sf:input path="teorema" id="teorema" value="${teorema}" class="form-control"/><sf:errors path="teorema" cssClass="error" /><br/>
             </div>
            </div>
           
-          <div class="form-group row">
+          <div class="form-group row justify-content-center">
               <label for="tipo" class="col-lg-1 col-form-label">Type:</label>
               <div class="col-lg-3">
                 <select class="form-control" id="selecTipo" name="tipoSeleccionado">
@@ -61,7 +57,7 @@
                 </select>
               </div>
           </div>
-          <div class="form-group row">
+          <div class="form-group row justify-content-center">
               <label for="categoria" class="col-lg-1 col-form-label">Category:</label>
               <div class="col-lg-3">
                 <select class="form-control" id="selecCateg" name="categoriaSeleccionada">
@@ -71,24 +67,24 @@
                 </select>  
               </div>
           </div>
-          <div class="form-group row">
+          <div class="form-group row justify-content-center">
               <label for="numeroT" class="col-lg-1 col-form-label">Theorem Number:</label>
               <div class="col-lg-3">
                 <sf:input class="form-control" path="numeroTeorema" value="${numeroTeorema}"/><sf:errors path="numeroTeorema" cssClass="error" />  
               </div>
           </div>
-          <div class="form-group row">
+          <div class="form-group row justify-content-center">
               <label for="nombreT" class="col-lg-1 col-form-label">Theorem Name (Optional):</label>
               <div class="col-lg-3">
                 <sf:input class="form-control" path="nombreTeorema" value="${nombreTeorema}"/><sf:errors path="nombreTeorema" cssClass="error" />
               </div>
           </div>
-          <div class="row " >
+          <div class="row justify-content-center" >
                <div class="offset-lg-1 col-lg-3">
                    <button type="submit" class="btn btn-default">Save</button>
                </div>
           </div>
-          <div class="row " >
+          <div class="row justify-content-center" >
                <div class="offset-lg-1 col-lg-3">
                    &nbsp;
                </div>

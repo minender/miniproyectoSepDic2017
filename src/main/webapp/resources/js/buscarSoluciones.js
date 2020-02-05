@@ -3,30 +3,32 @@ function buscarSoluciones(idTeo){
     var url = window.location.href + "/listaSolucion";
     var data = {};
     data["teoid"] = idTeo;
+    $("#modalLoading").css('display','inline-block');
     $.ajax({
         type:'POST',
         url: url,
         dataType:'json',
         data:data,
         success: function(data){
+            $("#modalLoading").css('display','none');
             var i = 0;
-            $('#lista').html("");
+            $('#listaSoluciones').html("");
             var len = Object.keys(data.soluciones).length;
             var i;
             for (i=1; i <= len; i++){
                 var key = "Proof "+i;
-                var link = "<a href='javascript:buscarFormula("+ data.soluciones[key] +","+ data.idTeo +");'style='cursor:pointer;'> ";
+                var link = "<a href='javascript:buscarFormula("+ data.soluciones[key] +","+ data.idTeo +");'> ";
                 link = link + key + "</a>";
-                $('#lista').append("<li style='list-style: none;'>" + link +  " </li>");
+                $('#listaSoluciones').append("<li>" + link +  " </li>");
 
             }
             if(len != 0){
-                $("#panelSoluciones").show();
+                $("#panelSoluciones").removeClass("d-none");
                 $('#formula').html("");
             }
             else{
                 alert("EL teorema seleccionado no tiene soluciones guardadas.");
-                $("#panelSoluciones").hide();
+                $("#panelSoluciones").removeClass("d-none");
             }
         }
         
@@ -35,11 +37,11 @@ function buscarSoluciones(idTeo){
 }
 
 function buscarMetaSoluciones(idTeo){
-    $('#lista').html("");
-    var link = "<a href='javascript:buscarMetaFormula("+idTeo+");'style='cursor:pointer;'> ";
-    link = link + "Solucion 1" + "</a>";
-    $('#lista').append("<li style='list-style: none;'>" + link +  " </li>");
-    $("#panelSoluciones").show();
+    $('#listaSoluciones').html("");
+    var link = "<a href='javascript:buscarMetaFormula("+idTeo+");'> ";
+    link = link + "Proof 1" + "</a>";
+    $('#listaSoluciones').append("<li>" + link +  " </li>");
+    $("#panelSoluciones").removeClass("d-none");
     $('#formula').html("");
 }
 
@@ -49,13 +51,14 @@ function buscarFormula(idSol,idTeo){
     var url = window.location.href + "/buscarFormula";
     data["idSol"] = idSol;
     data["idTeo"] = idTeo;
-    
+    $("#modalLoading").css('display','inline-block');
     $.ajax({
         type:'POST',
         url: url,
         dataType:'json',
         data:data,
         success: function(data){
+            $("#modalLoading").css('display','none');
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
         }
@@ -67,13 +70,14 @@ function buscarMetaFormula(idTeo){
     var data = {};
     var url = window.location.href + "/buscarMetaFormula";
     data["idTeo"] = idTeo;
-    
+    $("#modalLoading").css('display','inline-block');
     $.ajax({
         type:'POST',
         url: url,
         dataType:'json',
         data:data,
         success: function(data){
+            $("#modalLoading").css('display','none');
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
         }
