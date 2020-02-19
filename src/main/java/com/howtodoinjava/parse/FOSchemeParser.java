@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class FOSchemeParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "CAPITALLETTER", "LETTER", "WORD", "INITIALDIGIT", "DIGIT", "NUMBER", "WHITESPACE", "'=='", "'\\\\equiv'", "'==>'", "'\\\\Rightarrow'", "'<=='", "'\\\\Leftarrow'", "'\\\\/'", "'\\\\vee'", "'/\\\\'", "'\\\\wedge'", "'!=='", "'\\\\nequiv'", "'!'", "'\\\\neg'", "'true'", "'false'", "'('", "'forall'", "'|'", "':'", "')'", "'exists'", "'['", "':='", "']'", "','", "'lambda'", "'.'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "CAPITALLETTER", "LETTER", "WORD", "INITIALDIGIT", "DIGIT", "NUMBER", "WHITESPACE", "'=='", "'\\\\equiv'", "'==>'", "'\\\\Rightarrow'", "'<=='", "'\\\\Leftarrow'", "'\\\\/'", "'\\\\vee'", "'/\\\\'", "'\\\\wedge'", "'!=='", "'\\\\not\\\\equiv'", "'!'", "'\\\\neg'", "'true'", "'false'", "'('", "'forall'", "'|'", "':'", "')'", "'exists'", "'['", "':='", "']'", "','", "'lambda'", "'.'"
     };
     public static final int T__29=29;
     public static final int T__28=28;
@@ -677,7 +677,7 @@ public class FOSchemeParser extends Parser {
 
              Term aux=neg15;
                                                             for(Iterator<Term> i = neqtail16.iterator(); i.hasNext();) 
-                                                               aux=new App(new App(new Const("\\nequiv "),i.next()),aux);
+                                                               aux=new App(new App(new Const("\\not\\equiv "),i.next()),aux);
                                                             value =aux;
                                                           
 
@@ -696,7 +696,7 @@ public class FOSchemeParser extends Parser {
 
 
     // $ANTLR start "neqtail"
-    // FOScheme.g:90:1: neqtail returns [ArrayList<Term> value] : ( ( '!==' | '\\\\nequiv' ) neg tail6= neqtail | );
+    // FOScheme.g:90:1: neqtail returns [ArrayList<Term> value] : ( ( '!==' | '\\\\not\\\\equiv' ) neg tail6= neqtail | );
     public final ArrayList<Term> neqtail() throws RecognitionException {
         ArrayList<Term> value = null;
 
@@ -706,7 +706,7 @@ public class FOSchemeParser extends Parser {
 
 
         try {
-            // FOScheme.g:90:40: ( ( '!==' | '\\\\nequiv' ) neg tail6= neqtail | )
+            // FOScheme.g:90:40: ( ( '!==' | '\\\\not\\\\equiv' ) neg tail6= neqtail | )
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -724,7 +724,7 @@ public class FOSchemeParser extends Parser {
             }
             switch (alt5) {
                 case 1 :
-                    // FOScheme.g:92:5: ( '!==' | '\\\\nequiv' ) neg tail6= neqtail
+                    // FOScheme.g:92:5: ( '!==' | '\\\\not\\\\equiv' ) neg tail6= neqtail
                     {
                     if ( (input.LA(1)>=21 && input.LA(1)<=22) ) {
                         input.consume();

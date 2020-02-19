@@ -6,22 +6,23 @@
             </button>
           <div class="collapse navbar-collapse" id="options">
           <ul class="navbar-nav nav-fill w-100">
-            <li class="nav-item ${perfilMenu}"><a href="${fromEvalError}home" class="nav-link">Profile</a></li>
-	    <li class="nav-item ${guardarMenu}" ><a href="${fromEvalError}guardar" class="nav-link">Agregar Abreviación</a></li>
-            <li class="nav-item ${listarTerminosMenu}"><a href="${fromEvalError}listar?comb=n" class="nav-link">Mis Abreviaciones</a></li>
-            <li class="nav-item ${misTeoremasMenu}"><a href="${fromEvalError}misTeoremas" class="nav-link">Mis Teoremas</a></li>
-            <li class="nav-item ${agregarTeoremaMenu}"><a href="${fromEvalError}guardarteo" class="nav-link">Agregar Teorema</a></li>
+            <li class="nav-item ${perfilMenu}"><a href="home" class="nav-link">Profile</a></li>
+	    <li class="nav-item ${guardarMenu}" ><a href="guardar" class="nav-link">Agregar Abreviación</a></li>
+            <li class="nav-item ${listarTerminosMenu}"><a href="listar?comb=n" class="nav-link">Mis Abreviaciones</a></li>
+            <li class="nav-item ${misTeoremasMenu}"><a href="misTeoremas" class="nav-link">Mis Teoremas</a></li>
+            <li class="nav-item ${agregarTeoremaMenu}"><a href="guardarteo" class="nav-link">Agregar Teorema</a></li>
             <li class="nav-item ${computarMenu}"><a href="${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Demostrar</a></li>
             <c:choose>
                 <c:when test="${isAdmin.intValue()==1}">
-                    <li class="nav-item ${students}" ><a href="${fromEvalError}students" class="nav-link">Students</a></li>
+                    <li class="nav-item ${students}" ><a href="students" class="nav-link">Students</a></li>
                 </c:when>    
                 <c:otherwise>
                 
                 </c:otherwise>
             </c:choose>
-            <li class="nav-item ${helpMenu}" ><a href="${fromEvalError}help" class="nav-link">Help</a></li>
-            <li class="nav-item" ><a href="${fromEvalError}close" class="nav-link">Sign Out</a></li>
+            <li class="nav-item ${theoMenu}" ><a href="theo" class="nav-link">Theories</a></li>
+            <li class="nav-item ${helpMenu}" ><a href="help" class="nav-link">Help</a></li>
+            <li class="nav-item" ><a href="close" class="nav-link">Sign Out</a></li>
           </ul>
           </div>
         </nav>

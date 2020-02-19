@@ -30,6 +30,7 @@ El resuelve manager tiene un monton de metodos que obtienen el resuelve de la bd
 Si le das a inferir sin llenar el formulario no aparece nada en el lienzo de la emostracion
 Despues de cada inferen el formulario continua lleno con los datos del paso anterior hay que limpiar a menos que la inferencia no sea valida
 Implementar el click al metateorema en la vista demostracion
+Los metateoremas se desbloquean cuando estan demostrados todos los teoremas que usa como hipotesis
 
 
 

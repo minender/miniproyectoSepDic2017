@@ -87,15 +87,16 @@ public class RegistroController {
                     resuelveManager.addResuelve(resuelve);
                 }
             }  
-                
-            return "redirect:registro/"+registro.getLogin();
+            
+            map.addAttribute("usuario", user);
+            return "registrado";
         }
         
-        @RequestMapping(value="/{username}", method=RequestMethod.GET)
+        /*@RequestMapping(value="/{username}", method=RequestMethod.GET)
         public String showUsuarioProfile(@PathVariable String username, ModelMap map) {
             map.addAttribute("usuario", usuarioManager.getUsuario(username));
             return "registrado";
-        }
+        }*/
         public void setUsuarioManager(UsuarioManager usuarioManager) {
 		this.usuarioManager = usuarioManager;
         }

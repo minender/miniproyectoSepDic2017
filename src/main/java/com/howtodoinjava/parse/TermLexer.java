@@ -291,10 +291,10 @@ public class TermLexer extends Lexer {
         try {
             int _type = T__23;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Term.g:14:7: ( '\\\\nequiv' )
-            // Term.g:14:9: '\\\\nequiv'
+            // Term.g:14:7: ( '\\\\not\\\\equiv' )
+            // Term.g:14:9: '\\\\not\\\\equiv'
             {
-            match("\\nequiv"); 
+            match("\\not\\equiv"); 
 
 
             }

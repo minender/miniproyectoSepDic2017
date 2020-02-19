@@ -543,7 +543,7 @@ public class InferController {
                     
                 Term stTeorema = resuel.getTeorema().getTeoTerm();
                 
-                if(false/*teoremaInicialInfo.size() == 1*/){//cableado para metodo directo
+                if(true/*teoremaInicialInfo.size() == 1*/){//cableado para metodo directo
 
                     if(stTeorema.equals(expIniTerm)){
                         //buscar en bd

@@ -58,10 +58,6 @@ input[type="reset"]{
 	border-radius: 5px;
 }
 
-body{
-	font-size: 12px;
-	font-family: 'Raleway', sans-serif;
-}
 b{
 	font-size: 12px;
 	padding:10px;
@@ -124,10 +120,44 @@ body > .navbar .brand {
 	-moz-transition: all .2s linear;
 	transition: all .2s linear;
 }
+
+a:hover {
+   text-decoration: none;
+}
+
+a.expandmeta {
+    cursor: default;
+}
+
+span.metaitem {
+    margin-left: 38px;
+}
+
 .navbar .nav>li>a {
 	float: none;
 	padding: 19px 10px 20px 30px !important;
 }
+
+h3.subtitle {
+    color: #03A9F4;
+}
+
+#misteoremas ul li {
+    list-style: none; 
+}
+
+#misteoremas ul li ul li{
+    list-style: none;
+}
+
+#misteoremas ul li ul li p{
+    color: #000;
+}
+
+#listaSoluciones li {
+    list-style: none;
+}
+
 .accordion-heading .accordion-toggle {
 	display: block;
 	padding: 8px 15px;
@@ -219,6 +249,11 @@ footer {
     border:1px #ccc solid; 
     padding:10px;
     background-color: #ffffff;
+}
+
+.behind-footer {
+    margin: 3px; 
+    padding: 10px;
 }
 
 .description-index{

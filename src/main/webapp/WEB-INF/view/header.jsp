@@ -3,9 +3,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>CalcLogic</title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
-        <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.slim.min.js"></script>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
+        <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.min.js"></script>
         <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
         <c:choose>
@@ -25,6 +25,8 @@
         </c:choose>
         <c:choose>
           <c:when test='${misTeoremasMenu.equals("active")}'>
+            <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/buscarSoluciones.js"></script>
+            <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/expandMeta.js"></script>
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
           </c:when>
         </c:choose>

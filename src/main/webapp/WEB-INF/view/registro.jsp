@@ -27,7 +27,7 @@
             </button>
           <div class="collapse navbar-collapse" id="options">
           <ul class="navbar-nav">
-            <li class="nav-item" ><a href="index/theo" class="nav-link">Theoretical Basis</a></li>
+            <li class="nav-item" ><a href="index/help" class="nav-link">Help</a></li>
           </ul>
           </div>
         </nav>
