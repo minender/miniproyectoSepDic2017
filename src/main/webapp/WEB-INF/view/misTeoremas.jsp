@@ -14,7 +14,7 @@
           <ul>
             <c:forEach items="${teoremas}" var="resu">
               <c:choose>
-                <c:when test="${resu.getTeorema().getCategoria().getId()==cat.getId()}">      
+                <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
                   <c:choose>
                     <c:when test="${!resu.isResuelto()}">
                       <li style="list-style: none;">

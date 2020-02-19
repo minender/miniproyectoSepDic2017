@@ -26,6 +26,15 @@ public class Resuelve  implements java.io.Serializable {
      private String numeroteorema;
      private boolean resuelto;
      private boolean esAxioma;
+     private Categoria categoria;
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
 
     public boolean isEsAxioma() {
         return esAxioma;
@@ -48,22 +57,24 @@ public class Resuelve  implements java.io.Serializable {
         return demopendiente;
     }
 
-    public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema) {
+    public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, Categoria categoria) {
         this.usuario = usuario;
         this.teorema = teorema;
         this.nombreteorema = nombreteorema;
         this.numeroteorema = numeroteorema;
         this.resuelto = false;
         this.demopendiente = -1;
+        this.categoria = categoria;
     }
     
-    public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, boolean resuelto) {
+    public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, boolean resuelto, Categoria categoria) {
         this.usuario = usuario;
         this.teorema = teorema;
         this.nombreteorema = nombreteorema;
         this.numeroteorema = numeroteorema;
         this.resuelto = resuelto;
         this.demopendiente = -1;
+        this.categoria = categoria;
     }
 
     public int getId() {
