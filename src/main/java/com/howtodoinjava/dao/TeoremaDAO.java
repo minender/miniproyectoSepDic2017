@@ -24,8 +24,6 @@ public interface TeoremaDAO {
     public List<Teorema> getAllTeoremas();
     
     public Teorema getTeoremaByEnunciados(String enunciado);
-    
-    public List<Teorema> getTeoremasByCategoria(int categoriaId);
-//
+    //
 //    public List<Teorema> getPublicTeoremas(Categoria categoria);
 }

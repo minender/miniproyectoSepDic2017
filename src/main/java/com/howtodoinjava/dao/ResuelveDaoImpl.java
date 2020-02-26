@@ -5,11 +5,14 @@
 package com.howtodoinjava.dao;
 
 import com.howtodoinjava.entity.Resuelve;
+import com.howtodoinjava.entity.Teorema;
+import com.howtodoinjava.lambdacalculo.Term;
 import java.util.List;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.SerializationUtils;
 
 /**
  *
@@ -61,6 +64,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     @Transactional
     public List<Resuelve> getAllResuelveByUser(String userLogin){
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE usuario.login = :userLogin order by numeroteorema").setParameter("userLogin",userLogin).list();
+
     }
     @Override
     @Transactional
@@ -112,5 +116,11 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         } else {
             return list.get(0);
         }
-    }    
+    }
+
+    @Override
+    public List<Resuelve> getResuelveByCategoria(int categoriaId) {
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE categoria.id = :categoriaId").setParameter("categoriaId", categoriaId).list();
+    }
+        
 }

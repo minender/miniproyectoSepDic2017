@@ -145,8 +145,7 @@ ALTER SEQUENCE userdb.materia_id_seq OWNED BY userdb.materia.id;
 CREATE TABLE userdb.metateorema (
     id integer NOT NULL,
     enunciado text NOT NULL,
-    metateoserializado bytea NOT NULL,
-    categoriaid integer NOT NULL
+    metateoserializado bytea NOT NULL
 );
 
 
@@ -211,7 +210,8 @@ CREATE TABLE userdb.resuelve (
     numeroteorema text NOT NULL,
     resuelto boolean DEFAULT false NOT NULL,
     loginusuario text NOT NULL,
-    teoremaid integer NOT NULL
+    teoremaid integer NOT NULL,
+    categoriaid integer NOT NULL
 );
 
 
@@ -281,7 +281,6 @@ CREATE TABLE userdb.teorema (
     id integer NOT NULL,
     enunciado text NOT NULL,
     teoserializado bytea NOT NULL,
-    categoriaid integer NOT NULL,
     esquema boolean NOT NULL
 );
 
@@ -444,7 +443,7 @@ SELECT pg_catalog.setval('userdb.materia_id_seq', 1, true);
 -- Data for Name: metateorema; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY userdb.metateorema (id, enunciado, metateoserializado, categoriaid) FROM stdin;
+COPY userdb.metateorema (id, enunciado, metateoserializado) FROM stdin;
 \.
 
 
@@ -505,7 +504,7 @@ SELECT pg_catalog.setval('userdb.solucion_id_seq', 1, false);
 -- Data for Name: teorema; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY userdb.teorema (id, enunciado, teoserializado, categoriaid, esquema) FROM stdin;
+COPY userdb.teorema (id, enunciado, teoserializado, esquema) FROM stdin;
 \.
 
 
@@ -687,14 +686,6 @@ ALTER TABLE ONLY userdb.dispone
 
 
 --
--- Name: metateorema_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
---
-
-ALTER TABLE ONLY userdb.metateorema
-    ADD CONSTRAINT "metateorema_FK" FOREIGN KEY (categoriaid) REFERENCES userdb.categoria(id);
-
-
---
 -- Name: predicado_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
 --
 
@@ -727,13 +718,6 @@ ALTER TABLE ONLY userdb.solucion
 
 
 --
--- Name: teorema_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
---
-
-ALTER TABLE ONLY userdb.teorema
-    ADD CONSTRAINT "teorema_FK" FOREIGN KEY (categoriaid) REFERENCES userdb.categoria(id);
-
-
 --
 -- Name: termino_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
 --
@@ -749,7 +733,8 @@ ALTER TABLE ONLY userdb.termino
 ALTER TABLE ONLY userdb.usuario
     ADD CONSTRAINT "usuario_FK" FOREIGN KEY (materiaid) REFERENCES userdb.materia(id);
 
-
+ALTER TABLE ONLY userdb.resuelve
+    ADD CONSTRAINT "categoria_FK" FOREIGN KEY (categoriaid) REFERENCES userdb.categoria(id);
 --
 -- Name: userdb; Type: ACL; Schema: -; Owner: userdb
 --
