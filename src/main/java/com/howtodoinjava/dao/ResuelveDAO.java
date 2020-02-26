@@ -35,4 +35,6 @@ public interface ResuelveDAO {
     public Resuelve getResuelveByUserAndTeorema(String userLogin,String teo);
 
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum);
+    
+    public List<Resuelve> getResuelveByCategoria(int categoriaId);
 }

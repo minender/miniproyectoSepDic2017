@@ -68,10 +68,6 @@ public class TeoremaDaoImpl implements TeoremaDAO {
 //		return this.sessionFactory.getCurrentSession().createQuery("FROM Termino WHERE usuario.login = :username").setParameter("username",username).list();
 //	}
 
-    @Override
-    public List<Teorema> getTeoremasByCategoria(int categoriaId) {
-        return this.sessionFactory.getCurrentSession().createQuery("FROM Teorema WHERE categoria.id = :categoriaId").setParameter("categoriaId", categoriaId).list();
-    }
 //    private static class TeoremaException extends Exception
 //    {
 //

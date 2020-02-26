@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.service;
 import com.howtodoinjava.dao.TeoremaDAO;
+import com.howtodoinjava.dao.ResuelveDAO;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Teorema;
 import com.howtodoinjava.lambdacalculo.Term;
@@ -25,6 +26,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
 
     @Autowired
     private TeoremaDAO teoremaDAO;
+    private ResuelveDAO resuelveDAO;
 
     @Override
     @Transactional
@@ -114,7 +116,11 @@ public class TeoremaManagerImpl implements TeoremaManager {
     @Override
     @Transactional
     public List<Teorema> getTeoremasByCategoria(int categoriaId) {
-        List<Teorema> teos = teoremaDAO.getTeoremasByCategoria(categoriaId);
+        List<Resuelve> res = resuelveDAO.getResuelveByCategoria(categoriaId);
+        List<Teorema> teos = new ArrayList<Teorema>();
+        for (int i=0;i<=res.size();i++){
+            teos.add(res.get(i).getTeorema());
+        }
         if (teos != null) {
             for (Teorema teo : teos){
                teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
