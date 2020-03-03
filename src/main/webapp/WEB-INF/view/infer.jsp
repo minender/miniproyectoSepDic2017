@@ -243,7 +243,7 @@
                   <ul>
                     <c:forEach items="${resuelves}" var="resu">
                       <c:choose>
-                        <c:when test="${resu.getTeorema().getCategoria().getId()==cat.getId()}">      
+                        <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
                             <li ${!selecTeo && resu.getNumeroteorema().equals(nTeo)?"id=currentTeo":""} style="list-style: none;">
                               <h6 style="color: #000;">
                                 <c:choose>

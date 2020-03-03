@@ -483,14 +483,15 @@ public class PerfilController {
                     throw new CategoriaException("Ese numero de categoria no existe");
                 }
                 // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
-                Teorema teoremaAdd = new Teorema(categoria,teoTerm.traducBD().toStringFinal(),teoTerm,false);
+                Teorema teoremaAdd = new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false);
                 Teorema teorema = teoremaManager.addTeorema(teoremaAdd); 
-                Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma());
+                Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma(), categoria);
                 Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
+                
 
                 // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
                 Term metateoTerm = new App(new App(new Const("\\equiv ",false,1,1),new Const("true")),teoTerm);
-                Metateorema metateoremaAdd = new Metateorema(teorema.getId(),categoria,metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm));
+                Metateorema metateoremaAdd = new Metateorema(teorema.getId(),metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm));
                 Metateorema metateorema = metateoremaManager.addMetateorema(metateoremaAdd);
                 
                 Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);

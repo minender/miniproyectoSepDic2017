@@ -1,3 +1,4 @@
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -76,6 +77,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Transactional
     public List<Resuelve> getAllResuelveByUserWithSol(String userLogin){
         List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin);
+
         try {
             for (Resuelve resuelve : resuelves) {
                 List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelve.getId());

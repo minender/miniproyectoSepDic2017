@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.service;
 import com.howtodoinjava.dao.TeoremaDAO;
+import com.howtodoinjava.dao.ResuelveDAO;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Teorema;
 import com.howtodoinjava.lambdacalculo.Term;
@@ -25,6 +26,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
 
     @Autowired
     private TeoremaDAO teoremaDAO;
+    private ResuelveDAO resuelveDAO;
 
     @Override
     @Transactional
@@ -92,28 +94,33 @@ public class TeoremaManagerImpl implements TeoremaManager {
     public List<Teorema> getTeoremaByResuelveList(List<Resuelve> resList) {
         List<Teorema> teoList = new ArrayList<Teorema>();
         Teorema teorema;
+        
+        Collections.sort(resList, new ResuelveComparator());
+        
         for (Resuelve res : resList) {
             teorema = res.getTeorema();
             teorema.setTeoTerm((Term) SerializationUtils.deserialize(teorema.getTeoserializado()));
             teoList.add(teorema);
         }
 
-        Collections.sort(teoList, new TeoremaComparator());
-
         return teoList;
     }
 
-    class TeoremaComparator implements Comparator<Teorema> {
+    class ResuelveComparator implements Comparator<Resuelve> {
 
-        public int compare(Teorema teo1, Teorema teo2) {
-            return teo1.getCategoria().getId() - teo2.getCategoria().getId();
+        public int compare(Resuelve res1, Resuelve res2) {
+            return res1.getCategoria().getId() - res2.getCategoria().getId();
         }
     }
 
     @Override
     @Transactional
     public List<Teorema> getTeoremasByCategoria(int categoriaId) {
-        List<Teorema> teos = teoremaDAO.getTeoremasByCategoria(categoriaId);
+        List<Resuelve> res = resuelveDAO.getResuelveByCategoria(categoriaId);
+        List<Teorema> teos = new ArrayList<Teorema>();
+        for (int i=0;i<=res.size();i++){
+            teos.add(res.get(i).getTeorema());
+        }
         if (teos != null) {
             for (Teorema teo : teos){
                teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));

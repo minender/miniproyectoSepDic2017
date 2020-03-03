@@ -23,8 +23,6 @@ public class Metateorema  implements java.io.Serializable {
      private int id;
      private Term teoTerm;
 
-
-     private Categoria categoria;
      private String enunciado;
      private byte[] metateoserializado;
      private Set dispones = new HashSet(0);
@@ -39,15 +37,13 @@ public class Metateorema  implements java.io.Serializable {
     public Metateorema() {
     }
 
-    public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado) {
+    public Metateorema(int id, String enunciado, byte[] metateoserializado) {
         this.id = id;
-        this.categoria = categoria;
         this.enunciado = enunciado;
         this.metateoserializado = metateoserializado;
     }
     
-    public Metateorema(Categoria categoria, String enunciado, byte[] metateoserializado) {
-        this.categoria = categoria;
+    public Metateorema(String enunciado, byte[] metateoserializado) {
         this.enunciado = enunciado;
         this.metateoserializado = metateoserializado;
     }
@@ -68,13 +64,7 @@ public class Metateorema  implements java.io.Serializable {
     public void setId(int id) {
         this.id = id;
     }
-    public Categoria getCategoria() {
-        return this.categoria;
-    }
-    
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
+
     public String getEnunciado() {
         return this.enunciado;
     }
