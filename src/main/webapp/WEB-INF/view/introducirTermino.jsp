@@ -27,7 +27,7 @@
            </div>
            <div class="form-group row justify-content-center">
             <label for="termino_string" class="col-lg-1 col-form-label">Term:</label>
-            <sf:textarea path="termino" id="termino_string" rows="3" class="form-control col-lg-6"/><sf:errors path="termino" cssClass="error" /><br/>
+            <sf:textarea path="termino" id="termino_string" rows="3" class="form-control col-lg-6" /><sf:errors path="termino" cssClass="error" /><br/>
            </div> 
            <div class="form-group row justify-content-center">
             <button type="submit" class="btn btn-default">Save</button>&nbsp;
@@ -41,7 +41,7 @@
             <sf:form method="POST" modelAttribute="modificarForm">
               <div class="form-group row justify-content-center">
                 <label class="col-lg-1 col-form-label" for="termino_string">Term:</label>
-                <sf:textarea path="termino" id="termino_string" rows="3" class="form-control col-lg-6"/><sf:errors path="termino" cssClass="error" />
+                <sf:textarea path="termino" id="termino_string" rows="3" class="form-control col-lg-6" placeholder="hola"/><sf:errors path="termino" cssClass="error" />
               </div>
               <div class="row justify-content-center" >
                <div class="offset-lg-1 col-lg-6">

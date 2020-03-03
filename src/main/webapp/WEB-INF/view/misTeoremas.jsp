@@ -18,8 +18,15 @@
            </div>
         </center>
     </div>
-    <tiles:insertDefinition name="nav" />
-    <h1>Mis Teoremas</h1>
+    <c:choose>
+        <c:when test="${isDifferentUser.intValue()==1}">
+            <h1>Teoremas de ${usuario.getNombre()} ${usuario.getApellido()}</h1>
+        </c:when>
+        <c:otherwise>
+            <tiles:insertDefinition name="nav" />
+            <h1>Mis Teoremas</h1>
+        </c:otherwise>
+    </c:choose>
     <div class="row">
      <div id="misteoremas" class="col-lg-5">
      <ul>
@@ -85,6 +92,10 @@
        <h5 id="formula"></h5>
      </div>
     </div>
-    <tiles:insertDefinition name="footer" />
+    <c:choose>
+        <c:when test="${isDifferentUser.intValue()!=1}">
+            <tiles:insertDefinition name="footer" />
+        </c:when>
+    </c:choose>
   </body>
 </html>

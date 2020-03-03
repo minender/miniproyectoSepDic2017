@@ -129,7 +129,7 @@ public class PerfilController {
     }
     
     @RequestMapping(value="/{username}/students", method=RequestMethod.GET)
-    public String studentView(@PathVariable String username, ModelMap map){
+    public String studentsView(@PathVariable String username, ModelMap map){
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
         {
             return "redirect:/index";
@@ -141,7 +141,7 @@ public class PerfilController {
         
         List<Usuario> studentsList = usuarioManager.getStudents();
         List<Materia> materiasList = materiaManager.getAllMaterias();
-                
+
         map.addAttribute("studentsList",studentsList);
         map.addAttribute("materiasList",materiasList);
         map.addAttribute("usuario", usr);
@@ -158,7 +158,34 @@ public class PerfilController {
         map.addAttribute("anchuraDiv","1100px");
         return "students";
     }
-
+    
+    @RequestMapping(value="/{username}/student", method=RequestMethod.GET)
+    public String studentView(@RequestParam(value="usr") String login, @PathVariable String username, ModelMap map){
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
+        if (!usr.isAdmin()){
+            return "redirect:/index";
+        }
+        Usuario student = usuarioManager.getUsuario(login);
+        if (student != null)
+        {
+            map.addAttribute("login",login);
+            map.addAttribute("guardarMenu","");
+            map.addAttribute("listarTerminosMenu","");
+            map.addAttribute("misTeoremasMenu","");        
+            map.addAttribute("agregarTeoremaMenu","");        
+            map.addAttribute("perfilMenu","");
+            map.addAttribute("students","active");
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            map.addAttribute("helpMenu","");
+            return "student";
+        }
+        else
+            return "redirect:/index";
+    }
     
     @RequestMapping(value="/{username}/editar", method=RequestMethod.GET)
     public String editarView(@PathVariable String username, ModelMap map) {
@@ -272,7 +299,9 @@ public class PerfilController {
     
     @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.GET)
     public String misTeoremasView(@PathVariable String username, ModelMap map) {
-        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
+           && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
+           )
         {
             return "redirect:/index";
         }
@@ -290,12 +319,15 @@ public class PerfilController {
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),t.getTeoTerm()));
         }*/
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        Usuario usr = usuarioManager.getUsuario(username);
+        map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
+        map.addAttribute("usuario", usr);
         map.addAttribute("guardarMenu","");
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("misTeoremasMenu","active");
         map.addAttribute("agregarTeoremaMenu","");
         map.addAttribute("perfilMenu","");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
         map.addAttribute("teoremas", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
@@ -307,6 +339,7 @@ public class PerfilController {
     @RequestMapping(value="/{username}/misTeoremas/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody teoremasSolucion listaSoluciones( @RequestParam(value="teoid") int teoid, @PathVariable String username)
     {   
+        //validar si esta el usuario en sesion
         teoremasSolucion response = new teoremasSolucion();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid);
         Integer resuelveId = resuelve.getId();
@@ -319,6 +352,7 @@ public class PerfilController {
     @RequestMapping(value="/{username}/misTeoremas/buscarFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
+        // validar que el usuario este en sesion
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInfFinal();

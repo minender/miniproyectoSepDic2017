@@ -46,8 +46,8 @@
                         <tbody>
                             <c:forEach var="student" items="${studentsList}">
                                 <tr>
-                                    <td>${student.nombre}</td>
-                                    <td>${student.apellido}</td>
+                                    <td><a href="student?usr=${student.getLogin()}">${student.nombre}</a></td>
+                                    <td><a href="student?usr=${student.getLogin()}">${student.apellido}</a></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
