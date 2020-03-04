@@ -11,4 +11,7 @@
   <table-filter match-name="predicado"/>
   <table-filter match-name="dispone"/>
   <table-filter match-name="resuelve"/>
+  <table-filter match-name="teoria"/>
+  <table-filter match-name="simbolo"/>
+
 </hibernate-reverse-engineering>

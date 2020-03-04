@@ -339,6 +339,48 @@ CREATE TABLE userdb.usuario (
 
 ALTER TABLE userdb.usuario OWNER TO userdb;
 
+CREATE TABLE userdb.teoria (
+    id integer NOT NULL,
+    nombre text NOT NULL
+);
+
+ALTER TABLE userdb.teoria OWNER TO userdb;
+
+CREATE SEQUENCE userdb.teoria_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE userdb.teoria_id_seq OWNER TO userdb;
+
+ALTER SEQUENCE userdb.teoria_id_seq OWNED BY userdb.teoria.id;
+
+
+CREATE TABLE userdb.simbolo (
+    id integer NOT NULL,
+    notacion_latex text NOT NULL,
+    argumentos integer,
+    esInfijo boolean DEFAULT false NOT NULL,
+    asociatividad integer,
+    precedencia integer NOT NULL,
+    notacion text NOT NULL,
+    teoriaid integer NOT NULL
+);
+
+ALTER TABLE userdb.simbolo OWNER TO userdb;
+
+CREATE SEQUENCE userdb.simbolo_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE userdb.simbolo_id_seq OWNER TO userdb;
+
+ALTER SEQUENCE userdb.simbolo_id_seq OWNED BY userdb.simbolo.id;
 --
 -- Name: id; Type: DEFAULT; Schema: userdb; Owner: userdb
 --
@@ -379,6 +421,11 @@ ALTER TABLE ONLY userdb.solucion ALTER COLUMN id SET DEFAULT nextval('userdb.sol
 --
 
 ALTER TABLE ONLY userdb.teorema ALTER COLUMN id SET DEFAULT nextval('userdb.teorema_id_seq'::regclass);
+
+
+ALTER TABLE ONLY userdb.teoria ALTER COLUMN id SET DEFAULT nextval('userdb.teoria_id_seq'::regclass);
+
+ALTER TABLE ONLY userdb.simbolo ALTER COLUMN id SET DEFAULT nextval('userdb.simbolo_id_seq'::regclass);
 
 
 --
@@ -532,6 +579,10 @@ admin	Admin	Admin	correodem@asiado.falso	1f0d65c78b2350520c7bb6409104226063e3d9b
 AdminTeoremas	Admin	Teoremas	admin@teoremas.gries	4b39bf2b2076bb3aec161cfd09ca0614a65f3c0adadb80ff443b8434237ad0a2745018653685a9811f2335dd0b314427ff7568592cd3856ef67ddb0315da4627	1	t
 \.
 
+COPY userdb.teoria (id, nombre) FROM stdin;
+1	Lógica proposicional
+\.
+
 
 --
 -- Name: categoria_PK; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
@@ -669,6 +720,11 @@ ALTER TABLE ONLY userdb.usuario
     ADD CONSTRAINT usuario_pk PRIMARY KEY (login);
 
 
+ALTER TABLE ONLY userdb.teoria
+    ADD CONSTRAINT "teoria_pk" PRIMARY KEY (id);
+
+ALTER TABLE ONLY userdb.simbolo
+    ADD CONSTRAINT "simbolo_pk" PRIMARY KEY (id);   
 --
 -- Name: dispone_metateorema_FK; Type: FK CONSTRAINT; Schema: userdb; Owner: userdb
 --
@@ -737,6 +793,9 @@ ALTER TABLE ONLY userdb.resuelve
     ADD CONSTRAINT "categoria_FK" FOREIGN KEY (categoriaid) REFERENCES userdb.categoria(id);
 --
 -- Name: userdb; Type: ACL; Schema: -; Owner: userdb
+
+ALTER TABLE ONLY userdb.simbolo
+    ADD CONSTRAINT "teoria_FK" FOREIGN KEY (teoriaid) REFERENCES userdb.teoria(id);
 --
 
 GRANT ALL ON SCHEMA userdb TO userdb;

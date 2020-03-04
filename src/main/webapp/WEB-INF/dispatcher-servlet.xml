@@ -122,6 +122,12 @@
     <bean id="solucionDAO" class="com.howtodoinjava.dao.SolucionDaoImpl"></bean>
     <bean id="solucionManager" class="com.howtodoinjava.service.SolucionManagerImpl">
     </bean>
+    <bean id="teoriaDAO" class="com.howtodoinjava.dao.TeoriaDaoImpl"></bean>
+    <bean id="teoriaManager" class="com.howtodoinjava.service.TeoriaManagerImpl">
+    </bean>
+    <bean id="simboloDAO" class="com.howtodoinjava.dao.SimboloDaoImpl"></bean>
+    <bean id="simboloManager" class="com.howtodoinjava.service.SimboloManagerImpl">
+    </bean>
  
     <tx:annotation-driven />
     <bean id="transactionManager"

@@ -313,14 +313,13 @@
       <systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/validation-api-1.1.1-20130726.102745-1.jar</systemPath>-->
     </dependency>
     
-        <dependency>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr4</artifactId>
-        <version>4.7.1</version>
-       <type>jar</type>
-       <!--<scope>system</scope>
-       <systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/antlr-runtime-3.2.jar</systemPath>-->
-      </dependency>
+      <dependency> 
+        <groupId>org.antlr</groupId> 
+        <artifactId>antlr4</artifactId> 
+        <version>4.8</version>
+        <type>jar</type> 
+      </dependency> 
+
       
       <dependency>
         <groupId>org.apache.tiles</groupId>
@@ -396,6 +395,36 @@
       <artifactId>antlr-runtime</artifactId>
       <version>3.2</version>
       <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.core</artifactId>
+      <version>2.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.asm</artifactId>
+      <version>2.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.antlr</artifactId>
+      <version>2.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.jpa</artifactId>
+      <version>2.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+      <version>2.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>javax.persistence</artifactId>
+      <version>2.1.0</version>
     </dependency>
   </dependencies>
   

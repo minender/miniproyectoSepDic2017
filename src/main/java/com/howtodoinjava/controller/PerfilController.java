@@ -10,8 +10,10 @@ import com.howtodoinjava.entity.Metateorema;
 import com.howtodoinjava.entity.Publicacion;
 import com.howtodoinjava.entity.PublicacionId;
 import com.howtodoinjava.entity.Resuelve;
+import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
+import com.howtodoinjava.entity.Teoria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,6 +25,7 @@ import org.springframework.util.SerializationUtils;
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
+import com.howtodoinjava.forms.AgregarSimbolo;
 import com.howtodoinjava.forms.AgregarTeorema;
 import com.howtodoinjava.forms.InferResponse;
 import com.howtodoinjava.forms.InfersForm;
@@ -36,7 +39,6 @@ import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Brackear;
 import com.howtodoinjava.lambdacalculo.Comprobacion;
 import com.howtodoinjava.lambdacalculo.Const;
-import com.howtodoinjava.lambdacalculo.PasoInferencia;
 import com.howtodoinjava.lambdacalculo.Sust;
 import com.howtodoinjava.service.TerminoManager;
 import com.howtodoinjava.service.UsuarioManager;
@@ -56,8 +58,10 @@ import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MateriaManager;
 import com.howtodoinjava.service.MetateoremaManager;
 import com.howtodoinjava.service.ResuelveManager;
+import com.howtodoinjava.service.SimboloManager;
 import com.howtodoinjava.service.SolucionManager;
 import com.howtodoinjava.service.TeoremaManager;
+import com.howtodoinjava.service.TeoriaManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -96,6 +100,10 @@ public class PerfilController {
     private HttpSession session;
     @Autowired
     private MateriaManager materiaManager;
+    @Autowired
+    private TeoriaManager teoriaManager;
+    @Autowired
+    private SimboloManager simboloManager;
     
     @RequestMapping(value="/{username}/close", method=RequestMethod.GET)
     public String closeSesion(@PathVariable String username, ModelMap map){
@@ -1336,6 +1344,88 @@ public class PerfilController {
         map.addAttribute("anchuraDiv","1200px");
         
         return "insertarEvaluar";
+    }
+    
+    @RequestMapping(value="/{username}/theo", method=RequestMethod.GET)
+    public String TheoriesView(@PathVariable String username, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> listaSimbolos = simboloManager.getAllSimbolo();
+        List<Teoria> listaTeorias = teoriaManager.getAllTeoria();
+        
+        map.addAttribute("usuario", usr);
+        map.addAttribute("mensaje","");
+        map.addAttribute("guardarMenu","");
+        map.addAttribute("listarTerminosMenu","");
+        map.addAttribute("misTeoremasMenu","");        
+        map.addAttribute("agregarTeoremaMenu","");        
+        map.addAttribute("perfilMenu","");
+        map.addAttribute("theoMenu","active");
+        map.addAttribute("students","");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("helpMenu","");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1100px");
+        map.addAttribute("listaSimbolos",listaSimbolos);
+        map.addAttribute("listaTeorias",listaTeorias);
+        map.addAttribute("agregarSimbolo",new AgregarSimbolo());
+        map.addAttribute("modificarSimbolo",new AgregarSimbolo());
+        
+        
+        return "theories";
+    }
+    
+    @RequestMapping(value="/{username}/theo", method=RequestMethod.POST)
+    public String guardarTeoria(@Valid AgregarSimbolo agregarSimbolo, BindingResult bindingResult, @PathVariable String username, ModelMap map)
+    {
+            if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+            {
+                return "redirect:/index";
+            }
+        Teoria teoria = teoriaManager.getTeoria(agregarSimbolo.getTeoriaid());
+        
+        if (!agregarSimbolo.isModificar()){
+            Simbolo simbolo = new Simbolo(agregarSimbolo.getNotacion_latex(),agregarSimbolo.getArgumentos(),agregarSimbolo.isEsInfijo(),
+            agregarSimbolo.getAsociatividad(),agregarSimbolo.getPrecedencia(),agregarSimbolo.getNotacion(), teoria);
+            simboloManager.addSimbolo(simbolo);
+        }else{
+            Simbolo simbolo = simboloManager.getSimbolo(agregarSimbolo.getId());
+            System.out.println(simbolo);
+            simbolo.setNotacion_latex(agregarSimbolo.getNotacion_latex());
+            simbolo.setArgumentos(agregarSimbolo.getArgumentos());
+            simbolo.setAsociatividad(agregarSimbolo.getAsociatividad());
+            simbolo.setEsInfijo(agregarSimbolo.isEsInfijo());
+            simbolo.setPrecedencia(agregarSimbolo.getPrecedencia());
+            simbolo.setTeoria(teoria);
+            simbolo.setNotacion(agregarSimbolo.getNotacion());
+            simboloManager.updateSimbolo(simbolo);
+        }
+        
+
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> listaSimbolos = simboloManager.getAllSimbolo();
+        List<Teoria> listaTeorias = teoriaManager.getAllTeoria();
+        map.addAttribute("usuario", usr);
+        map.addAttribute("mensaje","");
+        map.addAttribute("guardarMenu","");
+        map.addAttribute("listarTerminosMenu","");
+        map.addAttribute("misTeoremasMenu","");        
+        map.addAttribute("agregarTeoremaMenu","");        
+        map.addAttribute("perfilMenu","");
+        map.addAttribute("theoMenu","active");
+        map.addAttribute("students","");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("helpMenu","");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1100px");
+        map.addAttribute("listaSimbolos",listaSimbolos);
+        map.addAttribute("listaTeorias",listaTeorias);
+        map.addAttribute("agregarSimbolo",new AgregarSimbolo());
+        map.addAttribute("modificarSimbolo",new AgregarSimbolo());
+        return "theories";
     }
     
     public void setUsuarioManager(UsuarioManager usuarioManager) 
