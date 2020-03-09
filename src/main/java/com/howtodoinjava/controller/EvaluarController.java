@@ -7,28 +7,16 @@ package com.howtodoinjava.controller;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.forms.InsertarEvaluar;
-import com.howtodoinjava.lambdacalculo.App;
-import com.howtodoinjava.lambdacalculo.Const;
-import com.howtodoinjava.lambdacalculo.Bracket;
-import com.howtodoinjava.lambdacalculo.TypedA;
-import com.howtodoinjava.lambdacalculo.TypedL;
-import com.howtodoinjava.lambdacalculo.TypedApp;
-import com.howtodoinjava.lambdacalculo.Corrida;
-import com.howtodoinjava.lambdacalculo.PasoInferencia;
-import com.howtodoinjava.lambdacalculo.Sust;
 import com.howtodoinjava.lambdacalculo.Corrida;
 import com.howtodoinjava.lambdacalculo.Term;
 import com.howtodoinjava.lambdacalculo.Tripla;
-import com.howtodoinjava.parse.IsNotInDBException;
-import com.howtodoinjava.lambdacalculo.TypeVerificationException;
-import com.howtodoinjava.lambdacalculo.TypedI;
-import com.howtodoinjava.lambdacalculo.Var;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MetateoremaManager;
 import com.howtodoinjava.service.ResuelveManager;
+import com.howtodoinjava.service.SimboloManager;
 import com.howtodoinjava.service.SolucionManager;
 import com.howtodoinjava.service.TeoremaManager;
 import com.howtodoinjava.service.TerminoManager;
@@ -37,9 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.ANTLRInputStream;
+//import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -74,6 +63,8 @@ public class EvaluarController {
     @Autowired
     private SolucionManager solucionManager;
     @Autowired
+    private SimboloManager simboloManager;
+    @Autowired
     private HttpSession session;
 
     @RequestMapping(value = "/{username}/pruebaPredicado/{id}", method = RequestMethod.GET)
@@ -88,12 +79,12 @@ public class EvaluarController {
             TerminoId terminoid2 = new TerminoId();
             terminoid2.setLogin(username);
 
-            ANTLRStringStream in = new ANTLRStringStream("p,q:=p/\\r,r\\/r"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
+            ANTLRInputStream in = new ANTLRInputStream("p,q:=p/\\r,r\\/r"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
             //Term teoTerm;
-            ANTLRStringStream in2 = new ANTLRStringStream("p \\/ q /\\(r ==> p /\\ (r \\/ q))");
+            ANTLRInputStream in2 = new ANTLRInputStream("p \\/ q /\\(r ==> p /\\ (r \\/ q))");
             TermLexer lexer2 = new TermLexer(in2);
             CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
             TermParser parser2 = new TermParser(tokens2);
@@ -102,9 +93,9 @@ public class EvaluarController {
             try //si la sintanxis no es correcta ocurre una Exception
             {
 
-                teoTerm = parser.instantiate(terminoid2, terminoManager);
+                teoTerm = parser.instantiate(terminoid2, terminoManager,simboloManager).value;
 //                teoTerm.setAlias(0);
-                teoTerm2 = parser2.start_rule(terminoid2, terminoManager);
+                teoTerm2 = parser2.start_rule(terminoid2, terminoManager,simboloManager).value;
                 teoTerm2.setAlias(0);
                 // inicializando pa q no ladille java
                 /*Term izq = null;
@@ -190,9 +181,9 @@ public class EvaluarController {
                 map.addAttribute("anchuraDiv", "1100px");
                 return "PagParaVerPredicado";
             }*/
-            catch (IsNotInDBException e) {
-                String hdr = parser.getErrorHeader(e);
-                String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+            /*catch (IsNotInDBException e) {
+                //String hdr = parser.getErrorHeader(e);
+                String msg = ""; //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
 
                 map.addAttribute("agregarTeoremaMenu", "class=\"active\"");
@@ -204,9 +195,9 @@ public class EvaluarController {
                 map.addAttribute("overflow", "hidden");
                 map.addAttribute("anchuraDiv", "1100px");
                 return "PagParaVerPredicado";
-            } catch (RecognitionException e) {
+            }*/ catch (RecognitionException e) {
                 String hdr = parser.getErrorHeader(e);
-                String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+                String msg = "";//parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
 
                 map.addAttribute("admin", "admin");
@@ -252,7 +243,7 @@ public class EvaluarController {
 
         //Hay que construir un Term aqui con el String termino.combinador
         //para luego traducir, hace falta construir un parse   
-        ANTLRStringStream in = new ANTLRStringStream(programa);
+        ANTLRInputStream in = new ANTLRInputStream(programa);
         TermLexer lexer = new TermLexer(in);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         TermParser parser = new TermParser(tokens);
@@ -260,10 +251,10 @@ public class EvaluarController {
         try //si la sintanxis no es correcta ocurre una Exception
         {
 
-            term = parser.start_rule(terminoid, terminoManager);
+            term = parser.start_rule(terminoid, terminoManager,simboloManager).value;
             term.setAlias(0);
 
-        } catch (IsNotInDBException e) {
+        } /*catch (IsNotInDBException e) {
             String hdr = parser.getErrorHeader(e);
             String msg = parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", usuarioManager.getUsuario(username));
@@ -282,9 +273,9 @@ public class EvaluarController {
             map.addAttribute("overflow", "hidden");
             map.addAttribute("anchuraDiv", "1100px");
             return "insertarEvaluar";
-        } catch (RecognitionException e) {
+        } */catch (RecognitionException e) {
             String hdr = parser.getErrorHeader(e);
-            String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+            String msg = "";//parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", usuarioManager.getUsuario(username));
             map.addAttribute("insertarEvaluar", new InsertarEvaluar());
             map.addAttribute("mensaje", hdr + " " + msg);

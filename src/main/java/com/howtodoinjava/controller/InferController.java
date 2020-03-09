@@ -1,12 +1,9 @@
 package com.howtodoinjava.controller;
 
-import com.howtodoinjava.dao.ResuelveDAO;
 import com.howtodoinjava.entity.Dispone;
-import com.howtodoinjava.entity.Metateorema;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
-import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.forms.InferResponse;
@@ -14,8 +11,6 @@ import com.howtodoinjava.forms.InfersForm;
 import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Bracket;
 import com.howtodoinjava.lambdacalculo.Const;
-import com.howtodoinjava.lambdacalculo.MakeTerm;
-import com.howtodoinjava.lambdacalculo.PasoInferencia;
 import com.howtodoinjava.lambdacalculo.Sust;
 import com.howtodoinjava.lambdacalculo.Var;
 import com.howtodoinjava.lambdacalculo.Term;
@@ -34,17 +29,15 @@ import com.howtodoinjava.service.UsuarioManager;
 import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MetateoremaManager;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -73,6 +66,8 @@ public class InferController {
     private MetateoremaManager metateoremaManager;
     @Autowired
     private ResuelveManager resuelveManager;
+    @Autowired
+    private SimboloManager simboloManager;
     @Autowired
     private HttpSession session;
     @Autowired
@@ -302,19 +297,19 @@ public class InferController {
         ArrayList<Object> arr = null;
         if (!instanciacion.equals(""))
         {
-          ANTLRStringStream in2 = new ANTLRStringStream(instanciacion);
+          ANTLRInputStream in2 = new ANTLRInputStream(instanciacion);
           TermLexer lexer2 = new TermLexer(in2);
           CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
           TermParser parser2 = new TermParser(tokens2);
           try
           {
-             arr=parser2.instantiate(terminoid,terminoManager);
+             arr=parser2.instantiate(terminoid,terminoManager,simboloManager).value;
           }
           catch(RecognitionException e)
           {
 
               String hdr = parser2.getErrorHeader(e);
-              String msg = parser2.getErrorMessage(e, TermParser.tokenNames);
+              String msg = "";//parser2.getErrorMessage(e, TermParser.tokenNames);
               response.setErrorParser2(hdr + " " + msg);
                 
               return response;
@@ -324,18 +319,18 @@ public class InferController {
         Term leibnizTerm = null;
         if (!leibniz.equals(""))
         {
-            ANTLRStringStream in3 = new ANTLRStringStream(leibniz);
+            ANTLRInputStream in3 = new ANTLRInputStream(leibniz);
             TermLexer lexer3 = new TermLexer(in3);
             CommonTokenStream tokens3 = new CommonTokenStream(lexer3);
             TermParser parser3 = new TermParser(tokens3);
             try
             {
-               leibnizTerm =parser3.lambda(terminoid,terminoManager);
+               leibnizTerm =parser3.lambda(terminoid,terminoManager,simboloManager).value;
             }
             catch(RecognitionException e)
             {
                 String hdr = parser3.getErrorHeader(e);
-                String msg = parser3.getErrorMessage(e, TermParser.tokenNames);
+                String msg = "";//parser3.getErrorMessage(e, TermParser.tokenNames);
                 response.setErrorParser3(hdr + " " + msg);
                 
                 return response;

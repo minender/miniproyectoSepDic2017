@@ -68,9 +68,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
@@ -473,7 +473,7 @@ public class PerfilController {
             terminoid2.setLogin(username);
             
             
-            ANTLRStringStream in = new ANTLRStringStream(agregarTeorema.getTeorema());
+            ANTLRInputStream in = new ANTLRInputStream(agregarTeorema.getTeorema());
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
@@ -481,7 +481,7 @@ public class PerfilController {
             try //si la sintanxis no es correcta ocurre una Exception
             {
 
-                teoTerm =parser.start_rule(terminoid2,terminoManager);
+                teoTerm =parser.start_rule(terminoid2,terminoManager,simboloManager).value;
                 teoTerm.setAlias(0);
                 
                 // ESTO DEBE MOSTRAR LAS CATEGORIAS
@@ -548,7 +548,7 @@ public class PerfilController {
                 map.addAttribute("anchuraDiv","1100px");
                 return "agregarTeorema";
             }
-            catch(IsNotInDBException e)
+            /*catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = parser.getErrorMessage(e, TermParser.tokenNames);
@@ -565,11 +565,11 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "agregarTeorema";
-            }
+            }*/
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+		String msg = "";//parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario", user);
                 map.addAttribute("infer",new InfersForm());
                 map.addAttribute("mensaje", hdr+" "+msg);
@@ -669,7 +669,7 @@ public class PerfilController {
             
             //Hay que construir un Term aqui con el String termino.combinador
             //para luego traducir, hace falta construir un parse   
-            ANTLRStringStream in = new ANTLRStringStream(programa);
+            ANTLRInputStream in = new ANTLRInputStream(programa);
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
@@ -685,7 +685,7 @@ public class PerfilController {
                 if(terminoEnBD == null)
                 {
                     //System.out.println(terminoManager.getTermino(terminoid));
-                    term=parser.start_rule(terminoid2,terminoManager);
+                    term=parser.start_rule(terminoid2,terminoManager,simboloManager).value;
                     
                     term.setAlias(terminoid.getAlias());
                     //aqui se traduce y luego se llama a toString para tener el
@@ -764,7 +764,7 @@ public class PerfilController {
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
             }
-            catch(IsNotInDBException e)
+            /*catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = parser.getErrorMessage(e, TermParser.tokenNames);
@@ -784,11 +784,11 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
-            }
+            }*/
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+		String msg = "";// parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario",user);
                 map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                 map.addAttribute("modificar",new Integer(0));
@@ -975,14 +975,14 @@ public class PerfilController {
             
             //Hay que construir un Term aqui con el String termino.combinador
             //para luego traducir, hace falta construir un parse   
-            ANTLRStringStream in = new ANTLRStringStream(programa);
+            ANTLRInputStream in = new ANTLRInputStream(programa);
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
             Term term;
             try //si la sintanxis no es correcta ocurre una Exception
             {
-                term=parser.start_rule(terminoid2,terminoManager);
+                term=parser.start_rule(terminoid2,terminoManager,simboloManager).value;
                 term.alias=alias;
                 //aqui se traduce y luego se llama a toString para tener el
                 //combinador en String
@@ -1025,7 +1025,7 @@ public class PerfilController {
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
             }
-            catch(IsNotInDBException e)
+            /*catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = parser.getErrorMessage(e, TermParser.tokenNames);
@@ -1039,11 +1039,11 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
-            }
+            }*/
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+		String msg = "";//parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("terminoid",new TerminoId());
                 map.addAttribute("usuario",usuarioManager.getUsuario(username));                
                 map.addAttribute("modificar",new Integer(1));

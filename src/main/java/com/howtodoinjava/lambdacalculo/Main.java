@@ -25,7 +25,7 @@ public class Main {
         Term t1 = mk.makeTerm("p  /\\  (p  \\/ (p  ==  p))");
 
         Term v = mk.makeTerm("(p \\/ Conj(p,q))");
-        Term v1 = mk.makeCuant("(existsx|R:P) == (forallx|P:Q)");
+        //Term v1 = mk.makeCuant("(existsx|R:P) == (forallx|P:Q)");
         Term a = mk.makeApp("p", "r");
         
         //System.out.println(t1.toStringInFin());

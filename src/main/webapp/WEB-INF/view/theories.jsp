@@ -521,7 +521,11 @@ $(document).ready(function(){
                             		                            
         <tiles:insertDefinition name="footer" />
         <script>
-                var table = $('#table_id').DataTable();
+                var table = $('#table_id').DataTable({
+                        "drawCallback": function( settings ) {
+                        MathJax.Hub.Queue(["Typeset",MathJax.Hub]); 
+                    }
+                        });
                 function editSimbol(row_number){
                     fields = table.row(row_number).data();
                     $('#id-edit').val(fields[0]);
