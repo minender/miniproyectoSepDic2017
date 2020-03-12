@@ -9,12 +9,15 @@ import com.howtodoinjava.parse.FOSchemeLexer;
 import com.howtodoinjava.parse.FOSchemeParser;
 import com.howtodoinjava.parse.IsNotInDBException;
 import com.howtodoinjava.parse.TermLexer;
+import com.howtodoinjava.parse.TermBaseListener;
 import com.howtodoinjava.parse.TermParser;
+import com.howtodoinjava.service.SimboloManager;
 import com.howtodoinjava.service.TerminoManager;
 import java.util.ArrayList;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 
 /**
  *
@@ -29,31 +32,33 @@ public class MakeTerm {
         TerminoId terminoid = new TerminoId();
         terminoid.setLogin("admin");
         TerminoManager terminoManager = null;
-        ANTLRStringStream in = new ANTLRStringStream(str);
+        SimboloManager simboloManager = null;
+        CharStream in = CharStreams.fromString(str);
         TermLexer lexer = new TermLexer(in);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         TermParser parser = new TermParser(tokens);
+        parser.addParseListener(new TermBaseListener());
         Term term;
                
         try{  
-            term = parser.start_rule(terminoid,terminoManager); 
+            term = parser.start_rule(terminoid,terminoManager,simboloManager).value; 
             return term;
         }
         catch(IsNotInDBException e)
         {
             String hdr = parser.getErrorHeader(e);
-            String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
         }
         catch(RecognitionException e)
         {
             String hdr = parser.getErrorHeader(e);
-            String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
         }  
         return null;
     }
     
     public Term makeCuant(String str){
-        TerminoId terminoid = null;
+/*        TerminoId terminoid = null;
         TerminoManager terminoManager = null;
         ANTLRStringStream in = new ANTLRStringStream(str);
         //TermLexer lexer = new TermLexer(in);
@@ -76,7 +81,7 @@ public class MakeTerm {
         {
             String hdr = parser.getErrorHeader(e);
             String msg = parser.getErrorMessage(e, TermParser.tokenNames);
-        }  
+        }  */
         return null;
     }
     
@@ -84,25 +89,27 @@ public class MakeTerm {
     public ArrayList<Object> makeInsta(String str){
         TerminoId terminoid = null;
         TerminoManager terminoManager = null;
-        ANTLRStringStream in = new ANTLRStringStream(str);
+        SimboloManager simboloManager = null;
+        CharStream in = CharStreams.fromString(str);
         TermLexer lexer = new TermLexer(in);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         TermParser parser = new TermParser(tokens);
+        parser.addParseListener(new TermBaseListener());
         ArrayList<Object> listObj;
                
         try{  
-            listObj = parser.instantiate(terminoid,terminoManager); 
+            listObj = parser.instantiate(terminoid,terminoManager,simboloManager).value; 
             return listObj;
         }
         catch(IsNotInDBException e)
         {
             String hdr = parser.getErrorHeader(e);
-            String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
         }
         catch(RecognitionException e)
         {
             String hdr = parser.getErrorHeader(e);
-            String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
         }  
         return null;
     }

@@ -19,12 +19,9 @@ import com.howtodoinjava.lambdacalculo.Sust;
 import com.howtodoinjava.lambdacalculo.Corrida;
 import com.howtodoinjava.lambdacalculo.Term;
 import com.howtodoinjava.lambdacalculo.Tripla;
-import com.howtodoinjava.parse.IsNotInDBException;
 import com.howtodoinjava.lambdacalculo.TypeVerificationException;
 import com.howtodoinjava.lambdacalculo.TypedI;
 import com.howtodoinjava.lambdacalculo.Var;
-import com.howtodoinjava.parse.TermLexer;
-import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MetateoremaManager;
@@ -37,9 +34,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
+import com.howtodoinjava.parse.TermLexer;
+import com.howtodoinjava.parse.TermParser;
+import com.howtodoinjava.parse.IsNotInDBException;
+import com.howtodoinjava.service.SimboloManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -61,6 +63,8 @@ public class EvaluarController {
     private UsuarioManager usuarioManager;
     @Autowired
     private TerminoManager terminoManager;
+    @Autowired
+    private SimboloManager simboloManager;
     @Autowired
     private ResuelveManager resuelveManager;
     @Autowired
@@ -88,12 +92,12 @@ public class EvaluarController {
             TerminoId terminoid2 = new TerminoId();
             terminoid2.setLogin(username);
 
-            ANTLRStringStream in = new ANTLRStringStream("p,q:=p/\\r,r\\/r"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
+            CharStream in = CharStreams.fromString("p,q:=p/\\r,r\\/r"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
             //Term teoTerm;
-            ANTLRStringStream in2 = new ANTLRStringStream("p \\/ q /\\(r ==> p /\\ (r \\/ q))");
+            CharStream in2 = CharStreams.fromString("p \\/ q /\\(r ==> p /\\ (r \\/ q))");
             TermLexer lexer2 = new TermLexer(in2);
             CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
             TermParser parser2 = new TermParser(tokens2);
@@ -102,9 +106,9 @@ public class EvaluarController {
             try //si la sintanxis no es correcta ocurre una Exception
             {
 
-                teoTerm = parser.instantiate(terminoid2, terminoManager);
+                teoTerm = parser.instantiate(terminoid2, terminoManager,simboloManager).value;
 //                teoTerm.setAlias(0);
-                teoTerm2 = parser2.start_rule(terminoid2, terminoManager);
+                teoTerm2 = parser2.start_rule(terminoid2, terminoManager,simboloManager).value;
                 teoTerm2.setAlias(0);
                 // inicializando pa q no ladille java
                 /*Term izq = null;
@@ -192,7 +196,7 @@ public class EvaluarController {
             }*/
             catch (IsNotInDBException e) {
                 String hdr = parser.getErrorHeader(e);
-                String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+                String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
 
                 map.addAttribute("agregarTeoremaMenu", "class=\"active\"");
@@ -206,7 +210,7 @@ public class EvaluarController {
                 return "PagParaVerPredicado";
             } catch (RecognitionException e) {
                 String hdr = parser.getErrorHeader(e);
-                String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+                String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
 
                 map.addAttribute("admin", "admin");
@@ -252,7 +256,7 @@ public class EvaluarController {
 
         //Hay que construir un Term aqui con el String termino.combinador
         //para luego traducir, hace falta construir un parse   
-        ANTLRStringStream in = new ANTLRStringStream(programa);
+        CharStream in = CharStreams.fromString(programa);
         TermLexer lexer = new TermLexer(in);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         TermParser parser = new TermParser(tokens);
@@ -260,12 +264,12 @@ public class EvaluarController {
         try //si la sintanxis no es correcta ocurre una Exception
         {
 
-            term = parser.start_rule(terminoid, terminoManager);
+            term = parser.start_rule(terminoid, terminoManager, simboloManager).value;
             term.setAlias(0);
 
         } catch (IsNotInDBException e) {
             String hdr = parser.getErrorHeader(e);
-            String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", usuarioManager.getUsuario(username));
             map.addAttribute("insertarEvaluar", new InsertarEvaluar());
             map.addAttribute("mensaje", hdr + ((IsNotInDBException) e).message);
@@ -284,7 +288,7 @@ public class EvaluarController {
             return "insertarEvaluar";
         } catch (RecognitionException e) {
             String hdr = parser.getErrorHeader(e);
-            String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", usuarioManager.getUsuario(username));
             map.addAttribute("insertarEvaluar", new InsertarEvaluar());
             map.addAttribute("mensaje", hdr + " " + msg);

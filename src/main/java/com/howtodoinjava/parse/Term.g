@@ -7,32 +7,39 @@ import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.lambdacalculo.*;
 import com.howtodoinjava.service.TerminoManager;
+import com.howtodoinjava.service.SimboloManager;
 import java.util.Iterator;}
 
 // Parser Rules
-start_rule[TerminoId terminoid, TerminoManager terminoManager]   returns [Term value]: eq           { $value=$eq.value;};
+start_rule[TerminoId terminoid, TerminoManager terminoManager, SimboloManager sm]   
+                           returns [Term value]: eq[sm]           { $value=$eq.value;};
 
-eq returns [Term value]: term eqtail          { Term aux=$term.value;
+eq[SimboloManager sm] 
+     returns [Term value]: term[sm] eqtail[sm]  { Term aux=$term.value;
                                                 for(Iterator<Term> i = $eqtail.value.iterator(); i.hasNext();) 
                                                    aux=new App(new App(new Const("\\equiv ",false,1,1),i.next()),aux);
+                                                if (((Const)((App)((App)aux).p).p).getCon().equals("hola"))
+                                                   throw new IsNotInDBException(this,"");
                                                 $value=aux;
                                               };
 
-eqtail returns [ArrayList<Term> value]:    
-    ('=='| '\\equiv') term tail1=eqtail       {ArrayList<Term> aux=$tail1.value; aux.add(0,$term.value); $value=aux;}
+eqtail[SimboloManager sm] 
+        returns [ArrayList<Term> value]:    
+    ('=='| '\\equiv') term[sm] tail1=eqtail[sm] {ArrayList<Term> aux=$tail1.value; aux.add(0,$term.value); $value=aux;}
 
-   |                                          {$value=new ArrayList<Term>();};
+   |                                            {$value=new ArrayList<Term>();};
 
-term returns [Term value]: disyconj disyconjtail  { 
+term[SimboloManager sm] returns [Term value]: 
+    disyconj[sm] disyconjtail[sm]                 { 
                                                     if ($disyconjtail.value == null)
                                                        $value = $disyconj.value;
                                                     else
                                                        $value = new App($disyconjtail.value,$disyconj.value);
                                                   };
 
-disyconjtail returns [Term value]:  
+disyconjtail[SimboloManager sm] returns [Term value]:  
 
-     ('==>'| '\\Rightarrow') disyconj tail2=disyconjtail{
+   ('==>'| '\\Rightarrow') disyconj[sm] tail2=disyconjtail[sm]{
                                                if ($tail2.value == null)
                                                   $value = new App(new Const("\\Rightarrow ",false,2,2),$disyconj.value);
                                                else
@@ -41,21 +48,24 @@ disyconjtail returns [Term value]:
 
    |                                          {$value=null;};
 
-disyconj returns [Term value]: conc conctail  { Term aux=$conc.value;
+disyconj[SimboloManager sm] 
+returns [Term value]: conc[sm] conctail[sm]  { Term aux=$conc.value;
                                                 for(Iterator<Term> i = $conctail.value.iterator(); i.hasNext();) 
                                                    aux=new App(new App(new Const("\\Leftarrow ",false,2,1),i.next()),aux);
                                                 $value=aux;
                                               };
 
-conctail returns [ArrayList<Term> value]:
+conctail[SimboloManager sm] returns [ArrayList<Term> value]:
 
-    ('<=='| '\\Leftarrow') conc tail3=conctail{ArrayList<Term> aux=$tail3.value; 
+    ('<=='| '\\Leftarrow') conc[sm] tail3=conctail[sm]
+                                              {ArrayList<Term> aux=$tail3.value; 
                                                aux.add(0,$conc.value); $value=aux;
                                               }
 
    |                                          {$value=new ArrayList<Term>();};
 
-conc returns [Term value]: neq disytail             { Term aux=$neq.value; 
+conc[SimboloManager sm] 
+   returns [Term value]: neq[sm] disytail[sm]      { Term aux=$neq.value; 
                                                      for(Iterator<ParserPair> i = $disytail.value.iterator(); i.hasNext();)
                                                      {
                                                         ParserPair pair = i.next();
@@ -67,35 +77,36 @@ conc returns [Term value]: neq disytail             { Term aux=$neq.value;
                                                      $value=aux;
                                                    };
 
-disytail returns [ArrayList<ParserPair> value]:
+disytail[SimboloManager sm] returns [ArrayList<ParserPair> value]:
 
-     ('\\/'| '\\vee') neq tail4=disytail      {ArrayList<ParserPair> aux=$tail4.value;
+  ('\\/'| '\\vee') neq[sm] tail4=disytail[sm] {ArrayList<ParserPair> aux=$tail4.value;
                                                aux.add(0,new ParserPair("\\vee ",$neq.value)); $value=aux;
                                               }
 
-   | ('/\\'| '\\wedge') neq tail5=disytail    {ArrayList<ParserPair> aux=$tail5.value; 
-                                               aux.add(0,new ParserPair("\\wedge ",$neq.value)); $value=aux;
-                                              }
+| ('/\\'| '\\wedge') neq[sm] tail5=disytail[sm] {ArrayList<ParserPair> aux=$tail5.value; 
+                                                 aux.add(0,new ParserPair("\\wedge ",$neq.value)); $value=aux;
+                                                }
 
    |                                          {$value=new ArrayList<ParserPair>();};
 
-neq returns [Term value]: neg neqtail         { Term aux=$neg.value;
+neq[SimboloManager sm] 
+  returns [Term value]: neg[sm] neqtail[sm]   { Term aux=$neg.value;
                                                 for(Iterator<Term> i = $neqtail.value.iterator(); i.hasNext();) 
                                                    aux=new App(new App(new Const("\\not\\equiv ",false,4,1),i.next()),aux);
                                                 $value=aux;
                                               };
 
-neqtail returns [ArrayList<Term> value]:
+neqtail[SimboloManager sm] returns [ArrayList<Term> value]:
 
-    ('!=='| '\\not\\equiv') neg tail6=neqtail {ArrayList<Term> aux=$tail6.value; 
-                                               aux.add(0,$neg.value); $value=aux;
-                                              }
+ ('!=='| '\\not\\equiv') neg[sm] tail6=neqtail[sm] {ArrayList<Term> aux=$tail6.value; 
+                                                    aux.add(0,$neg.value); $value=aux;
+                                                   }
 
    |                                          {$value=new ArrayList<Term>();};
 
-neg returns [Term value]: 
+neg[SimboloManager sm] returns [Term value]: 
 
-      ('!' | '\\neg') n=neg                   {$value=new App(new Const("\\neg ",false,5,2),$n.value);}
+      ('!' | '\\neg') n=neg[sm]               {$value=new App(new Const("\\neg ",false,5,2),$n.value);}
 
      | CAPITALLETTER                          {$value = new Var((new Integer((int)$CAPITALLETTER.text.charAt(0))).intValue());}
 
@@ -105,7 +116,7 @@ neg returns [Term value]:
 
      | 'false'                                {$value = new Const("false ");}
 
-     | CAPITALLETTER '_{' eq '}^{' LETTER '}' {Var letter = new Var((new Integer((int)$LETTER.text.charAt(0))).intValue());
+ | CAPITALLETTER '_{' eq[sm] '}^{' LETTER '}' {Var letter = new Var((new Integer((int)$LETTER.text.charAt(0))).intValue());
                                                Var capl = new Var((new Integer((int)$CAPITALLETTER.text.charAt(0))).intValue());
                                                List<Var> vars = new ArrayList<Var>();
                                                List<Term> terms = new ArrayList<Term>();
@@ -120,36 +131,32 @@ neg returns [Term value]:
                                                $value=aux;
                                               }
 
-     | '(' eq ')'                             {$value=$eq.value;};
+     | '(' eq[sm] ')'                         {$value=$eq.value;};
 
-instantiate[TerminoId terminoid, TerminoManager terminoManager] returns [ArrayList<Object> value]: 
+instantiate[TerminoId terminoid, TerminoManager terminoManager, SimboloManager sm] 
+     returns [ArrayList<Object> value]: 
 
-     arguments ':=' explist                   {ArrayList<Object> arr=new ArrayList<Object>();
+     arguments ':=' explist[sm]               {ArrayList<Object> arr=new ArrayList<Object>();
                                                arr.add($arguments.value);
                                                arr.add($explist.value);
                                                $value = arr;
                                               };
 
-explist returns [ArrayList<Term> value]: 
+explist[SimboloManager sm] returns [ArrayList<Term> value]: 
 
-     eq  explisttail                          {ArrayList<Term> aux = $explisttail.value;
+     eq[sm]  explisttail[sm]                  {ArrayList<Term> aux = $explisttail.value;
                                                aux.add(0,$eq.value);
                                                $value = aux;
                                               };
 
-explisttail returns [ArrayList<Term> value]: 
+explisttail[SimboloManager sm] returns [ArrayList<Term> value]: 
 
-     ',' eq tail7=explisttail                 {ArrayList<Term> aux = $tail7.value;
+     ',' eq[sm] tail7=explisttail[sm]         {ArrayList<Term> aux = $tail7.value;
                                                aux.add(0,$eq.value);
                                                $value =aux;
                                               }
 
      |                                        {$value = new ArrayList<Term>();};
-
-X:
-   'X' NUMBER
-
-  | 'x' NUMBER;
 
 arguments returns [ArrayList<Var> value]: LETTER ',' arg=arguments {ArrayList<Var> aux=$arg.value; 
                                                             Var v=new Var((new Integer((int)$LETTER.text.charAt(0))).intValue());
@@ -175,16 +182,10 @@ arguments returns [ArrayList<Var> value]: LETTER ',' arg=arguments {ArrayList<Va
                                                              $value = list;
                                                            };
 
-lambda[TerminoId terminoid, TerminoManager terminoManager] returns [Term value]: 
-                             'lambda' LETTER '.' eq        {Var v=new Var((new Integer($LETTER.text.charAt(0))).intValue());
+lambda[TerminoId terminoid, TerminoManager terminoManager, SimboloManager sm] returns [Term value]: 
+                             'lambda' LETTER '.' eq[sm]    {Var v=new Var((new Integer($LETTER.text.charAt(0))).intValue());
                                                             $value = new Bracket(v,$eq.value);
                                                            };
-
-INITIALDIGIT: '1'..'9';
-
-DIGIT: '0'|INITIALDIGIT;
-
-NUMBER: '0' | INITIALDIGIT (DIGIT)*;
 
 CAPITALLETTER: 'A'..'Z';
 
@@ -194,4 +195,4 @@ WORD:   CAPITALLETTER (LETTER)+
 
       | CAPITALLETTER;
 
-WHITESPACE: (' ' | '\r')+ {$channel = HIDDEN;};
+WHITESPACE: (' ' | '\r')+ -> channel(HIDDEN);

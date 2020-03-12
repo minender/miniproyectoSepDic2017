@@ -34,6 +34,7 @@ import com.howtodoinjava.service.UsuarioManager;
 import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MetateoremaManager;
+import com.howtodoinjava.service.SimboloManager;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,9 +43,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -67,6 +69,8 @@ public class InferController {
     private UsuarioManager usuarioManager;
     @Autowired
     private TerminoManager terminoManager;
+    @Autowired
+    private SimboloManager simboloManager;
     @Autowired
     private SolucionManager solucionManager;
     @Autowired
@@ -302,19 +306,19 @@ public class InferController {
         ArrayList<Object> arr = null;
         if (!instanciacion.equals(""))
         {
-          ANTLRStringStream in2 = new ANTLRStringStream(instanciacion);
+          CharStream in2 = CharStreams.fromString(instanciacion);
           TermLexer lexer2 = new TermLexer(in2);
           CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
           TermParser parser2 = new TermParser(tokens2);
           try
           {
-             arr=parser2.instantiate(terminoid,terminoManager);
+             arr=parser2.instantiate(terminoid,terminoManager,simboloManager).value;
           }
           catch(RecognitionException e)
           {
 
               String hdr = parser2.getErrorHeader(e);
-              String msg = parser2.getErrorMessage(e, TermParser.tokenNames);
+              String msg = e.getMessage(); //parser2.getErrorMessage(e, TermParser.tokenNames);
               response.setErrorParser2(hdr + " " + msg);
                 
               return response;
@@ -324,18 +328,18 @@ public class InferController {
         Term leibnizTerm = null;
         if (!leibniz.equals(""))
         {
-            ANTLRStringStream in3 = new ANTLRStringStream(leibniz);
+            CharStream in3 = CharStreams.fromString(leibniz);
             TermLexer lexer3 = new TermLexer(in3);
             CommonTokenStream tokens3 = new CommonTokenStream(lexer3);
             TermParser parser3 = new TermParser(tokens3);
             try
             {
-               leibnizTerm =parser3.lambda(terminoid,terminoManager);
+               leibnizTerm =parser3.lambda(terminoid,terminoManager,simboloManager).value;
             }
             catch(RecognitionException e)
             {
                 String hdr = parser3.getErrorHeader(e);
-                String msg = parser3.getErrorMessage(e, TermParser.tokenNames);
+                String msg = e.getMessage(); //parser3.getErrorMessage(e, TermParser.tokenNames);
                 response.setErrorParser3(hdr + " " + msg);
                 
                 return response;

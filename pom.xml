@@ -15,6 +15,11 @@
 			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
                         <!--<url>file:///home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib</url>-->
 		</repository>
+                <repository>
+          <id>Central Maven repository</id>
+          <name>Central Maven repository https</name>
+          <url>https://repo.maven.apache.org/maven2</url>
+       </repository>
 	</repositories>
   <properties>
     <org.springframework.version>4.3.18.RELEASE</org.springframework.version>
@@ -367,7 +372,7 @@
       <version>2.4.0.v200706111738</version>
       <type>jar</type>
       <scope>system</scope>
-      <systemPath>/home/jt/NetBeansProjects/javax.servlet-2.4.0.v200706111738.jar</systemPath>
+      <systemPath>/home/federico/NetBeansProjects/Logica/lib/javax.servlet-2.4.0.v200706111738.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
