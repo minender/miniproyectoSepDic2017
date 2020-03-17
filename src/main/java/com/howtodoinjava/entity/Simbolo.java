@@ -84,12 +84,24 @@ public class Simbolo  implements java.io.Serializable {
     public boolean isEsInfijo() {
         return esInfijo;
     }
+    
+    public boolean isInf() {
+        return esInfijo;
+    }
 
     public int getAsociatividad() {
         return asociatividad;
     }
+    
+    public int getAs() {
+        return asociatividad;
+    }
 
     public int getPrecedencia() {
+        return precedencia;
+    }
+    
+    public int getPr() {
         return precedencia;
     }
 

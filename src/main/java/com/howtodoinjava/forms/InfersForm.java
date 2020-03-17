@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Const;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
+import com.howtodoinjava.service.SimboloManager;
 import java.util.List;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -134,7 +135,7 @@ public class InfersForm {
         return true;
     }
 
-        public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, List<PasoInferencia> inferencias){
+        public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, List<PasoInferencia> inferencias, SimboloManager s){
         
         
         this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
@@ -142,11 +143,11 @@ public class InfersForm {
         String ultimaExp = "";
         for (PasoInferencia x: inferencias) {
             this.setHistorial(this.getHistorial()+ "$$" +
-                                    x.getExpresion().toStringInf()+" $$" + " $$ \\equiv< " + 
-                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf() + 
-                                    " - " + x.getLeibniz().toStringInf() + 
+                                    x.getExpresion().toStringInf(s)+" $$" + " $$ \\equiv< " + 
+                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf(s) + 
+                                    " - " + x.getLeibniz().toStringInf(s) + 
                                     " - " + x.getInstancia().toString()+" > $$");
-            ultimaExp = x.getResult().toStringInf();
+            ultimaExp = x.getResult().toStringInf(s);
         }
         if(valida) {
             this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");
@@ -156,18 +157,18 @@ public class InfersForm {
         
     }
     
-    public void generarHistorial(String formula, String nTeo, List<PasoInferencia> inferencias){
+    public void generarHistorial(String formula, String nTeo, List<PasoInferencia> inferencias,SimboloManager s){
         
         
         this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
         String ultimaExp = "";
         for (PasoInferencia x: inferencias) {
             this.setHistorial(this.getHistorial()+ "$$" +
-                                    x.getExpresion().toStringInf()+" $$" + " $$ \\equiv< " + 
-                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf() + 
-                                    " - " + x.getLeibniz().toStringInf() + 
+                                    x.getExpresion().toStringInf(s)+" $$" + " $$ \\equiv< " + 
+                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf(s) + 
+                                    " - " + x.getLeibniz().toStringInf(s) + 
                                     " - " + x.getInstancia()+" > $$");
-                ultimaExp = x.getResult().toStringInf();
+                ultimaExp = x.getResult().toStringInf(s);
         }
         
         this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");

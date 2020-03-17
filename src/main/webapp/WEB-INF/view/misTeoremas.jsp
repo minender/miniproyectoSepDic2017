@@ -41,7 +41,7 @@
                       <li >
                         <p >
                              <i class="fa fa-lock" aria-hidden="true" ></i>
-                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$                     
+                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal(simboloManager)}$                     
                         </p> 
                       </li>
                       
@@ -56,16 +56,16 @@
                                 </a>
                                 <i class="fa fa-unlock" aria-hidden="true"></i>
 
-                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$
+                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal(simboloManager)}$
                                 <span class="d-none" id="${resu.getTeorema().getId()}">
 
                                 <br><span class="metaitem"></span>
-                                <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) Metatheorem: </a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
+                                <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) Metatheorem: </a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal(simboloManager)}$
                                 </span>
                             </c:when>
                             <c:otherwise>
                                 <i class="fa fa-unlock" aria-hidden="true" ></i>
-                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$                     
+                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal(simboloManager)}$                     
                         
                             </c:otherwise>
                           </c:choose>

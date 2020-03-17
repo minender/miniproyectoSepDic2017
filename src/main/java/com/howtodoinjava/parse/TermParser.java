@@ -3,6 +3,7 @@ package com.howtodoinjava.parse;
 
 import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
+import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.lambdacalculo.*;
 import com.howtodoinjava.service.TerminoManager;
 import com.howtodoinjava.service.SimboloManager;
@@ -196,10 +197,14 @@ public class TermParser extends Parser {
 			setState(38);
 			((EqContext)_localctx).eqtail = eqtail(sm);
 			 Term aux=((EqContext)_localctx).term.value;
-			                                                for(Iterator<Term> i = ((EqContext)_localctx).eqtail.value.iterator(); i.hasNext();) 
-			                                                   aux=new App(new App(new Const("\\equiv ",false,1,1),i.next()),aux);
-			                                                if (((Const)((App)((App)aux).p).p).getCon().equals("hola"))
-			                                                   throw new IsNotInDBException(this,"");
+			                                                for(Iterator<Term> i = ((EqContext)_localctx).eqtail.value.iterator(); i.hasNext();)
+			                                                {
+			                                                   Simbolo s = sm.getSimbolo(1); 
+			                                                   if (s == null)
+			                                                      throw new IsNotInDBException(this,"");
+			                                                   aux=new App(new App(new Const(1,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+			                                                }
+
 			                                                ((EqContext)_localctx).value = aux;
 			                                              
 			}
@@ -406,9 +411,19 @@ public class TermParser extends Parser {
 				((DisyconjtailContext)_localctx).tail2 = disyconjtail(sm);
 
 				                                               if (((DisyconjtailContext)_localctx).tail2.value == null)
-				                                                  ((DisyconjtailContext)_localctx).value =  new App(new Const("\\Rightarrow ",false,2,2),((DisyconjtailContext)_localctx).disyconj.value);
+				                                               {
+				                                                  Simbolo s = sm.getSimbolo(2); 
+				                                                  if (s == null)
+				                                                     throw new IsNotInDBException(this,"");
+				                                                  ((DisyconjtailContext)_localctx).value =  new App(new Const(2,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((DisyconjtailContext)_localctx).disyconj.value);
+				                                               }
 				                                               else
-				                                               ((DisyconjtailContext)_localctx).value = new App(new Const("\\Rightarrow ",false,2,2),new App(((DisyconjtailContext)_localctx).tail2.value,((DisyconjtailContext)_localctx).disyconj.value));
+				                                               {
+				                                                  Simbolo s = sm.getSimbolo(2); 
+				                                                  if (s == null)
+				                                                     throw new IsNotInDBException(this,"");
+				                                                  ((DisyconjtailContext)_localctx).value = new App(new Const(2,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((DisyconjtailContext)_localctx).tail2.value,((DisyconjtailContext)_localctx).disyconj.value));
+				                                               }
 				                                              
 				}
 				break;
@@ -477,7 +492,12 @@ public class TermParser extends Parser {
 			((DisyconjContext)_localctx).conctail = conctail(sm);
 			 Term aux=((DisyconjContext)_localctx).conc.value;
 			                                                for(Iterator<Term> i = ((DisyconjContext)_localctx).conctail.value.iterator(); i.hasNext();) 
-			                                                   aux=new App(new App(new Const("\\Leftarrow ",false,2,1),i.next()),aux);
+			                                                {
+			                                                   Simbolo s = sm.getSimbolo(3); 
+			                                                   if (s == null)
+			                                                      throw new IsNotInDBException(this,"");
+			                                                   aux=new App(new App(new Const(3,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+			                                                }
 			                                                ((DisyconjContext)_localctx).value = aux;
 			                                              
 			}
@@ -621,9 +641,19 @@ public class TermParser extends Parser {
 			                                                     {
 			                                                        ParserPair pair = i.next();
 			                                                        if (pair.symbol.equals("\\vee "))
-			                                                           aux=new App(new App(new Const(pair.symbol,false,3,1),pair.term),aux); 
+			                                                        {
+			                                                           Simbolo s = sm.getSimbolo(4); 
+			                                                           if (s == null)
+			                                                              throw new IsNotInDBException(this,"");
+			                                                           aux=new App(new App(new Const(4,pair.symbol,!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
+			                                                        }
 			                                                        else if (pair.symbol.equals("\\wedge "))
-			                                                           aux=new App(new App(new Const(pair.symbol,false,3,1),pair.term),aux); 
+			                                                        {
+			                                                           Simbolo s = sm.getSimbolo(5); 
+			                                                           if (s == null)
+			                                                              throw new IsNotInDBException(this,"");
+			                                                           aux=new App(new App(new Const(5,pair.symbol,!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
+			                                                        }
 			                                                     }
 			                                                     ((ConcContext)_localctx).value = aux;
 			                                                   
@@ -695,7 +725,10 @@ public class TermParser extends Parser {
 				setState(79);
 				((DisytailContext)_localctx).tail4 = disytail(sm);
 				ArrayList<ParserPair> aux=((DisytailContext)_localctx).tail4.value;
-				                                               aux.add(0,new ParserPair("\\vee ",((DisytailContext)_localctx).neq.value)); ((DisytailContext)_localctx).value = aux;
+				                                               Simbolo s = sm.getSimbolo(4); 
+				                                               if (s == null)
+				                                                  throw new IsNotInDBException(this,"");
+				                                               aux.add(0,new ParserPair(s.getNotacion_latex(),((DisytailContext)_localctx).neq.value)); ((DisytailContext)_localctx).value = aux;
 				                                              
 				}
 				break;
@@ -718,7 +751,10 @@ public class TermParser extends Parser {
 				setState(84);
 				((DisytailContext)_localctx).tail5 = disytail(sm);
 				ArrayList<ParserPair> aux=((DisytailContext)_localctx).tail5.value; 
-				                                                 aux.add(0,new ParserPair("\\wedge ",((DisytailContext)_localctx).neq.value)); ((DisytailContext)_localctx).value = aux;
+				                                                 Simbolo s = sm.getSimbolo(5); 
+				                                                 if (s == null)
+				                                                    throw new IsNotInDBException(this,"");
+				                                                 aux.add(0,new ParserPair(s.getNotacion_latex(),((DisytailContext)_localctx).neq.value)); ((DisytailContext)_localctx).value = aux;
 				                                                
 				}
 				break;
@@ -791,7 +827,12 @@ public class TermParser extends Parser {
 			((NeqContext)_localctx).neqtail = neqtail(sm);
 			 Term aux=((NeqContext)_localctx).neg.value;
 			                                                for(Iterator<Term> i = ((NeqContext)_localctx).neqtail.value.iterator(); i.hasNext();) 
-			                                                   aux=new App(new App(new Const("\\not\\equiv ",false,4,1),i.next()),aux);
+			                                                {
+			                                                   Simbolo s = sm.getSimbolo(6); 
+			                                                   if (s == null)
+			                                                      throw new IsNotInDBException(this,"");
+			                                                   aux=new App(new App(new Const(6,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+			                                                }
 			                                                ((NeqContext)_localctx).value = aux;
 			                                              
 			}
@@ -959,7 +1000,8 @@ public class TermParser extends Parser {
 				}
 				setState(103);
 				((NegContext)_localctx).n = neg(sm);
-				((NegContext)_localctx).value = new App(new Const("\\neg ",false,5,2),((NegContext)_localctx).n.value);
+				Simbolo s = sm.getSimbolo(7); if (s == null)throw new IsNotInDBException(this,""); 
+				                                               ((NegContext)_localctx).value = new App(new Const(7,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((NegContext)_localctx).n.value);
 				}
 				break;
 			case 2:
@@ -983,7 +1025,9 @@ public class TermParser extends Parser {
 				{
 				setState(110);
 				match(T__14);
-				((NegContext)_localctx).value =  new Const("true ");
+				Simbolo s = sm.getSimbolo(8); if (s == null)throw new IsNotInDBException(this,"");
+				                                               ((NegContext)_localctx).value =  new Const(8,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                              
 				}
 				break;
 			case 5:
@@ -991,7 +1035,8 @@ public class TermParser extends Parser {
 				{
 				setState(112);
 				match(T__15);
-				((NegContext)_localctx).value =  new Const("false ");
+				Simbolo s = sm.getSimbolo(9); if (s == null)throw new IsNotInDBException(this,"");
+				                                               ((NegContext)_localctx).value =  new Const(9,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				}
 				break;
 			case 6:
@@ -1030,7 +1075,7 @@ public class TermParser extends Parser {
 				((NegContext)_localctx).arguments = arguments();
 				setState(125);
 				match(T__20);
-				Term aux = new Const((((NegContext)_localctx).WORD!=null?((NegContext)_localctx).WORD.getText():null),true,-1,-1);
+				Term aux = new Const(-1,(((NegContext)_localctx).WORD!=null?((NegContext)_localctx).WORD.getText():null),true,-1,-1);
 				                                               for(Iterator<Var> i = ((NegContext)_localctx).arguments.value.iterator(); i.hasNext();) 
 				                                                  aux=new App(aux,i.next());
 				                                               ((NegContext)_localctx).value = aux;

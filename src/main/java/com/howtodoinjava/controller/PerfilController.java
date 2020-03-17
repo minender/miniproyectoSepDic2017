@@ -319,7 +319,7 @@ public class PerfilController {
         {
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
-            t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
+            t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
         }
         /*
         List<Teorema> teoremas = usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username));
@@ -340,6 +340,7 @@ public class PerfilController {
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
         map.addAttribute("teoremas", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
+        map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         return "misTeoremas";
@@ -364,14 +365,14 @@ public class PerfilController {
         // validar que el usuario este en sesion
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
-        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
+        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInfFinal(simboloManager);
         String nTeo = resuelve.getNumeroteorema();
         Solucion solucion = solucionManager.getSolucion(idSol);
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term typedTerm = solucion.getTypedTerm();
         
-        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager);
+        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager, simboloManager);
         return response;
     }
     
@@ -381,11 +382,11 @@ public class PerfilController {
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
-        String teoremaStr = new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),resuelve.getTeorema().getTeoTerm()).toStringInfFinal();
+        String teoremaStr = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true ")),resuelve.getTeorema().getTeoTerm()).toStringInfFinal(simboloManager);
         String nTeo = resuelve.getNumeroteorema();
-        Term A1 = new TypedA( new App(new App(new Const("\\equiv ",false,1,1), new App(new App(new Const("\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const("\\equiv ",false,1,1),new Var(113)),new Var(112))) );
-        Term A2 = new TypedA( new App(new App(new Const("\\equiv ",false,1,1),new Var(113)),
-                                     new App(new App(new Const("\\equiv ",false,1,1),new Var(113)),
+        Term A1 = new TypedA( new App(new App(new Const(1,"\\equiv ",false,1,1), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),new Var(112))) );
+        Term A2 = new TypedA( new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),
+                                     new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),
                                                                new Const("true "))));
         Term A3 = new TypedA(teo);
         List<Var> list1 = new ArrayList<Var>();
@@ -414,7 +415,7 @@ public class PerfilController {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager);
+        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager, simboloManager);
         return response;
     }
     
@@ -499,7 +500,7 @@ public class PerfilController {
                 
 
                 // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
-                Term metateoTerm = new App(new App(new Const("\\equiv ",false,1,1),new Const("true")),teoTerm);
+                Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
                 Metateorema metateoremaAdd = new Metateorema(teorema.getId(),metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm));
                 Metateorema metateorema = metateoremaManager.addMetateorema(metateoremaAdd);
                 

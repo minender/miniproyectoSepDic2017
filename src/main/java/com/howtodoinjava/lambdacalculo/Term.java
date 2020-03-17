@@ -4,6 +4,8 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.entity.Simbolo;
+import com.howtodoinjava.service.SimboloManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
+import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  *
@@ -78,6 +82,18 @@ public abstract class Term implements Cloneable, Serializable{
         }
     }
     
+    public static String notation(Simbolo sym, Stack<String> args)
+    {
+        Map<String,String> values = new HashMap<String, String>();
+        values.put("op", sym.getNotacion_latex());
+        for (int i=0; i < sym.getArgumentos(); i++)
+            values.put("a"+(i+1),args.pop());
+        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
+        String s = sub.replace(sym.getNotacion());
+        
+        return s;
+    }
+    
     public abstract Term bracketAbsSH(Var x);
     
     public abstract Term traducBD();
@@ -121,7 +137,7 @@ public abstract class Term implements Cloneable, Serializable{
     @Override
     public abstract String toString();
     
-    public abstract String toStringInf();
+    public abstract String toStringInf(SimboloManager s);
     
     public abstract String toStringInfLabeled(int z, Term initTerm, List<String> leibniz, Id id, int nivel);
     
@@ -144,10 +160,10 @@ public abstract class Term implements Cloneable, Serializable{
         return term;
     }
     
-    public String toStringInfFinal()
+    public String toStringInfFinal(SimboloManager s)
     {
         String term;
-        String aux= this.toStringInf();
+        String aux= this.toStringInf(s);
         if(aux.startsWith("("))            
             term = aux.substring(1, aux.length()-1);            
         else{
@@ -164,7 +180,7 @@ public abstract class Term implements Cloneable, Serializable{
         String st = this.toStringInfLabeledFinal(z, this, l, new Id(), 0)+"$\n";
         st+="<script>\nvar leibniz=[";
         for(String it: l)
-            st+="\n\"lambda "+new Var(z).toStringInf()+"."+it+"\",";
+            st+="\n\"lambda "+new Var(z).toStringInf(null)+"."+it+"\",";
         st = st.substring(0, st.length()-1)+"];\n</script>";
         return st;
     }

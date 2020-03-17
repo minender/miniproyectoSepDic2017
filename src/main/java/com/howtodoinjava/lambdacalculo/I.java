@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,7 +132,7 @@ public class I extends Term {
     }
    
     @Override
-    public String toStringInf() {
+    public String toStringInf(SimboloManager s) {
             return ""; //"|";
     }     
     

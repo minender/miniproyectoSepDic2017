@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -152,12 +153,12 @@ public class Bracket extends Term{
         if(t.alias == null)
             return "(\\lambda "+x.toString()+"."+t.toStringFinal()+")";
         else{
-            return "(\\lambda "+x.toStringInfFinal()+"."+t.alias +")";
+            return "(\\lambda "+x.toStringInfFinal(null)+"."+t.alias +")";
             //return "(\\lambda "+x.toString()+"."+t.alias.split("@")[0].replace("_", "\\_") +")";
         }
     }
     
-    public String toStringInf()
+    public String toStringInf(SimboloManager s)
     {
        /* if(t.alias == null) {
             System.out.println(t instanceof App);
@@ -177,22 +178,22 @@ public class Bracket extends Term{
         }*/
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
-            return "(\\lambda "+x.toStringInfFinal()+"."+t.toStringInfFinal()+")";
+            return "(\\lambda "+x.toStringInfFinal(s)+"."+t.toStringInfFinal(s)+")";
         }
         else {
-            return "(\\lambda "+x.toStringInfFinal()+"."+t.alias +")";
+            return "(\\lambda "+x.toStringInfFinal(s)+"."+t.alias +")";
         }//.split("@")[0].replace("_", "\\_") +")";
     }
     
     public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
         id.id++;
-        leibniz.add(t.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
-            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal()+"."+t.toStringInfFinal()+")}}";
+            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal(null)+"."+t.toStringInfFinal(null)+")}}";
         }
         else {
-            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal()+"."+t.alias +")}}";
+            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal(null)+"."+t.alias +")}}";
         }
     }
     
@@ -218,13 +219,13 @@ public class Bracket extends Term{
         if(t.alias == null)
         {
             t.toStringInfAbrvFinal(toString);
-            toString.term= "(\\lambda "+x.toStringInf()+"."+toString.term+")";
+            toString.term= "(\\lambda "+x.toStringInf(null)+"."+toString.term+")";
             return toString;
         }
         else
         {
             toString.setNuevoAlias(t.alias, t);
-            toString.term="(\\lambda "+x.toStringInf()+"."+toString.term+")";
+            toString.term="(\\lambda "+x.toStringInf(null)+"."+toString.term+")";
             return toString;
         }
         

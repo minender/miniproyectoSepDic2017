@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -136,13 +137,13 @@ public class Phi extends Term{
     
     public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
         String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{\\Phi_{"+ind.toString()+"}}}";
-        leibniz.add(t.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
         id.id++;
         return term;
     }
     
     
-    public String toStringInf() {
+    public String toStringInf(SimboloManager s) {
         return "\\Phi_{"+ind.toString()+"}";
     }
     
@@ -160,7 +161,7 @@ public class Phi extends Term{
     
     public ToString toStringInfAbrv(ToString toString)
     {
-        toString.term=this.toStringInf();
+        toString.term=this.toStringInf(null);
         return toString;
     }
 

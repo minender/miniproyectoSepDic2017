@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,14 +153,14 @@ public class Sust extends Term{
     }
     
     @Override
-    public String toStringInf() {
+    public String toStringInf(SimboloManager s) {
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringInf()+",";
+            varss += v.toStringInf(s)+",";
         
         for (Term t : terms)
-            termss += t.toStringInfFinal()+",";
+            termss += t.toStringInfFinal(s)+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
@@ -172,14 +173,14 @@ public class Sust extends Term{
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringInf()+",";
+            varss += v.toStringInf(null)+",";
         
         for (Term t : terms)
-            termss += t.toStringInf()+",";
+            termss += t.toStringInf(null)+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
-         leibniz.add(init.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
+         leibniz.add(init.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
         
         return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{["+varss+" := "+termss+"]}}";
     }
@@ -213,7 +214,7 @@ public class Sust extends Term{
     
     public ToString toStringInfAbrv(ToString toString)
     {
-        toString.term=this.toStringInf();
+        toString.term=this.toStringInf(null);
         return toString;
     }
 

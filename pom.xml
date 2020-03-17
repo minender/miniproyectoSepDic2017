@@ -401,6 +401,14 @@
       <version>3.2</version>
       <type>jar</type>
     </dependency>
+    
+    <dependency>
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-lang3</artifactId>
+	<version>3.0</version>
+        <!--<systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/jstl-1.2.jar</systemPath>-->
+    </dependency>
+    
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.core</artifactId>

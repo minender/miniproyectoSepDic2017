@@ -5,7 +5,11 @@
 package com.howtodoinjava.lambdacalculo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  *
@@ -13,9 +17,17 @@ import java.util.List;
  */
 public class Main {
 
-    public static void main(String args[]) 
+    public static void main(String argss[]) 
     {
-        ArrayList<Object> lisObj = new ArrayList<Object>();
+        int args = 1;
+        String[] arr = {"p"};
+        Map<String,String> values = new HashMap<String, String>();
+        for (int i=0; i < args; i++)
+            values.put("a"+(i+1),arr[i]);
+        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
+        String s = sub.replace("\\neg %(a1)");
+        System.out.println(s);
+        /*ArrayList<Object> lisObj = new ArrayList<Object>();
         ArrayList<Term> lisTerm = new ArrayList<Term>();
         ArrayList<Var> lisVar = new ArrayList<Var>();
 
@@ -26,12 +38,12 @@ public class Main {
 
         Term v = mk.makeTerm("(p \\/ Conj(p,q))");
         Term v1 = mk.makeCuant("(existsx|R:P) == (forallx|P:Q)");
-        Term a = mk.makeApp("p", "r");
+        Term a = mk.makeApp("p", "r");*/
         
         //System.out.println(t1.toStringInFin());
         //System.out.println("+++++++++++++----------+++++++++++++++++");
         //System.out.println("++++++++++++++++++++++++++++++");
-        System.out.println(v.toStringInfFinal());
+        //System.out.println(v.toStringInfFinal(null));
         //System.out.println(v1.toString());
         //System.out.println(v1.toStringInFin());
         //System.out.println("++++++++++++---------------++++++++++++++++++");
