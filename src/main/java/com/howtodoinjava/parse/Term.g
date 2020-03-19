@@ -89,14 +89,14 @@ conc[SimboloManager sm]
                                                      for(Iterator<ParserPair> i = $disytail.value.iterator(); i.hasNext();)
                                                      {
                                                         ParserPair pair = i.next();
-                                                        if (pair.symbol.equals("\\vee "))
+                                                        if (pair.symbol.equals("\\vee"))
                                                         {
                                                            Simbolo s = sm.getSimbolo(4); 
                                                            if (s == null)
                                                               throw new IsNotInDBException(this,"");
                                                            aux=new App(new App(new Const(4,pair.symbol,!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
                                                         }
-                                                        else if (pair.symbol.equals("\\wedge "))
+                                                        else if (pair.symbol.equals("\\wedge"))
                                                         {
                                                            Simbolo s = sm.getSimbolo(5); 
                                                            if (s == null)

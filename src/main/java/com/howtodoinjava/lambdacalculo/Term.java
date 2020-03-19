@@ -8,13 +8,11 @@ import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.service.SimboloManager;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  *
@@ -80,18 +78,6 @@ public abstract class Term implements Cloneable, Serializable{
         {
             return term;
         }
-    }
-    
-    public static String notation(Simbolo sym, Stack<String> args)
-    {
-        Map<String,String> values = new HashMap<String, String>();
-        values.put("op", sym.getNotacion_latex());
-        for (int i=0; i < sym.getArgumentos(); i++)
-            values.put("a"+(i+1),args.pop());
-        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
-        String s = sub.replace(sym.getNotacion());
-        
-        return s;
     }
     
     public abstract Term bracketAbsSH(Var x);

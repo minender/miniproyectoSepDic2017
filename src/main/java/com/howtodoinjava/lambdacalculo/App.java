@@ -7,8 +7,11 @@ package com.howtodoinjava.lambdacalculo;
 import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  *
@@ -394,31 +397,70 @@ public class App extends Term{
         
         return "("+izq+" "+der+")";
     }
+    
+    private class IntXIntXString {
+        public int x1;
+        public int x2;
+        public String x3;
+        
+        public IntXIntXString(int x, int y, String z) {
+            x1 = x;
+            x2 = y;
+            x3 = z;
+        }
+    }
+    
+    private IntXIntXString privateToStringInf(SimboloManager s) {
+        
+        Stack<Term> stk = new Stack<Term>();
+        stk.push(q);
+        Term aux = p;
+        while ( aux instanceof App )
+        {
+           stk.push(((App)aux).q);
+           aux = ((App)aux).p;
+        }
+        Const c = (Const) aux;
+        Simbolo sym = s.getSimbolo(c.getId());
+        
+        Map<String,String> values = new HashMap<String, String>();
+        values.put("op", sym.getNotacion_latex());
+        String notation = sym.getNotacion();
+        int i = 1;
+        while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
+         Term arg = stk.pop();
+         if (notation.contains("%(na"+i+")"))
+               values.put("na"+i,arg.toStringInf(s));
+         else if (notation.contains("%(a"+i+")"))
+         {
+           if (arg instanceof App)
+           {
+            IntXIntXString tuple = ((App) arg).privateToStringInf(s);
+            values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
+           }
+           else
+            values.put("a"+i,arg.toStringInf(s));
+         }
+         else if (notation.contains("%(aa"+i+")"))
+         {
+          if (arg instanceof App)
+          {
+           IntXIntXString tuple = ((App) arg).privateToStringInf(s);
+           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
+          }
+          else
+           values.put("aa"+i,arg.toStringInf(s));
+         }
+          i++;
+        }
+        
+        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
+        return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace(sym.getNotacion()));
+    }
 
     public String toStringInf(SimboloManager s)
     {
-        /*if ( p instanceof Const )
-           return "("+p.toStringInf() +" "+ q.toStringInf()+")";
-        else if ( p instanceof App && ((App)p).p instanceof App )
-        {
-           Stack<String> stk = new Stack<String>();
-           stk.push(q.toStringInfFinal());
-           Term aux = p;
-           while ( aux instanceof App )
-           {
-              stk.add(((App)aux).q.toStringInfFinal());
-              aux = ((App)aux).p;
-           }
-           String termStr = aux.toStringInf()+" ( "+stk.pop();
-           while ( !stk.empty() )
-              termStr = termStr + " , " + stk.pop();
-           return termStr + " )";
-        }
-        else if ( p instanceof App )
-           return "("+q.toStringInf()+" "+((App)p).p.toStringInf()+" "+((App)p).q.toStringInf()+")";
-        else
-           return this.toString();
-           */
+        /*
         Stack<String> stk = new Stack<String>();
         Simbolo s1, s2;
         Const c1, c2;
@@ -514,7 +556,8 @@ public class App extends Term{
         }
         else
            return this.toString();
-
+        */
+        return privateToStringInf(s).x3;
     }   
     
     public String toStringInfLabeled(int z, Term t, List<String> l, Id id, int nivel)

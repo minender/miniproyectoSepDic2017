@@ -25,6 +25,7 @@ public class Main {
         for (int i=0; i < args; i++)
             values.put("a"+(i+1),arr[i]);
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
+        System.out.println("\\neg %(a1)".contains("%(a1)"));
         String s = sub.replace("\\neg %(a1)");
         System.out.println(s);
         /*ArrayList<Object> lisObj = new ArrayList<Object>();
