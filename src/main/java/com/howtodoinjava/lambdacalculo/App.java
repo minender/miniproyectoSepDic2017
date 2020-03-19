@@ -549,7 +549,7 @@ public class App extends Term{
         else if ( p instanceof App && ((App)p).p instanceof Const )
            // Const p q
         {
-           stk.push(q.toStringInf(s));
+           stk.push(q.toStringInf(s)); 
            stk.push(((App)p).q.toStringInf(s));
            s1 = s.getSimbolo(((Const)((App)p).p).getId());
            return "("+Term.notation(s1, stk)+")"; //"("+q.toStringInf(s)+" "+((App)p).p.toStringInf(s)+" "+((App)p).q.toStringInf(s)+")";
