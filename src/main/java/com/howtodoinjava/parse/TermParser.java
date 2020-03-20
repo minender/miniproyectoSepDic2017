@@ -200,7 +200,7 @@ public class TermParser extends Parser {
 			 Term aux=((EqContext)_localctx).term.value;
 			                                                for(Iterator<Term> i = ((EqContext)_localctx).eqtail.value.iterator(); i.hasNext();) {
 			                                                   Simbolo s = simboloManager.getSimbolo(54);
-			                                                   aux=new App(new App(new Const(s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+			                                                   aux=new App(new App(new Const("\\equiv ",false,1,1),i.next()),aux);
 			                                                }
 			                                                ((EqContext)_localctx).value = aux;
 			                                              

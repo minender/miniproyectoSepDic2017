@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
   <tiles:insertDefinition name="header" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
   <body>
     <div id="modalLoading" class="modal" >
         <center>
@@ -24,14 +25,20 @@
         </c:when>
         <c:otherwise>
             <tiles:insertDefinition name="nav" />
+            <div class="row flex align-items-center">
             <h1>Mis Teoremas</h1>
+            <a data-target="#exampleModal" data-toggle="modal">            
+                <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
+            </a>
+            </div>
         </c:otherwise>
     </c:choose>
     <div class="row">
+    <div id="misteoremasSpace">
      <div id="misteoremas" class="col-lg-5">
      <ul>
-      <c:forEach items="${categorias}" var="cat"> 
-          <li ><h3 class="subtitle">${cat.getNombre()}</h3>
+      <c:forEach items="${showCategorias}" var="cat"> 
+          <li id="category-${cat.getId()}"><h3 class="subtitle">${cat.getNombre()}</h3>
           <ul>
             <c:forEach items="${teoremas}" var="resu">
               <c:choose>
@@ -82,6 +89,7 @@
      </ul>
     
      </div>
+     </div>
      <div id="panelSoluciones" class="col-lg-2 d-none">
          <center><h3 class="subtitle"> Proofs</h3></center>
            <ul id="listaSoluciones">
@@ -92,10 +100,126 @@
        <h5 id="formula"></h5>
      </div>
     </div>
+            
+    <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="exampleModalLabel">Configuraciones</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <h5>Mostrar Categorias</h5>
+          <ul>
+              <c:forEach items="${categorias}" var="categoria">
+                  <div class="row flex align-items-center">
+                     
+                    <li>${categoria.getNombre()}</li>
+                    <c:choose>
+                    <c:when test="${showCategorias.contains(categoria)}">
+                    <input type="checkbox" id="categoria-${categoria.getId()}" name="${categoria.getId()}" value="true" class="ml-2 categoria-settings" checked >
+                    </c:when>
+                    <c:otherwise>
+                    <input type="checkbox" id="categoria-${categoria.getId()}" name="${categoria.getId()}" value="true" class="ml-2 categoria-settings">
+                    </c:otherwise>
+                    </c:choose>
+                  </div>
+              </c:forEach>
+
+          </ul>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="saveConfig" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script>
+        console.log('AAAA');
+        function guardarMostrarCategorias(){
+            console.log('Ajaa');
+            allCategoriasSettings = document.getElementsByClassName("categoria-settings");
+            let categorias = {
+                listaIdCategorias:[],
+                username: "${usuario.getLogin()}"
+            };
+            console.log(allCategoriasSettings);
+            for (let i = 0; i<allCategoriasSettings.length;i++){
+                cat = allCategoriasSettings.item(i);
+                if (cat.checked === true){
+                    let id = allCategoriasSettings.item(i).getAttribute("name");
+                    categorias.listaIdCategorias.push(id);
+                }
+                
+            };
+                $.ajax({
+                cache:false,
+                type: 'POST',
+                url: "misTeoremas",
+                data: JSON.stringify(categorias),
+                contentType: "application/json",
+                success:  function(data) {
+                    var element = document.getElementById("misteoremas");
+                    element.parentNode.removeChild(element);
+                    
+                     var p = document.getElementById("misteoremasSpace");
+                     var newElement = document.createElement("div");
+                     newElement.setAttribute('id', "misteoremas");
+                     newElement.setAttribute("class","col-lg-5")
+                     newCategories = []
+                     newRows=''
+                     console.log(data)
+                     innerHTML = "<ul>"
+                     categories = data.categories
+                     teoremas = data.resuelves
+                     for (i=0;i<categories.length;i++){
+                         newRows = newRows + "<li id=category-"+categories[i].categoryid+"><h3 class='subtitle'>"+categories[i].categoryname+"</h3>"
+                         newRows = newRows + "<ul>";
+                         for (j=0;j < teoremas.length ;j++){
+                            if (teoremas[j].categoryid == categories[i].categoryid){
+                                if (teoremas[j].isResuelto){
+                                    newRows = newRows + "<li><p><i class='fa fa-lock' aria-hidden='true'></i>(" + teoremas[j].numeroteorema + ")"+ teoremas[j].nombreteorema + ": &nbsp; $" + teoremas[j].string + "$</p></li>"
+                                }else{
+                                    newRows = newRows + "<li><p>"
+                                    if (teoremas[j].isAxioma){
+                                        newRows = newRows + "<a class='expandmeta' onclick='expandMeta(" + teoremas[j].teoremaid + ")'><i class='fa fa-plus-circle' aria-hidden='true'></i></a><i class='fa fa-unlock' aria-hidden='true'></i><a href='javascript:buscarSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ")" +  teoremas[j].nombreteorema + ": </a> &nbsp; $" + teoremas[j].string + "$<span class='d-none' id='" + teoremas[j].teoremaid + "'><br><span class='metaitem'></span><a href='javascript:buscarMetaSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ") Metatheorem: </a> &nbsp; $" + teoremas[j].metateoremastring + "$</span>"
+                                    }else{
+                                        newRows = newRows + "<i class='fa fa-unlock' aria-hidden='true' ></i> (" + teoremas[j].numeroteorema + ")" + teoremas[j].nombreteorema + ": &nbsp; $" + teoremas[j].string + "$"
+                                    }
+                                    newRows = newRows + "</p></li>"
+                                }
+                            }
+                            console.log('Aja')
+                         }
+                        newRows = newRows + "</ul></li>";
+ 
+                     }
+                     innerHTML = innerHTML + newRows + "</ul>"
+                     newElement.innerHTML = innerHTML;
+                     p.appendChild(newElement);
+                     MathJax.Hub.Queue(["Typeset",MathJax.Hub,"misteoremas"]);
+                     
+                    
+                }
+        });
+        }
+        document.getElementById("saveConfig").onclick = function(){
+            console.log('Test');
+            guardarMostrarCategorias();
+
+        }
+</script> 
     <c:choose>
         <c:when test="${isDifferentUser.intValue()!=1}">
             <tiles:insertDefinition name="footer" />
         </c:when>
     </c:choose>
+
   </body>
 </html>

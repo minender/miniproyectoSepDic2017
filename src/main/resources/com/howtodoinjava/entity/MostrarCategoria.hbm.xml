@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="com.howtodoinjava.entity.MostrarCategoria" table="mostrarCategoria" schema="userdb">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="sequence">
+                <param name="sequence">mostrarCategoria_id_seq</param>
+            </generator>
+        </id>
+        <many-to-one name="usuario" class="com.howtodoinjava.entity.Usuario" lazy="false" fetch="select">
+            <column name="usuariologin" not-null="true" />
+        </many-to-one>
+        <many-to-one name="categoria" class="com.howtodoinjava.entity.Categoria" lazy="false" fetch="select">
+            <column name="categoriaid" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

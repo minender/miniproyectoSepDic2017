@@ -18,7 +18,7 @@ start_rule[TerminoId terminoid, TerminoManager terminoManager, SimboloManager si
 eq[SimboloManager simboloManager] returns [Term value]: term[simboloManager] eqtail[simboloManager]          { Term aux=$term.value;
                                                 for(Iterator<Term> i = $eqtail.value.iterator(); i.hasNext();) {
                                                    Simbolo s = simboloManager.getSimbolo(54);
-                                                   aux=new App(new App(new Const(s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+                                                   aux=new App(new App(new Const("\\equiv ",false,1,1),i.next()),aux);
                                                 }
                                                 $value=aux;
                                               };
