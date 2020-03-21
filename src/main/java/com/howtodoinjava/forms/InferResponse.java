@@ -15,6 +15,7 @@ import com.howtodoinjava.lambdacalculo.TypedL;
 import com.howtodoinjava.lambdacalculo.TypedS;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.ResuelveManager;
+import com.howtodoinjava.service.SimboloManager;
 import java.util.List;
 
 /**
@@ -88,7 +89,7 @@ public class InferResponse {
     }
     
 
-    public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, Term typedTerm) {//List<PasoInferencia> inferencias){
+    public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, Term typedTerm, SimboloManager s) {//List<PasoInferencia> inferencias){
         
         this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
         
@@ -102,38 +103,38 @@ public class InferResponse {
             if (((App)typedTerm).q instanceof App)
                 if (((App)((App)typedTerm).q).q instanceof App)
                 {
-                    teo = ((App)((App)((App)typedTerm).q).q).q.type().toStringInfFinal();
-                    inst = ((App)((App)((App)typedTerm).q).q).p.type().toStringInfFinal();
-                    leib = ((App)((App)typedTerm).q).p.type().toStringInfFinal();
+                    teo = ((App)((App)((App)typedTerm).q).q).q.type().toStringInfFinal(s);
+                    inst = ((App)((App)((App)typedTerm).q).q).p.type().toStringInfFinal(s);
+                    leib = ((App)((App)typedTerm).q).p.type().toStringInfFinal(s);
                 }
                 else
                 {
-                    teo = ((App)((App)typedTerm).q).q.type().toStringInfFinal();
+                    teo = ((App)((App)typedTerm).q).q.type().toStringInfFinal(s);
                     if (((App)typedTerm).p instanceof TypedS)
                       if (((App)((App)typedTerm).q).p instanceof TypedI)
                       {
-                        inst = ((App)((App)typedTerm).q).p.type().toStringInfFinal();
+                        inst = ((App)((App)typedTerm).q).p.type().toStringInfFinal(s);
                         leib = "";
                       }
                       else
                       {
                         inst = "";
-                        leib = ((App)((App)typedTerm).q).p.type().toStringInfFinal();
+                        leib = ((App)((App)typedTerm).q).p.type().toStringInfFinal(s);
                       }
                 }
             else
             {
                 Term aux = typedTerm.type();
-                teo = aux.toStringInfFinal();
-                primExp = ((App)aux).q.toStringInfFinal();
-                pasoPost = ((App)((App)aux).p).q.toStringInfFinal();
+                teo = aux.toStringInfFinal(s);
+                primExp = ((App)aux).q.toStringInfFinal(s);
+                pasoPost = ((App)((App)aux).p).q.toStringInfFinal(s);
             }
         else
         {
             Term aux = typedTerm.type();
-            teo = aux.toStringInfFinal();
-            primExp = ((App)aux).q.toStringInfFinal();
-            pasoPost = ((App)((App)aux).p).q.toStringInfFinal();
+            teo = aux.toStringInfFinal(s);
+            primExp = ((App)aux).q.toStringInfFinal(s);
+            pasoPost = ((App)((App)aux).p).q.toStringInfFinal(s);
         }
         hint = "\\equiv<"+teo+"-"+inst+"-"+leib+">";
             this.setHistorial("$$" + primExp + " $$" +
@@ -152,7 +153,7 @@ public class InferResponse {
         }
     }
     
-    public void generarHistorial(String user, String formula, String nTeo, Term typedTerm,  Boolean valida, ResuelveManager resuelveManager, DisponeManager disponeManager) {//List<PasoInferencia> inferencias){
+    public void generarHistorial(String user, String formula, String nTeo, Term typedTerm,  Boolean valida, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {//List<PasoInferencia> inferencias){
         
         this.setHistorial("");
         String header = "Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:<br>";  
@@ -208,7 +209,7 @@ public class InferResponse {
           {
             typedTerm = ((TypedApp)typedTerm).q;
             type = typedTerm.type();
-            pasoPost= ((App)((App)type).p).q.toStringInfFinal()+equanimityHint+"$";
+            pasoPost= ((App)((App)type).p).q.toStringInfFinal(s)+equanimityHint+"$";
           }
           else
             pasoPost= ((App)((App)type).p).q.toStringInfLabeled();
@@ -246,34 +247,34 @@ public class InferResponse {
                   if (((App)((App)ultInf).q).q instanceof App)
                   {
                     Term aux = ((App)ultInf.type()).q;
-                    primExp = aux.toStringInfFinal()+(aux.equals(goal)?equanimityHint:"");
+                    primExp = aux.toStringInfFinal(s)+(aux.equals(goal)?equanimityHint:"");
                     teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
-                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInfFinal();
+                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInfFinal(s);
                     inst = "~with~" + inst.substring(1, inst.length()-1);
-                    leib = ((App)((App)ultInf).q).p.type().toStringInfFinal();
+                    leib = ((App)((App)ultInf).q).p.type().toStringInfFinal(s);
                     leib = "~and~" + leib;
                   }
                   else
                   {
                     Term aux = ((App)ultInf.type()).q;
-                    primExp = aux.toStringInfFinal()+(aux.equals(goal)?equanimityHint:"");
+                    primExp = aux.toStringInfFinal(s)+(aux.equals(goal)?equanimityHint:"");
                     teo = ((App)((App)ultInf).q).q.type().toStringFinal();
                     if (((App)ultInf).p instanceof TypedS)
                       if (((App)((App)ultInf).q).p instanceof TypedI)
                       {
-                        inst = ((App)((App)ultInf).q).p.type().toStringInfFinal();
+                        inst = ((App)((App)ultInf).q).p.type().toStringInfFinal(s);
                         inst = "~with~" + inst.substring(1, inst.length()-1);
                       }
                       else
                       {
-                        leib = ((App)((App)ultInf).q).p.type().toStringInfFinal();
+                        leib = ((App)((App)ultInf).q).p.type().toStringInfFinal(s);
                         leib = "~and~" + leib;
                       }
                     else
                     {
-                        inst = ((App)((App)ultInf).q).p.type().toStringInfFinal();
+                        inst = ((App)((App)ultInf).q).p.type().toStringInfFinal(s);
                         inst = "~with~" + inst.substring(1, inst.length()-1);
-                        leib = ((App)ultInf).p.type().toStringInfFinal();
+                        leib = ((App)ultInf).p.type().toStringInfFinal(s);
                         leib = "~and~" + leib;
                     }
                   }
@@ -281,20 +282,20 @@ public class InferResponse {
                 {
                   if (((App)ultInf).p instanceof TypedI)
                   {
-                    inst = ((App)ultInf).p.type().toStringInfFinal();
+                    inst = ((App)ultInf).p.type().toStringInfFinal(s);
                     inst = "~with~" + inst.substring(1, inst.length()-1);
                   }
                   else if (((App)ultInf).p instanceof TypedL)
-                    leib = "~and~" + ((App)ultInf).p.type().toStringInfFinal();
+                    leib = "~and~" + ((App)ultInf).p.type().toStringInfFinal(s);
                   teo = ((App)ultInf).q.type().toStringFinal();
                   Term aux = ((App)ultInf.type()).q;
-                  primExp = aux.toStringInfFinal()+(aux.equals(goal)?equanimityHint:"");
+                  primExp = aux.toStringInfFinal(s)+(aux.equals(goal)?equanimityHint:"");
                 }
               else
               {
                 Term aux = ultInf.type();
                 teo = aux.toStringFinal();
-                primExp = ((App)aux).q.toStringInfFinal()+(aux.equals(goal)?equanimityHint:"");
+                primExp = ((App)aux).q.toStringInfFinal(s)+(aux.equals(goal)?equanimityHint:"");
               } 
           
               String op = ((Const)((App)((App)ultInf.type()).p).p).getCon().trim();

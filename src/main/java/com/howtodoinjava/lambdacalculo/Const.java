@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  */
 public class Const extends Term
 {
+    final int id;
     final String con;
     final boolean funNotation;
     final int preced;
@@ -21,20 +23,26 @@ public class Const extends Term
     
     public Const(String cons)
     {
+        id =0;
         con=cons;
         funNotation = false;
         preced = 0;
         asociat = 0;
     }
     
-    public Const(String cons, boolean funNota, int prec, int asoc)
+    public Const(int idd, String cons, boolean funNota, int prec, int asoc)
     {
+        id = idd;
         con=cons;
         funNotation = funNota;
         preced = prec;
         asociat = asoc;
     }
 
+    public int getId() {
+        return id;
+    }
+    
     public String getCon() {
         return con;
     }
@@ -186,13 +194,16 @@ public class Const extends Term
     } */    
         
     @Override
-    public String toStringInf() {
-        return con;
+    public String toStringInf(SimboloManager s) {
+        if (id == 0)
+           return con;
+        else
+           return s.getSimbolo(id).getNotacion_latex();
     }
     
     public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
         String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}";
-        leibniz.add(t.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
         id.id++;
         return term;
     }
@@ -218,7 +229,7 @@ public class Const extends Term
     
     public ToString toStringInfAbrv(ToString toString)
     {
-        toString.term=this.toStringInf();
+        toString.term=this.toStringInf(null);
         return toString;
     }
 

@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -154,7 +155,7 @@ public class Var extends Term{
     }
     
     @Override
-    public String toStringInf() {
+    public String toStringInf(SimboloManager s) {
         if(alias == null ) {
             char ascii = (char) indice; 
             return ""+ascii;
@@ -165,7 +166,7 @@ public class Var extends Term{
     
     public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
         id.id++;
-        leibniz.add(t.leibniz(z, this).toStringInfFinal().replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
         if(alias == null ) {
             char ascii = (char) indice; 
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+ascii+"}}";
@@ -218,7 +219,7 @@ public class Var extends Term{
     public ToString toStringInfAbrv(ToString toString)
     {
         if(alias == null)
-            toString.term=this.toStringInf();
+            toString.term=this.toStringInf(null);
         else
         {
             /*toString.currentnAlias++;

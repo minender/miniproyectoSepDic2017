@@ -2,12 +2,11 @@
 package com.howtodoinjava.parse; 
 
 import com.howtodoinjava.entity.Termino;
-import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.entity.TerminoId;
+import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.lambdacalculo.*;
 import com.howtodoinjava.service.TerminoManager;
 import com.howtodoinjava.service.SimboloManager;
-
 import java.util.Iterator;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;

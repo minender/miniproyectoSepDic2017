@@ -15,6 +15,11 @@
 			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
                         <!--<url>file:///home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib</url>-->
 		</repository>
+                <repository>
+          <id>Central Maven repository</id>
+          <name>Central Maven repository https</name>
+          <url>https://repo.maven.apache.org/maven2</url>
+       </repository>
 	</repositories>
   <properties>
     <org.springframework.version>4.3.18.RELEASE</org.springframework.version>
@@ -404,6 +409,14 @@
       <version>3.2</version>
       <type>jar</type>
     </dependency>
+    
+    <dependency>
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-lang3</artifactId>
+	<version>3.0</version>
+        <!--<systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/jstl-1.2.jar</systemPath>-->
+    </dependency>
+    
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.core</artifactId>

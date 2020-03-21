@@ -4,8 +4,10 @@
  */
 package com.howtodoinjava.parse;
 
-import org.antlr.runtime.IntStream;
-import org.antlr.runtime.NoViableAltException;
+//import org.antlr.runtime.IntStream;
+import org.antlr.v4.runtime.NoViableAltException;
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.RecognitionException;
 
 /**
  *
@@ -21,8 +23,6 @@ public class IsNotInDBException extends NoViableAltException {
      * Creates a new instance of
      * <code>IsNotInDBException</code> without detail message.
      */
-    public IsNotInDBException() {
-    }
 
     /**
      * Constructs an instance of
@@ -30,12 +30,16 @@ public class IsNotInDBException extends NoViableAltException {
      *
      * @param msg the detail message.
      */
-    public IsNotInDBException(String grammarDecisionDescription,
+    public IsNotInDBException(Parser recognizer, String message) {
+        super(recognizer);
+        this.message += message;
+    }
+    /*public IsNotInDBException(String grammarDecisionDescription,
 								int decisionNumber,
 								int stateNumber,
 								IntStream input,
                                                                 String message) {
         super(grammarDecisionDescription,decisionNumber,stateNumber, input);
         this.message += message;
-    }
+    }*/
 }

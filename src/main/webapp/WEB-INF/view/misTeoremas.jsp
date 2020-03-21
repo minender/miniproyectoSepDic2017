@@ -36,7 +36,14 @@
     <div class="row">
     <div id="misteoremasSpace">
      <div id="misteoremas" class="col-lg-5">
-     <ul>
+         <div id="showNoCategories">
+            <c:choose>
+                <c:when test="${showCategorias.size() == 0}">
+                    Actualmente no tienes categorias para mostrar, ajusta tus configuraciones
+                </c:when>
+            </c:choose>
+         </div>
+       <ul>
       <c:forEach items="${showCategorias}" var="cat"> 
           <li id="category-${cat.getId()}"><h3 class="subtitle">${cat.getNombre()}</h3>
           <ul>
@@ -48,7 +55,7 @@
                       <li >
                         <p >
                              <i class="fa fa-lock" aria-hidden="true" ></i>
-                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$                     
+                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager)}$                     
                         </p> 
                       </li>
                       
@@ -63,16 +70,16 @@
                                 </a>
                                 <i class="fa fa-unlock" aria-hidden="true"></i>
 
-                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$
+                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager)}$
                                 <span class="d-none" id="${resu.getTeorema().getId()}">
 
                                 <br><span class="metaitem"></span>
-                                <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) Metatheorem: </a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$
+                                <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) Metatheorem: </a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager)}$
                                 </span>
                             </c:when>
                             <c:otherwise>
                                 <i class="fa fa-unlock" aria-hidden="true" ></i>
-                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfFinal()}$                     
+                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager)}$                     
                         
                             </c:otherwise>
                           </c:choose>
@@ -171,13 +178,15 @@
                      var p = document.getElementById("misteoremasSpace");
                      var newElement = document.createElement("div");
                      newElement.setAttribute('id', "misteoremas");
-                     newElement.setAttribute("class","col-lg-5")
-                     newCategories = []
-                     newRows=''
-                     console.log(data)
-                     innerHTML = "<ul>"
+                     newElement.setAttribute("class","col-lg-5");
                      categories = data.categories
                      teoremas = data.resuelves
+                     if (categories.length == 0 ){
+                         newElement.innerHTML = "<div id='showNoCategories'>Actualmente no tienes categorias para mostrar, ajusta tus configuraciones</div>"
+                     }else{
+                     newRows=''
+                     innerHTML = "<ul>"
+
                      for (i=0;i<categories.length;i++){
                          newRows = newRows + "<li id=category-"+categories[i].categoryid+"><h3 class='subtitle'>"+categories[i].categoryname+"</h3>"
                          newRows = newRows + "<ul>";
@@ -202,6 +211,8 @@
                      }
                      innerHTML = innerHTML + newRows + "</ul>"
                      newElement.innerHTML = innerHTML;
+                    }
+                     
                      p.appendChild(newElement);
                      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"misteoremas"]);
                      

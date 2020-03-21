@@ -73,7 +73,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -90,6 +91,8 @@ public class PerfilController {
     private UsuarioManager usuarioManager;
     @Autowired
     private TerminoManager terminoManager;
+    @Autowired
+    private SimboloManager simboloManager;
     @Autowired
     private ResuelveManager resuelveManager;
     @Autowired
@@ -108,8 +111,6 @@ public class PerfilController {
     private MateriaManager materiaManager;
     @Autowired
     private TeoriaManager teoriaManager;
-    @Autowired
-    private SimboloManager simboloManager;
     @Autowired
     private MostrarCategoriaManager mostrarCategoriaManager;
     
@@ -327,7 +328,7 @@ public class PerfilController {
         {
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
-            t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
+            t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
         }
         /*
         List<Teorema> teoremas = usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username));
@@ -355,6 +356,7 @@ public class PerfilController {
         map.addAttribute("teoremas", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("categoriaManager",categoriaManager);
+        map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         return "misTeoremas";
@@ -375,7 +377,7 @@ public class PerfilController {
         {
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
-            t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
+            t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
         }
         Usuario usuario = usuarioManager.getUsuario(answer.getUsername());
         List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usuario);
@@ -416,8 +418,8 @@ public class PerfilController {
             resuelve.addProperty("numeroteorema", resuelves.get(i).getNumeroteorema());
             resuelve.addProperty("nombreteorema", resuelves.get(i).getNombreteorema());
             resuelve.addProperty("teoremaid", resuelves.get(i).getTeorema().getId());
-            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringInfFinal());
-            resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringInfFinal());
+            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager));
+            resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringInfFinal(simboloManager));
             resuelves1.add(resuelve);
         }
         response.add("categories", categories);
@@ -444,14 +446,14 @@ public class PerfilController {
         // validar que el usuario este en sesion
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
-        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
+        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager);
         String nTeo = resuelve.getNumeroteorema();
         Solucion solucion = solucionManager.getSolucion(idSol);
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term typedTerm = solucion.getTypedTerm();
         
-        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager);
+        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager, simboloManager);
         return response;
     }
     
@@ -461,11 +463,11 @@ public class PerfilController {
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
-        String teoremaStr = new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),resuelve.getTeorema().getTeoTerm()).toStringInfFinal();
+        String teoremaStr = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true ")),resuelve.getTeorema().getTeoTerm()).toStringInf(simboloManager);
         String nTeo = resuelve.getNumeroteorema();
-        Term A1 = new TypedA( new App(new App(new Const("\\equiv ",false,1,1), new App(new App(new Const("\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const("\\equiv ",false,1,1),new Var(113)),new Var(112))) );
-        Term A2 = new TypedA( new App(new App(new Const("\\equiv ",false,1,1),new Var(113)),
-                                     new App(new App(new Const("\\equiv ",false,1,1),new Var(113)),
+        Term A1 = new TypedA( new App(new App(new Const(1,"\\equiv ",false,1,1), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),new Var(112))) );
+        Term A2 = new TypedA( new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),
+                                     new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),
                                                                new Const("true "))));
         Term A3 = new TypedA(teo);
         List<Var> list1 = new ArrayList<Var>();
@@ -494,7 +496,7 @@ public class PerfilController {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager);
+        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager, simboloManager);
         return response;
     }
     
@@ -554,7 +556,7 @@ public class PerfilController {
             terminoid2.setLogin(username);
             
             
-            ANTLRInputStream in = new ANTLRInputStream(agregarTeorema.getTeorema());
+            CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
@@ -579,7 +581,7 @@ public class PerfilController {
                 
 
                 // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
-                Term metateoTerm = new App(new App(new Const("\\equiv ",false,1,1),new Const("true")),teoTerm);
+                Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
                 Metateorema metateoremaAdd = new Metateorema(teorema.getId(),metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm));
                 Metateorema metateorema = metateoremaManager.addMetateorema(metateoremaAdd);
                 
@@ -632,7 +634,7 @@ public class PerfilController {
             /*catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -650,7 +652,7 @@ public class PerfilController {
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = "";//parser.getErrorMessage(e, TermParser.tokenNames);
+		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario", user);
                 map.addAttribute("infer",new InfersForm());
                 map.addAttribute("mensaje", hdr+" "+msg);
@@ -750,7 +752,7 @@ public class PerfilController {
             
             //Hay que construir un Term aqui con el String termino.combinador
             //para luego traducir, hace falta construir un parse   
-            ANTLRInputStream in = new ANTLRInputStream(programa);
+            CharStream in = CharStreams.fromString(programa);
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
@@ -848,7 +850,7 @@ public class PerfilController {
             /*catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario",user);
                 map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                 map.addAttribute("modificar",new Integer(0));
@@ -869,7 +871,7 @@ public class PerfilController {
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = "";// parser.getErrorMessage(e, TermParser.tokenNames);
+		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario",user);
                 map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                 map.addAttribute("modificar",new Integer(0));
@@ -1056,7 +1058,7 @@ public class PerfilController {
             
             //Hay que construir un Term aqui con el String termino.combinador
             //para luego traducir, hace falta construir un parse   
-            ANTLRInputStream in = new ANTLRInputStream(programa);
+            CharStream in = CharStreams.fromString(programa);
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             TermParser parser = new TermParser(tokens);
@@ -1109,7 +1111,7 @@ public class PerfilController {
             /*catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = parser.getErrorMessage(e, TermParser.tokenNames);
+		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("terminoid",new TerminoId());
                 map.addAttribute("usuario",usuarioManager.getUsuario(username));                
                 map.addAttribute("modificar",new Integer(1));
@@ -1124,7 +1126,7 @@ public class PerfilController {
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = "";//parser.getErrorMessage(e, TermParser.tokenNames);
+		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("terminoid",new TerminoId());
                 map.addAttribute("usuario",usuarioManager.getUsuario(username));                
                 map.addAttribute("modificar",new Integer(1));
