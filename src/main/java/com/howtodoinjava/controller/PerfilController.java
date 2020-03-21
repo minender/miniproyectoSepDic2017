@@ -3,6 +3,8 @@
  * and open the template in the editor.
  */
 package com.howtodoinjava.controller;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.howtodoinjava.entity.Categoria;
 import com.howtodoinjava.entity.Dispone;
 import com.howtodoinjava.entity.Materia;
@@ -25,6 +27,7 @@ import org.springframework.util.SerializationUtils;
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
+import com.howtodoinjava.entity.MostrarCategoria;
 import com.howtodoinjava.forms.AgregarSimbolo;
 import com.howtodoinjava.forms.AgregarTeorema;
 import com.howtodoinjava.forms.InferResponse;
@@ -32,6 +35,7 @@ import com.howtodoinjava.forms.InfersForm;
 import com.howtodoinjava.forms.InsertarEvaluar;
 import com.howtodoinjava.forms.ModificarAliasForm;
 import com.howtodoinjava.forms.ModificarForm;
+import com.howtodoinjava.forms.MostrarCategoriaForm;
 import com.howtodoinjava.forms.Registro;
 import com.howtodoinjava.forms.UsuarioGuardar;
 import com.howtodoinjava.forms.teoremasSolucion;
@@ -50,19 +54,20 @@ import com.howtodoinjava.lambdacalculo.TypedApp;
 import com.howtodoinjava.lambdacalculo.TypedI;
 import com.howtodoinjava.lambdacalculo.TypedS;
 import com.howtodoinjava.lambdacalculo.Var;
-import com.howtodoinjava.parse.IsNotInDBException;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MateriaManager;
 import com.howtodoinjava.service.MetateoremaManager;
+import com.howtodoinjava.service.MostrarCategoriaManager;
 import com.howtodoinjava.service.ResuelveManager;
 import com.howtodoinjava.service.SimboloManager;
 import com.howtodoinjava.service.SolucionManager;
 import com.howtodoinjava.service.TeoremaManager;
 import com.howtodoinjava.service.TeoriaManager;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,6 +80,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -105,6 +111,9 @@ public class PerfilController {
     private MateriaManager materiaManager;
     @Autowired
     private TeoriaManager teoriaManager;
+    @Autowired
+    private MostrarCategoriaManager mostrarCategoriaManager;
+    
     
     @RequestMapping(value="/{username}/close", method=RequestMethod.GET)
     public String closeSesion(@PathVariable String username, ModelMap map){
@@ -328,7 +337,12 @@ public class PerfilController {
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),t.getTeoTerm()));
         }*/
-        Usuario usr = usuarioManager.getUsuario(username);
+        Usuario usr = usuarioManager.getUsuario(username);        
+        List <Categoria> showCategorias = new LinkedList<Categoria>();
+        List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
+        for (int i = 0; i < mostrarCategoria.size(); i++ ){
+            showCategorias.add(mostrarCategoria.get(i).getCategoria());
+        }
         map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
         map.addAttribute("usuario", usr);
         map.addAttribute("guardarMenu","");
@@ -338,12 +352,79 @@ public class PerfilController {
         map.addAttribute("perfilMenu","");
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
+        map.addAttribute("showCategorias",showCategorias);
         map.addAttribute("teoremas", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
+        map.addAttribute("categoriaManager",categoriaManager);
         map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         return "misTeoremas";
+    }
+    
+    @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.POST,produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody String misTeoremasConfigView(@PathVariable String username, ModelMap map,@RequestBody MostrarCategoriaForm answer) {
+        if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
+           && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
+           )
+        {   
+            JsonObject response = new JsonObject();
+            response.addProperty("error", "Debes estar logueado en el sistema");
+            return response.toString();
+        }
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
+        for (Resuelve r: resuelves)
+        {
+            Teorema t = r.getTeorema();
+            t.setTeoTerm(t.getTeoTerm());
+            t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
+        }
+        Usuario usuario = usuarioManager.getUsuario(answer.getUsername());
+        List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usuario);
+        List<Integer> categoriasIdListUser =  new LinkedList<Integer>();
+        for (MostrarCategoria mc: mostrarCategorias){
+           categoriasIdListUser.add(mc.getCategoria().getId());
+        }
+        for (int categoriaId :answer.getListaIdCategorias()){
+            if (!categoriasIdListUser.contains(categoriaId)){
+                Categoria categoria = categoriaManager.getCategoria(categoriaId);
+                MostrarCategoria mostrarCategoriaNew = new MostrarCategoria(categoria, usuario);
+                mostrarCategoriaManager.addMostrarCategoria(mostrarCategoriaNew);
+            }
+        }
+        for (int categoriaId: categoriasIdListUser){
+            if (!answer.getListaIdCategorias().contains(categoriaId)){
+                Categoria categoria = categoriaManager.getCategoria(categoriaId);
+                MostrarCategoria mostrarCategoria = mostrarCategoriaManager.getMostrarCategoriaByCategoriaAndUsuario(categoria, usuario);
+                mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria.getId());
+            }
+        }
+        List<MostrarCategoria> mostrarCategorias1 = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usuario);
+        JsonObject response = new JsonObject();
+        JsonArray categories = new JsonArray();
+        for (int i = 0; i < mostrarCategorias1.size(); i ++){
+            JsonObject category = new JsonObject();
+            category.addProperty("categoryid", mostrarCategorias1.get(i).getCategoria().getId());
+            category.addProperty("categoryname",mostrarCategorias1.get(i).getCategoria().getNombre());
+            categories.add(category);
+        }
+        JsonArray resuelves1 = new JsonArray();
+
+        for (int i = 0; i < resuelves.size(); i++){
+            JsonObject resuelve = new JsonObject();
+            resuelve.addProperty("categoryid", resuelves.get(i).getCategoria().getId());
+            resuelve.addProperty("isResuelto", resuelves.get(i).isResuelto());
+            resuelve.addProperty("isAxioma", resuelves.get(i).isEsAxioma());
+            resuelve.addProperty("numeroteorema", resuelves.get(i).getNumeroteorema());
+            resuelve.addProperty("nombreteorema", resuelves.get(i).getNombreteorema());
+            resuelve.addProperty("teoremaid", resuelves.get(i).getTeorema().getId());
+            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager));
+            resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringInfFinal(simboloManager));
+            resuelves1.add(resuelve);
+        }
+        response.add("categories", categories);
+        response.add("resuelves", resuelves1);
+        return response.toString();
     }
     
     @RequestMapping(value="/{username}/misTeoremas/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
@@ -550,7 +631,7 @@ public class PerfilController {
                 map.addAttribute("anchuraDiv","1100px");
                 return "agregarTeorema";
             }
-            catch(IsNotInDBException e)
+            /*catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
@@ -567,7 +648,7 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "agregarTeorema";
-            }
+            }*/
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
@@ -766,7 +847,7 @@ public class PerfilController {
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
             }
-            catch(IsNotInDBException e)
+            /*catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
@@ -786,7 +867,7 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
-            }
+            }*/
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
@@ -1027,7 +1108,7 @@ public class PerfilController {
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
             }
-            catch(IsNotInDBException e)
+            /*catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
@@ -1041,7 +1122,7 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
-            }
+            }*/
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);

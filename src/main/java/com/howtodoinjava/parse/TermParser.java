@@ -2,6 +2,7 @@
 package com.howtodoinjava.parse; 
 
 import com.howtodoinjava.entity.Termino;
+import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.lambdacalculo.*;

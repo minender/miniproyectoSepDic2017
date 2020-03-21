@@ -71,4 +71,25 @@ public class Categoria  implements java.io.Serializable {
     public void setMetateoremas(Set metateoremas) {
         this.metateoremas = metateoremas;
     }
+    
+    @Override
+public boolean equals(Object object)
+{
+    boolean isEqual= false;
+
+    if (object != null && object instanceof Categoria)
+    {
+        Categoria categoria2 = (Categoria)object;
+        if (categoria2.getId() == this.getId()){
+                isEqual = true;
+        }
+    }
+
+    return isEqual;
+}
+
+    @Override
+    public int hashCode() {
+        return this.getId();
+    }
 }

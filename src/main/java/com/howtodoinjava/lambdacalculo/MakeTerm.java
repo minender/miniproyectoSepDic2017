@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.howtodoinjava.lambdacalculo;
+ package com.howtodoinjava.lambdacalculo;
 
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.parse.FOSchemeLexer;
@@ -69,7 +69,7 @@ public class MakeTerm {
         Term term;
                
         try{  
-            term = parser.start_rule(terminoid,terminoManager); 
+            term = parser.start_rule(terminoid,terminoManager).value; 
             return term;
         }
         catch(IsNotInDBException e)
@@ -84,7 +84,6 @@ public class MakeTerm {
         }  */
         return null;
     }
-    
     
     public ArrayList<Object> makeInsta(String str){
         TerminoId terminoid = null;

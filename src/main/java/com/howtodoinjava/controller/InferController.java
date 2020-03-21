@@ -1,12 +1,9 @@
 package com.howtodoinjava.controller;
 
-import com.howtodoinjava.dao.ResuelveDAO;
 import com.howtodoinjava.entity.Dispone;
-import com.howtodoinjava.entity.Metateorema;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
-import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.forms.InferResponse;
@@ -14,8 +11,6 @@ import com.howtodoinjava.forms.InfersForm;
 import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Bracket;
 import com.howtodoinjava.lambdacalculo.Const;
-import com.howtodoinjava.lambdacalculo.MakeTerm;
-import com.howtodoinjava.lambdacalculo.PasoInferencia;
 import com.howtodoinjava.lambdacalculo.Sust;
 import com.howtodoinjava.lambdacalculo.Var;
 import com.howtodoinjava.lambdacalculo.Term;

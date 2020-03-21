@@ -321,9 +321,17 @@
       <dependency> 
         <groupId>org.antlr</groupId> 
         <artifactId>antlr4</artifactId> 
-        <version>4.8</version>
-        <type>jar</type> 
+        <version>4.8-complete</version>
+        <type>jar</type>
+        <scope>system</scope>
+        <systemPath>/home/jt/NetBeansProjects/antlr-4.8-complete.jar</systemPath>
       </dependency> 
+      
+      <dependency> 
+        <groupId>org.antlr</groupId> 
+        <artifactId>antlr4</artifactId> 
+        <version>4.8</version> 
+      </dependency>
 
       
       <dependency>
@@ -372,7 +380,7 @@
       <version>2.4.0.v200706111738</version>
       <type>jar</type>
       <scope>system</scope>
-      <systemPath>/home/federico/NetBeansProjects/Logica/lib/javax.servlet-2.4.0.v200706111738.jar</systemPath>
+      <systemPath>/home/jt/NetBeansProjects/javax.servlet-2.4.0.v200706111738.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -439,6 +447,11 @@
       <artifactId>javax.persistence</artifactId>
       <version>2.1.0</version>
     </dependency>
+    <dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.0</version>
+</dependency>
   </dependencies>
   
   

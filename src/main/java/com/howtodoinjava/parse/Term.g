@@ -4,6 +4,7 @@ grammar Term;
 @header{package com.howtodoinjava.parse; 
 
 import com.howtodoinjava.entity.Termino;
+import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.lambdacalculo.*;
@@ -209,7 +210,7 @@ arguments returns [ArrayList<Var> value]: LETTER ',' arg=arguments {ArrayList<Va
                                                             $value=aux;
                                                            }
 
-                                         | CAPITALLETTER ',' arg=arguments {ArrayList<Var> aux=$arg.value; 
+                                         | CAPITALLETTER ',' arg=arguments[simboloManager] {ArrayList<Var> aux=$arg.value; 
                                                      Var v=new Var((new Integer((int)$CAPITALLETTER.text.charAt(0))).intValue());
                                                             aux.add(0,v); 
                                                             $value=aux;

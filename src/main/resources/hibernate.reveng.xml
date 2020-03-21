@@ -13,5 +13,6 @@
   <table-filter match-name="resuelve"/>
   <table-filter match-name="teoria"/>
   <table-filter match-name="simbolo"/>
+  <table-filter match-name="mostrarCategoria"/>
 
 </hibernate-reverse-engineering>

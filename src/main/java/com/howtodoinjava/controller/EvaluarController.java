@@ -7,18 +7,11 @@ package com.howtodoinjava.controller;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.forms.InsertarEvaluar;
-import com.howtodoinjava.lambdacalculo.App;
-import com.howtodoinjava.lambdacalculo.Const;
-import com.howtodoinjava.lambdacalculo.Bracket;
-import com.howtodoinjava.lambdacalculo.TypedA;
-import com.howtodoinjava.lambdacalculo.TypedL;
-import com.howtodoinjava.lambdacalculo.TypedApp;
-import com.howtodoinjava.lambdacalculo.Corrida;
-import com.howtodoinjava.lambdacalculo.PasoInferencia;
-import com.howtodoinjava.lambdacalculo.Sust;
 import com.howtodoinjava.lambdacalculo.Corrida;
 import com.howtodoinjava.lambdacalculo.Term;
 import com.howtodoinjava.lambdacalculo.Tripla;
+import com.howtodoinjava.parse.TermLexer;
+import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.lambdacalculo.TypeVerificationException;
 import com.howtodoinjava.lambdacalculo.TypedI;
 import com.howtodoinjava.lambdacalculo.Var;
@@ -26,6 +19,7 @@ import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MetateoremaManager;
 import com.howtodoinjava.service.ResuelveManager;
+import com.howtodoinjava.service.SimboloManager;
 import com.howtodoinjava.service.SolucionManager;
 import com.howtodoinjava.service.TeoremaManager;
 import com.howtodoinjava.service.TerminoManager;
@@ -267,7 +261,7 @@ public class EvaluarController {
             term = parser.start_rule(terminoid, terminoManager, simboloManager).value;
             term.setAlias(0);
 
-        } catch (IsNotInDBException e) {
+        } /*catch (IsNotInDBException e) {
             String hdr = parser.getErrorHeader(e);
             String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", usuarioManager.getUsuario(username));
@@ -286,7 +280,7 @@ public class EvaluarController {
             map.addAttribute("overflow", "hidden");
             map.addAttribute("anchuraDiv", "1100px");
             return "insertarEvaluar";
-        } catch (RecognitionException e) {
+        } */catch (RecognitionException e) {
             String hdr = parser.getErrorHeader(e);
             String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", usuarioManager.getUsuario(username));

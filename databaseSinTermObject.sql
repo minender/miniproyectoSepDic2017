@@ -381,6 +381,24 @@ CREATE SEQUENCE userdb.simbolo_id_seq
 ALTER TABLE userdb.simbolo_id_seq OWNER TO userdb;
 
 ALTER SEQUENCE userdb.simbolo_id_seq OWNED BY userdb.simbolo.id;
+
+CREATE TABLE userdb.mostrarCategoria (
+    id integer NOT NULL,
+    categoriaid integer NOT NULL,
+    usuariologin text NOT NULL
+);
+
+ALTER TABLE userdb.mostrarCategoria OWNER TO userdb;
+
+CREATE SEQUENCE userdb.mostrarCategoria_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE userdb.mostrarCategoria_id_seq OWNER TO userdb;
+
 --
 -- Name: id; Type: DEFAULT; Schema: userdb; Owner: userdb
 --
@@ -426,6 +444,8 @@ ALTER TABLE ONLY userdb.teorema ALTER COLUMN id SET DEFAULT nextval('userdb.teor
 ALTER TABLE ONLY userdb.teoria ALTER COLUMN id SET DEFAULT nextval('userdb.teoria_id_seq'::regclass);
 
 ALTER TABLE ONLY userdb.simbolo ALTER COLUMN id SET DEFAULT nextval('userdb.simbolo_id_seq'::regclass);
+
+ALTER TABLE ONLY userdb.mostrarCategoria ALTER COLUMN id SET DEFAULT nextval('userdb.simbolo_id_seq'::regclass);
 
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (1,'\equiv', 2, TRUE, 0, 1,'%(a2) %(op) %(a1)',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (2,'\Rightarrow', 2, TRUE, 1, 2,'%(a2) %(op) %(a1)', 1);
@@ -813,6 +833,15 @@ ALTER TABLE ONLY userdb.resuelve
 ALTER TABLE ONLY userdb.simbolo
     ADD CONSTRAINT "teoria_FK" FOREIGN KEY (teoriaid) REFERENCES userdb.teoria(id);
 --
+
+ALTER TABLE ONLY userdb.mostrarCategoria
+    ADD CONSTRAINT "mostrarCategoria_PK" PRIMARY KEY (id);
+
+ALTER TABLE ONLY userdb.mostrarCategoria
+    ADD CONSTRAINT "categoria_FK" FOREIGN KEY (categoriaid) REFERENCES userdb.categoria(id);
+
+ALTER TABLE ONLY userdb.mostrarCategoria
+    ADD CONSTRAINT "usuario_FK" FOREIGN KEY (usuariologin) REFERENCES userdb.usuario(login);
 
 GRANT ALL ON SCHEMA userdb TO userdb;
 REVOKE ALL ON SCHEMA public FROM postgres;
