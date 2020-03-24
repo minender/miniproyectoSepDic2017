@@ -170,7 +170,7 @@ public class EvaluarController {
                 //TypedA A = new TypedA(teoTerm2);
                 map.addAttribute("id", id);
                 map.addAttribute("usuario", username);
-                map.addAttribute("alias", teoTerm2.toStringInfLabeled());//(new TypedApp(I, A)).type().toStringInfFinal());//teoTerm.toStringInfLabeled());
+                map.addAttribute("alias", teoTerm2.toStringInfLabeled(simboloManager));//(new TypedApp(I, A)).type().toStringInfFinal());//teoTerm.toStringInfLabeled());
                 map.addAttribute("predserializado", categoriaManager.getAllCategorias().toString());
                 return "PagParaVerPredicado";
             }

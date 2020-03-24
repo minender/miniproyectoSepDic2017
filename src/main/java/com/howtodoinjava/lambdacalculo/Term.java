@@ -123,9 +123,9 @@ public abstract class Term implements Cloneable, Serializable{
     @Override
     public abstract String toString();
     
-    public abstract String toStringInf(SimboloManager s);
+    public abstract String toStringInf(SimboloManager s,String numTeo);
     
-    public abstract String toStringInfLabeled(int z, Term initTerm, List<String> leibniz, Id id, int nivel);
+    public abstract String toStringInfLabeled(SimboloManager s,int z, Term initTerm, List<String> leibniz, Id id, int nivel);
     
     public abstract ToString toStringAbrvV1(ToString toString);
     
@@ -146,10 +146,10 @@ public abstract class Term implements Cloneable, Serializable{
         return term;
     }
     
-    public String toStringInfFinal(SimboloManager s)
+    public String toStringInfFinal(SimboloManager s) //Deprecate
     {
         String term;
-        String aux= this.toStringInf(s);
+        String aux= this.toStringInf(s,"");
         if(aux.startsWith("("))            
             term = aux.substring(1, aux.length()-1);            
         else{
@@ -157,23 +157,24 @@ public abstract class Term implements Cloneable, Serializable{
         }return term;
     }
     
-    public String toStringInfLabeled()
+    public String toStringInfLabeled(SimboloManager s)
     {
         List<String> l = new LinkedList<String>();
         int z = this.maxVar()+1;
         if (z <= 122)
             z = 122;
-        String st = this.toStringInfLabeledFinal(z, this, l, new Id(), 0)+"$\n";
+        String st = this.toStringInfLabeled(s,z, this, l, new Id(), 0)+"$\n";
         st+="<script>\nvar leibniz=[";
         for(String it: l)
-            st+="\n\"lambda "+new Var(z).toStringInf(null)+"."+it+"\",";
+            st+="\n\"lambda "+new Var(z).toStringInf(null,"")+"."+it+"\",";
         st = st.substring(0, st.length()-1)+"];\n</script>";
         return st;
     }
     
-    public String toStringInfLabeledFinal(int z, Term initTerm, List<String> leibniz, Id id, int nivel){
+    // Deprecade
+    public String toStringInfLabeledFinal(SimboloManager s,int z, Term initTerm, List<String> leibniz, Id id, int nivel){
         String term;
-        String aux= this.toStringInfLabeled(z, initTerm, leibniz, id, nivel);
+        String aux= this.toStringInfLabeled(s,z, initTerm, leibniz, id, nivel);
         int i = 9;
         while  (aux.charAt(i)!='{')
             i++;

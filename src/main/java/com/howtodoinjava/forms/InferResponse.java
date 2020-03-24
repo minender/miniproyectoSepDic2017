@@ -165,11 +165,11 @@ public class InferResponse {
         }
         else if (type == null && !valida)
         {
-            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled()+"$$Regla~de~inferencia~no~valida$$");
+            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$Regla~de~inferencia~no~valida$$");
         }
         else if(type == null && valida)
         {
-            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled()+"</center>");
+            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"</center>");
         }
         else
         {
@@ -212,7 +212,7 @@ public class InferResponse {
             pasoPost= ((App)((App)type).p).q.toStringInfFinal(s)+equanimityHint+"$";
           }
           else
-            pasoPost= ((App)((App)type).p).q.toStringInfLabeled();
+            pasoPost= ((App)((App)type).p).q.toStringInfLabeled(s);
         /*this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
         String ultimaExp = "";
         for (PasoInferencia x: inferencias) {

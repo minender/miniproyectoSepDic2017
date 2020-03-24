@@ -418,7 +418,7 @@ public class PerfilController {
             resuelve.addProperty("numeroteorema", resuelves.get(i).getNumeroteorema());
             resuelve.addProperty("nombreteorema", resuelves.get(i).getNombreteorema());
             resuelve.addProperty("teoremaid", resuelves.get(i).getTeorema().getId());
-            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager));
+            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager,""));
             resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringInfFinal(simboloManager));
             resuelves1.add(resuelve);
         }
@@ -446,7 +446,7 @@ public class PerfilController {
         // validar que el usuario este en sesion
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
-        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager);
+        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
         String nTeo = resuelve.getNumeroteorema();
         Solucion solucion = solucionManager.getSolucion(idSol);
         
@@ -463,7 +463,7 @@ public class PerfilController {
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
-        String teoremaStr = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true ")),resuelve.getTeorema().getTeoTerm()).toStringInf(simboloManager);
+        String teoremaStr = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true ")),resuelve.getTeorema().getTeoTerm()).toStringInf(simboloManager,"");
         String nTeo = resuelve.getNumeroteorema();
         Term A1 = new TypedA( new App(new App(new Const(1,"\\equiv ",false,1,1), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),new Var(112))) );
         Term A2 = new TypedA( new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),

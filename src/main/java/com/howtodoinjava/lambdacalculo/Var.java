@@ -155,7 +155,7 @@ public class Var extends Term{
     }
     
     @Override
-    public String toStringInf(SimboloManager s) {
+    public String toStringInf(SimboloManager s,String numTeo) {
         if(alias == null ) {
             char ascii = (char) indice; 
             return ""+ascii;
@@ -164,9 +164,9 @@ public class Var extends Term{
         }
     }
     
-    public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, Id id, int nivel){
         id.id++;
-        leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
         if(alias == null ) {
             char ascii = (char) indice; 
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+ascii+"}}";
@@ -219,7 +219,7 @@ public class Var extends Term{
     public ToString toStringInfAbrv(ToString toString)
     {
         if(alias == null)
-            toString.term=this.toStringInf(null);
+            toString.term=this.toStringInf(null,"");
         else
         {
             /*toString.currentnAlias++;
@@ -292,7 +292,7 @@ public class Var extends Term{
     
     @Override
     protected Object clone() throws CloneNotSupportedException{
-        return this;
+        return new Var(indice);
     }
 
     @Override

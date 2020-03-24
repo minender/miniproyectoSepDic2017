@@ -143,11 +143,11 @@ public class InfersForm {
         String ultimaExp = "";
         for (PasoInferencia x: inferencias) {
             this.setHistorial(this.getHistorial()+ "$$" +
-                                    x.getExpresion().toStringInf(s)+" $$" + " $$ \\equiv< " + 
-                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf(s) + 
-                                    " - " + x.getLeibniz().toStringInf(s) + 
+                                    x.getExpresion().toStringInf(s,"")+" $$" + " $$ \\equiv< " + 
+                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf(s,"") + 
+                                    " - " + x.getLeibniz().toStringInf(s,"") + 
                                     " - " + x.getInstancia().toString()+" > $$");
-            ultimaExp = x.getResult().toStringInf(s);
+            ultimaExp = x.getResult().toStringInf(s,"");
         }
         if(valida) {
             this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");
@@ -164,11 +164,11 @@ public class InfersForm {
         String ultimaExp = "";
         for (PasoInferencia x: inferencias) {
             this.setHistorial(this.getHistorial()+ "$$" +
-                                    x.getExpresion().toStringInf(s)+" $$" + " $$ \\equiv< " + 
-                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf(s) + 
-                                    " - " + x.getLeibniz().toStringInf(s) + 
+                                    x.getExpresion().toStringInf(s,"")+" $$" + " $$ \\equiv< " + 
+                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf(s,"") + 
+                                    " - " + x.getLeibniz().toStringInf(s,"") + 
                                     " - " + x.getInstancia()+" > $$");
-                ultimaExp = x.getResult().toStringInf(s);
+                ultimaExp = x.getResult().toStringInf(s,"");
         }
         
         this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");

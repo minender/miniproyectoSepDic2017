@@ -33,7 +33,7 @@ public class Comprobacion {
                         arrayList.add(((App)actual).p);
                         arrayList.add(((App)actual).q );
                     }else if(actual instanceof Var){
-                        return actual.toStringInf(null);
+                        return actual.toStringInf(null,"");
                     }
                     for (Term n : arrayList) {
                         pila.push(n);

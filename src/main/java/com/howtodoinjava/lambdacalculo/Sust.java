@@ -153,11 +153,11 @@ public class Sust extends Term{
     }
     
     @Override
-    public String toStringInf(SimboloManager s) {
+    public String toStringInf(SimboloManager s,String numTeo) {
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringInf(s)+",";
+            varss += v.toStringInf(s,"")+",";
         
         for (Term t : terms)
             termss += t.toStringInfFinal(s)+",";
@@ -168,15 +168,16 @@ public class Sust extends Term{
         return "["+varss+" := "+termss+"]";
     }
     
-    public String toStringInfLabeled(int z, Term init, List<String> leibniz, Id id, int nivel){
+    @Override
+    public String toStringInfLabeled(SimboloManager s,int z, Term init, List<String> leibniz, Id id, int nivel){
         id.id++;
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringInf(null)+",";
+            varss += v.toStringInf(null,"")+",";
         
         for (Term t : terms)
-            termss += t.toStringInf(null)+",";
+            termss += t.toStringInf(null,"")+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
@@ -214,7 +215,7 @@ public class Sust extends Term{
     
     public ToString toStringInfAbrv(ToString toString)
     {
-        toString.term=this.toStringInf(null);
+        toString.term=this.toStringInf(null,"");
         return toString;
     }
 

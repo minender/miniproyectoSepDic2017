@@ -129,7 +129,7 @@ public class InferController {
             return "redirect:/index";
         }
         Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        String formula = resuel.getTeorema().getTeoTerm().toStringInf(simboloManager);
+        String formula = resuel.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
         String solId = "new";
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
@@ -141,14 +141,14 @@ public class InferController {
             Term term = t.getTeoTerm();
             if(r.isResuelto()==true || r.getNumeroteorema().equals(nTeo)){
                 
-                try
+                /*try
                 {
                   t.setTeoTerm(new App(new App(new Const(1,"\\cssId{click@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{"+((Const)((App)((App)term).p).p).getCon()+"}}}",((Const)((App)((App)term).p).p).getFunNotation(),((Const)((App)((App)term).p).p).getPreced(),((Const)((App)((App)term).p).p).getAsociat()),((App)((App)term).p).q),((App)term).q));
                 }
                 catch (java.lang.ClassCastException e)
-                {
+                {*/
                     t.setTeoTerm(term);
-                }
+                //}
                 t.setMetateoTerm(new App(new App(new Const(1,"\\cssId{clickmeta@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{\\equiv}}}",false,1,1),new Const("true ")), term));
             }
             else{
@@ -230,6 +230,7 @@ public class InferController {
         map.addAttribute("resuelves", resuelves);
         map.addAttribute("metateoremas",metateoremaManager);
         map.addAttribute("resuelveManager",resuelveManager);
+        map.addAttribute("simboloManager",simboloManager);
         //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
@@ -604,7 +605,7 @@ public class InferController {
                 }
             }
 
-            String formula = resuel.getTeorema().getTeoTerm().toStringInf(simboloManager);
+            String formula = resuel.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
             response.generarHistorial(username,formula, nTeo,valida?pasoPostTerm:typedTerm,valida,
                                       resuelveManager,disponeManager,simboloManager);
 
@@ -629,7 +630,7 @@ public class InferController {
         }
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
-        String formula = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager);
+        String formula = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
 
         response.generarHistorial(username,formula, nTeo,respRetroceder==0?null:solucion.getTypedTerm(),true,resuelveManager,disponeManager,simboloManager);
         if(/*respRetroceder==1 ||*/ respRetroceder==0){
@@ -650,7 +651,7 @@ public class InferController {
         InferResponse response = new InferResponse();
 
         Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        String formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().toStringInf(simboloManager);
+        String formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
         
         //String formula = "";
         Term formulaTerm = null;
@@ -709,9 +710,9 @@ public class InferController {
             response.setLado("1");
         }
 
-        String formulaDer = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInf(simboloManager);
-        String formulaIzq = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInf(simboloManager);
-        String operador = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).p.toStringInf(simboloManager);//resuelve.getTeorema().getOperador();
+        String formulaDer = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInf(simboloManager,"");
+        String formulaIzq = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInf(simboloManager,"");
+        String operador = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).p.toStringInf(simboloManager,"");//resuelve.getTeorema().getOperador();
         
         formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
         formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
@@ -729,7 +730,7 @@ public class InferController {
         InferResponse response = new InferResponse();
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager);
+        String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
         
         Term formulaTerm = null;
         
@@ -769,7 +770,7 @@ public class InferController {
         InferResponse response = new InferResponse();
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager);
+        String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
         
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();
@@ -817,7 +818,7 @@ public class InferController {
         InferResponse response = new InferResponse();
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager);
+        String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
         
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();

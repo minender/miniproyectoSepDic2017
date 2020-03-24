@@ -410,7 +410,7 @@ public class App extends Term{
         }
     }
     
-    private IntXIntXString privateToStringInf(SimboloManager s) {
+    private IntXIntXString privateToStringInf(SimboloManager s, String numTeo) {
         
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
@@ -424,32 +424,35 @@ public class App extends Term{
         Simbolo sym = s.getSimbolo(c.getId());
         
         Map<String,String> values = new HashMap<String, String>();
-        values.put("op", sym.getNotacion_latex());
+        if (numTeo.equals(""))
+           values.put("op", sym.getNotacion_latex());
+        else
+           values.put("op", "\\cssId{click@"+numTeo+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{"+sym.getNotacion_latex()+"}}}");
         String notation = sym.getNotacion();
         int i = 1;
         while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
          Term arg = stk.pop();
          if (notation.contains("%(na"+i+")"))
-               values.put("na"+i,arg.toStringInf(s));
+               values.put("na"+i,arg.toStringInf(s,""));
          else if (notation.contains("%(a"+i+")"))
          {
            if (arg instanceof App)
            {
-            IntXIntXString tuple = ((App) arg).privateToStringInf(s);
+            IntXIntXString tuple = ((App) arg).privateToStringInf(s,"");
             values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
            }
            else
-            values.put("a"+i,arg.toStringInf(s));
+            values.put("a"+i,arg.toStringInf(s,""));
          }
          else if (notation.contains("%(aa"+i+")"))
          {
           if (arg instanceof App)
           {
-           IntXIntXString tuple = ((App) arg).privateToStringInf(s);
+           IntXIntXString tuple = ((App) arg).privateToStringInf(s,"");
            values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
           }
           else
-           values.put("aa"+i,arg.toStringInf(s));
+           values.put("aa"+i,arg.toStringInf(s,""));
          }
           i++;
         }
@@ -458,7 +461,7 @@ public class App extends Term{
         return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace(sym.getNotacion()));
     }
 
-    public String toStringInf(SimboloManager s)
+    public String toStringInf(SimboloManager s, String numTeo)
     {
         /*
         Stack<String> stk = new Stack<String>();
@@ -557,41 +560,96 @@ public class App extends Term{
         else
            return this.toString();
         */
-        return privateToStringInf(s).x3;
-    }   
+        return privateToStringInf(s,numTeo).x3;
+    }
     
-    public String toStringInfLabeled(int z, Term t, List<String> l, Id id, int nivel)
+    private IntXIntXString privateToStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, 
+                                                     Id id, int nivel) {
+        
+        Stack<Term> stk = new Stack<Term>();
+        stk.push(q);
+        Term aux = p;
+        while ( aux instanceof App )
+        {
+           stk.push(((App)aux).q);
+           aux = ((App)aux).p;
+        }
+        Const c = (Const) aux;
+        Simbolo sym = s.getSimbolo(c.getId());
+        
+        Map<String,String> values = new HashMap<String, String>();
+        values.put("op", "\\class{terminoClick}{"+sym.getNotacion_latex()+"}");
+        String notation = sym.getNotacion();
+        int i = 1;
+        while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
+         Term arg = stk.pop();
+         if (notation.contains("%(na"+i+")"))
+               values.put("na"+i,arg.toStringInfLabeled(s,z,t,l,id,nivel+1));
+         else if (notation.contains("%(a"+i+")"))
+         {
+           if (arg instanceof App)
+           {
+            IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,id,nivel+1);
+            values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
+           }
+           else
+            values.put("a"+i,arg.toStringInfLabeled(s,z,t,l,id,nivel+1));
+         }
+         else if (notation.contains("%(aa"+i+")"))
+         {
+          if (arg instanceof App)
+          {
+           IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,id,nivel+1);
+           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
+          }
+          else
+           values.put("aa"+i,arg.toStringInfLabeled(s,z,t,l,id,nivel+1));
+         }
+          i++;
+        }
+        
+        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
+        String term = sub.replace("\\class{"+nivel+"}{"+sym.getNotacion()+"}");
+        term = "\\cssId{"+id.id+"}{"+term+"}";
+        l.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
+        id.id++;
+        return new IntXIntXString(sym.getId(),sym.getPr(),term);
+    }
+    
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, Id id, int nivel)
     {
-        String term;
+        return privateToStringInfLabeled(s, z, t, l, id, nivel).x3;
+        /*String term;
         Const c1, c2;
+        System.out.println(this.toString());
         if ( p instanceof Const && q instanceof App && ((App) q).p instanceof Const && 
               (c1 = (Const)p) != null && (c2 = (Const)((App) q).p) != null &&
              !c1.funNotation && ( c2.preced > c1.preced  || (c2.preced == c1.preced && c1.asociat == 1) )    ) 
            // Const(Const p)
-           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf(null)+"} "+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
+           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
            // agregas lambda z. Const z, lambda z. Const (Const z) y lambda z.z dentro de un contexto E es decir
         else if ( p instanceof Const && q instanceof App && ((App)q).p instanceof App && ((App)((App)q).p).p instanceof Const &&
                   (c1 = (Const)p) != null && (c2 = (Const)((App)((App)q).p).p ) != null  && 
                   !c1.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c1.asociat == 1) ))
            // Const(Const p q)
-           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf(null) +"} "+ q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
+           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf(null,"") +"} "+ q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
         else if ( p instanceof App && q instanceof App && ((App)p).p instanceof Const && ((App)q).p instanceof Const &&
                   (c1 = (Const)((App)p).p ) != null && (c2 = (Const)((App)q).p) != null && 
                   !c2.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c2.asociat ==0)))
            // Const p (Const q)
             if ((new App(new App(c1,((App)p).q),new Const(""))).toStringInfFinal(null).endsWith(")"))
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null)+"} "+ ((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
+              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+ ((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
             else
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null)+"} "+ ((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
+              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+ ((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
         else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && ((App)((App)p).q).p instanceof Const &&
                   (c1 = (Const)((App)p).p) != null && (c2 = (Const)((App)((App)p).q).p) != null)
             if (new App(new App(c1,new Const("")),q).toStringInfFinal(null).startsWith("("))
-               term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null)+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
+               term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
             else
-               term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null)+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}"; 
+               term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}"; 
         else if ( p instanceof Const )
            // Const p
-           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+p.toStringInf(null)+"}"+q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
+           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+p.toStringInf(null,"")+"}"+q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
         else if ( p instanceof App && ((App)p).p instanceof App )
            // (App p) q
         {
@@ -603,7 +661,7 @@ public class App extends Term{
               stk.add(((App)aux).q.toStringInfFinal(null));
               aux = ((App)aux).p;
            }
-           String termStr = aux.toStringInf(null)+" ( "+stk.pop();
+           String termStr = aux.toStringInf(null,"")+" ( "+stk.pop();
            while ( !stk.empty() )
               termStr = termStr + " , " + stk.pop();
            term = termStr + " )";
@@ -616,27 +674,27 @@ public class App extends Term{
                   (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 1)))
            // Const (Const p q) r
             if (new App(new App(c1,new Const("")),q).toStringInfFinal(null).startsWith("("))
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null)+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
+              term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
             else
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null)+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";  
+              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";  
         else if ( p instanceof App && ((App)p).p instanceof Const && q instanceof App && ((App)q).p instanceof App &&
                   ((App)((App)q).p).p instanceof Const && 
                   (c1 = (Const)((App)p).p)!= null && (c2 = (Const)((App)((App)q).p).p) != null &&
                   (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 0)))
            // (Const p)(Const p q)
            if (new App(new App(c1,((App)p).q),new Const("")).toStringInfFinal(null).endsWith(")"))
-             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null)+"} "+((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
+             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
            else
-             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null)+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
+             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
         else if ( p instanceof App && ((App)p).p instanceof Const )
            // Const p q
-           term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+((App)p).p.toStringInf(null)+"} "+((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
+           term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+((App)p).p.toString()+"} "+((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
         else
            term = this.toString();
         term = "\\cssId{"+id.id+"}{"+term+"}";
         l.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
         id.id++;
-        return term;
+        return term;*/
     }   
     
     public ToString toStringAbrv(ToString toString)

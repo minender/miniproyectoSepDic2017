@@ -132,11 +132,12 @@ public class I extends Term {
     }
    
     @Override
-    public String toStringInf(SimboloManager s) {
+    public String toStringInf(SimboloManager s,String numTeo) {
             return ""; //"|";
     }     
     
-    public String toStringInfLabeled(int z, Term t, List<String> l, Id id, int nivel){
+    @Override
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, Id id, int nivel){
             return ""; //"|";
     }
         

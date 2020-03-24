@@ -194,16 +194,17 @@ public class Const extends Term
     } */    
         
     @Override
-    public String toStringInf(SimboloManager s) {
+    public String toStringInf(SimboloManager s,String numTeo) {
         if (id == 0)
            return con;
         else
            return s.getSimbolo(id).getNotacion_latex();
     }
     
-    public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
+    @Override
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, Id id, int nivel){
         String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}";
-        leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
         id.id++;
         return term;
     }
@@ -229,7 +230,7 @@ public class Const extends Term
     
     public ToString toStringInfAbrv(ToString toString)
     {
-        toString.term=this.toStringInf(null);
+        toString.term=this.toStringInf(null,"");
         return toString;
     }
 
@@ -250,7 +251,7 @@ public class Const extends Term
     
     @Override
     protected Object clone() throws CloneNotSupportedException{
-        return this;
+        return new Const(id, con, funNotation, preced, asociat);
     }
 
     @Override

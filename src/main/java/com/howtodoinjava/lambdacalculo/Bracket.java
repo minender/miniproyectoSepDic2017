@@ -158,7 +158,8 @@ public class Bracket extends Term{
         }
     }
     
-    public String toStringInf(SimboloManager s)
+    @Override
+    public String toStringInf(SimboloManager s,String numTeo)
     {
        /* if(t.alias == null) {
             System.out.println(t instanceof App);
@@ -185,7 +186,7 @@ public class Bracket extends Term{
         }//.split("@")[0].replace("_", "\\_") +")";
     }
     
-    public String toStringInfLabeled(int z, Term t, List<String> leibniz, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, Id id, int nivel){
         id.id++;
         leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
         if(t.alias == null) {
@@ -219,13 +220,13 @@ public class Bracket extends Term{
         if(t.alias == null)
         {
             t.toStringInfAbrvFinal(toString);
-            toString.term= "(\\lambda "+x.toStringInf(null)+"."+toString.term+")";
+            toString.term= "(\\lambda "+x.toStringInf(null,"")+"."+toString.term+")";
             return toString;
         }
         else
         {
             toString.setNuevoAlias(t.alias, t);
-            toString.term="(\\lambda "+x.toStringInf(null)+"."+toString.term+")";
+            toString.term="(\\lambda "+x.toStringInf(null,"")+"."+toString.term+")";
             return toString;
         }
         
