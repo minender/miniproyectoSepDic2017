@@ -181,6 +181,7 @@
                      newElement.setAttribute("class","col-lg-5");
                      categories = data.categories
                      teoremas = data.resuelves
+                    
                      if (categories.length == 0 ){
                          newElement.innerHTML = "<div id='showNoCategories'>Actualmente no tienes categorias para mostrar, ajusta tus configuraciones</div>"
                      }else{
@@ -192,11 +193,12 @@
                          newRows = newRows + "<ul>";
                          for (j=0;j < teoremas.length ;j++){
                             if (teoremas[j].categoryid == categories[i].categoryid){
-                                if (teoremas[j].isResuelto){
+                                console.log(teoremas[j])
+                                if (!teoremas[j].isResuelto){
                                     newRows = newRows + "<li><p><i class='fa fa-lock' aria-hidden='true'></i>(" + teoremas[j].numeroteorema + ")"+ teoremas[j].nombreteorema + ": &nbsp; $" + teoremas[j].string + "$</p></li>"
                                 }else{
                                     newRows = newRows + "<li><p>"
-                                    if (teoremas[j].isAxioma){
+                                    if (!teoremas[j].isAxioma){
                                         newRows = newRows + "<a class='expandmeta' onclick='expandMeta(" + teoremas[j].teoremaid + ")'><i class='fa fa-plus-circle' aria-hidden='true'></i></a><i class='fa fa-unlock' aria-hidden='true'></i><a href='javascript:buscarSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ")" +  teoremas[j].nombreteorema + ": </a> &nbsp; $" + teoremas[j].string + "$<span class='d-none' id='" + teoremas[j].teoremaid + "'><br><span class='metaitem'></span><a href='javascript:buscarMetaSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ") Metatheorem: </a> &nbsp; $" + teoremas[j].metateoremastring + "$</span>"
                                     }else{
                                         newRows = newRows + "<i class='fa fa-unlock' aria-hidden='true' ></i> (" + teoremas[j].numeroteorema + ")" + teoremas[j].nombreteorema + ": &nbsp; $" + teoremas[j].string + "$"
