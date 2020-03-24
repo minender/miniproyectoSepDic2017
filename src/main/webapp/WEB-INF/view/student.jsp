@@ -5,8 +5,25 @@
 <html>
   <tiles:insertDefinition name="header" />
   <body>
+      <style>
+          html,body{
+              height: 92%;
+          }
+          .studentIframe{
+              height: 100%;
+          }
+          .container-fluid{
+              height: 100%;
+              width: 100%;
+          }
+          #studentIframe{
+              overflow-x: hidden;
+          }
+      </style>
     <tiles:insertDefinition name="nav" />
-    <iframe width="100%" height="100%" src="../${login}/misTeoremas" frameborder="0"></iframe>
+    <div style="height : 100% !important" id="iframeSpace">
+        <iframe id="studentIframe" width="100%" height="100%" src="../${login}/misTeoremas" frameborder="0"></iframe>
+    </div>
     <tiles:insertDefinition name="footer" />
   </body>
 </html>

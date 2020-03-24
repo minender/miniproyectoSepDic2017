@@ -5,6 +5,16 @@
 <html>
   <tiles:insertDefinition name="header" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
+  <style>
+      <c:choose>
+          <c:when test="${isDifferentUser.intValue()==1}">
+              html{
+                  padding-left:15px;
+                  overflow: hidden;
+              }
+          </c:when>
+      </c:choose>
+  </style>
   <body>
     <div id="modalLoading" class="modal" >
         <center>
@@ -21,7 +31,12 @@
     </div>
     <c:choose>
         <c:when test="${isDifferentUser.intValue()==1}">
-            <h1>Teoremas de ${usuario.getNombre()} ${usuario.getApellido()}</h1>
+            <div class="row flex align-items-center">
+                <h1>Teoremas de ${usuario.getNombre()} ${usuario.getApellido()}</h1>
+                <a data-target="#exampleModal" data-toggle="modal">            
+                    <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
+                </a>
+            </div>
         </c:when>
         <c:otherwise>
             <tiles:insertDefinition name="nav" />
