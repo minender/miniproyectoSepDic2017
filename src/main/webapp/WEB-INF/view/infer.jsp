@@ -238,9 +238,23 @@
               </select>
           </div>
             <article id="teoremas" class="teoremas">
-              <h3 style="margin: 0px;padding:0px;height:40px;"><a>Teoremas</a></h3>
+                <div class="row flex align-items-center">
+                <h3 style="margin-left: 5%; margin-top: 2%;padding:0px;height:40px;"><a>Teoremas</a></h3>
+                <a data-target="#exampleModal" data-toggle="modal">            
+                    <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
+                </a>
+               </div>
             <ul>
-              <c:forEach items="${categorias}" var="cat"> 
+               <div id="showNoCategories">
+                <c:choose>
+                    <c:when test="${showCategorias.size() == 0}">
+                        Actualmente no tienes categorias para mostrar, ajusta tus configuraciones
+                    </c:when>
+                </c:choose>
+                </div>
+                <div id="misteoremasSpace">
+                <div id="misteoremas"> 
+              <c:forEach items="${showCategorias}" var="cat"> 
                   <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-${cat.getNombre()}" role="button" aria-expanded="false" aria-controls="collapse-${cat.getNombre()}" class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
                       <ul id="collapse-${cat.getNombre()}" class="collapse">
                     <c:forEach items="${resuelves}" var="resu">
@@ -333,9 +347,47 @@
                   </ul>
                 </li>
               </c:forEach> 
+              </div>
+              </div>
             </ul>
           </article>     
+                         <!-- Modal -->
+          <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="exampleModalLabel">Configuraciones</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    <h5>Mostrar Categorias</h5>
+                    <ul>
+                    <c:forEach items="${categorias}" var="categoria">
+                    <div class="row flex align-items-center"> 
+                        <li>${categoria.getNombre()}</li>
+                        <c:choose>
+                            <c:when test="${showCategorias.contains(categoria)}">
+                                <input type="checkbox" id="categoria-${categoria.getId()}" name="${categoria.getId()}" value="true" class="ml-2 categoria-settings" checked >
+                            </c:when>
+                            <c:otherwise>
+                                <input type="checkbox" id="categoria-${categoria.getId()}" name="${categoria.getId()}" value="true" class="ml-2 categoria-settings">
+                            </c:otherwise>
+                        </c:choose>
+                  </div>
+                    </c:forEach>
+                    </ul>
 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="saveConfig" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
         </div>
 
         <script>
@@ -390,8 +442,158 @@
           <form> 
           </c:when>
           </c:choose>
+          
+ 
           <script>
+              function guardarMostrarCategorias(){
+            console.log('Ajaa');
+            allCategoriasSettings = document.getElementsByClassName("categoria-settings");
+            let categorias = {
+                listaIdCategorias:[],
+                username: "${usuario.getLogin()}"
+            };
+            console.log(allCategoriasSettings);
+            for (let i = 0; i<allCategoriasSettings.length;i++){
+                cat = allCategoriasSettings.item(i);
+                if (cat.checked === true){
+                    let id = allCategoriasSettings.item(i).getAttribute("name");
+                    categorias.listaIdCategorias.push(id);
+                }
+                
+            };
+                $.ajax({
+                cache:false,
+                type: 'POST',
+                url: "misTeoremas",
+                data: JSON.stringify(categorias),
+                contentType: "application/json",
+                success:  function(data) { 
+                    console.log(data)
+                    var element = document.getElementById("misteoremas");
+                    element.parentNode.removeChild(element);
+                    
+                     var p = document.getElementById("misteoremasSpace");
+                     var newElement = document.createElement("div");
+                     newElement.setAttribute('id', "misteoremas");
+                     categories = data.categories
+                     teoremas = data.resuelves
+                     if (categories.length == 0 ){
+                         newElement.innerHTML = "<div id='showNoCategories'>Actualmente no tienes categorias para mostrar, ajusta tus configuraciones</div>"
+                     }else{
+                        newRows=''
+                        for (i=0;i<categories.length;i++){
+                            newRows = newRows + '<li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-' + categories[i].categoryname + '" role="button" aria-expanded="false" aria-controls="collapse-' + categories[i].categoryname + '" class="collapse-link">' + categories[i].categoryname + '</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4>';
+                            newRows = newRows + '<ul id="collapse-' + categories[i].categoryname + '" class="collapse">';
+                            for (j=0;j < teoremas.length ;j++){
+                                if (teoremas[j].categoryid == categories[i].categoryid){
+                                    <c:choose>
+                                        <c:when test='${!nTeo.equals("")}'>
+                                            if  (${!selecTeo} && teoremas[j].numeroteorema == ${nTeo}){                     
+                                        </c:when>
+                                        <c:otherwise>
+                                            if  (${!selecTeo} && teoremas[j].numeroteorema == ""){                     
+
+                                        </c:otherwise>
+                                    </c:choose>
+                                        newRows = newRows + '<li id="currentTeo" style="list-style: none;">'
+                                   }else{
+                                       newRows = newRows + '<li style="list-style: none;">'
+                                   }
+                                   newRows = newRows + '<h6 style="color: #000;">'
+                                   if (${!selecTeo}){
+                                    <c:choose>
+                                        <c:when test='${!nTeo.equals("")}'>
+                                            if(teoremas[j].isResuelto || teoremas[j].numeroteorema == ${nTeo}){
+                                        </c:when>
+                                        <c:otherwise>
+                                            if(teoremas[j].isResuelto || teoremas[j].numeroteorema == ""){
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <c:choose>
+                                        <c:when test='${!nTeo.equals("")}'>
+                                           if(teoremas[j].numeroteorema == ${nTeo}){
+                                        </c:when>
+                                        <c:otherwise>
+                                           if(teoremas[j].numeroteorema == ""){
+                                        </c:otherwise>
+                                    </c:choose>
+                                              newRows = newRows + '<a>'
+                                              newRows = newRows + '<i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>'
+                                              newRows = newRows + '<a>'
+                                           }else{
+                                              newRows = newRows + '<a onclick="expandMeta(' + "'metaTeo" + teoremas[j].numeroteorema + "'" + ')" >'
+                                              newRows = newRows + '<i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>'
+                                             newRows = newRows + '</a>'
+                                            }
+    
+                                       
+                                            newRows = newRows + '<span id="teoIdName' + teoremas[j].numeroteorema + '" class="teoIdName">(' + teoremas[j].numeroteorema + ')'+ teoremas[j].nombreteorema + ':</span> &nbsp;<span id="click' + teoremas[j].numeroteorema + '">$' + teoremas[j].stringNumero + '$</span>';
+                                            newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');';
+                                            newRows = newRows + 'clickOperator(' + "'" + 'click' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');<' + '/script>';
+                                            <c:choose>
+                                                <c:when test='${!nTeo.equals("")}'>
+                                                    if(teoremas[j].numeroteorema != ${nTeo}){
+                                                </c:when>
+                                                <c:otherwise>
+                                                    if(teoremas[j].numeroteorema != ""){
+                                                </c:otherwise>
+                                            </c:choose>
+                                                newRows = newRows + '<span style="display: none;" id="metaTeo' + teoremas[j].numeroteorema + '">';
+                                                newRows = newRows + '<br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+                                                newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ');'
+                                                newRows = newRows + 'clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + ');';
+                                                newRows = newRows + '</' + 'script>';
+                                                newRows = newRows + '</span>';
+                                            }
+                                        }
+                                    }else{
+                                        if (teoremas[j].isResuelto){
+                                            newRows = newRows + '<i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>';
+                                        }else{
+                                            newRows = newRows + '<i class="fa fa-lock" aria-hidden="true" style="margin-right: 15px;"></i>'
+                  
+                                        }
+                                        if (!teoremas[j].isAxioma){
+                                            if(teoremas[j].demopendiente == -1){
+                                                newRows = newRows + '<a onclick="return confirm(' + "'" + 'Usted va a demostrar el teorema' + teoremas[j].numeroteorema + "'" + ')" href="../../infer/${usuario.getLogin()}/' + teoremas[j].numeroteorema + '">(' + teoremas[j].numeroteorema + ')' +  teoremas[j].nombreteorema + ':</a> &nbsp; $' + teoremas[j].string + '$'
+                                            }else{
+                                                newRows = newRows + '<a onclick="return confirm(' + "'" + 'Usted ha dejado una demostraci&oacute;n incompleta del teorema' + teoremas[j].numeroteorema + '. Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;' + "'" + ')" href="../../infer/${usuario.getLogin()}/' + teoremas[j].numeroteorema + '">(' + teoremas[j].numeroteorema + ')' +  teoremas[j].nombreteorema + ':</a> &nbsp; $' + teoremas[j].string + '$'
+                                           
+                                            }
+                                        }else{
+                                           newRows = newRows + '(' + teoremas[j].numeroteorema + ') ' + teoremas[j].nombreteorema + ': &nbsp; $' + teoremas[j].string + '$'  
+                                        }
+                                    }
+                                    newRows = newRows + '</h6>';
+                                    newRows = newRows + '</li>'
+                                       
+                                       
+                                       
+                                   }
+
+                                }
+                                newRows = newRows + "</ul></li>"
+                            }
+                        innerHTML = newRows
+                        newElement.innerHTML = innerHTML;                        
+                        }    
+                     p.appendChild(newElement);
+                     MathJax.Hub.Queue(["Typeset",MathJax.Hub,"misteoremas"]);
+
+                     }
+
+                
+                 });
+        }
+        document.getElementById("saveConfig").onclick = function(){
+            console.log('Test');
+            guardarMostrarCategorias();
+
+        }
+          </script>
+                    <script>
               $(".collapse-link").on("click",function(e){
+                  console.log('Hey')
                   if($(this).next().hasClass("fa-chevron-down")){
                       $(this).next().removeClass("fa-chevron-down");
                       $(this).next().addClass("fa-chevron-up");
