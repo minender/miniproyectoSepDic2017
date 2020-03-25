@@ -14,11 +14,13 @@
     <!-- Desde aqui -->
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
         <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.min.js"></script>
         <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
+        
         <script type="text/x-mathjax-config">
           MathJax.Hub.Config({
           tex2jax: {
@@ -28,6 +30,7 @@
          });
         </script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript">
             
             $(function(){
@@ -220,7 +223,6 @@
         </script>
         
         <div style="float: right; width: 40%;">
-
           <div id="metodosDiv">
             <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Método de demostración</h3>
               <select class="form-control" id="metodosDemostracion">
@@ -235,12 +237,12 @@
 
               </select>
           </div>
-          <article id="teoremas">
-            <h3 style="margin: 0px;padding:0px;height:40px;"><a onclick="desplegar('teoremas')">Teoremas</a></h3>
+            <article id="teoremas" class="teoremas">
+              <h3 style="margin: 0px;padding:0px;height:40px;"><a>Teoremas</a></h3>
             <ul>
               <c:forEach items="${categorias}" var="cat"> 
-                <li style="list-style: none; color: #03A9F4"><h4 >${cat.getNombre()}</h4>
-                  <ul>
+                  <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-${cat.getNombre()}" role="button" aria-expanded="false" aria-controls="collapse-${cat.getNombre()}" class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
+                      <ul id="collapse-${cat.getNombre()}" class="collapse">
                     <c:forEach items="${resuelves}" var="resu">
                       <c:choose>
                         <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
@@ -388,6 +390,19 @@
           <form> 
           </c:when>
           </c:choose>
+          <script>
+              $(".collapse-link").on("click",function(e){
+                  if($(this).next().hasClass("fa-chevron-down")){
+                      $(this).next().removeClass("fa-chevron-down");
+                      $(this).next().addClass("fa-chevron-up");
+                      
+                  }else if ($(this).next().hasClass("fa-chevron-up")){
+                      $(this).next().removeClass("fa-chevron-up");
+                      $(this).next().addClass("fa-chevron-down");
+                  }
+
+              })
+          </script>
 
     <tiles:insertDefinition name="footer" /> 
     </body>
