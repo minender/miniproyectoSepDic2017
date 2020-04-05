@@ -425,7 +425,9 @@ public class PerfilController {
             resuelve.addProperty("nombreteorema", resuelves.get(i).getNombreteorema());
             resuelve.addProperty("teoremaid", resuelves.get(i).getTeorema().getId());
             resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager,""));
+            resuelve.addProperty("stringNumero", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager, resuelves.get(i).getNumeroteorema()));
             resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringInfFinal(simboloManager));
+            resuelve.addProperty("demopendiente",resuelves.get(i).getDemopendiente());
             resuelves1.add(resuelve);
         }
         response.add("categories", categories);

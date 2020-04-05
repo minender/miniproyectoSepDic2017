@@ -1,7 +1,9 @@
 package com.howtodoinjava.controller;
 
+import com.howtodoinjava.entity.Categoria;
 import com.howtodoinjava.entity.Dispone;
 import com.howtodoinjava.entity.PredicadoId;
+import com.howtodoinjava.entity.MostrarCategoria;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
@@ -31,11 +33,13 @@ import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MetateoremaManager;
 import com.howtodoinjava.service.PredicadoManager;
+import com.howtodoinjava.service.MostrarCategoriaManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,6 +86,8 @@ public class InferController {
     private CategoriaManager categoriaManager;
     @Autowired
     private DisponeManager disponeManager;
+    @Autowired
+    private MostrarCategoriaManager mostrarCategoriaManager;
     
     @RequestMapping(value="/{username}", method=RequestMethod.GET)
     public String selectTeoView(@PathVariable String username, ModelMap map) {
@@ -96,8 +102,14 @@ public class InferController {
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
         }
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        Usuario usr = usuarioManager.getUsuario(username);
+        map.addAttribute("usuario",usr);
         InfersForm infersForm = new InfersForm();
+        List <Categoria> showCategorias = new LinkedList<Categoria>();
+        List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
+        for (int i = 0; i < mostrarCategoria.size(); i++ ){
+            showCategorias.add(mostrarCategoria.get(i).getCategoria());
+        }
         
         map.addAttribute("infer",infersForm);
         map.addAttribute("mensaje","");
@@ -122,6 +134,7 @@ public class InferController {
         map.addAttribute("metateoremas",metateoremaManager);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("simboloManager",simboloManager);
+        map.addAttribute("showCategorias",showCategorias);
         //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
@@ -169,7 +182,8 @@ public class InferController {
             }
             
         }
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        Usuario usr = usuarioManager.getUsuario(username);
+        map.addAttribute("usuario", usr);
         InfersForm infersForm = new InfersForm();
         infersForm.setSolucionId(0);
         
@@ -216,6 +230,11 @@ public class InferController {
             else
                map.addAttribute("teoInicial", "");
         }
+        List <Categoria> showCategorias = new LinkedList<Categoria>();
+        List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
+        for (int i = 0; i < mostrarCategoria.size(); i++ ){
+            showCategorias.add(mostrarCategoria.get(i).getCategoria());
+        }
         
         map.addAttribute("guardarMenu","");
         map.addAttribute("selecTeo",false);
@@ -235,6 +254,7 @@ public class InferController {
         map.addAttribute("metateoremas",metateoremaManager);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("simboloManager",simboloManager);
+        map.addAttribute("showCategorias",showCategorias);
         //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
