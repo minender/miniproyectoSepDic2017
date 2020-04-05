@@ -51,7 +51,7 @@
                     
                     
                 $("#metodosDemostracion").change(function(){
-                    
+                    var metodosDemostracionValue = this.value
                     if(this.value==="1"){
                         if(confirm("¿Esta seguro que desea utilizar el metodo directo?")){
                             $("#selectTeoInicial").val("1");
@@ -245,14 +245,14 @@
                 </a>
                </div>
             <ul>
-               <div id="showNoCategories">
+                <div id="misteoremasSpace">
+                                   <div id="showNoCategories">
                 <c:choose>
                     <c:when test="${showCategorias.size() == 0}">
                         Actualmente no tienes categorias para mostrar, ajusta tus configuraciones
                     </c:when>
                 </c:choose>
                 </div>
-                <div id="misteoremasSpace">
                 <div id="misteoremas"> 
               <c:forEach items="${showCategorias}" var="cat"> 
                   <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-${cat.getNombre()}" role="button" aria-expanded="false" aria-controls="collapse-${cat.getNombre()}" class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
@@ -446,13 +446,11 @@
  
           <script>
               function guardarMostrarCategorias(){
-            console.log('Ajaa');
             allCategoriasSettings = document.getElementsByClassName("categoria-settings");
             let categorias = {
                 listaIdCategorias:[],
                 username: "${usuario.getLogin()}"
             };
-            console.log(allCategoriasSettings);
             for (let i = 0; i<allCategoriasSettings.length;i++){
                 cat = allCategoriasSettings.item(i);
                 if (cat.checked === true){
@@ -468,7 +466,6 @@
                 data: JSON.stringify(categorias),
                 contentType: "application/json",
                 success:  function(data) { 
-                    console.log(data)
                     var element = document.getElementById("misteoremas");
                     element.parentNode.removeChild(element);
                     
@@ -476,7 +473,10 @@
                      var newElement = document.createElement("div");
                      newElement.setAttribute('id', "misteoremas");
                      categories = data.categories
-                     teoremas = data.resuelves
+                     teoremas = data.resuelves;
+                     var script= document.createElement('script');
+                     script.type= 'text/javascript';
+                     script.innerHTML = '';
                      if (categories.length == 0 ){
                          newElement.innerHTML = "<div id='showNoCategories'>Actualmente no tienes categorias para mostrar, ajusta tus configuraciones</div>"
                      }else{
@@ -528,8 +528,11 @@
     
                                        
                                             newRows = newRows + '<span id="teoIdName' + teoremas[j].numeroteorema + '" class="teoIdName">(' + teoremas[j].numeroteorema + ')'+ teoremas[j].nombreteorema + ':</span> &nbsp;<span id="click' + teoremas[j].numeroteorema + '">$' + teoremas[j].stringNumero + '$</span>';
-                                            newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');';
-                                            newRows = newRows + 'clickOperator(' + "'" + 'click' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');<' + '/script>';
+                                            //newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');';
+                                            //newRows = newRows + 'clickOperator(' + "'" + 'click' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');<' + '/script>';                                            
+                                            var script1= document.createElement('script');
+                                            script.type= 'text/javascript';
+                                            script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'click' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');';
                                             <c:choose>
                                                 <c:when test='${!nTeo.equals("")}'>
                                                     if(teoremas[j].numeroteorema != ${nTeo}){
@@ -540,9 +543,11 @@
                                             </c:choose>
                                                 newRows = newRows + '<span style="display: none;" id="metaTeo' + teoremas[j].numeroteorema + '">';
                                                 newRows = newRows + '<br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
-                                                newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ');'
-                                                newRows = newRows + 'clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + ');';
-                                                newRows = newRows + '</' + 'script>';
+                                                newRows = newRows + ' <span id="metateoIdName' + teoremas[j].numeroteorema + '" class="teoIdName">(' + teoremas[j].numeroteorema + ') Metatheorem:</span> &nbsp; <span id="clickmeta' + teoremas[j].numeroteorema + '">$' + teoremas[j].metateoremastring + '$</span>  '
+                                                //newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ');'
+                                                //newRows = newRows + 'clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" +');';
+                                                //newRows = newRows + '</' + 'script>';
+                                                script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" +');'
                                                 newRows = newRows + '</span>';
                                             }
                                         }
@@ -576,9 +581,16 @@
                             }
                         innerHTML = newRows
                         newElement.innerHTML = innerHTML;                        
-                        }    
+                        }
                      p.appendChild(newElement);
+                     
                      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"misteoremas"]);
+                     terminoClick = document.getElementsByClassName("terminoClick")
+                     if ($('#metodosDemostracion')[0].value && terminoClick.length == 0){
+                            $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
+                            $(".operator").css({"cursor":"","color":""});
+                        }
+                        document.body.appendChild(script);
 
                      }
 
@@ -586,14 +598,12 @@
                  });
         }
         document.getElementById("saveConfig").onclick = function(){
-            console.log('Test');
             guardarMostrarCategorias();
 
         }
           </script>
                     <script>
               $(".collapse-link").on("click",function(e){
-                  console.log('Hey')
                   if($(this).next().hasClass("fa-chevron-down")){
                       $(this).next().removeClass("fa-chevron-down");
                       $(this).next().addClass("fa-chevron-up");
