@@ -33,6 +33,28 @@ public class App extends Term{
         return p.occur(x) || q.occur(x);
     }
     
+    public String position(Var x)
+    {
+        if (p.occur(x)) 
+            return "1"+p.position(x);
+        else if (q.occur(x)) 
+            return "2"+q.position(x);
+        else
+            return "3";
+    }
+    
+    @Override
+    public Term subterm(String position) {
+        if (position.equals(""))
+           return this;
+        else if (position.charAt(0) == '1')
+           return p.subterm(position.substring(1));
+        else if (position.charAt(0) == '2')
+           return q.subterm(position.substring(1));
+        else
+           return null;
+    }
+    
     public Term sust(Var x,Term t)
     {
         Term t2;
@@ -463,6 +485,7 @@ public class App extends Term{
 
     public String toStringInf(SimboloManager s, String numTeo)
     {
+        return privateToStringInf(s,numTeo).x3;
         /*
         Stack<String> stk = new Stack<String>();
         Simbolo s1, s2;
@@ -560,7 +583,6 @@ public class App extends Term{
         else
            return this.toString();
         */
-        return privateToStringInf(s,numTeo).x3;
     }
     
     private IntXIntXString privateToStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, 
@@ -733,19 +755,80 @@ public class App extends Term{
         return toString;
     }
     
-    public ToString toStringInfAbrv(ToString toString)
-    {
+    private IntXIntXString privateToStringInfAbr(ToString tStr, SimboloManager s, String numTeo) {
         
-        String izq;
+        Stack<Term> stk = new Stack<Term>();
+        stk.push(q);
+        Term aux = p;
+        while ( aux instanceof App )
+        {
+           stk.push(((App)aux).q);
+           aux = ((App)aux).p;
+        }
+        Const c = (Const) aux;
+        Simbolo sym = s.getSimbolo(c.getId());
+        
+        Map<String,String> values = new HashMap<String, String>();
+        if (numTeo.equals(""))
+           values.put("op", sym.getNotacion_latex());
+        else
+           values.put("op", "\\cssId{click@"+numTeo+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{"+sym.getNotacion_latex()+"}}}");
+        String notation = sym.getNotacion();
+        int i = 1;
+        while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
+         Term arg = stk.pop();
+         if (arg.alias != null) {
+             tStr.setNuevoAlias(arg.alias, arg, s, numTeo);
+             values.put("na"+i,tStr.term);
+             values.put("a"+i,tStr.term);
+             values.put("aa"+i,tStr.term);
+         }
+         else {
+           if (notation.contains("%(na"+i+")")) {
+             arg.toStringInfAbrv(tStr,s,"");
+             values.put("na"+i,tStr.term);
+           }
+           else if (notation.contains("%(a"+i+")"))
+           {
+             if (arg instanceof App)
+             {
+              IntXIntXString tuple = ((App) arg).privateToStringInfAbr(tStr,s,"");
+              values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
+             }
+             else 
+              values.put("a"+i,arg.toStringInfAbrv(tStr,s,"").term);
+           }
+           else if (notation.contains("%(aa"+i+")"))
+           {
+            if (arg instanceof App)
+            {
+             IntXIntXString tuple = ((App) arg).privateToStringInfAbr(tStr,s,"");
+             values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
+            }
+            else 
+             values.put("aa"+i,arg.toStringInfAbrv(tStr,s,"").term);
+           }
+         }
+         i++;
+        }
+        
+        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
+        tStr.term = sub.replace(sym.getNotacion());
+        return new IntXIntXString(sym.getId(),sym.getPr(),tStr.term);
+    }
+    
+    @Override
+    public ToString toStringInfAbrv(ToString toString, SimboloManager s,String numTeo)
+    {
+        privateToStringInfAbr(toString,s,numTeo);
+        return toString;
+        
+        /*String izq;
         String der;
         
         if(p.alias == null)
         {
-/*            if(p instanceof App)
-                p.toStringInfAbrvFinal(toString);
-            else
-*/
-                p.toStringInfAbrv(toString);
+            p.toStringInfAbrv(toString,s);
             
             izq = toString.term;
         }
@@ -757,7 +840,7 @@ public class App extends Term{
         
         if(q.alias == null)
         {
-            q.toStringInfAbrv(toString);
+            q.toStringInfAbrv(toString,s);
             der = toString.term;
         }
         else
@@ -767,7 +850,7 @@ public class App extends Term{
         }
         
         toString.term="("+izq+der+")";
-        return toString;
+        return toString;*/
     }
     
     public ToString toStringAbrvV1(ToString toString)

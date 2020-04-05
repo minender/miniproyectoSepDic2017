@@ -41,8 +41,25 @@ public class PredicadoDaoImpl implements PredicadoDAO{
     
     @Override
     @Transactional
+    public void updatePredicado(Predicado pre) {
+        this.sessionFactory.getCurrentSession().update(pre);
+    }
+    
+    @Override
+    @Transactional
     public Predicado getPredicado(PredicadoId id){
         return (Predicado)this.sessionFactory.getCurrentSession().get(Predicado.class,id);
+    }
+    
+    @Override
+    @Transactional
+    public Predicado getPredicado(String username, String comb) {
+        String sql="FROM Predicado WHERE predicado = :comb and id.login = :username";
+            List<Predicado> list= this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("comb",comb).setParameter("username", username).list();
+            if(list.isEmpty())
+                return null;
+            else
+                return list.get(0);
     }
     
     @Override

@@ -177,12 +177,11 @@ ALTER SEQUENCE userdb.metateorema_id_seq OWNED BY userdb.metateorema.id;
 --
 
 CREATE TABLE userdb.predicado (
-    id text NOT NULL,
     predicado text NOT NULL,
     alias text NOT NULL,
-    predserializado text NOT NULL,
-    loginusuario text NOT NULL,
-    numargumentos integer NOT NULL
+    predserializado bytea NOT NULL,
+    login text NOT NULL,
+    argumentos text NOT NULL
 );
 
 
@@ -541,7 +540,7 @@ SELECT pg_catalog.setval('userdb.metateorema_id_seq', 1, false);
 -- Data for Name: predicado; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY userdb.predicado (id, predicado, alias, predserializado, loginusuario, numargumentos) FROM stdin;
+COPY userdb.predicado (predicado, alias, predserializado, login, argumentos) FROM stdin;
 \.
 
 
@@ -681,7 +680,7 @@ ALTER TABLE ONLY userdb.metateorema
 --
 
 ALTER TABLE ONLY userdb.predicado
-    ADD CONSTRAINT "predicado_PK" PRIMARY KEY (id, loginusuario);
+    ADD CONSTRAINT "predicado_PK" PRIMARY KEY (alias, login);
 
 
 --
@@ -689,15 +688,7 @@ ALTER TABLE ONLY userdb.predicado
 --
 
 ALTER TABLE ONLY userdb.predicado
-    ADD CONSTRAINT "predicado_alias_UNIQUE" UNIQUE (alias);
-
-
---
--- Name: predicado_predSerializado_UNIQUE; Type: CONSTRAINT; Schema: userdb; Owner: userdb; Tablespace: 
---
-
-ALTER TABLE ONLY userdb.predicado
-    ADD CONSTRAINT "predicado_predSerializado_UNIQUE" UNIQUE (predserializado);
+    ADD CONSTRAINT "predicado_alias_UNIQUE" UNIQUE (predicado, login);
 
 
 --
@@ -782,7 +773,7 @@ ALTER TABLE ONLY userdb.dispone
 --
 
 ALTER TABLE ONLY userdb.predicado
-    ADD CONSTRAINT "predicado_FK" FOREIGN KEY (loginusuario) REFERENCES userdb.usuario(login);
+    ADD CONSTRAINT "predicado_FK" FOREIGN KEY (login) REFERENCES userdb.usuario(login);
 
 
 --

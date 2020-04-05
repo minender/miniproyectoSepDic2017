@@ -45,6 +45,22 @@ public abstract class Term implements Cloneable, Serializable{
             alias=new LinkedList<String>();
         }
         
+        public void setNuevoAlias(String alia,Term t,SimboloManager s,String nTeo)
+        {   
+            String aux;
+            String provisional = "P@2, Q@12";
+            valores.add(t.toStringInfAbrv(this,s,nTeo).term.replace("\\", "\\\\"));
+            String[] positions = provisional.split(",");
+            for (int i=0; i < positions.length; i++)
+                alia += (i==0?"(":", ")+t.subterm(positions[i].split("@")[1].trim()).toStringInfAbrv(this,s,nTeo).term.replace("\\", "\\\\");
+            alia = alia + ")";
+            alias.add(alia);
+            aux="\\cssId{agru@alias@"+currentnAlias+"}{\\style{cursor:pointer; color:#08c;}{"+alia.replace("\\", "\\\\") +"}}";
+            currentnAlias++;
+            
+            term=aux;
+        }
+        
         public void setNuevoAlias(String alia,Term t)
         {   
             //int indice= (new Integer(alia.split("@")[1])).intValue();
@@ -112,6 +128,10 @@ public abstract class Term implements Cloneable, Serializable{
 
     public abstract boolean occur(Var x);
     
+    public abstract String position(Var x);
+    
+    public abstract Term subterm(String position);
+    
     public abstract Term checkApp();
     
     public abstract Term type();
@@ -131,7 +151,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract ToString toStringAbrv(ToString toString);
     
-    public abstract ToString toStringInfAbrv(ToString toString);
+    public abstract ToString toStringInfAbrv(ToString toString, SimboloManager s,String numTeo);
     
     
     public String toStringFinal()
@@ -203,10 +223,11 @@ public abstract class Term implements Cloneable, Serializable{
         st.term = term;
     }
     
-    public void toStringInfAbrvFinal(ToString toString)
+    // Deprecate
+    public void toStringInfAbrvFinal(ToString toString) 
     {
         String term;
-        ToString st=this.toStringInfAbrv(toString);
+        ToString st=this.toStringInfAbrv(toString,null,"");
         String aux= st.term;
         if(aux.startsWith("("))
             term=aux.substring(1, aux.length()-1);
@@ -326,17 +347,22 @@ public abstract class Term implements Cloneable, Serializable{
         return st;
     }
     
-    public String toStringInfJavascript(String id)
+    public String toStringInfJavascript(SimboloManager s, String nTeo, String id)
     {
-        Tripla tri = this.toStringAbrvFinal();
+        ToString tStr=new ToString();
+        this.toStringInfAbrv(tStr,s,nTeo);
         
-        String st="<span id=\"Math"+id+"\">$$"+tri.term +"$$</span>";
+        String st;
+        if (alias != null)
+           tStr.setNuevoAlias(alias, this, s, nTeo);
+
+        st="<span id=\"Math"+id+"\">$"+tStr.term +"$</span>";
         st+="<script>var alias=[";
-        for(String it:tri.alias)
+        for(String it:tStr.alias)
             st+="\""+it+"\",\n";
 
-        st+= "];\n valorAlias=[";
-        for(String it2:tri.valores)
+        st+= "];\nvar valorAlias=[";
+        for(String it2:tStr.valores)
             st+="\""+it2+"\",\n";
         st+="];\n clickAlias(\"Math"+id +"\",alias, valorAlias);</script>";
         
@@ -878,19 +904,18 @@ public abstract class Term implements Cloneable, Serializable{
             Term term2=this;
             Term term1=term2;
 
-            do
-            {
-
+            //do
+            //{
                 term1=term2;
-                Redex redex=term1.buscarRedexIzq(null, false);
+                Redex redex=term1.buscarRedexIzqFinal(null, false);
                 while(redex!=null)
                 {
 
                     term1=term1.reducir();
-                    redex=term1.buscarRedexIzq(null, false);
+                    redex=term1.buscarRedexIzqFinal(null, false);
                 }
-                term2=term1.invBDOneStep();
-            }while(!term1.equals(term2));
+            //    term2=term1.invBDOneStep();
+            //}while(!term1.equals(term2));
 
 	    return term1;
     }

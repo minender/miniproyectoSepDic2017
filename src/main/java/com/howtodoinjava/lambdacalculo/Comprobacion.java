@@ -18,38 +18,21 @@ public class Comprobacion {
     
     public Comprobacion() {
     }    
-         
-         
-    public String bfs(Term t){
+
+    public String dfs(Term t){
+        String st = "";
         Stack<Term> pila = new Stack<Term>();
         pila.push(t);
-        HashSet<Term> visitados = new HashSet<Term>();
         while (!pila.isEmpty()) {
-              Term actual = pila.pop();
-              if (!visitados.contains(actual)) {
-                    visitados.add(actual);
-                    ArrayList<Term> arrayList = new ArrayList<Term>();
-                    if ( actual instanceof App){
-                        arrayList.add(((App)actual).p);
-                        arrayList.add(((App)actual).q );
-                    }else if(actual instanceof Var){
-                        return actual.toStringInf(null,"");
-                    }
-                    for (Term n : arrayList) {
-                        pila.push(n);
-                  }
-              }
+            Term actual = pila.pop();
+            if (actual instanceof Var) {
+               st = st + actual.toStringInf(null,"") + ",";
+            }
+            else if (actual instanceof App) {
+              pila.push(((App)actual).q);
+              pila.push(((App)actual).p);
+            }
         } 
-        return "";
-                
+        return st;
     }
-
-    
-    
-    
- 
-
-
-
-    
 }

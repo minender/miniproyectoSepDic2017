@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.controller;
 
+import com.howtodoinjava.entity.PredicadoId;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.forms.InsertarEvaluar;
@@ -35,6 +36,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.parse.IsNotInDBException;
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -57,6 +59,8 @@ public class EvaluarController {
     private UsuarioManager usuarioManager;
     @Autowired
     private TerminoManager terminoManager;
+    @Autowired
+    private PredicadoManager predicadoManager;
     @Autowired
     private SimboloManager simboloManager;
     @Autowired
@@ -83,8 +87,8 @@ public class EvaluarController {
             Usuario user = usuarioManager.getUsuario(username);
             usuarioManager.getAllTeoremas(user);
             */
-            TerminoId terminoid2 = new TerminoId();
-            terminoid2.setLogin(username);
+            PredicadoId predicadoid2 = new PredicadoId();
+            predicadoid2.setLogin(username);
 
             CharStream in = CharStreams.fromString("p,q:=p/\\r,r\\/r"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
             TermLexer lexer = new TermLexer(in);
@@ -100,10 +104,10 @@ public class EvaluarController {
             try //si la sintanxis no es correcta ocurre una Exception
             {
 
-                teoTerm = parser.instantiate(terminoid2, terminoManager,simboloManager).value;
+                teoTerm = parser.instantiate(predicadoid2, predicadoManager,simboloManager).value;
 //                teoTerm.setAlias(0);
-                teoTerm2 = parser2.start_rule(terminoid2, terminoManager,simboloManager).value;
-                teoTerm2.setAlias(0);
+                teoTerm2 = parser2.start_rule(predicadoid2, predicadoManager,simboloManager).value;
+//                teoTerm2.setAlias(0);
                 // inicializando pa q no ladille java
                 /*Term izq = null;
                 Term der = null;
@@ -245,8 +249,8 @@ public class EvaluarController {
         }
 
         String programa = insertarEvaluar.getAlgoritmo();
-        TerminoId terminoid = new TerminoId();
-        terminoid.setLogin(username);
+        PredicadoId predicadoid = new PredicadoId();
+        predicadoid.setLogin(username);
 
         //Hay que construir un Term aqui con el String termino.combinador
         //para luego traducir, hace falta construir un parse   
@@ -258,8 +262,8 @@ public class EvaluarController {
         try //si la sintanxis no es correcta ocurre una Exception
         {
 
-            term = parser.start_rule(terminoid, terminoManager, simboloManager).value;
-            term.setAlias(0);
+            term = parser.start_rule(predicadoid, predicadoManager, simboloManager).value;
+//            term.setAlias(0);
 
         } /*catch (IsNotInDBException e) {
             String hdr = parser.getErrorHeader(e);

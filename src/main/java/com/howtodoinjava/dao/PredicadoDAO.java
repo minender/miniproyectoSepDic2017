@@ -17,7 +17,11 @@ public interface PredicadoDAO {
     
     public void deletePredicado(PredicadoId id);
     
+    public void updatePredicado(Predicado pre);
+    
     public Predicado getPredicado(PredicadoId id);
+    
+    public Predicado getPredicado(String username, String comb);
     
     public List<Predicado> getAllPredicadosByUser(String userLogin);
     

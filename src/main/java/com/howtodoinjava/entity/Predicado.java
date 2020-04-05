@@ -1,6 +1,10 @@
 package com.howtodoinjava.entity;
 // Generated Mar 20, 2017 12:50:11 PM by Hibernate Tools 3.2.1.GA
 
+import com.howtodoinjava.lambdacalculo.Term;
+import org.springframework.util.SerializationUtils;
+
+
 
 
 /**
@@ -13,19 +17,20 @@ public class Predicado  implements java.io.Serializable {
      private Usuario usuario;
      private String predicado;
      private String alias;
-     private String predserializado;
-     private int numargumentos;
+     private byte[] predserializado;
+     private String argumentos;
+     private Term term;
 
     public Predicado() {
     }
 
-    public Predicado(PredicadoId id, Usuario usuario, String predicado, String alias, String predserializado, int numargumentos) {
+    public Predicado(PredicadoId id, Usuario usuario, String predicado, String alias, byte[] predserializado, String argumentos) {
        this.id = id;
        this.usuario = usuario;
        this.predicado = predicado;
        this.alias = alias;
        this.predserializado = predserializado;
-       this.numargumentos = numargumentos;
+       this.argumentos = argumentos;
     }
    
     public PredicadoId getId() {
@@ -56,19 +61,31 @@ public class Predicado  implements java.io.Serializable {
     public void setAlias(String alias) {
         this.alias = alias;
     }
-    public String getPredserializado() {
+    public byte[] getPredserializado() {
         return this.predserializado;
     }
     
-    public void setPredserializado(String predserializado) {
-        this.predserializado = predserializado;
-    }
-    public int getNumargumentos() {
-        return this.numargumentos;
+    public void setPredserializado(Term t) {
+        this.predserializado= SerializationUtils.serialize(t);
     }
     
-    public void setNumargumentos(int numargumentos) {
-        this.numargumentos = numargumentos;
+    public void setPredserializado(byte[] predserializado) {
+        this.predserializado = predserializado;
+    }
+    public String getArgumentos() {
+        return this.argumentos;
+    }
+    
+    public void setArgumentos(String argumentos) {
+        this.argumentos = argumentos;
+    }
+    
+    public void setTerm(Term t) {
+        term = t;
+    }
+    
+    public Term getTerm() {
+        return term;
     }
 
 

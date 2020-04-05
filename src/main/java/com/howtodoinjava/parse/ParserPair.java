@@ -4,12 +4,12 @@ import com.howtodoinjava.lambdacalculo.Term;
 
 public class ParserPair
 {
-    public String symbol;
+    public int symbolId;
     public Term term;
 
-    public ParserPair(String symbol,Term term)
+    public ParserPair(int symbol,Term term)
     {
-        this.symbol = symbol;
+        this.symbolId = symbol;
         this.term = term;
     }
 }

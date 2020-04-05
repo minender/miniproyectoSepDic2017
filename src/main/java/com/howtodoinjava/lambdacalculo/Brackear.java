@@ -18,10 +18,19 @@ public class Brackear {
     }
     
     public Term appBrack(ArrayList<String> vars, Term term){
-        MakeTerm mk = new MakeTerm();
+        // MakeTerm mk = new MakeTerm();
         
         for(int i = vars.toArray().length -1;  0 <= i ; i--){
-            term = new Bracket((Var) mk.makeTerm(vars.get(i).toString()), term);     
+            term = new Bracket(new Var(vars.get(i).charAt(0)), term);     
+        }  
+        return term;
+    }
+    
+    public Term appBrack(String[] vars, Term term){
+        // MakeTerm mk = new MakeTerm();
+        
+        for(int i = vars.length -1;  0 <= i ; i--){
+            term = new Bracket(new Var(vars[i].trim().charAt(0)), term);     
         }  
         return term;
     }
