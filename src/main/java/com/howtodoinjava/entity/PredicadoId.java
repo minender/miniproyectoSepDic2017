@@ -9,30 +9,30 @@ package com.howtodoinjava.entity;
 public class PredicadoId  implements java.io.Serializable {
 
 
-     private int id;
-     private String loginusuario;
+     private String alias;
+     private String login;
 
     public PredicadoId() {
     }
 
-    public PredicadoId(int id, String loginusuario) {
-       this.id = id;
-       this.loginusuario = loginusuario;
+    public PredicadoId(String alias, String loginusuario) {
+       this.alias = alias;
+       login = loginusuario;
     }
    
-    public int getId() {
-        return this.id;
+    public String getAlias() {
+        return alias;
     }
     
-    public void setId(int id) {
-        this.id = id;
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
-    public String getLoginusuario() {
-        return this.loginusuario;
+    public String getLogin() {
+        return this.login;
     }
     
-    public void setLoginusuario(String loginusuario) {
-        this.loginusuario = loginusuario;
+    public void setLogin(String loginusuario) {
+        this.login = loginusuario;
     }
 
 
@@ -42,15 +42,15 @@ public class PredicadoId  implements java.io.Serializable {
 		 if ( !(other instanceof PredicadoId) ) return false;
 		 PredicadoId castOther = ( PredicadoId ) other; 
          
-		 return (this.getId()==castOther.getId())
- && ( (this.getLoginusuario()==castOther.getLoginusuario()) || ( this.getLoginusuario()!=null && castOther.getLoginusuario()!=null && this.getLoginusuario().equals(castOther.getLoginusuario()) ) );
+		 return ( (this.getAlias()==castOther.getAlias()) || ( this.getAlias()!=null && castOther.getAlias()!=null && this.getAlias().equals(castOther.getAlias()) ) )
+ && ( (this.getLogin()==castOther.getLogin()) || ( this.getLogin()!=null && castOther.getLogin()!=null && this.getLogin().equals(castOther.getLogin()) ) );
    }
    
    public int hashCode() {
          int result = 17;
          
-         result = 37 * result + this.getId();
-         result = 37 * result + ( getLoginusuario() == null ? 0 : this.getLoginusuario().hashCode() );
+         result = 37 * result + ( getAlias() == null ? 0 : this.getAlias().hashCode() );
+         result = 37 * result + ( getLogin() == null ? 0 : this.getLogin().hashCode() );
          return result;
    }   
 

@@ -4,11 +4,13 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import java.io.Serializable;
+
 /**
  *
  * @author federico
  */
-public abstract class Indice {
+public abstract class Indice implements Cloneable, Serializable{
      
     public int orden;
     

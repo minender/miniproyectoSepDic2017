@@ -1,12 +1,12 @@
 // Generated from Term.g by ANTLR 4.8
 package com.howtodoinjava.parse; 
 
-import com.howtodoinjava.entity.Termino;
+import com.howtodoinjava.entity.Predicado;
 import com.howtodoinjava.entity.Simbolo;
-import com.howtodoinjava.entity.TerminoId;
+import com.howtodoinjava.entity.PredicadoId;
 import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.lambdacalculo.*;
-import com.howtodoinjava.service.TerminoManager;
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.util.Iterator;
 import org.antlr.v4.runtime.atn.*;
@@ -112,8 +112,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class Start_ruleContext extends ParserRuleContext {
-		public TerminoId terminoid;
-		public TerminoManager terminoManager;
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public Term value;
 		public EqContext eq;
@@ -121,10 +121,10 @@ public class TermParser extends Parser {
 			return getRuleContext(EqContext.class,0);
 		}
 		public Start_ruleContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Start_ruleContext(ParserRuleContext parent, int invokingState, TerminoId terminoid, TerminoManager terminoManager, SimboloManager sm) {
+		public Start_ruleContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
-			this.terminoid = terminoid;
-			this.terminoManager = terminoManager;
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_start_rule; }
@@ -138,14 +138,14 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final Start_ruleContext start_rule(TerminoId terminoid,TerminoManager terminoManager,SimboloManager sm) throws RecognitionException {
-		Start_ruleContext _localctx = new Start_ruleContext(_ctx, getState(), terminoid, terminoManager, sm);
+	public final Start_ruleContext start_rule(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		Start_ruleContext _localctx = new Start_ruleContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 0, RULE_start_rule);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(34);
-			((Start_ruleContext)_localctx).eq = eq(sm);
+			((Start_ruleContext)_localctx).eq = eq(id, pm, sm);
 			 ((Start_ruleContext)_localctx).value = ((Start_ruleContext)_localctx).eq.value;
 			}
 		}
@@ -161,6 +161,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class EqContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public Term value;
 		public TermContext term;
@@ -172,8 +174,10 @@ public class TermParser extends Parser {
 			return getRuleContext(EqtailContext.class,0);
 		}
 		public EqContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public EqContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public EqContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_eq; }
@@ -187,16 +191,16 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final EqContext eq(SimboloManager sm) throws RecognitionException {
-		EqContext _localctx = new EqContext(_ctx, getState(), sm);
+	public final EqContext eq(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		EqContext _localctx = new EqContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 2, RULE_eq);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(37);
-			((EqContext)_localctx).term = term(sm);
+			((EqContext)_localctx).term = term(id,pm,sm);
 			setState(38);
-			((EqContext)_localctx).eqtail = eqtail(sm);
+			((EqContext)_localctx).eqtail = eqtail(id,pm,sm);
 			 Term aux=((EqContext)_localctx).term.value;
 			                                                for(Iterator<Term> i = ((EqContext)_localctx).eqtail.value.iterator(); i.hasNext();)
 			                                                {
@@ -222,6 +226,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class EqtailContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public ArrayList<Term> value;
 		public TermContext term;
@@ -233,8 +239,10 @@ public class TermParser extends Parser {
 			return getRuleContext(EqtailContext.class,0);
 		}
 		public EqtailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public EqtailContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public EqtailContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_eqtail; }
@@ -248,8 +256,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final EqtailContext eqtail(SimboloManager sm) throws RecognitionException {
-		EqtailContext _localctx = new EqtailContext(_ctx, getState(), sm);
+	public final EqtailContext eqtail(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		EqtailContext _localctx = new EqtailContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 4, RULE_eqtail);
 		int _la;
 		try {
@@ -271,9 +279,9 @@ public class TermParser extends Parser {
 					consume();
 				}
 				setState(42);
-				((EqtailContext)_localctx).term = term(sm);
+				((EqtailContext)_localctx).term = term(id,pm,sm);
 				setState(43);
-				((EqtailContext)_localctx).tail1 = eqtail(sm);
+				((EqtailContext)_localctx).tail1 = eqtail(id,pm,sm);
 				ArrayList<Term> aux=((EqtailContext)_localctx).tail1.value; aux.add(0,((EqtailContext)_localctx).term.value); ((EqtailContext)_localctx).value = aux;
 				}
 				break;
@@ -302,6 +310,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class TermContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public Term value;
 		public DisyconjContext disyconj;
@@ -313,8 +323,10 @@ public class TermParser extends Parser {
 			return getRuleContext(DisyconjtailContext.class,0);
 		}
 		public TermContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public TermContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public TermContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_term; }
@@ -328,16 +340,16 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final TermContext term(SimboloManager sm) throws RecognitionException {
-		TermContext _localctx = new TermContext(_ctx, getState(), sm);
+	public final TermContext term(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		TermContext _localctx = new TermContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 6, RULE_term);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(49);
-			((TermContext)_localctx).disyconj = disyconj(sm);
+			((TermContext)_localctx).disyconj = disyconj(id,pm,sm);
 			setState(50);
-			((TermContext)_localctx).disyconjtail = disyconjtail(sm);
+			((TermContext)_localctx).disyconjtail = disyconjtail(id,pm,sm);
 			 
 			                                                    if (((TermContext)_localctx).disyconjtail.value == null)
 			                                                       ((TermContext)_localctx).value =  ((TermContext)_localctx).disyconj.value;
@@ -358,6 +370,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class DisyconjtailContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public Term value;
 		public DisyconjContext disyconj;
@@ -369,8 +383,10 @@ public class TermParser extends Parser {
 			return getRuleContext(DisyconjtailContext.class,0);
 		}
 		public DisyconjtailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public DisyconjtailContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public DisyconjtailContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_disyconjtail; }
@@ -384,8 +400,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final DisyconjtailContext disyconjtail(SimboloManager sm) throws RecognitionException {
-		DisyconjtailContext _localctx = new DisyconjtailContext(_ctx, getState(), sm);
+	public final DisyconjtailContext disyconjtail(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		DisyconjtailContext _localctx = new DisyconjtailContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 8, RULE_disyconjtail);
 		int _la;
 		try {
@@ -407,9 +423,9 @@ public class TermParser extends Parser {
 					consume();
 				}
 				setState(54);
-				((DisyconjtailContext)_localctx).disyconj = disyconj(sm);
+				((DisyconjtailContext)_localctx).disyconj = disyconj(id,pm,sm);
 				setState(55);
-				((DisyconjtailContext)_localctx).tail2 = disyconjtail(sm);
+				((DisyconjtailContext)_localctx).tail2 = disyconjtail(id,pm,sm);
 
 				                                               if (((DisyconjtailContext)_localctx).tail2.value == null)
 				                                               {
@@ -455,6 +471,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class DisyconjContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public Term value;
 		public ConcContext conc;
@@ -466,8 +484,10 @@ public class TermParser extends Parser {
 			return getRuleContext(ConctailContext.class,0);
 		}
 		public DisyconjContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public DisyconjContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public DisyconjContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_disyconj; }
@@ -481,16 +501,16 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final DisyconjContext disyconj(SimboloManager sm) throws RecognitionException {
-		DisyconjContext _localctx = new DisyconjContext(_ctx, getState(), sm);
+	public final DisyconjContext disyconj(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		DisyconjContext _localctx = new DisyconjContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 10, RULE_disyconj);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(61);
-			((DisyconjContext)_localctx).conc = conc(sm);
+			((DisyconjContext)_localctx).conc = conc(id,pm,sm);
 			setState(62);
-			((DisyconjContext)_localctx).conctail = conctail(sm);
+			((DisyconjContext)_localctx).conctail = conctail(id,pm,sm);
 			 Term aux=((DisyconjContext)_localctx).conc.value;
 			                                                for(Iterator<Term> i = ((DisyconjContext)_localctx).conctail.value.iterator(); i.hasNext();) 
 			                                                {
@@ -515,6 +535,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class ConctailContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public ArrayList<Term> value;
 		public ConcContext conc;
@@ -526,8 +548,10 @@ public class TermParser extends Parser {
 			return getRuleContext(ConctailContext.class,0);
 		}
 		public ConctailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ConctailContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public ConctailContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_conctail; }
@@ -541,8 +565,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final ConctailContext conctail(SimboloManager sm) throws RecognitionException {
-		ConctailContext _localctx = new ConctailContext(_ctx, getState(), sm);
+	public final ConctailContext conctail(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		ConctailContext _localctx = new ConctailContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 12, RULE_conctail);
 		int _la;
 		try {
@@ -564,9 +588,9 @@ public class TermParser extends Parser {
 					consume();
 				}
 				setState(66);
-				((ConctailContext)_localctx).conc = conc(sm);
+				((ConctailContext)_localctx).conc = conc(id,pm,sm);
 				setState(67);
-				((ConctailContext)_localctx).tail3 = conctail(sm);
+				((ConctailContext)_localctx).tail3 = conctail(id,pm,sm);
 				ArrayList<Term> aux=((ConctailContext)_localctx).tail3.value; 
 				                                               aux.add(0,((ConctailContext)_localctx).conc.value); ((ConctailContext)_localctx).value = aux;
 				                                              
@@ -601,6 +625,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class ConcContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public Term value;
 		public NeqContext neq;
@@ -612,8 +638,10 @@ public class TermParser extends Parser {
 			return getRuleContext(DisytailContext.class,0);
 		}
 		public ConcContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ConcContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public ConcContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_conc; }
@@ -627,33 +655,33 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final ConcContext conc(SimboloManager sm) throws RecognitionException {
-		ConcContext _localctx = new ConcContext(_ctx, getState(), sm);
+	public final ConcContext conc(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		ConcContext _localctx = new ConcContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 14, RULE_conc);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(73);
-			((ConcContext)_localctx).neq = neq(sm);
+			((ConcContext)_localctx).neq = neq(id,pm,sm);
 			setState(74);
-			((ConcContext)_localctx).disytail = disytail(sm);
+			((ConcContext)_localctx).disytail = disytail(id,pm,sm);
 			 Term aux=((ConcContext)_localctx).neq.value; 
 			                                                     for(Iterator<ParserPair> i = ((ConcContext)_localctx).disytail.value.iterator(); i.hasNext();)
 			                                                     {
 			                                                        ParserPair pair = i.next();
-			                                                        if (pair.symbol.equals("\\vee"))
+			                                                        if (pair.symbolId==4)
 			                                                        {
 			                                                           Simbolo s = sm.getSimbolo(4); 
 			                                                           if (s == null)
 			                                                              throw new IsNotInDBException(this,"");
-			                                                           aux=new App(new App(new Const(4,pair.symbol,!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
+			                                                           aux=new App(new App(new Const(4,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
 			                                                        }
-			                                                        else if (pair.symbol.equals("\\wedge"))
+			                                                        else if (pair.symbolId==5)
 			                                                        {
 			                                                           Simbolo s = sm.getSimbolo(5); 
 			                                                           if (s == null)
 			                                                              throw new IsNotInDBException(this,"");
-			                                                           aux=new App(new App(new Const(5,pair.symbol,!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
+			                                                           aux=new App(new App(new Const(5,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
 			                                                        }
 			                                                     }
 			                                                     ((ConcContext)_localctx).value = aux;
@@ -672,6 +700,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class DisytailContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public ArrayList<ParserPair> value;
 		public NeqContext neq;
@@ -684,8 +714,10 @@ public class TermParser extends Parser {
 			return getRuleContext(DisytailContext.class,0);
 		}
 		public DisytailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public DisytailContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public DisytailContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_disytail; }
@@ -699,8 +731,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final DisytailContext disytail(SimboloManager sm) throws RecognitionException {
-		DisytailContext _localctx = new DisytailContext(_ctx, getState(), sm);
+	public final DisytailContext disytail(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		DisytailContext _localctx = new DisytailContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 16, RULE_disytail);
 		int _la;
 		try {
@@ -722,14 +754,14 @@ public class TermParser extends Parser {
 					consume();
 				}
 				setState(78);
-				((DisytailContext)_localctx).neq = neq(sm);
+				((DisytailContext)_localctx).neq = neq(id,pm,sm);
 				setState(79);
-				((DisytailContext)_localctx).tail4 = disytail(sm);
+				((DisytailContext)_localctx).tail4 = disytail(id,pm,sm);
 				ArrayList<ParserPair> aux=((DisytailContext)_localctx).tail4.value;
 				                                               Simbolo s = sm.getSimbolo(4); 
 				                                               if (s == null)
 				                                                  throw new IsNotInDBException(this,"");
-				                                               aux.add(0,new ParserPair(s.getNotacion_latex(),((DisytailContext)_localctx).neq.value)); ((DisytailContext)_localctx).value = aux;
+				                                               aux.add(0,new ParserPair(s.getId(),((DisytailContext)_localctx).neq.value)); ((DisytailContext)_localctx).value = aux;
 				                                              
 				}
 				break;
@@ -748,14 +780,14 @@ public class TermParser extends Parser {
 					consume();
 				}
 				setState(83);
-				((DisytailContext)_localctx).neq = neq(sm);
+				((DisytailContext)_localctx).neq = neq(id,pm,sm);
 				setState(84);
-				((DisytailContext)_localctx).tail5 = disytail(sm);
+				((DisytailContext)_localctx).tail5 = disytail(id,pm,sm);
 				ArrayList<ParserPair> aux=((DisytailContext)_localctx).tail5.value; 
 				                                                 Simbolo s = sm.getSimbolo(5); 
 				                                                 if (s == null)
 				                                                    throw new IsNotInDBException(this,"");
-				                                                 aux.add(0,new ParserPair(s.getNotacion_latex(),((DisytailContext)_localctx).neq.value)); ((DisytailContext)_localctx).value = aux;
+				                                                 aux.add(0,new ParserPair(s.getId(),((DisytailContext)_localctx).neq.value)); ((DisytailContext)_localctx).value = aux;
 				                                                
 				}
 				break;
@@ -790,6 +822,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class NeqContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public Term value;
 		public NegContext neg;
@@ -801,8 +835,10 @@ public class TermParser extends Parser {
 			return getRuleContext(NeqtailContext.class,0);
 		}
 		public NeqContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public NeqContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public NeqContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_neq; }
@@ -816,16 +852,16 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final NeqContext neq(SimboloManager sm) throws RecognitionException {
-		NeqContext _localctx = new NeqContext(_ctx, getState(), sm);
+	public final NeqContext neq(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		NeqContext _localctx = new NeqContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 18, RULE_neq);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(90);
-			((NeqContext)_localctx).neg = neg(sm);
+			((NeqContext)_localctx).neg = neg(id,pm,sm);
 			setState(91);
-			((NeqContext)_localctx).neqtail = neqtail(sm);
+			((NeqContext)_localctx).neqtail = neqtail(id,pm,sm);
 			 Term aux=((NeqContext)_localctx).neg.value;
 			                                                for(Iterator<Term> i = ((NeqContext)_localctx).neqtail.value.iterator(); i.hasNext();) 
 			                                                {
@@ -850,6 +886,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class NeqtailContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public ArrayList<Term> value;
 		public NegContext neg;
@@ -861,8 +899,10 @@ public class TermParser extends Parser {
 			return getRuleContext(NeqtailContext.class,0);
 		}
 		public NeqtailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public NeqtailContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public NeqtailContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_neqtail; }
@@ -876,8 +916,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final NeqtailContext neqtail(SimboloManager sm) throws RecognitionException {
-		NeqtailContext _localctx = new NeqtailContext(_ctx, getState(), sm);
+	public final NeqtailContext neqtail(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		NeqtailContext _localctx = new NeqtailContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 20, RULE_neqtail);
 		int _la;
 		try {
@@ -899,9 +939,9 @@ public class TermParser extends Parser {
 					consume();
 				}
 				setState(95);
-				((NeqtailContext)_localctx).neg = neg(sm);
+				((NeqtailContext)_localctx).neg = neg(id,pm,sm);
 				setState(96);
-				((NeqtailContext)_localctx).tail6 = neqtail(sm);
+				((NeqtailContext)_localctx).tail6 = neqtail(id,pm,sm);
 				ArrayList<Term> aux=((NeqtailContext)_localctx).tail6.value; 
 				                                                    aux.add(0,((NeqtailContext)_localctx).neg.value); ((NeqtailContext)_localctx).value = aux;
 				                                                   
@@ -942,6 +982,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class NegContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public Term value;
 		public NegContext n;
@@ -949,7 +991,7 @@ public class TermParser extends Parser {
 		public Token LETTER;
 		public EqContext eq;
 		public Token WORD;
-		public ArgumentsContext arguments;
+		public ExplistContext explist;
 		public NegContext neg() {
 			return getRuleContext(NegContext.class,0);
 		}
@@ -959,12 +1001,14 @@ public class TermParser extends Parser {
 			return getRuleContext(EqContext.class,0);
 		}
 		public TerminalNode WORD() { return getToken(TermParser.WORD, 0); }
-		public ArgumentsContext arguments() {
-			return getRuleContext(ArgumentsContext.class,0);
+		public ExplistContext explist() {
+			return getRuleContext(ExplistContext.class,0);
 		}
 		public NegContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public NegContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public NegContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_neg; }
@@ -978,8 +1022,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final NegContext neg(SimboloManager sm) throws RecognitionException {
-		NegContext _localctx = new NegContext(_ctx, getState(), sm);
+	public final NegContext neg(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		NegContext _localctx = new NegContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 22, RULE_neg);
 		int _la;
 		try {
@@ -1000,7 +1044,7 @@ public class TermParser extends Parser {
 					consume();
 				}
 				setState(103);
-				((NegContext)_localctx).n = neg(sm);
+				((NegContext)_localctx).n = neg(id,pm,sm);
 				Simbolo s = sm.getSimbolo(7); if (s == null)throw new IsNotInDBException(this,""); 
 				                                               ((NegContext)_localctx).value = new App(new Const(7,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((NegContext)_localctx).n.value);
 				}
@@ -1048,7 +1092,7 @@ public class TermParser extends Parser {
 				setState(115);
 				match(T__16);
 				setState(116);
-				((NegContext)_localctx).eq = eq(sm);
+				((NegContext)_localctx).eq = eq(id,pm,sm);
 				setState(117);
 				match(T__17);
 				setState(118);
@@ -1073,12 +1117,22 @@ public class TermParser extends Parser {
 				setState(123);
 				match(T__19);
 				setState(124);
-				((NegContext)_localctx).arguments = arguments();
+				((NegContext)_localctx).explist = explist(id,pm,sm);
 				setState(125);
 				match(T__20);
-				Term aux = new Const(-1,(((NegContext)_localctx).WORD!=null?((NegContext)_localctx).WORD.getText():null),true,-1,-1);
-				                                               for(Iterator<Var> i = ((NegContext)_localctx).arguments.value.iterator(); i.hasNext();) 
+				id.setAlias((((NegContext)_localctx).WORD!=null?((NegContext)_localctx).WORD.getText():null)); 
+				                                               Predicado preInBD=pm.getPredicado(id);
+				                                               if(preInBD==null) {
+				                                                 throw new IsNotInDBException(this,"");
+				                                               } 
+				                                               Term aux = preInBD.getTerm();
+				                                               int nArg = preInBD.getArgumentos().split(",").length;
+				                                               if (((NegContext)_localctx).explist.value.size() != nArg)
+				                                                 throw new NoViableAltException(this);
+				                                               for(Iterator<Term> i = ((NegContext)_localctx).explist.value.iterator(); i.hasNext();) 
 				                                                  aux=new App(aux,i.next());
+				                                               aux = aux.evaluar();
+				                                               aux.setAlias(id.getAlias());
 				                                               ((NegContext)_localctx).value = aux;
 				                                              
 				}
@@ -1089,7 +1143,7 @@ public class TermParser extends Parser {
 				setState(128);
 				match(T__19);
 				setState(129);
-				((NegContext)_localctx).eq = eq(sm);
+				((NegContext)_localctx).eq = eq(id,pm,sm);
 				setState(130);
 				match(T__20);
 				((NegContext)_localctx).value = ((NegContext)_localctx).eq.value;
@@ -1109,8 +1163,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class InstantiateContext extends ParserRuleContext {
-		public TerminoId terminoid;
-		public TerminoManager terminoManager;
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public ArrayList<Object> value;
 		public ArgumentsContext arguments;
@@ -1122,10 +1176,10 @@ public class TermParser extends Parser {
 			return getRuleContext(ExplistContext.class,0);
 		}
 		public InstantiateContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public InstantiateContext(ParserRuleContext parent, int invokingState, TerminoId terminoid, TerminoManager terminoManager, SimboloManager sm) {
+		public InstantiateContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
-			this.terminoid = terminoid;
-			this.terminoManager = terminoManager;
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_instantiate; }
@@ -1139,8 +1193,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final InstantiateContext instantiate(TerminoId terminoid,TerminoManager terminoManager,SimboloManager sm) throws RecognitionException {
-		InstantiateContext _localctx = new InstantiateContext(_ctx, getState(), terminoid, terminoManager, sm);
+	public final InstantiateContext instantiate(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		InstantiateContext _localctx = new InstantiateContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 24, RULE_instantiate);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -1150,7 +1204,7 @@ public class TermParser extends Parser {
 			setState(136);
 			match(T__21);
 			setState(137);
-			((InstantiateContext)_localctx).explist = explist(sm);
+			((InstantiateContext)_localctx).explist = explist(id,pm,sm);
 			ArrayList<Object> arr=new ArrayList<Object>();
 			                                               arr.add(((InstantiateContext)_localctx).arguments.value);
 			                                               arr.add(((InstantiateContext)_localctx).explist.value);
@@ -1170,6 +1224,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class ExplistContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public ArrayList<Term> value;
 		public EqContext eq;
@@ -1181,8 +1237,10 @@ public class TermParser extends Parser {
 			return getRuleContext(ExplisttailContext.class,0);
 		}
 		public ExplistContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ExplistContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public ExplistContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_explist; }
@@ -1196,16 +1254,16 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final ExplistContext explist(SimboloManager sm) throws RecognitionException {
-		ExplistContext _localctx = new ExplistContext(_ctx, getState(), sm);
+	public final ExplistContext explist(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		ExplistContext _localctx = new ExplistContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 26, RULE_explist);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(140);
-			((ExplistContext)_localctx).eq = eq(sm);
+			((ExplistContext)_localctx).eq = eq(id,pm,sm);
 			setState(141);
-			((ExplistContext)_localctx).explisttail = explisttail(sm);
+			((ExplistContext)_localctx).explisttail = explisttail(id,pm,sm);
 			ArrayList<Term> aux = ((ExplistContext)_localctx).explisttail.value;
 			                                               aux.add(0,((ExplistContext)_localctx).eq.value);
 			                                               ((ExplistContext)_localctx).value =  aux;
@@ -1224,6 +1282,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class ExplisttailContext extends ParserRuleContext {
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public ArrayList<Term> value;
 		public EqContext eq;
@@ -1235,8 +1295,10 @@ public class TermParser extends Parser {
 			return getRuleContext(ExplisttailContext.class,0);
 		}
 		public ExplisttailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ExplisttailContext(ParserRuleContext parent, int invokingState, SimboloManager sm) {
+		public ExplisttailContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_explisttail; }
@@ -1250,8 +1312,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final ExplisttailContext explisttail(SimboloManager sm) throws RecognitionException {
-		ExplisttailContext _localctx = new ExplisttailContext(_ctx, getState(), sm);
+	public final ExplisttailContext explisttail(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		ExplisttailContext _localctx = new ExplisttailContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 28, RULE_explisttail);
 		try {
 			setState(150);
@@ -1263,9 +1325,9 @@ public class TermParser extends Parser {
 				setState(144);
 				match(T__22);
 				setState(145);
-				((ExplisttailContext)_localctx).eq = eq(sm);
+				((ExplisttailContext)_localctx).eq = eq(id,pm,sm);
 				setState(146);
-				((ExplisttailContext)_localctx).tail7 = explisttail(sm);
+				((ExplisttailContext)_localctx).tail7 = explisttail(id,pm,sm);
 				ArrayList<Term> aux = ((ExplisttailContext)_localctx).tail7.value;
 				                                               aux.add(0,((ExplisttailContext)_localctx).eq.value);
 				                                               ((ExplisttailContext)_localctx).value = aux;
@@ -1273,6 +1335,7 @@ public class TermParser extends Parser {
 				}
 				break;
 			case EOF:
+			case T__20:
 				enterOuterAlt(_localctx, 2);
 				{
 				((ExplisttailContext)_localctx).value =  new ArrayList<Term>();
@@ -1351,9 +1414,9 @@ public class TermParser extends Parser {
 				((ArgumentsContext)_localctx).arg = arguments();
 				ArrayList<Var> aux=((ArgumentsContext)_localctx).arg.value; 
 				                                                     Var v=new Var((new Integer((int)(((ArgumentsContext)_localctx).CAPITALLETTER!=null?((ArgumentsContext)_localctx).CAPITALLETTER.getText():null).charAt(0))).intValue());
-				                                                            aux.add(0,v); 
-				                                                            ((ArgumentsContext)_localctx).value = aux;
-				                                                           
+				                                                     aux.add(0,v); 
+				                                                     ((ArgumentsContext)_localctx).value = aux;
+				                                                    
 				}
 				break;
 			case 3:
@@ -1394,8 +1457,8 @@ public class TermParser extends Parser {
 	}
 
 	public static class LambdaContext extends ParserRuleContext {
-		public TerminoId terminoid;
-		public TerminoManager terminoManager;
+		public PredicadoId id;
+		public PredicadoManager pm;
 		public SimboloManager sm;
 		public Term value;
 		public Token LETTER;
@@ -1405,10 +1468,10 @@ public class TermParser extends Parser {
 			return getRuleContext(EqContext.class,0);
 		}
 		public LambdaContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public LambdaContext(ParserRuleContext parent, int invokingState, TerminoId terminoid, TerminoManager terminoManager, SimboloManager sm) {
+		public LambdaContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 			super(parent, invokingState);
-			this.terminoid = terminoid;
-			this.terminoManager = terminoManager;
+			this.id = id;
+			this.pm = pm;
 			this.sm = sm;
 		}
 		@Override public int getRuleIndex() { return RULE_lambda; }
@@ -1422,8 +1485,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final LambdaContext lambda(TerminoId terminoid,TerminoManager terminoManager,SimboloManager sm) throws RecognitionException {
-		LambdaContext _localctx = new LambdaContext(_ctx, getState(), terminoid, terminoManager, sm);
+	public final LambdaContext lambda(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
+		LambdaContext _localctx = new LambdaContext(_ctx, getState(), id, pm, sm);
 		enterRule(_localctx, 32, RULE_lambda);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -1435,7 +1498,7 @@ public class TermParser extends Parser {
 			setState(170);
 			match(T__24);
 			setState(171);
-			((LambdaContext)_localctx).eq = eq(sm);
+			((LambdaContext)_localctx).eq = eq(id,pm,sm);
 			Var v=new Var((new Integer((((LambdaContext)_localctx).LETTER!=null?((LambdaContext)_localctx).LETTER.getText():null).charAt(0))).intValue());
 			                                                            ((LambdaContext)_localctx).value =  new Bracket(v,((LambdaContext)_localctx).eq.value);
 			                                                           
@@ -1485,24 +1548,24 @@ public class TermParser extends Parser {
 		"\r\2jk\b\r\1\2k\u0088\3\2\2\2lm\7\34\2\2m\u0088\b\r\1\2no\7\35\2\2o\u0088"+
 		"\b\r\1\2pq\7\21\2\2q\u0088\b\r\1\2rs\7\22\2\2s\u0088\b\r\1\2tu\7\34\2"+
 		"\2uv\7\23\2\2vw\5\4\3\2wx\7\24\2\2xy\7\35\2\2yz\7\25\2\2z{\b\r\1\2{\u0088"+
-		"\3\2\2\2|}\7\36\2\2}~\7\26\2\2~\177\5 \21\2\177\u0080\7\27\2\2\u0080\u0081"+
-		"\b\r\1\2\u0081\u0088\3\2\2\2\u0082\u0083\7\26\2\2\u0083\u0084\5\4\3\2"+
-		"\u0084\u0085\7\27\2\2\u0085\u0086\b\r\1\2\u0086\u0088\3\2\2\2\u0087h\3"+
-		"\2\2\2\u0087l\3\2\2\2\u0087n\3\2\2\2\u0087p\3\2\2\2\u0087r\3\2\2\2\u0087"+
-		"t\3\2\2\2\u0087|\3\2\2\2\u0087\u0082\3\2\2\2\u0088\31\3\2\2\2\u0089\u008a"+
-		"\5 \21\2\u008a\u008b\7\30\2\2\u008b\u008c\5\34\17\2\u008c\u008d\b\16\1"+
-		"\2\u008d\33\3\2\2\2\u008e\u008f\5\4\3\2\u008f\u0090\5\36\20\2\u0090\u0091"+
-		"\b\17\1\2\u0091\35\3\2\2\2\u0092\u0093\7\31\2\2\u0093\u0094\5\4\3\2\u0094"+
-		"\u0095\5\36\20\2\u0095\u0096\b\20\1\2\u0096\u0099\3\2\2\2\u0097\u0099"+
-		"\b\20\1\2\u0098\u0092\3\2\2\2\u0098\u0097\3\2\2\2\u0099\37\3\2\2\2\u009a"+
-		"\u009b\7\35\2\2\u009b\u009c\7\31\2\2\u009c\u009d\5 \21\2\u009d\u009e\b"+
-		"\21\1\2\u009e\u00a9\3\2\2\2\u009f\u00a0\7\34\2\2\u00a0\u00a1\7\31\2\2"+
-		"\u00a1\u00a2\5 \21\2\u00a2\u00a3\b\21\1\2\u00a3\u00a9\3\2\2\2\u00a4\u00a5"+
-		"\7\35\2\2\u00a5\u00a9\b\21\1\2\u00a6\u00a7\7\34\2\2\u00a7\u00a9\b\21\1"+
-		"\2\u00a8\u009a\3\2\2\2\u00a8\u009f\3\2\2\2\u00a8\u00a4\3\2\2\2\u00a8\u00a6"+
-		"\3\2\2\2\u00a9!\3\2\2\2\u00aa\u00ab\7\32\2\2\u00ab\u00ac\7\35\2\2\u00ac"+
-		"\u00ad\7\33\2\2\u00ad\u00ae\5\4\3\2\u00ae\u00af\b\22\1\2\u00af#\3\2\2"+
-		"\2\n\61=IZf\u0087\u0098\u00a8";
+		"\3\2\2\2|}\7\36\2\2}~\7\26\2\2~\177\5\34\17\2\177\u0080\7\27\2\2\u0080"+
+		"\u0081\b\r\1\2\u0081\u0088\3\2\2\2\u0082\u0083\7\26\2\2\u0083\u0084\5"+
+		"\4\3\2\u0084\u0085\7\27\2\2\u0085\u0086\b\r\1\2\u0086\u0088\3\2\2\2\u0087"+
+		"h\3\2\2\2\u0087l\3\2\2\2\u0087n\3\2\2\2\u0087p\3\2\2\2\u0087r\3\2\2\2"+
+		"\u0087t\3\2\2\2\u0087|\3\2\2\2\u0087\u0082\3\2\2\2\u0088\31\3\2\2\2\u0089"+
+		"\u008a\5 \21\2\u008a\u008b\7\30\2\2\u008b\u008c\5\34\17\2\u008c\u008d"+
+		"\b\16\1\2\u008d\33\3\2\2\2\u008e\u008f\5\4\3\2\u008f\u0090\5\36\20\2\u0090"+
+		"\u0091\b\17\1\2\u0091\35\3\2\2\2\u0092\u0093\7\31\2\2\u0093\u0094\5\4"+
+		"\3\2\u0094\u0095\5\36\20\2\u0095\u0096\b\20\1\2\u0096\u0099\3\2\2\2\u0097"+
+		"\u0099\b\20\1\2\u0098\u0092\3\2\2\2\u0098\u0097\3\2\2\2\u0099\37\3\2\2"+
+		"\2\u009a\u009b\7\35\2\2\u009b\u009c\7\31\2\2\u009c\u009d\5 \21\2\u009d"+
+		"\u009e\b\21\1\2\u009e\u00a9\3\2\2\2\u009f\u00a0\7\34\2\2\u00a0\u00a1\7"+
+		"\31\2\2\u00a1\u00a2\5 \21\2\u00a2\u00a3\b\21\1\2\u00a3\u00a9\3\2\2\2\u00a4"+
+		"\u00a5\7\35\2\2\u00a5\u00a9\b\21\1\2\u00a6\u00a7\7\34\2\2\u00a7\u00a9"+
+		"\b\21\1\2\u00a8\u009a\3\2\2\2\u00a8\u009f\3\2\2\2\u00a8\u00a4\3\2\2\2"+
+		"\u00a8\u00a6\3\2\2\2\u00a9!\3\2\2\2\u00aa\u00ab\7\32\2\2\u00ab\u00ac\7"+
+		"\35\2\2\u00ac\u00ad\7\33\2\2\u00ad\u00ae\5\4\3\2\u00ae\u00af\b\22\1\2"+
+		"\u00af#\3\2\2\2\n\61=IZf\u0087\u0098\u00a8";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

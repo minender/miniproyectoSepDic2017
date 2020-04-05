@@ -1,6 +1,7 @@
 package com.howtodoinjava.controller;
 
 import com.howtodoinjava.entity.Dispone;
+import com.howtodoinjava.entity.PredicadoId;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
@@ -29,6 +30,7 @@ import com.howtodoinjava.service.UsuarioManager;
 import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MetateoremaManager;
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -64,6 +66,8 @@ public class InferController {
     private UsuarioManager usuarioManager;
     @Autowired
     private TerminoManager terminoManager;
+    @Autowired
+    private PredicadoManager predicadoManager;
     @Autowired
     private SimboloManager simboloManager;
     @Autowired
@@ -262,8 +266,8 @@ public class InferController {
         }*/
         
         
-        TerminoId terminoid=new TerminoId();
-        terminoid.setLogin(username);
+        PredicadoId predicadoid=new PredicadoId();
+        predicadoid.setLogin(username);
         
         String tipoTeo = nStatement.substring(0, 2);
         String numeroTeo = nStatement.substring(3, nStatement.length());
@@ -309,7 +313,7 @@ public class InferController {
           TermParser parser2 = new TermParser(tokens2);
           try
           {
-             arr=parser2.instantiate(terminoid,terminoManager,simboloManager).value;
+             arr=parser2.instantiate(predicadoid,predicadoManager,simboloManager).value;
           }
           catch(RecognitionException e)
           {
@@ -331,7 +335,7 @@ public class InferController {
             TermParser parser3 = new TermParser(tokens3);
             try
             {
-               leibnizTerm =parser3.lambda(terminoid,terminoManager,simboloManager).value;
+               leibnizTerm =parser3.lambda(predicadoid,predicadoManager,simboloManager).value;
             }
             catch(RecognitionException e)
             {
