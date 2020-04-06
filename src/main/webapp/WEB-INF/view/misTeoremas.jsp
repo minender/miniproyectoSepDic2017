@@ -70,7 +70,7 @@
                       <li >
                         <p >
                              <i class="fa fa-lock" aria-hidden="true" ></i>
-                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,resu.getNumeroteorema(),"")}$                     
+                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,resu.getNumeroteorema(),"")}                     
                         </p> 
                       </li>
                       
@@ -85,7 +85,7 @@
                                 </a>
                                 <i class="fa fa-unlock" aria-hidden="true"></i>
 
-                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,resu.getNumeroteorema(),"")}$
+                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,resu.getNumeroteorema(),"")}
                                 <span class="d-none" id="${resu.getTeorema().getId()}">
 
                                 <br><span class="metaitem"></span>
