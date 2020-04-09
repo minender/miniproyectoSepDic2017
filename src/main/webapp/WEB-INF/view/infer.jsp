@@ -590,8 +590,10 @@
                      if ($('#metodosDemostracion')[0].value && terminoClick.length == 0){
                             $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
                             $(".operator").css({"cursor":"","color":""});
-                            $("#currentTeo").hide();
                         }
+                    if (terminoClick.length > 0){
+                        $("#currentTeo").hide();
+                    }
                         document.body.appendChild(script);
 
                      }
