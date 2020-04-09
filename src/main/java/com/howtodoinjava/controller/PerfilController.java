@@ -28,6 +28,8 @@ import com.howtodoinjava.entity.Usuario;
 import com.howtodoinjava.entity.Termino;
 import com.howtodoinjava.entity.TerminoId;
 import com.howtodoinjava.entity.MostrarCategoria;
+import com.howtodoinjava.entity.Predicado;
+import com.howtodoinjava.entity.PredicadoId;
 import com.howtodoinjava.forms.AgregarSimbolo;
 import com.howtodoinjava.forms.AgregarTeorema;
 import com.howtodoinjava.forms.InferResponse;
@@ -54,6 +56,7 @@ import com.howtodoinjava.lambdacalculo.TypedApp;
 import com.howtodoinjava.lambdacalculo.TypedI;
 import com.howtodoinjava.lambdacalculo.TypedS;
 import com.howtodoinjava.lambdacalculo.Var;
+import com.howtodoinjava.parse.IsNotInDBException;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.service.CategoriaManager;
@@ -61,6 +64,7 @@ import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MateriaManager;
 import com.howtodoinjava.service.MetateoremaManager;
 import com.howtodoinjava.service.MostrarCategoriaManager;
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.ResuelveManager;
 import com.howtodoinjava.service.SimboloManager;
 import com.howtodoinjava.service.SolucionManager;
@@ -91,6 +95,8 @@ public class PerfilController {
     private UsuarioManager usuarioManager;
     @Autowired
     private TerminoManager terminoManager;
+    @Autowired
+    private PredicadoManager predicadoManager;
     @Autowired
     private SimboloManager simboloManager;
     @Autowired
@@ -465,12 +471,12 @@ public class PerfilController {
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
-        String teoremaStr = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true ")),resuelve.getTeorema().getTeoTerm()).toStringInf(simboloManager,"");
+        String teoremaStr = new App(new App(new Const(1,"\\equiv",false,1,1),new Const("true")),resuelve.getTeorema().getTeoTerm()).toStringInf(simboloManager,"");
         String nTeo = resuelve.getNumeroteorema();
-        Term A1 = new TypedA( new App(new App(new Const(1,"\\equiv ",false,1,1), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),new Var(112))) );
-        Term A2 = new TypedA( new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),
-                                     new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(113)),
-                                                               new Const("true "))));
+        Term A1 = new TypedA( new App(new App(new Const(1,"\\equiv",false,1,1), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"\\equiv",false,1,1),new Var(113)),new Var(112))) );
+        Term A2 = new TypedA( new App(new App(new Const(1,"\\equiv",false,1,1),new Var(113)),
+                                     new App(new App(new Const(1,"\\equiv",false,1,1),new Var(113)),
+                                                               new Const("true"))));
         Term A3 = new TypedA(teo);
         List<Var> list1 = new ArrayList<Var>();
         list1.add(new Var(112));
@@ -515,7 +521,7 @@ public class PerfilController {
         map.addAttribute("categoria",categoriaManager.getAllCategorias());
         map.addAttribute("numeroTeorema","");
         map.addAttribute("mensaje", "");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("agregarTeoremaMenu","active");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
@@ -545,7 +551,7 @@ public class PerfilController {
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
                 map.addAttribute("mensaje", "");
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
@@ -554,8 +560,8 @@ public class PerfilController {
             
             Usuario user = usuarioManager.getUsuario(username);
             
-            TerminoId terminoid2=new TerminoId();
-            terminoid2.setLogin(username);
+            PredicadoId predicadoid2=new PredicadoId();
+            predicadoid2.setLogin(username);
             
             
             CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
@@ -566,8 +572,8 @@ public class PerfilController {
             try //si la sintanxis no es correcta ocurre una Exception
             {
 
-                teoTerm =parser.start_rule(terminoid2,terminoManager,simboloManager).value;
-                teoTerm.setAlias(0);
+                teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+//                teoTerm.setAlias(0);
                 
                 // ESTO DEBE MOSTRAR LAS CATEGORIAS
                 Categoria categoria;
@@ -612,7 +618,7 @@ public class PerfilController {
                 map.addAttribute("selected",agregarTeorema.getCategoria());
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
                 map.addAttribute("mensaje", "No se puede ingresar su teorema porque es invalido");
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
@@ -627,13 +633,13 @@ public class PerfilController {
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
                 map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1100px");
                 return "agregarTeorema";
             }
-            /*catch(IsNotInDBException e)
+            catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
@@ -644,13 +650,13 @@ public class PerfilController {
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
                 map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("guardarMenu","");
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "agregarTeorema";
-            }*/
+            }
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
@@ -663,7 +669,7 @@ public class PerfilController {
                 map.addAttribute("teorema",agregarTeorema.getTeorema());
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
@@ -690,7 +696,7 @@ public class PerfilController {
         map.addAttribute("termino","");
         map.addAttribute("alias","");
         map.addAttribute("mensaje", "");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("guardarMenu","active");
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("verTerminosPublicosMenu","");
@@ -724,7 +730,7 @@ public class PerfilController {
                 map.addAttribute("termino",usuarioGuardar.getTermino());
                 map.addAttribute("alias",usuarioGuardar.getAlias());
                 map.addAttribute("mensaje", "");
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("guardarMenu","active");
                 map.addAttribute("listarTerminosMenu","");
                 map.addAttribute("verTerminosPublicosMenu","");
@@ -737,19 +743,19 @@ public class PerfilController {
             }
             
             
-            TerminoId terminoid = new TerminoId();
+            PredicadoId predicadoid = new PredicadoId();
             Tokenizar tk = new Tokenizar();
             tk.tokenizacion(usuarioGuardar.getAlias());
             String alias=usuarioGuardar.getAlias();
             
-            terminoid.setAlias(tk.getName());//alias);
-            terminoid.setLogin(username);
-            Termino termino = new Termino();
+            predicadoid.setAlias(tk.getName());//alias);
+            predicadoid.setLogin(username);
+            Predicado predicado = new Predicado();
             Usuario user=usuarioManager.getUsuario(username);
-            termino.setUsuario(user);
-            termino.setId(terminoid);
-            TerminoId terminoid2=new TerminoId();
-            terminoid2.setLogin(username);
+            predicado.setUsuario(user);
+            predicado.setId(predicadoid);
+            PredicadoId predicadoid2=new PredicadoId();
+            predicadoid2.setLogin(username);
             String programa=usuarioGuardar.getTermino();
             
             //Hay que construir un Term aqui con el String termino.combinador
@@ -766,36 +772,43 @@ public class PerfilController {
                 //aqui hay que hacer un query para verificar que el combinador 
                 //es no esta ya en la BD, poner esta verificacion en el dig de sec
 
-                Termino terminoEnBD=terminoManager.getTermino(terminoid); //arreglar solo consigue los tuyos mas no los de admin y publico
-                if(terminoEnBD == null)
+                Predicado predicadoEnBD=predicadoManager.getPredicado(predicadoid2); //arreglar solo consigue los tuyos mas no los de admin y publico
+                if(predicadoEnBD == null)
                 {
                     //System.out.println(terminoManager.getTermino(terminoid));
-                    term=parser.start_rule(terminoid2,terminoManager,simboloManager).value;
+                    term=parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
                     
-                    term.setAlias(terminoid.getAlias());
+                    //term.setAlias(predicadoid.getAlias());
                     //aqui se traduce y luego se llama a toString para tener el
                     //combinador en String
-                    termino.setTermObject(term);//este metodo serializa de ademas de setear el terminoObject
-                    termino.setCombinador(term.traducBD().toStringFinal());
-                    Termino termino2=terminoManager.getCombinador(username, termino.getCombinador());
-                    if(termino2 != null) 
-                        throw new AlphaEquivalenceException(termino2.getId().getAlias());
+                    
                     //  termino.setSerializado(ToString.toString(term));
                     //verificar si el String combinador existe pero con otro alias
-                    
                     Comprobacion comprobar = new Comprobacion();
                     Brackear bk = new Brackear();
-                    Term res = bk.appBrack(tk.getVars(), term);
-                    String check  = comprobar.bfs(res.traducBD());
+                    Term res = bk.appBrack(tk.getVars(), term).traducBD();
+                    String check  = comprobar.dfs(res);
                     String resultado;
                     if (check.equals("")) {
-                        resultado  = " 1 Su t&eacute;rmino ha sido guardado con exito";
+                     predicado.setPredicado(res.toStringFinal());
+                     Predicado predicado2=predicadoManager.getPredicado(username, predicado.getPredicado());
+                     if(predicado2 != null) 
+                        throw new AlphaEquivalenceException(predicado2.getId().getAlias());
+                     predicado.setPredserializado(res);
+                     String pos = "";
+                     int i = 0;
+                     for (String var: tk.getVars())
+                     {
+                        pos += (i==0?"":", ")+var+"@"+term.position(new Var(var.trim().charAt(0)));
+                        i++;
+                     }
+                     predicado.setArgumentos(pos);
+                     predicadoManager.addPredicado(predicado);
+                     resultado  = " 1 Su abreviaci&oacute;n ha sido guardado con exito";
                     }else{
-                        resultado = " 2 Su t&eacute;rmino usa variables como: "+check +" que no estan especificada";
+                     resultado = " 2 Su abreviaci&oacute;n usa variables como: "+check +" que no estan especificada";
                     }
                     
-                    termino.getId().setLogin(username);
-                    terminoManager.addTermino(termino);
                     map.addAttribute("usuarioGuardar", usuarioGuardar);
                     map.addAttribute("modificar",new Integer(0));
                     map.addAttribute("mensaje", resultado);
@@ -817,7 +830,7 @@ public class PerfilController {
                     map.addAttribute("modificar",new Integer(0));
                     map.addAttribute("mensaje", "Ya existe un t&eacute;rmino en la Base de Datos con este alias: ");
                     map.addAttribute("termino",programa);
-                    map.addAttribute("admin","admin");
+                    map.addAttribute("admin","AdminTeoremas");
                     map.addAttribute("alias",alias);
                     map.addAttribute("guardarMenu","active");
                     map.addAttribute("listarTerminosMenu","");
@@ -837,7 +850,7 @@ public class PerfilController {
                 map.addAttribute("modificar",new Integer(0));
                 map.addAttribute("mensaje", "Su t&eacute;rmino ya existe y es equivalente al t&eacute;rmino "+ e.alias);
                 map.addAttribute("termino",programa);
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("alias",alias);
                 map.addAttribute("guardarMenu","active");
                 map.addAttribute("listarTerminosMenu","");
@@ -849,7 +862,7 @@ public class PerfilController {
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
             }
-            /*catch(IsNotInDBException e)
+            catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
@@ -858,7 +871,7 @@ public class PerfilController {
                 map.addAttribute("modificar",new Integer(0));
                 map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
                 map.addAttribute("termino",programa);
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("alias",alias);
                 map.addAttribute("guardarMenu","active");
                 map.addAttribute("listarTerminosMenu","");
@@ -869,7 +882,7 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
-            }*/
+            }
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
@@ -879,7 +892,7 @@ public class PerfilController {
                 map.addAttribute("modificar",new Integer(0));
                 map.addAttribute("mensaje", hdr+" "+msg);
                 map.addAttribute("termino",programa);
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("alias",alias);
                 map.addAttribute("guardarMenu","active");
                 map.addAttribute("listarTerminosMenu","");
@@ -894,7 +907,7 @@ public class PerfilController {
     }
     
     @RequestMapping(value="/{username}/modificaralias", method=RequestMethod.GET)
-    public String modificarAliasView(ModelMap map, @PathVariable String username, @RequestParam("aliasv") String aliasv) 
+    public String modificarAliasView(ModelMap map, @PathVariable String username, @RequestParam("aliasv") String aliasv, @RequestParam("args") String args) 
     {
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
         {
@@ -905,12 +918,12 @@ public class PerfilController {
         map.addAttribute("termino","");
         map.addAttribute("modificarAliasForm",new ModificarAliasForm());
         map.addAttribute("modificar",new Integer(2));
-        if(username.equals("admin"))
-            map.addAttribute("alias",aliasv+"_");
-        else
+        //if(username.equals("AdminTeoremas"))
+        //    map.addAttribute("alias",aliasv+"_");
+        //else
             map.addAttribute("alias",aliasv);
         map.addAttribute("mensaje", "");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         
@@ -918,27 +931,33 @@ public class PerfilController {
     }
     
     @RequestMapping(value="/{username}/modificar", method=RequestMethod.GET)
-    public String modificarView(ModelMap map, @PathVariable String username, @RequestParam("alias") String alias) 
+    public String modificarView(ModelMap map, @PathVariable String username, @RequestParam("alias") String alias, @RequestParam("args") String args) 
     {
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
         {
             return "redirect:/index";
         }
         //map.addAttribute("usuario", usuarioManager.getUsuario(username));
-        TerminoId id= new TerminoId();
+        PredicadoId id= new PredicadoId();
         id.setAlias(alias);
         id.setLogin(username);
-        Termino t=terminoManager.getTermino(id);
-        String term=t.getTermObject().toStringFinal();
-        String termino;
-        termino = term.replace("\\","" ).replace("}", "").replaceAll("[_][{]", "");
+        Predicado p=predicadoManager.getPredicado(id);
+        Tokenizar tk = new Tokenizar();
+        tk.tokenArgs(p.getArgumentos());
+        Term aux = (Term)SerializationUtils.deserialize(p.getPredserializado());
+        for (String var : tk.getVars()) 
+            aux=new App(aux,new Var(var.charAt(0)));
+        aux = aux.evaluar();
+        String term=aux.toStringInf(simboloManager,"").replace("\\", "\\\\");
+        //String termino;
+        //termino = term.replace("\\","" ).replace("}", "").replaceAll("[_][{]", "");
         map.addAttribute("usuario", usuarioManager.getUsuario(username));
-        map.addAttribute("termino",termino);
+        map.addAttribute("termino",term);
         map.addAttribute("modificarForm",new UsuarioGuardar());
         map.addAttribute("modificar",new Integer(1));
         map.addAttribute("alias","");
         map.addAttribute("mensaje", "");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         
@@ -946,7 +965,7 @@ public class PerfilController {
     }
     
     @RequestMapping(value="/{username}/modificaralias", method=RequestMethod.POST)
-    public String modificarAlias(@Valid ModificarAliasForm modificarAliasForm, BindingResult bindingResult, @PathVariable String username, @RequestParam("aliasv") String aliasv, ModelMap map)
+    public String modificarAlias(@Valid ModificarAliasForm modificarAliasForm, BindingResult bindingResult, @PathVariable String username, @RequestParam("aliasv") String aliasv, @RequestParam("args") String args, ModelMap map)
     {
             if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
             {
@@ -965,7 +984,7 @@ public class PerfilController {
                 map.addAttribute("termino","");
                 map.addAttribute("alias",modificarAliasForm.getAlias());
                 map.addAttribute("mensaje", "");
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
@@ -973,10 +992,10 @@ public class PerfilController {
         
             
             String aliasNuevo=modificarAliasForm.getAlias();
-            if(username.equals("admin"))
+            if(username.equals("AdminTeoremas"))
                 aliasNuevo=aliasNuevo.substring(0, aliasNuevo.length()-1);
-            TerminoId nuevo=new TerminoId();
-            TerminoId anterior=new TerminoId();
+            PredicadoId nuevo=new PredicadoId();
+            PredicadoId anterior=new PredicadoId();
             nuevo.setAlias(aliasNuevo);
             nuevo.setLogin(username);
             anterior.setAlias(aliasv);
@@ -984,13 +1003,13 @@ public class PerfilController {
             Usuario u =usuarioManager.getUsuario(username);
             
             
-            Termino terminoEnBD=null;
+            Predicado predicadoEnBD=null;
             if(!aliasv.equals(aliasNuevo))
-                terminoEnBD=terminoManager.getTermino(nuevo); //arreglar solo consigue los tuyos mas no los de admin y publico
-            if(terminoEnBD == null)
+                predicadoEnBD=predicadoManager.getPredicado(nuevo); //arreglar solo consigue los tuyos mas no los de admin y publico
+            if(predicadoEnBD == null)
             {
                 nuevo.setLogin(username);
-                terminoManager.modificarAlias(anterior,nuevo);
+                predicadoManager.modificarAlias(anterior,nuevo);
                 map.addAttribute("mensaje", "Su Alias se ha modificado con exito");
                 map.addAttribute("usuario",u);
                 map.addAttribute("guardarMenu","");
@@ -1010,8 +1029,8 @@ public class PerfilController {
                 map.addAttribute("modificar",new Integer(2));
                 map.addAttribute("mensaje", "ya existe un t&eacute;rmino con el alias que usted ha colocado");
                 map.addAttribute("termino","");
-                map.addAttribute("admin","admin");
-                if(username.equals("admin"))
+                map.addAttribute("admin","AdminTeoremas");
+                if(username.equals("AdminTeoremas"))
                     map.addAttribute("alias",aliasNuevo+"_");
                 else
                     map.addAttribute("alias",aliasNuevo);
@@ -1022,7 +1041,7 @@ public class PerfilController {
     }
     
     @RequestMapping(value="/{username}/modificar", method=RequestMethod.POST)
-    public String modificar(@Valid ModificarForm modificarForm, BindingResult bindingResult, @PathVariable String username, @RequestParam("alias") String alias, ModelMap map)
+    public String modificar(@Valid ModificarForm modificarForm, BindingResult bindingResult, @PathVariable String username, @RequestParam("alias") String alias, @RequestParam("args") String args,ModelMap map)
     {
             if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
             {
@@ -1041,21 +1060,22 @@ public class PerfilController {
                 map.addAttribute("termino",modificarForm.getTermino());
                 map.addAttribute("alias","");
                 map.addAttribute("mensaje", "");
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
             }
         
-            TerminoId terminoid=new TerminoId();
-            terminoid.setAlias(alias);
-            terminoid.setLogin(username);
-            Termino termino = new Termino();
+            PredicadoId predicadoid=new PredicadoId();
+            predicadoid.setAlias(alias);
+            predicadoid.setLogin(username);
+            Predicado predicado = new Predicado();
             Usuario u =usuarioManager.getUsuario(username);
-            termino.setUsuario(u);
-            termino.setId(terminoid);
-            TerminoId terminoid2=new TerminoId();
-            terminoid2.setLogin(terminoid.getLogin());
+            predicado.setUsuario(u);
+            predicado.setId(predicadoid);
+            predicado.setArgumentos(args);
+            PredicadoId predicadoid2=new PredicadoId();
+            predicadoid2.setLogin(predicadoid.getLogin());
             String programa=modificarForm.getTermino();
             
             //Hay que construir un Term aqui con el String termino.combinador
@@ -1067,24 +1087,28 @@ public class PerfilController {
             Term term;
             try //si la sintanxis no es correcta ocurre una Exception
             {
-                term=parser.start_rule(terminoid2,terminoManager,simboloManager).value;
-                term.alias=alias;
+                term=parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+                //term.alias=alias;
                 //aqui se traduce y luego se llama a toString para tener el
                 //combinador en String
-                termino.setTermObject(term);//este metodo serializa de ademas de setear el terminoObject
-                termino.setCombinador(term.traducBD().toStringFinal());
                 
-            
-                //verificar si el String combinador existe pero con otro alias
-                Termino termino2=terminoManager.getCombinador(username, termino.getCombinador());
-                //revisar si la instruccion de arriva arroja una excepcion para diferenciarla de las del parse
-                if(termino2 != null) 
-                {
-                    if(!termino2.getId().getAlias().equals(alias))
-                        throw new AlphaEquivalenceException(termino2.getId().getAlias());
+                Comprobacion comprobar = new Comprobacion();
+                Brackear bk = new Brackear();
+                Term res = bk.appBrack(args.split(","), term).traducBD();
+                String check  = comprobar.dfs(res);
+                String resultado;
+                if (check.equals("")) {
+                    predicado.setPredicado(res.toStringFinal());
+                    Predicado predicado2=predicadoManager.getPredicado(username, predicado.getPredicado());
+                    if(predicado2 != null && !predicado2.getId().getAlias().equals(alias)) 
+                        throw new AlphaEquivalenceException(predicado2.getId().getAlias());
+                    predicado.setPredserializado(res);
+                    predicadoManager.updatePredicado(predicado);
+                    resultado  = " 1 Su abreviaci&oacute;n ha sido guardado con exito";
+                }else{
+                    resultado = " 2 Su abreviaci&oacute;n usa variables como: "+check +" que no estan especificada";
                 }
 
-                terminoManager.modificarTermino(termino);
                 map.addAttribute("mensaje", "Su t&eacute;rmino se ha modificado con exito");
                 map.addAttribute("usuario", usuarioManager.getUsuario(username));
                 map.addAttribute("guardarMenu","");
@@ -1105,12 +1129,12 @@ public class PerfilController {
                 map.addAttribute("mensaje", "No se puede ingresar su t&eacute;rmino ya que es alpha equivalente al t&eacute;rmino ya existente "+e.alias);
                 map.addAttribute("termino",programa);
                 map.addAttribute("alias","");
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
             }
-            /*catch(IsNotInDBException e)
+            catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
@@ -1120,11 +1144,11 @@ public class PerfilController {
                 map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
                 map.addAttribute("termino",programa);
                 map.addAttribute("alias","");
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
-            }*/
+            }
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
@@ -1135,7 +1159,7 @@ public class PerfilController {
                 map.addAttribute("mensaje", hdr+" "+msg);
                 map.addAttribute("termino",programa);
                 map.addAttribute("alias","");
-                map.addAttribute("admin","admin");
+                map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 return "introducirTermino";
@@ -1151,11 +1175,12 @@ public class PerfilController {
         }    
         map.addAttribute("titulo", "Mis Abreviaciones");
         map.addAttribute("publico", "publico");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
         map.addAttribute("usuario", usuarioManager.getUsuario(username));
-        map.addAttribute("terminos", terminoManager.getAllTerminos(username));
-        if(comb.equals("y"))
+        map.addAttribute("predicados", predicadoManager.getAllPredicadosByUser(username));
+        map.addAttribute("simboloManager", simboloManager);
+        if (comb.equals("y"))
             map.addAttribute("comb", new Integer(1));
         else
             map.addAttribute("comb", new Integer(0));
@@ -1170,7 +1195,7 @@ public class PerfilController {
         map.addAttribute("misPublicacionesMenu","");
         map.addAttribute("computarMenu","");
         map.addAttribute("perfilMenu","");
-        map.addAttribute("overflow","scroll");
+        map.addAttribute("regex","@[12]*");
         map.addAttribute("anchuraDiv","1163px");
         
         return "listar";
@@ -1185,7 +1210,7 @@ public class PerfilController {
         }
         map.addAttribute("titulo", "Mis Publicaciones");
         map.addAttribute("publico", "publico");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
         map.addAttribute("usuario", usuarioManager.getUsuario(username));
         map.addAttribute("terminos", terminoManager.getAllPublicaciones(username));
@@ -1219,10 +1244,11 @@ public class PerfilController {
         }
         map.addAttribute("titulo", "Mis Abreviaciones");
         map.addAttribute("publico", "publico");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
-        map.addAttribute("usuario", usuarioManager.getUsuario("publico"));
-        map.addAttribute("terminos", terminoManager.getAllTerminos(username));
+        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        map.addAttribute("predicados", predicadoManager.getAllPredicadosByUser(username));
+        map.addAttribute("simboloManager",simboloManager);
         if(comb.equals("y"))
             map.addAttribute("comb", new Integer(1));
         else
@@ -1231,6 +1257,7 @@ public class PerfilController {
         map.addAttribute("accion","listarocult");
         map.addAttribute("perfil",new Integer(0));
         map.addAttribute("click","yes");
+        map.addAttribute("regex","@[12]*");
         map.addAttribute("publicaciones",new Integer(0));
         
         return "listar";
@@ -1245,7 +1272,7 @@ public class PerfilController {
         }
         map.addAttribute("titulo", "Abreviaciones publicas");
         map.addAttribute("publico", "publico");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
         map.addAttribute("usuario", usuarioManager.getUsuario("publico"));
         map.addAttribute("terminos", terminoManager.getAllTerminos("publico"));
@@ -1279,7 +1306,7 @@ public class PerfilController {
         }
         map.addAttribute("titulo", "Abreviaciones publicas");
         map.addAttribute("publico", "publico");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
         map.addAttribute("usuario", usuarioManager.getUsuario("publico"));
         map.addAttribute("terminos", terminoManager.getAllTerminos("publico"));
@@ -1305,10 +1332,10 @@ public class PerfilController {
         }
         map.addAttribute("titulo", "Abreviaciones predefinidas");
         map.addAttribute("publico", "publico");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
         map.addAttribute("usuario", usuarioManager.getUsuario("publico"));
-        map.addAttribute("terminos", terminoManager.getAllTerminos("admin"));
+        map.addAttribute("terminos", terminoManager.getAllTerminos("AdminTeoremas"));
         if(comb.equals("y"))
             map.addAttribute("comb", new Integer(1));
         else
@@ -1330,8 +1357,8 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        TerminoId id=new TerminoId( alias, username);
-        terminoManager.deleteTermino(id);
+        PredicadoId id=new PredicadoId( alias, username);
+        predicadoManager.deletePredicado(id);
         return "redirect:../../perfil/"+username+"/listar?comb=n";
     }
     
@@ -1363,7 +1390,7 @@ public class PerfilController {
         {
             map.addAttribute("titulo", "Mis Abreviaciones");
             map.addAttribute("publico", "publico");
-            map.addAttribute("admin","admin");
+            map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("usuario", usuarioManager.getUsuario(username));
             map.addAttribute("terminos", terminoManager.getAllTerminos(username));
             map.addAttribute("comb", new Integer(0));
@@ -1383,7 +1410,7 @@ public class PerfilController {
         }
         Termino termino = terminoManager.getTermino(terminoid);
         Termino termino2 = terminoManager.getCombinador("publico", termino.getCombinador());
-        Termino termino3 = terminoManager.getCombinador("admin", termino.getCombinador());
+        Termino termino3 = terminoManager.getCombinador("AdminTeoremas", termino.getCombinador());
         try{
             if(termino2 != null)
                 throw new AlphaEquivalenceException(termino2.getId().getAlias());
@@ -1394,7 +1421,7 @@ public class PerfilController {
         {
             map.addAttribute("titulo", "Mis Abreviaciones");
             map.addAttribute("publico", "publico");
-            map.addAttribute("admin","admin");
+            map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("usuario", usuarioManager.getUsuario(username));
             map.addAttribute("terminos", terminoManager.getAllTerminos(username));
             map.addAttribute("comb", new Integer(0));
@@ -1451,7 +1478,7 @@ public class PerfilController {
         //map.addAttribute("modificar",new Integer(0));
         map.addAttribute("nombre","");
         map.addAttribute("termino","");
-        map.addAttribute("admin","admin");
+        map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("guardarMenu","");
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("verTerminosPublicosMenu","");
@@ -1512,7 +1539,6 @@ public class PerfilController {
             simboloManager.addSimbolo(simbolo);
         }else{
             Simbolo simbolo = simboloManager.getSimbolo(agregarSimbolo.getId());
-            System.out.println(simbolo);
             simbolo.setNotacion_latex(agregarSimbolo.getNotacion_latex());
             simbolo.setArgumentos(agregarSimbolo.getArgumentos());
             simbolo.setAsociatividad(agregarSimbolo.getAsociatividad());

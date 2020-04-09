@@ -39,6 +39,22 @@ public class Var extends Term{
             return false;
     }
     
+    public String position(Var x)
+    {
+        if(this.equals(x))
+            return "";
+        else
+            return "3";
+    }
+    
+    @Override
+    public Term subterm(String position) {
+        if (position.equals(""))
+           return this;
+        else
+           return null;
+    }
+    
     public Term sust(Var x,Term t)
     {
         if(indice==x.indice)
@@ -216,10 +232,11 @@ public class Var extends Term{
         return toString;
     }
     
-    public ToString toStringInfAbrv(ToString toString)
+    @Override
+    public ToString toStringInfAbrv(ToString toString, SimboloManager s, String nTeo)
     {
         if(alias == null)
-            toString.term=this.toStringInf(null,"");
+            toString.term=this.toStringInf(s,"");
         else
         {
             /*toString.currentnAlias++;

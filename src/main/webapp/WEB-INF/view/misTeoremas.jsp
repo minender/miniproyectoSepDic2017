@@ -70,7 +70,7 @@
                       <li >
                         <p >
                              <i class="fa fa-lock" aria-hidden="true" ></i>
-                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,"")}$                     
+                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,resu.getNumeroteorema(),"")}                     
                         </p> 
                       </li>
                       
@@ -85,16 +85,16 @@
                                 </a>
                                 <i class="fa fa-unlock" aria-hidden="true"></i>
 
-                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,"")}$
+                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,resu.getNumeroteorema(),"")}
                                 <span class="d-none" id="${resu.getTeorema().getId()}">
 
                                 <br><span class="metaitem"></span>
-                                <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) Metatheorem: </a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$
+                                <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) Metatheorem: </a> &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfJavascript(simboloManager,resu.getNumeroteorema(),"")}$
                                 </span>
                             </c:when>
                             <c:otherwise>
                                 <i class="fa fa-unlock" aria-hidden="true" ></i>
-                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,"")}$                     
+                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,resu.getNumeroteorema(),"")}                     
                         
                             </c:otherwise>
                           </c:choose>

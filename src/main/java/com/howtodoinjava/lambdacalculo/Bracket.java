@@ -39,6 +39,28 @@ public class Bracket extends Term{
              return t.occur(y);
     }
     
+    public String position(Var y)
+    {
+         if(x.equals(y))
+             return "3";
+         else {
+            if (t.occur(y))
+             return "1"+t.position(y);
+            else
+             return "3";
+         }
+    }
+    
+    @Override
+    public Term subterm(String position) {
+        if (position.equals(""))
+           return this;
+        else if (position.charAt(0) == '1')
+           return subterm(position.substring(1));
+        else
+           return null;
+    }
+    
     public Term sust(Var x,Term t)
     {
         return null;
@@ -215,18 +237,19 @@ public class Bracket extends Term{
         
     }
     
-    public ToString toStringInfAbrv(ToString toString)
+    @Override
+    public ToString toStringInfAbrv(ToString toString,SimboloManager s, String nTeo)
     {
         if(t.alias == null)
         {
             t.toStringInfAbrvFinal(toString);
-            toString.term= "(\\lambda "+x.toStringInf(null,"")+"."+toString.term+")";
+            toString.term= "(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
             return toString;
         }
         else
         {
             toString.setNuevoAlias(t.alias, t);
-            toString.term="(\\lambda "+x.toStringInf(null,"")+"."+toString.term+")";
+            toString.term="(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
             return toString;
         }
         

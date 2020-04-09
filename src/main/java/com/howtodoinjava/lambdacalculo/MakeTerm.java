@@ -4,15 +4,13 @@
  */
  package com.howtodoinjava.lambdacalculo;
 
-import com.howtodoinjava.entity.TerminoId;
-import com.howtodoinjava.parse.FOSchemeLexer;
-import com.howtodoinjava.parse.FOSchemeParser;
+import com.howtodoinjava.entity.PredicadoId;
 import com.howtodoinjava.parse.IsNotInDBException;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermBaseListener;
 import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.service.SimboloManager;
-import com.howtodoinjava.service.TerminoManager;
+import com.howtodoinjava.service.PredicadoManager;
 import java.util.ArrayList;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -29,9 +27,9 @@ public class MakeTerm {
     }
     
     public Term makeTerm(String str){
-        TerminoId terminoid = new TerminoId();
+        PredicadoId terminoid = new PredicadoId();
         terminoid.setLogin("admin");
-        TerminoManager terminoManager = null;
+        PredicadoManager terminoManager = null;
         SimboloManager simboloManager = null;
         CharStream in = CharStreams.fromString(str);
         TermLexer lexer = new TermLexer(in);
@@ -86,8 +84,8 @@ public class MakeTerm {
     }
     
     public ArrayList<Object> makeInsta(String str){
-        TerminoId terminoid = null;
-        TerminoManager terminoManager = null;
+        PredicadoId terminoid = null;
+        PredicadoManager terminoManager = null;
         SimboloManager simboloManager = null;
         CharStream in = CharStreams.fromString(str);
         TermLexer lexer = new TermLexer(in);

@@ -27,7 +27,7 @@
         <tr>
             <td data-toggle="collapse" href="#studentsList" aria-expanded="false" aria-controls="studentsList">
                 <p>
-                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#studentsList" aria-expanded="false" aria-controls="studentsList">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#studentsList-${materia.getId()}" aria-expanded="false" aria-controls="studentsList">
                     ${materia.nombre} 
                 </button>          
                 </p>
@@ -35,7 +35,7 @@
         </tr>
         <tr>
             <td>
-                <div id="studentsList" class="collapse">
+                <div id="studentsList-${materia.getId()}" class="collapse">
                     <table class="table">
                         <thead>
                             <tr>
@@ -45,10 +45,14 @@
                         </thead>
                         <tbody>
                             <c:forEach var="student" items="${studentsList}">
-                                <tr>
-                                    <td><a href="student?usr=${student.getLogin()}">${student.nombre}</a></td>
-                                    <td><a href="student?usr=${student.getLogin()}">${student.apellido}</a></td>
-                                </tr>
+                                <c:choose>
+                                    <c:when test="${student.getMateria().getId() == materia.getId()}">
+                                        <tr>
+                                            <td><a href="student?usr=${student.getLogin()}">${student.nombre}</a></td>
+                                            <td><a href="student?usr=${student.getLogin()}">${student.apellido}</a></td>
+                                        </tr>
+                                    </c:when>
+                                </c:choose>
                             </c:forEach>
                         </tbody>
                     </table>

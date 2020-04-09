@@ -18,7 +18,13 @@ public interface PredicadoManager {
     
     public void deletePredicado(PredicadoId id);
     
+    public void updatePredicado(Predicado pre);
+    
+    public void modificarAlias(PredicadoId anterior, PredicadoId nuevo);
+    
     public Predicado getPredicado(PredicadoId id);
+    
+    public Predicado getPredicado(String username, String comb);
     
     public List<Predicado> getAllPredicadosByUser(String userLogin);
 }

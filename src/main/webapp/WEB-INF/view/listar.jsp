@@ -68,35 +68,34 @@
     <table class="table table-hover" border="1">
       <thead><tr><th style="width: 180px;">Alias</th><th>Término</th></tr></thead>
       <tbody>  
-        <c:forEach var="termino" items="${terminos}"> 
+        <c:forEach var="predicado" items="${predicados}"> 
           <tr>
             <td>
               <c:choose>
                 <c:when test="${click.equals(yes)}">
-                  <a href="#!" onclick="insertAtCursor('termino_string', '${termino.getId().getAlias()}')">${termino.getId().getAlias()}</a>
+                  <a href="#!" onclick="insertAtCursor('termino_string', '${predicado.getId().getAlias()}(${predicado.getArgumentos().replaceAll(regex,"")})')">${predicado.getId().getAlias()}(${predicado.getArgumentos().replaceAll(regex,"")})</a>
                 </c:when>
                 <c:otherwise>
-                  ${termino.getId().getAlias()}
+                  ${predicado.getId().getAlias()}(${predicado.getArgumentos().replaceAll(regex,"")})
                 </c:otherwise>
               </c:choose>
             </td>
             <td>
               <c:choose>
-                <c:when test="${comb.intValue()==1}">$$${termino.getCombinador()}$$</c:when>
-                <c:otherwise>${termino.termObject.toStringJavascript(termino.getId().getAlias())}</c:otherwise>
+                <c:when test="${comb.intValue()==1}">$$${predicado.getPredicado()}$$</c:when>
+                <c:otherwise>$$${predicado.term.toStringInf(simboloManager,"")}$$</c:otherwise>
               </c:choose>
             </td>
             <c:choose>
-              <c:when test="${!usuario.getLogin().equals(publico)}">
+              <c:when test="${perfil.intValue()==1}">
                 <c:choose>
                   <c:when test="${publicaciones.intValue()==0}">
-                <%--<td>
-                    <a href="../${usuario.getLogin()}/modificar?alias=${termino.getId().getAlias()}" >Modificar</a></td>--%>
-                    <td><a href="../${usuario.getLogin()}/modificaralias?aliasv=${termino.getId().getAlias()}" >Modificar Alias</a></td>
-                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${usuario.getLogin()}/eliminar?alias=${termino.getId().getAlias()}">Eliminar</a></td>
+                    <td><a href="../${usuario.getLogin()}/modificar?alias=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modificar</a></td>
+                    <td><a href="../${usuario.getLogin()}/modificaralias?aliasv=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modificar Alias</a></td>
+                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${usuario.getLogin()}/eliminar?alias=${predicado.getId().getAlias()}">Eliminar</a></td>
                   </c:when>
                   <c:otherwise>
-                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${usuario.getLogin()}/eliminarpubl?alias=${termino.getId().getAlias()}">Eliminar</a></td>
+                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${usuario.getLogin()}/eliminarpubl?alias=${predicado.getId().getAlias()}">Eliminar</a></td>
                   </c:otherwise>
                 </c:choose>
   <%--            <c:choose>

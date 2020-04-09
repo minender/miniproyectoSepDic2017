@@ -7,7 +7,7 @@
   <body>
       <style>
           html,body{
-              height: 92%;
+              height: 100%;
           }
           .studentIframe{
               height: 100%;

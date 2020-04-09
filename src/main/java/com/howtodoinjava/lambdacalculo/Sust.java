@@ -35,6 +35,18 @@ public class Sust extends Term{
         return false;
     }
     
+    public String position(Var x) {
+        return "3";
+    }
+    
+    @Override
+    public Term subterm(String position) {
+        if (position.equals(""))
+           return this;
+        else
+           return null;
+    }
+    
     public Term sust(Var x,Term t)
     {
         return this;
@@ -213,9 +225,10 @@ public class Sust extends Term{
         return toString;
     }
     
-    public ToString toStringInfAbrv(ToString toString)
+    @Override
+    public ToString toStringInfAbrv(ToString toString, SimboloManager s, String nTeo)
     {
-        toString.term=this.toStringInf(null,"");
+        toString.term=this.toStringInf(s,"");
         return toString;
     }
 
