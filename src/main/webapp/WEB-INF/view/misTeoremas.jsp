@@ -48,8 +48,8 @@
         </c:otherwise>
     </c:choose>
     <div class="row">
-    <div id="misteoremasSpace">
-     <div id="misteoremas" class="col-lg-5">
+    <div id="misteoremasSpace" class="col-lg-5">
+     <div id="misteoremas" >
          <div id="showNoCategories">
             <c:choose>
                 <c:when test="${showCategorias.size() == 0}">
