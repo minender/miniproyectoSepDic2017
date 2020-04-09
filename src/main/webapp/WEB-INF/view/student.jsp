@@ -25,5 +25,21 @@
         <iframe id="studentIframe" width="100%" height="100%" src="../${login}/misTeoremas" frameborder="0"></iframe>
     </div>
     <tiles:insertDefinition name="footer" />
+    <script>
+        $(document).ready(function(){
+                let iframe = document.getElementById("studentIframe")
+                 iframe.addEventListener("load", ()=>{
+                     setTimeout(()=>{
+                        let need_height = iframe.contentWindow.document.body.offsetHeight + 20
+                        $("#iframeSpace").css({
+                        "min-height": "100%",
+                        "height": need_height + "px"
+                        })
+                     },500)
+                 })
+        })   
+
+        
+    </script>
   </body>
 </html>

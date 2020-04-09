@@ -10,7 +10,6 @@
           <c:when test="${isDifferentUser.intValue()==1}">
               html{
                   padding-left:15px;
-                  overflow: hidden;
               }
           </c:when>
       </c:choose>
@@ -163,15 +162,12 @@
 </div>
 
     <script>
-        console.log('AAAA');
         function guardarMostrarCategorias(){
-            console.log('Ajaa');
             allCategoriasSettings = document.getElementsByClassName("categoria-settings");
             let categorias = {
                 listaIdCategorias:[],
                 username: "${usuario.getLogin()}"
             };
-            console.log(allCategoriasSettings);
             for (let i = 0; i<allCategoriasSettings.length;i++){
                 cat = allCategoriasSettings.item(i);
                 if (cat.checked === true){
@@ -208,7 +204,6 @@
                          newRows = newRows + "<ul>";
                          for (j=0;j < teoremas.length ;j++){
                             if (teoremas[j].categoryid == categories[i].categoryid){
-                                console.log(teoremas[j])
                                 if (!teoremas[j].isResuelto){
                                     newRows = newRows + "<li><p><i class='fa fa-lock' aria-hidden='true'></i>(" + teoremas[j].numeroteorema + ")"+ teoremas[j].nombreteorema + ": &nbsp; $" + teoremas[j].string + "$</p></li>"
                                 }else{
@@ -221,7 +216,6 @@
                                     newRows = newRows + "</p></li>"
                                 }
                             }
-                            console.log('Aja')
                          }
                         newRows = newRows + "</ul></li>";
  
@@ -233,12 +227,25 @@
                      p.appendChild(newElement);
                      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"misteoremas"]);
                      
+                     <c:choose>
+                        <c:when test="${isDifferentUser.intValue()==1}">
+                             let iframe = $('#studentIframe', parent.document)[0];
+                            //let iframe = parent.getElementById("studentIframe")
+
+                            let need_height = iframe.contentWindow.document.body.offsetHeight + 20
+                            let iframeSpace = $('#iframeSpace', parent.document);
+                            iframeSpace.css({
+                                "min-height": "100%",   
+                                "height": need_height + "px"
+                            })
+                       </c:when>
+                    </c:choose>
                     
                 }
         });
         }
+        
         document.getElementById("saveConfig").onclick = function(){
-            console.log('Test');
             guardarMostrarCategorias();
 
         }
