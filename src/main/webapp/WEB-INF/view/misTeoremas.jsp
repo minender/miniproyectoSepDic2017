@@ -4,17 +4,16 @@
 <!DOCTYPE html>
 <html>
   <tiles:insertDefinition name="header" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
-  <style>
       <c:choose>
           <c:when test="${isDifferentUser.intValue()==1}">
+            <style>
               html{
                   padding-left:15px;
                   overflow: hidden;
               }
+            </style>
           </c:when>
       </c:choose>
-  </style>
   <body>
     <div id="modalLoading" class="modal" >
         <center>
