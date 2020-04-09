@@ -4,16 +4,15 @@
 <!DOCTYPE html>
 <html>
   <tiles:insertDefinition name="header" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
-  <style>
       <c:choose>
           <c:when test="${isDifferentUser.intValue()==1}">
+            <style>
               html{
                   padding-left:15px;
               }
+            </style>
           </c:when>
       </c:choose>
-  </style>
   <body>
     <div id="modalLoading" class="modal" >
         <center>
@@ -48,8 +47,8 @@
         </c:otherwise>
     </c:choose>
     <div class="row">
-    <div id="misteoremasSpace">
-     <div id="misteoremas" class="col-lg-5">
+    <div id="misteoremasSpace" class="col-lg-5">
+     <div id="misteoremas" >
          <div id="showNoCategories">
             <c:choose>
                 <c:when test="${showCategorias.size() == 0}">

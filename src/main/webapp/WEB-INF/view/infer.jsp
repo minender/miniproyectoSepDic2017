@@ -59,6 +59,7 @@
                             $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
                             $(".operator").css({"cursor":"","color":""});
                             $("#metodosDiv").hide();
+                            $("#currentTeo").hide();
                         }
                     }
                     else if(this.value==="2"){
@@ -590,6 +591,9 @@
                             $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
                             $(".operator").css({"cursor":"","color":""});
                         }
+                    if (terminoClick.length > 0){
+                        $("#currentTeo").hide();
+                    }
                         document.body.appendChild(script);
 
                      }
