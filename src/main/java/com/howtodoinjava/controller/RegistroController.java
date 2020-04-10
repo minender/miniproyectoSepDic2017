@@ -36,7 +36,7 @@ public class RegistroController {
             List<Materia> list = materiaManager.getAllMaterias();
             map.addAttribute("registro",new Registro());
             map.addAttribute("materias", list);
-            map.addAttribute("valueSubmit", "Registrarse");
+            map.addAttribute("valueSubmit", "Register");
             map.addAttribute("isRegistro", "1");
             return "registro";
         }

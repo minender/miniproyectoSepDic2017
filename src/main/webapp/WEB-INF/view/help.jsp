@@ -13,7 +13,7 @@
     <tiles:insertDefinition name="header" />
  <body>
         <c:choose>
-            <c:when test="${sesion.equals(logout)}">
+            <c:when test='${sesion.equals("logout")}'>
       <div class="container-fluid">
         <nav class="row navbar navbar-expand-lg navbar-dark bg-blue">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#options">
@@ -36,7 +36,7 @@
     </iframe>
 </div>
    <c:choose>
-    <c:when test="${!sesion.equals(logout)}">
+    <c:when test='${!sesion.equals("logout")}'>
         <tiles:insertDefinition name="footer" />
     </c:when>
    </c:choose>
