@@ -61,7 +61,7 @@ public class IndexController {
     
     @RequestMapping(value="/help", method=RequestMethod.GET)
     public String showHelp(ModelMap map) {
-        map.addAttribute("logout","logout");
+   //     map.addAttribute("logout","logout");
         map.addAttribute("sesion","logout");
         return "help";
     }
