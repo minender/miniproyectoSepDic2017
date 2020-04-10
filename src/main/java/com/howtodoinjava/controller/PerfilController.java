@@ -343,9 +343,10 @@ public class PerfilController {
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),t.getTeoTerm()));
         }*/
+        Usuario currentUser = (Usuario)session.getAttribute("user");
         Usuario usr = usuarioManager.getUsuario(username);        
         List <Categoria> showCategorias = new LinkedList<Categoria>();
-        List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
+        List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
@@ -386,7 +387,8 @@ public class PerfilController {
             t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
         }
         Usuario usuario = usuarioManager.getUsuario(answer.getUsername());
-        List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usuario);
+        Usuario currentUser = (Usuario)session.getAttribute("user");
+        List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
         List<Integer> categoriasIdListUser =  new LinkedList<Integer>();
         for (MostrarCategoria mc: mostrarCategorias){
            categoriasIdListUser.add(mc.getCategoria().getId());
@@ -394,18 +396,18 @@ public class PerfilController {
         for (int categoriaId :answer.getListaIdCategorias()){
             if (!categoriasIdListUser.contains(categoriaId)){
                 Categoria categoria = categoriaManager.getCategoria(categoriaId);
-                MostrarCategoria mostrarCategoriaNew = new MostrarCategoria(categoria, usuario);
+                MostrarCategoria mostrarCategoriaNew = new MostrarCategoria(categoria, currentUser);
                 mostrarCategoriaManager.addMostrarCategoria(mostrarCategoriaNew);
             }
         }
         for (int categoriaId: categoriasIdListUser){
             if (!answer.getListaIdCategorias().contains(categoriaId)){
                 Categoria categoria = categoriaManager.getCategoria(categoriaId);
-                MostrarCategoria mostrarCategoria = mostrarCategoriaManager.getMostrarCategoriaByCategoriaAndUsuario(categoria, usuario);
+                MostrarCategoria mostrarCategoria = mostrarCategoriaManager.getMostrarCategoriaByCategoriaAndUsuario(categoria, currentUser);
                 mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria.getId());
             }
         }
-        List<MostrarCategoria> mostrarCategorias1 = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usuario);
+        List<MostrarCategoria> mostrarCategorias1 = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
         JsonObject response = new JsonObject();
         JsonArray categories = new JsonArray();
         for (int i = 0; i < mostrarCategorias1.size(); i ++){
