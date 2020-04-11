@@ -1496,7 +1496,10 @@ public class PerfilController {
     
     @RequestMapping(value="/{username}/theo", method=RequestMethod.GET)
     public String TheoriesView(@PathVariable String username, ModelMap map) {
-        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        if (  
+            (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)
+                || !((Usuario)session.getAttribute("user")).isAdmin()
+            )
         {
             return "redirect:/index";
         }

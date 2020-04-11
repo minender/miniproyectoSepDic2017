@@ -20,7 +20,11 @@
                 
                 </c:otherwise>
             </c:choose>
-            <li class="nav-item ${theoMenu}" ><a href="theo" class="nav-link">Theories</a></li>
+            <c:choose>
+                <c:when test="${isAdmin.intValue()==1}">
+                    <li class="nav-item ${theoMenu}" ><a href="theo" class="nav-link">Theories</a></li>
+                </c:when>
+            </c:choose>
             <li class="nav-item ${helpMenu}" ><a href="help" class="nav-link">Help</a></li>
             <li class="nav-item" ><a href="close" class="nav-link">Sign Out</a></li>
           </ul>
