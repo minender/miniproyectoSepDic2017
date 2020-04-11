@@ -72,7 +72,7 @@
           <tr>
             <td>
               <c:choose>
-                <c:when test="${click.equals(yes)}">
+                <c:when test='${click.equals("yes")}'>
                   <a href="#!" onclick="insertAtCursor('termino_string', '${predicado.getId().getAlias()}(${predicado.getArgumentos().replaceAll(regex,"")})')">${predicado.getId().getAlias()}(${predicado.getArgumentos().replaceAll(regex,"")})</a>
                 </c:when>
                 <c:otherwise>
@@ -90,12 +90,12 @@
               <c:when test="${perfil.intValue()==1}">
                 <c:choose>
                   <c:when test="${publicaciones.intValue()==0}">
-                    <td><a href="../${usuario.getLogin()}/modificar?alias=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modificar</a></td>
-                    <td><a href="../${usuario.getLogin()}/modificaralias?aliasv=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modificar Alias</a></td>
-                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${usuario.getLogin()}/eliminar?alias=${predicado.getId().getAlias()}">Eliminar</a></td>
+                    <td><a href="../${username}/modificar?alias=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modificar</a></td>
+                    <td><a href="../${username}/modificaralias?aliasv=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modificar Alias</a></td>
+                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${username}/eliminar?alias=${predicado.getId().getAlias()}">Eliminar</a></td>
                   </c:when>
                   <c:otherwise>
-                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${usuario.getLogin()}/eliminarpubl?alias=${predicado.getId().getAlias()}">Eliminar</a></td>
+                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${username}/eliminarpubl?alias=${predicado.getId().getAlias()}">Eliminar</a></td>
                   </c:otherwise>
                 </c:choose>
   <%--            <c:choose>

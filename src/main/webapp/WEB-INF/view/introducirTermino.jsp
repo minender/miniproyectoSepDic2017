@@ -77,17 +77,17 @@
     </script>
     <div style="height: 50vh;">
       <c:choose>
-        <c:when test="${!usuario.getLogin().equals(admin)}">
+        <c:when test="${!username.equals(admin)}">
           <article id="predefinidos" >
             <h2 style="margin: 0px;padding:0px;height:40px;"><a href="#!" onclick="desplegar('predefinidos')">Abreviaciones predefinidas</a></h2>
-            <iframe width="100%" height="100%" src="../${usuario.getLogin()}/predef?comb=n">
+            <iframe width="100%" height="100%" src="../${username}/predef?comb=n">
             </iframe>
           </article>
         </c:when>
       </c:choose>
       <article id="misTerminos" >
         <h2 style="margin: 0px;padding:0px;height:40px;"><a href="#!" onclick="desplegar('misTerminos')">Mis abreviaciones</a></h2>
-        <iframe width="100%" height="100%" src="../${usuario.getLogin()}/listarocult?comb=n">        
+        <iframe width="100%" height="100%" src="../${username}/listarocult?comb=n">        
         </iframe>
       </article>
     </div>
