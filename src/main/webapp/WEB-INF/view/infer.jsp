@@ -162,6 +162,21 @@
                 var p2=[];
                 var idt1;
                 var idt2;
+                
+                function hasNumericClass(element){
+                    let clases = $(element).attr("class");
+                    isNumeric = false;
+                    if (clases){
+                        clases = clases.split(" ");
+                        for (let i = 0; i<clases.length;i++){
+                            if ($.isNumeric(clases[i])){
+                                isNumeric = true
+                            }
+                        }
+                    }
+                    return isNumeric
+                    
+                }
 
                 $('#formula').on("mouseup",function(event){
                     //Obtiene toda la expresion bien formada que se puede sustituir
@@ -172,24 +187,30 @@
                         var first_element = window.getSelection().getRangeAt(0).startContainer.parentNode
                         var last_element = window.getSelection().getRangeAt(0).endContainer.parentNode
                         //Si estos elementos pertenecen a la expresion total:
-                        if ($.contains( total_expression, first_element) && $.contains( total_expression, last_element)){
                             //Si el primer elemento no es un parte de una subexpresion (digamos un parentesis),
-                            // entonces se convierte en el elemento siguiente (su hermano)
-                            if (!$(first_element).hasClass("terminoClick")){
-                                first_element = $(first_element).next()[0]
+                            // entonces se convierte en el elemento siguiente (su hermano) y asi
+                            if (!$(first_element).hasClass("terminoClick") && !hasNumericClass(first_element)){
+                                while(!$(first_element).hasClass("terminoClick") && !hasNumericClass(first_element) && $(first_element).next().length > 0){
+                                    first_element = $(first_element).next()[0]
+                                }
                             };
                             //Obtenemos el nivel del primer elemento
                             var nivel_first_element = $(first_element).attr('class');
-                            nivel_first_element = nivel_first_element.split(" ")[1];
-                            //Obtenemos el id del primer elemento
-                            var id_first_element = $(first_element).attr("id");
-                            idt1=first_element.id;
-                            p1 = [id_first_element,nivel_first_element];
+                            if (nivel_first_element && nivel_first_element.length >= 2){
+                              nivel_first_element = nivel_first_element.split(" ")[1];
+                              //Obtenemos el id del primer elemento
+                              var id_first_element = $(first_element).attr("id");
+                              idt1=first_element.id;
+                              p1 = [id_first_element,nivel_first_element];  
+                            }
                             //Si el ultimo elemento no es un parte de una subexpresion (digamos un parentesis),
-                            // entonces se convierte en el elemento anterior (su hermano)
-                            if (!$(last_element).hasClass("terminoClick")){
-                                last_element = $(last_element).prev()[0]
+                            // entonces se convierte en el elemento anterior (su hermano) y asi
+                            if (!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element)){
+                                while(!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element) && $(last_element).prev().length > 0){
+                                    last_element = $(last_element).prev()[0]
+                                }
                             };
+
                             //Obtenemos el id del primer elemento
                             idt2=last_element.id;
                             //Si ambos id son iguales, se puede obtener la subexpresion
@@ -199,12 +220,15 @@
                             //Si no, se usa leibnizMouse(para obtener el comun entre ellos)
                             else{
                                 var nivel_last_element = $(last_element).attr('class');
-                                nivel_last_element = nivel_last_element.split(" ")[1];
-                                var id_last_element = $(last_element).attr("id");
-                                p2 = [id_last_element,nivel_last_element];
-                                leibnizMouse(p1,p2)
+                                if (nivel_last_element && nivel_last_element.length >= 2){
+                                    nivel_last_element = nivel_last_element.split(" ")[1];
+                                    var id_last_element = $(last_element).attr("id");
+                                    p2 = [id_last_element,nivel_last_element];
+                                    leibnizMouse(p1,p2)
+                                }
+                                
                             }
-                        }
+                        
                     }
                 })
                 
