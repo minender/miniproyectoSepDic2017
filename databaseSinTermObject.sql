@@ -455,7 +455,15 @@ insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociativi
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (7,'\neg', 1, TRUE, 1, 5,'%(op) %(aa1)',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (8,'true', 0, TRUE, 0, 0,'%(op)',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (9,'false', 0, TRUE, 0, 0,'%(op)',1);
-
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (10,'=', 2, TRUE, 0, 5,'%(a2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (11,'+', 2, TRUE, 0, 6,'%(a2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (12,'-', 2, TRUE, 0, 6,'%(a2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (13,'.', 2, TRUE, 0, 7,'%(aa2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (14,'/', 2, TRUE, 0, 7,'\\frac{%(na2)}{%(a1)}',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (15,'-', 1, TRUE, 0, 8,'%(op)%(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (16,'^', 1, TRUE, 0, 9,'(a2)%(op){%(a1)}',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (17,'0', 0, TRUE, 0, 0,'%(op)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (18,'1', 0, TRUE, 0, 0,'%(op)',1);
 
 --
 -- Name: simbolo_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb

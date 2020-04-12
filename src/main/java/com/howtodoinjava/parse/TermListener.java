@@ -47,15 +47,15 @@ public interface TermListener extends ParseTreeListener {
 	 */
 	void exitEqtail(TermParser.EqtailContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TermParser#term}.
+	 * Enter a parse tree produced by {@link TermParser#form}.
 	 * @param ctx the parse tree
 	 */
-	void enterTerm(TermParser.TermContext ctx);
+	void enterForm(TermParser.FormContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link TermParser#term}.
+	 * Exit a parse tree produced by {@link TermParser#form}.
 	 * @param ctx the parse tree
 	 */
-	void exitTerm(TermParser.TermContext ctx);
+	void exitForm(TermParser.FormContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TermParser#disyconjtail}.
 	 * @param ctx the parse tree
@@ -137,6 +137,76 @@ public interface TermListener extends ParseTreeListener {
 	 */
 	void exitNeg(TermParser.NegContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TermParser#term}.
+	 * @param ctx the parse tree
+	 */
+	void enterTerm(TermParser.TermContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TermParser#term}.
+	 * @param ctx the parse tree
+	 */
+	void exitTerm(TermParser.TermContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TermParser#sumsustail}.
+	 * @param ctx the parse tree
+	 */
+	void enterSumsustail(TermParser.SumsustailContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TermParser#sumsustail}.
+	 * @param ctx the parse tree
+	 */
+	void exitSumsustail(TermParser.SumsustailContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TermParser#sumsus}.
+	 * @param ctx the parse tree
+	 */
+	void enterSumsus(TermParser.SumsusContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TermParser#sumsus}.
+	 * @param ctx the parse tree
+	 */
+	void exitSumsus(TermParser.SumsusContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TermParser#multdivtail}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultdivtail(TermParser.MultdivtailContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TermParser#multdivtail}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultdivtail(TermParser.MultdivtailContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TermParser#multdiv}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultdiv(TermParser.MultdivContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TermParser#multdiv}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultdiv(TermParser.MultdivContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TermParser#constail}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstail(TermParser.ConstailContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TermParser#constail}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstail(TermParser.ConstailContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TermParser#cons}.
+	 * @param ctx the parse tree
+	 */
+	void enterCons(TermParser.ConsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TermParser#cons}.
+	 * @param ctx the parse tree
+	 */
+	void exitCons(TermParser.ConsContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TermParser#instantiate}.
 	 * @param ctx the parse tree
 	 */
@@ -166,6 +236,16 @@ public interface TermListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExplisttail(TermParser.ExplisttailContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TermParser#termtail}.
+	 * @param ctx the parse tree
+	 */
+	void enterTermtail(TermParser.TermtailContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TermParser#termtail}.
+	 * @param ctx the parse tree
+	 */
+	void exitTermtail(TermParser.TermtailContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TermParser#arguments}.
 	 * @param ctx the parse tree

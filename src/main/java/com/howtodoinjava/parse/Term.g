@@ -17,8 +17,8 @@ start_rule[PredicadoId id, PredicadoManager pm, SimboloManager sm]
                            returns [Term value]: eq[id, pm, sm]           { $value=$eq.value;};
 
 eq[PredicadoId id, PredicadoManager pm, SimboloManager sm] 
-  returns [Term value]: term[id,pm,sm] eqtail[id,pm,sm]  
-                                              { Term aux=$term.value;
+  returns [Term value]: form[id,pm,sm] eqtail[id,pm,sm]  
+                                              { Term aux=$form.value;
                                                 for(Iterator<Term> i = $eqtail.value.iterator(); i.hasNext();)
                                                 {
                                                    Simbolo s = sm.getSimbolo(1); 
@@ -32,12 +32,12 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm]
 
 eqtail[PredicadoId id, PredicadoManager pm, SimboloManager sm] 
         returns [ArrayList<Term> value]:    
-  ('=='| '\\equiv') term[id,pm,sm] tail1=eqtail[id,pm,sm] 
-                                                {ArrayList<Term> aux=$tail1.value; aux.add(0,$term.value); $value=aux;}
+  ('=='| '\\equiv') form[id,pm,sm] tail1=eqtail[id,pm,sm] 
+                                                {ArrayList<Term> aux=$tail1.value; aux.add(0,$form.value); $value=aux;}
 
    |                                            {$value=new ArrayList<Term>();};
 
-term[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
+form[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
     disyconj[id,pm,sm] disyconjtail[id,pm,sm]     { 
                                                     if ($disyconjtail.value == null)
                                                        $value = $disyconj.value;
@@ -180,6 +180,11 @@ neg[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]
                                                $value = new App(capl,new Sust(vars, terms));
                                               } 
 
+    | t1=term[id,pm,sm] '=' t2=term[id,pm,sm] {Simbolo s = sm.getSimbolo(10); if (s == null)throw new IsNotInDBException(this,"");
+                                               Term c = new Const(10,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                               $value = new App(new App(c,$t2.value), $t1.value);
+                                              }
+
      | WORD '(' explist[id,pm,sm] ')'         {id.setAlias($WORD.text); 
                                                Predicado preInBD=pm.getPredicado(id);
                                                if(preInBD==null) {
@@ -196,7 +201,157 @@ neg[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]
                                                $value=aux;
                                               }
 
+     | 'C' NUMBER '(' explist[id,pm,sm] ')'   {Simbolo s = sm.getSimbolo(Integer.parseInt($NUMBER.text)); 
+                                               if (s == null)throw new IsNotInDBException(this,"");
+                                               int nArg = s.getArgumentos();
+                                               if ($explist.value.size() != nArg)
+                                                 throw new NoViableAltException(this);
+                                               Term aux = new Const(Integer.parseInt($NUMBER.text),s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                               for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();)
+                                                  aux=new App(aux,i.next());
+                                               $value = aux;
+                                              }
+
      | '(' eq[id,pm,sm] ')'                         {$value=$eq.value;};
+
+term[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
+    sumsus[id,pm,sm] sumsustail[id,pm,sm]       { 
+                                                    if ($sumsustail.value == null)
+                                                       $value = $sumsus.value;
+                                                    else
+                                                       $value = new App($sumsustail.value,$sumsus.value);
+                                                  };
+
+sumsustail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]:  
+
+   '+' sumsus[id,pm,sm] tail2=sumsustail[id,pm,sm]{
+                                               if ($tail2.value == null)
+                                               {
+                                                  Simbolo s = sm.getSimbolo(11); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value = new App(new Const(11,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$sumsus.value);
+                                               }
+                                               else
+                                               {
+                                                  Simbolo s = sm.getSimbolo(11); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value=new App(new Const(11,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$sumsus.value));
+                                               }
+                                              }
+
+   | '-' sumsus[id,pm,sm] tail2=sumsustail[id,pm,sm]{
+                                               if ($tail2.value == null)
+                                               {
+                                                  Simbolo s = sm.getSimbolo(12); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value = new App(new Const(12,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$sumsus.value);
+                                               }
+                                               else
+                                               {
+                                                  Simbolo s = sm.getSimbolo(12); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value=new App(new Const(12,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$sumsus.value));
+                                               }
+                                              }
+
+   |                                          {$value=null;};
+
+sumsus[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
+    multdiv[id,pm,sm] multdivtail[id,pm,sm]       { 
+                                                    if ($multdivtail.value == null)
+                                                       $value = $multdiv.value;
+                                                    else
+                                                       $value = new App($multdivtail.value,$multdiv.value);
+                                                  };
+
+multdivtail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]:  
+
+   '.' multdiv[id,pm,sm] tail2=multdivtail[id,pm,sm]{
+                                               if ($tail2.value == null)
+                                               {
+                                                  Simbolo s = sm.getSimbolo(13); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value = new App(new Const(13,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$multdiv.value);
+                                               }
+                                               else
+                                               {
+                                                  Simbolo s = sm.getSimbolo(13); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value=new App(new Const(13,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$multdiv.value));
+                                               }
+                                              }
+
+   | '/' multdiv[id,pm,sm] tail2=multdivtail[id,pm,sm]{
+                                               if ($tail2.value == null)
+                                               {
+                                                  Simbolo s = sm.getSimbolo(14); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value = new App(new Const(14,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$multdiv.value);
+                                               }
+                                               else
+                                               {
+                                                  Simbolo s = sm.getSimbolo(14); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value=new App(new Const(14,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$multdiv.value));
+                                               }
+                                              }
+
+   |                                          {$value=null;};
+
+multdiv[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
+
+    cons[id,pm,sm] constail[id,pm,sm]             { 
+                                                    if ($constail.value == null)
+                                                       $value = $cons.value;
+                                                    else
+                                                       $value = new App($constail.value,$cons.value);
+                                                  };
+
+constail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]:  
+
+   '^{' cons[id,pm,sm] '}' tail2=constail[id,pm,sm]{
+                                               if ($tail2.value == null)
+                                               {
+                                                  Simbolo s = sm.getSimbolo(16); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value = new App(new Const(16,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$cons.value);
+                                               }
+                                               else
+                                               {
+                                                  Simbolo s = sm.getSimbolo(16); 
+                                                  if (s == null)
+                                                     throw new IsNotInDBException(this,"");
+                                                  $value=new App(new Const(16,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$cons.value));
+                                               }
+                                              }
+
+   |                                          {$value=null;};
+
+cons[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
+
+      '-' n=cons[id,pm,sm]                    {Simbolo s = sm.getSimbolo(15); if (s == null)throw new IsNotInDBException(this,""); 
+                                               $value=new App(new Const(15,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$n.value);}
+
+     | '0'                                    {Simbolo s = sm.getSimbolo(17); if (s == null)throw new IsNotInDBException(this,"");
+                                               $value = new Const(17,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                              }
+
+     | '1'                                    {Simbolo s = sm.getSimbolo(18); if (s == null)throw new IsNotInDBException(this,"");
+                                               $value = new Const(18,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                              }
+
+     | LETTER                                 {$value = new Var((int)$LETTER.text.charAt(0));}
+
+     | '(' term[id,pm,sm] ')'                 {$value=$term.value;};
 
 instantiate[PredicadoId id, PredicadoManager pm, SimboloManager sm] 
      returns [ArrayList<Object> value]: 
@@ -212,6 +367,11 @@ explist[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [ArrayLi
      eq[id,pm,sm]  explisttail[id,pm,sm]      {ArrayList<Term> aux = $explisttail.value;
                                                aux.add(0,$eq.value);
                                                $value = aux;
+                                              }
+
+   | term[id,pm,sm]  termtail[id,pm,sm]       {ArrayList<Term> aux = $termtail.value;
+                                               aux.add(0,$term.value);
+                                               $value = aux;
                                               };
 
 explisttail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [ArrayList<Term> value]: 
@@ -219,6 +379,16 @@ explisttail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Arr
      ',' eq[id,pm,sm] tail7=explisttail[id,pm,sm]         
                                               {ArrayList<Term> aux = $tail7.value;
                                                aux.add(0,$eq.value);
+                                               $value =aux;
+                                              }
+
+     |                                        {$value = new ArrayList<Term>();};
+
+termtail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [ArrayList<Term> value]: 
+
+     ',' term[id,pm,sm] tail7=termtail[id,pm,sm]         
+                                              {ArrayList<Term> aux = $tail7.value;
+                                               aux.add(0,$term.value);
                                                $value =aux;
                                               }
 
@@ -259,6 +429,8 @@ lambda[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term val
 CAPITALLETTER: 'A'..'Z';
 
 LETTER: 'a'..'z';
+
+NUMBER: [0-9]+;
 
 WORD:   CAPITALLETTER (LETTER)+
 
