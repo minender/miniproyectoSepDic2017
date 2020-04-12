@@ -162,29 +162,54 @@
                 var p2=[];
                 var idt1;
                 var idt2;
-                
-                $("#formula").on("mousedown",".terminoClick",function(event){
-                    var nivel = $(this).parent().attr('class');
-                    nivel = nivel.split(" ")[1];
-                    var id = $(this).parent().attr("id");
-                    idt1=this.id;
-                    p1 = [id,nivel];
-                });
-                $("#formula").on("mouseup",".terminoClick",function(event){
-                    idt2=this.id;
-                    if(idt1 === idt2){
-                        $('#leibniz_id').val(leibniz[idt1]);
-                    }
-                    else{
-                         var nivel = $(this).parent().attr('class');
-                        nivel = nivel.split(" ")[1];
-                        var id = $(this).parent().attr("id");
-                        p2 = [id,nivel];
-                        leibnizMouse(p1,p2)
-                    }
 
-                });
-            });   
+                $('#formula').on("mouseup",function(event){
+                    //Obtiene toda la expresion bien formada que se puede sustituir
+                    var total_expression = $(".0")[0];
+                    //Si esta expresion existe:
+                    if (total_expression){
+                        //Obtiene el primero y el ultimo elemento del subrayado 
+                        var first_element = window.getSelection().getRangeAt(0).startContainer.parentNode
+                        var last_element = window.getSelection().getRangeAt(0).endContainer.parentNode
+                        //Si estos elementos pertenecen a la expresion total:
+                        if ($.contains( total_expression, first_element) && $.contains( total_expression, last_element)){
+                            //Si el primer elemento no es un parte de una subexpresion (digamos un parentesis),
+                            // entonces se convierte en el elemento siguiente (su hermano)
+                            if (!$(first_element).hasClass("terminoClick")){
+                                first_element = $(first_element).next()[0]
+                            };
+                            //Obtenemos el nivel del primer elemento
+                            var nivel_first_element = $(first_element).attr('class');
+                            nivel_first_element = nivel_first_element.split(" ")[1];
+                            //Obtenemos el id del primer elemento
+                            var id_first_element = $(first_element).attr("id");
+                            idt1=first_element.id;
+                            p1 = [id_first_element,nivel_first_element];
+                            //Si el ultimo elemento no es un parte de una subexpresion (digamos un parentesis),
+                            // entonces se convierte en el elemento anterior (su hermano)
+                            if (!$(last_element).hasClass("terminoClick")){
+                                last_element = $(last_element).prev()[0]
+                            };
+                            //Obtenemos el id del primer elemento
+                            idt2=last_element.id;
+                            //Si ambos id son iguales, se puede obtener la subexpresion
+                            if(idt1 === idt2){
+                            $('#leibniz_id').val(leibniz[idt1]);
+                            }
+                            //Si no, se usa leibnizMouse(para obtener el comun entre ellos)
+                            else{
+                                var nivel_last_element = $(last_element).attr('class');
+                                nivel_last_element = nivel_last_element.split(" ")[1];
+                                var id_last_element = $(last_element).attr("id");
+                                p2 = [id_last_element,nivel_last_element];
+                                leibnizMouse(p1,p2)
+                            }
+                        }
+                    }
+                })
+                
+})
+            
 
         </script>
         <base href="/Miniproyecto/perfil/${usuario.login}/"/>
