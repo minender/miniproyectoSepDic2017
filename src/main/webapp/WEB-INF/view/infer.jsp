@@ -166,34 +166,178 @@
                 function hasNumericClass(element){
                     let clases = $(element).attr("class");
                     isNumeric = false;
+                    number = null;
                     if (clases){
                         clases = clases.split(" ");
                         for (let i = 0; i<clases.length;i++){
                             if ($.isNumeric(clases[i])){
                                 isNumeric = true
+                                number = clases[i]
                             }
                         }
                     }
-                    return isNumeric
+                    return [isNumeric,number]
                     
                 }
+                
+                function rangeIntersectsNode(range, node) {
+    var nodeRange;
+    if (range.intersectsNode) {
+        return range.intersectsNode(node);
+    } else {
+        nodeRange = node.ownerDocument.createRange();
+        try {
+            nodeRange.selectNode(node);
+        } catch (e) {
+            nodeRange.selectNodeContents(node);
+        }
+
+        return range.compareBoundaryPoints(Range.END_TO_START, nodeRange) == -1 &&
+            range.compareBoundaryPoints(Range.START_TO_END, nodeRange) == 1;
+    }
+}
+
+//function getSelectedElementTags(win) {
+//    var range, sel, elmlist, treeWalker, containerElement;
+//    sel = win.getSelection();
+//    if (sel.rangeCount > 0) {
+//        range = sel.getRangeAt(0);
+//        console.log(range)
+//    }
+//
+//    if (range) {
+//        containerElement = range.startContainer;
+//        if (containerElement.nodeType != 1) {
+//            containerElement = containerElement.parentNode;
+//        }
+//        
+//        while (currentContainer != range.)
+//
+//        treeWalker = win.document.createTreeWalker(
+//            containerElement,
+//            NodeFilter.SHOW_ELEMENT,
+//            function(node) { return rangeIntersectsNode(range, node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; },
+//            false
+//        );
+//
+//        elmlist = [];
+//        while (treeWalker.nextNode()) {
+//            elmlist.push(treeWalker.currentNode);
+//        }
+//
+//        return elmlist;
+//    }
+//}
+var elmlist = []
+
+function navigateDom(start,end){
+    if (start == end){
+        console.log('aaaa',start)
+        return
+    }
+    let siblings_q = $(start).siblings();
+    let siblings = []
+    for (let i = 0;i<siblings_q.length;i++){
+        siblings.push(siblings_q[i])
+    }
+    siblings.push(start)
+    console.log("SiblingS",siblings);
+    for (let j = 0; j < siblings.length;j++){
+        console.log("Sibling",siblings[j]);
+        elmlist.push(siblings[j]);
+        console.log("Childrens",$(siblings[j]).children())
+        if ($(siblings[j]).children().length > 0){
+            navigateDom($(siblings[j]).children()[0],end)
+        }
+    }
+}
+
+
+function getSelectedElements(win){
+   sel = win.getSelection();
+    if (sel.rangeCount > 0) {
+        range = sel.getRangeAt(0);
+        console.log(range)
+    }
+    startContainer = range.startContainer.parentNode.parentNode;
+    if (startContainer.nodeType != 1) {
+            startContainer = startContainer.parentNode;
+        }
+    endContainer = range.endContainer.parentNode;
+    if (endContainer.nodeType != 1) {
+            endContainer = endContainer.parentNode;
+        }
+    console.log('Goal Container', endContainer);
+    currentContainer = startContainer;
+    navigateDom(currentContainer,endContainer);
+//    while (currentContainer != endContainer){
+//        elmlist.push(currentContainer)
+//        console.log("Node para treeWalker",currentContainer)
+//        treeWalker = win.document.createTreeWalker(
+//            currentContainer,
+//            NodeFilter.SHOW_ELEMENT,
+//            function(node) { return rangeIntersectsNode(range, node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; },
+//            false
+//        );
+//        tempNode = currentContainer
+//        whi while (treeWalker.nextNode()) {
+//            elmlist.push(treeWalker.currentNode);
+//            currentContainer = treeWalker.currentNode
+//            if (currentContainer == endContainer){
+//                break
+//            }
+//        }le (treeWalker.nextNode()) {
+//            elmlist.push(treeWalker.currentNode);
+//            currentContainer = treeWalker.currentNode
+//            if (currentContainer == endContainer){
+//                break
+//            }
+//        }
+//        if (currentContainer != endContainer){
+//            console.log('Visitando hermano',tempNode)
+//            currentContainer = $(tempNode).next()[0]
+//        }
+//        console.log("Elim List",elmlist)
+//        
+//    }
+}
+
 
                 $('#formula').on("mouseup",function(event){
+                    getSelectedElements(window);
+                    console.log("ElmList",elmlist);
+                    list_select = elmlist;  
+                    list_numeric_class = []
+                    for (let i = 0; i<list_select.length; i++){
+                        element = list_select[i]
+                        hasNumeric = hasNumericClass(element)
+                        if (hasNumeric[0]){
+                            list_numeric_class.push([element,Number(hasNumeric[1])])
+                        }
+                    }
+                    console.log(list_numeric_class)
+                    list_numeric_class.sort(function(a,b){
+                        if (a[1] > b[1]){
+                            return 1
+                        }else if (a[1] < b[1]){
+                            return -1
+                        }
+                        return 0
+                    })
+
+
+                    
+                                        
                     //Obtiene toda la expresion bien formada que se puede sustituir
                     var total_expression = $(".0")[0];
                     //Si esta expresion existe:
                     if (total_expression){
-                        //Obtiene el primero y el ultimo elemento del subrayado 
-                        var first_element = window.getSelection().getRangeAt(0).startContainer.parentNode
-                        var last_element = window.getSelection().getRangeAt(0).endContainer.parentNode
+                        //Obtiene el primero y el ultimo elemento del subrayado
+                        var first_element = list_numeric_class[0][0]
+                        var last_element = list_numeric_class[list_numeric_class.length-1][0]
+                        console.log(first_element);
+                        console.log(last_element)
                         //Si estos elementos pertenecen a la expresion total:
-                            //Si el primer elemento no es un parte de una subexpresion (digamos un parentesis),
-                            // entonces se convierte en el elemento siguiente (su hermano) y asi
-                            if (!$(first_element).hasClass("terminoClick") && !hasNumericClass(first_element)){
-                                while(!$(first_element).hasClass("terminoClick") && !hasNumericClass(first_element) && $(first_element).next().length > 0){
-                                    first_element = $(first_element).next()[0]
-                                }
-                            };
                             //Obtenemos el nivel del primer elemento
                             var nivel_first_element = $(first_element).attr('class');
                             if (nivel_first_element && nivel_first_element.length >= 2){
@@ -205,12 +349,6 @@
                             }
                             //Si el ultimo elemento no es un parte de una subexpresion (digamos un parentesis),
                             // entonces se convierte en el elemento anterior (su hermano) y asi
-                            if (!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element)){
-                                while(!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element) && $(last_element).prev().length > 0){
-                                    last_element = $(last_element).prev()[0]
-                                }
-                            };
-
                             //Obtenemos el id del primer elemento
                             idt2=last_element.id;
                             //Si ambos id son iguales, se puede obtener la subexpresion
