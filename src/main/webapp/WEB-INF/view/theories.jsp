@@ -387,7 +387,7 @@ $(document).ready(function(){
                                                     </div>
 
 						</div>
-                                            	<div class="form-group">
+                                            	<div class="form-group" id="asociatividad-box">
                                                     <div style="width:100%;">
                                                     <label>Asociatividad (*)</label>
                                                     </div>
@@ -477,7 +477,7 @@ $(document).ready(function(){
                                                     </div>
 
 						</div>
-                                            	<div class="form-group">
+                                            	<div class="form-group" id="asociatividad-box-edit">
                                                     <div style="width:100%;">
                                                     <label>Asociatividad (*)</label>
                                                     </div>
@@ -568,6 +568,7 @@ $(document).ready(function(){
                         notacionInfijaEditFill();
                         
                     }else{
+                        $("#asociatividad-box-edit").hide();
                         $('#notacion-edit').val(fields[7]);
                         if (fields[5] === 'Izquierda'){
                             $('#asociatividad-edit').val(0)
@@ -618,7 +619,9 @@ $(document).ready(function(){
             }
             function notacionInfija(){
                 $("#notacion-box").hide();
+                $("#asociatividad-box").show();
                 $("#argumentos").val(2).prop("readonly", true);
+                $("#asociatividad").val(0)
                 asociatividad = $("#asociatividad")
                 writeNotacionByAso(asociatividad);
                 asociatividad.change(()=>{
@@ -627,6 +630,7 @@ $(document).ready(function(){
             }
             function notacionInfijaEditFill(){
                 $("#notacion-box-edit").hide();
+                $("#asociatividad-box-edit").show();
                 $("#argumentos-edit").val(2).prop("readonly", true);
                 if ($('#notacion-edit').val().match(regex_left)){
                      $('#asociatividad-edit').val(0)
@@ -644,6 +648,8 @@ $(document).ready(function(){
             }
             function notacionInfijaEdit(){
                 $("#notacion-box-edit").hide();
+                $("#asociatividad-box-edit").show();
+                $("#asociatividad-edit").val(0)
                 $("#argumentos-edit").val(2).prop("readonly", true);
                 asociatividad = $("#asociatividad-edit")
                 writeNotacionByAsoEdit(asociatividad);
@@ -653,14 +659,19 @@ $(document).ready(function(){
             }
             function revertirNotacionInfija(){
                 $("#notacion-box").show();
+                $("#asociatividad").val(3)
+                $("#asociatividad-box").hide()
+                console.log($("#asociatividad").val())
                 $("#argumentos").val("").prop("readonly", false);
-                $("#notacion").val("")
+                $("")
             }
             function revertirNotacionInfijaEdit(){
                 $("#notacion-box-edit").show();
+                $("#asociatividad-edit").val(3)
+                $("#asociatividad-box-edit").hide();
                 $("#argumentos-edit").val("").prop("readonly", false);
-                $("#notacion-edit").val("")
             }
+            revertirNotacionInfija();
             if ($('input[name="esInfijo"]').val() == true){
                 notacionInfija();
             }
