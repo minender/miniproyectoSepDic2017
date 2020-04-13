@@ -329,6 +329,12 @@ $(document).ready(function(){
                             <c:when test="${simbolo.getAsociatividad() == 1}">
                                 <td>Derecha</td>
                             </c:when>
+                            <c:when test="${simbolo.getAsociatividad() == 2}">
+                                <td>Izquierda y Derecha</td>
+                            </c:when>
+                            <c:when test="${simbolo.getAsociatividad() == 3}">
+                                <td>Ninguno</td>
+                            </c:when>
                         </c:choose>
                         <td>${simbolo.getPrecedencia()}</td>
                         <td>${simbolo.getNotacion()}</td>
@@ -389,6 +395,8 @@ $(document).ready(function(){
                                                     <form:select path="asociatividad">
                                                         <form:option value="0" label="Izquierda"/>
                                                         <form:option value="1" label="Derecha"/>
+                                                        <form:option value="2" label="Izquierda y Derecha"/>
+                                                        <form:option value="3" label="Ninguno"/>
                                                     </form:select>                                                          
                                                     </div>
                                                                                                        
@@ -399,7 +407,7 @@ $(document).ready(function(){
                                                         <sf:input path="precedencia" type="number" class="form-control"/>
 
 						</div>
-                                            	<div class="form-group">
+                                            	<div class="form-group" id="notacion-box">
 							<label>Notación (*)</label>
                                                         <sf:input path="notacion" type="text" class="form-control"/>
 						</div>
@@ -437,7 +445,7 @@ $(document).ready(function(){
 				<sf:form class="form" method="PUT" modelAttribute="agregarSimbolo">
 					<div class="modal-header">						
 						<h4 class="modal-title">Modificar Símbolo</h4>
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="revertirNotacionInfijaEdit()">&times;</button>
 					</div>
 					<div class="modal-body">
                                                 <sf:input path="modificar" name="edit" type="hidden" value="true"/>
@@ -477,6 +485,8 @@ $(document).ready(function(){
                                                     <form:select path="asociatividad" id="asociatividad-edit">
                                                         <form:option value="0" label="Izquierda"/>
                                                         <form:option value="1" label="Derecha"/>
+                                                        <form:option value="2" label="Izquierda y Derecha"/>
+                                                        <form:option value="3" label="Ninguno"/>
                                                     </form:select>                                                          
                                                     </div>
                                                                                                        
@@ -487,7 +497,7 @@ $(document).ready(function(){
                                                         <sf:input path="precedencia" type="number" class="form-control" id="precedencia-edit"/>
 
 						</div>
-                                            	<div class="form-group">
+                                            	<div class="form-group" id="notacion-box-edit">
 							<label>Notación (*)</label>
                                                         <sf:input path="notacion" type="text" class="form-control" id="notacion-edit"/>
 						</div>
@@ -521,6 +531,10 @@ $(document).ready(function(){
                             		                            
         <tiles:insertDefinition name="footer" />
         <script>
+                var regex_none = /%\(na2\)\s*%\(op\)\s*%\(na1\)/
+                var regex_left = /%\(aa2\)\s*%\(op\)\s*%\(a1\)/
+                var regex_right = /%\(a2\)\s*%\(op\)\s*%\(aa1\)/
+                var regex_left_right = /%\(aa2\)\s*%\(op\)\s*%\(aa1\)/
                 var table = $('#table_id').DataTable({
                         "drawCallback": function( settings ) {
                         MathJax.Hub.Queue(["Typeset",MathJax.Hub]); 
@@ -538,17 +552,132 @@ $(document).ready(function(){
                         $('#es-infijo-edit1').prop("checked", false);
                        $('#es-infijo-edit2').prop("checked", true);
                     }
-                    if (fields[5] === 'Izquierda'){
-                       $('#asociatividad-edit').val(0)
-                    }else{
-                       $('#asociatividad-edit').val(1)
-                    }
+//                    if (fields[5] === 'Izquierda'){
+//                       $('#asociatividad-edit').val(0)
+//                    }else if (fields[5] === 'Derecha'){
+//                       $('#asociatividad-edit').val(1)
+//                    }else if (fields[5] === 'Izquierda y Derecha'){
+//                       $('#asociatividad-edit').val(2)
+//                    }else if (fields[5] === 'Ninguno'){
+//                       $('#asociatividad-edit').val(3)
+//                    }
                     $('#precedencia-edit').val(fields[6]);
-                    $('#notacion-edit').val(fields[7]);
+                    $('#notacion-edit').val(fields[7])
+                    //Modificacion para infijos
+                    if(fields[4]== 'Si'){
+                        notacionInfijaEditFill();
+                        
+                    }else{
+                        $('#notacion-edit').val(fields[7]);
+                        if (fields[5] === 'Izquierda'){
+                            $('#asociatividad-edit').val(0)
+                        }else if (fields[5] === 'Derecha'){
+                            $('#asociatividad-edit').val(1)
+                        }else if (fields[5] === 'Izquierda y Derecha'){
+                            $('#asociatividad-edit').val(2)
+                        }else if (fields[5] === 'Ninguno'){
+                            $('#asociatividad-edit').val(3)
+                        }
+                    }
                     if (fields[8] == 'Logica Proposicional'){
                         $('#teoria-edit').val(1);
                     }                
                 }
+        </script>
+        <script>
+            
+            function writeNotacionByAso(asociatividad){
+                if (asociatividad.val()==0){
+                    $("#notacion").val("%(aa2) %(op) %(a1)")
+                }
+                else if (asociatividad.val()==1){
+                    $("#notacion").val("%(a2) %(op) %(aa1)")
+                }
+                else if (asociatividad.val()==2){
+                    $("#notacion").val("%(aa2) %(op) %(aa1)")
+                }
+                else if (asociatividad.val()==3){
+                    $("#notacion").val("%(na2) %(op) %(na1)")
+                }
+                
+            }
+            function writeNotacionByAsoEdit(asociatividad){
+                if (asociatividad.val()==0){
+                    $("#notacion-edit").val("%(aa2) %(op) %(a1)")
+                }
+                else if (asociatividad.val()==1){
+                    $("#notacion-edit").val("%(a2) %(op) %(aa1)")
+                }
+                else if (asociatividad.val()==2){
+                    $("#notacion-edit").val("%(aa2) %(op) %(aa1)")
+                }
+                else if (asociatividad.val()==3){
+                    $("#notacion-edit").val("%(na2) %(op) %(na1)")
+                }
+                
+            }
+            function notacionInfija(){
+                $("#notacion-box").hide();
+                $("#argumentos").val(2).prop("readonly", true);
+                asociatividad = $("#asociatividad")
+                writeNotacionByAso(asociatividad);
+                asociatividad.change(()=>{
+                    writeNotacionByAso(asociatividad)
+                })
+            }
+            function notacionInfijaEditFill(){
+                $("#notacion-box-edit").hide();
+                $("#argumentos-edit").val(2).prop("readonly", true);
+                if ($('#notacion-edit').val().match(regex_left)){
+                     $('#asociatividad-edit').val(0)
+                }else if($('#notacion-edit').val().match(regex_right)){
+
+                    $('#asociatividad-edit').val(1)
+                }else if($('#notacion-edit').val().match(regex_left_right)){
+
+                    $('#asociatividad-edit').val(2)
+                }else if($('#notacion-edit').val().match(regex_none)){
+
+                    $('#asociatividad-edit').val(3)
+                }
+
+            }
+            function notacionInfijaEdit(){
+                $("#notacion-box-edit").hide();
+                $("#argumentos-edit").val(2).prop("readonly", true);
+                asociatividad = $("#asociatividad-edit")
+                writeNotacionByAsoEdit(asociatividad);
+                asociatividad.change(()=>{
+                    writeNotacionByAsoEdit(asociatividad)
+                })
+            }
+            function revertirNotacionInfija(){
+                $("#notacion-box").show();
+                $("#argumentos").val("").prop("readonly", false);
+                $("#notacion").val("")
+            }
+            function revertirNotacionInfijaEdit(){
+                $("#notacion-box-edit").show();
+                $("#argumentos-edit").val("").prop("readonly", false);
+                $("#notacion-edit").val("")
+            }
+            if ($('input[name="esInfijo"]').val() == true){
+                notacionInfija();
+            }
+            $('input[name="esInfijo"]').change(()=>{
+               if ($('input[name="esInfijo"]:checked').val() == 'true'){
+                notacionInfija();
+            }else{
+                revertirNotacionInfija()
+            }
+            })
+            $('input[name="esInfijo"]').change(()=>{
+               if ($('#es-infijo-edit1').prop("checked")){
+                notacionInfijaEdit();
+            }else{
+                revertirNotacionInfijaEdit()
+            }
+            })
         </script>
 </body>
 </html>
