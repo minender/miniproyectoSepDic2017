@@ -181,10 +181,16 @@
                     //Obtiene toda la expresion bien formada que se puede sustituir
                     var total_expression = $(".0")[0];
                     //Si esta expresion existe:
-                    if (total_expression){
-                        //Obtiene el primero y el ultimo elemento del subrayado 
-                        var first_element = window.getSelection().getRangeAt(0).startContainer.parentNode
-                        var last_element = window.getSelection().getRangeAt(0).endContainer.parentNode
+                    if (total_expression && window.getSelection().type === 'Range'){
+                        //Obtiene el primero y el ultimo elemento del subrayado
+                        var first_element = window.getSelection().getRangeAt(0).startContainer;
+                        if (first_element.nodeType !== 1) {
+                            first_element = first_element.parentNode;
+                        } 
+                        var last_element = window.getSelection().getRangeAt(0).endContainer
+                        if (last_element.nodeType !== 1) {
+                            last_element = last_element.parentNode;
+                        }
                         //Si estos elementos pertenecen a la expresion total:
                             //Si el primer elemento no es un parte de una subexpresion (digamos un parentesis),
                             // entonces se convierte en el elemento siguiente (su hermano) y asi
