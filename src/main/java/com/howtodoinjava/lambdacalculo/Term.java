@@ -54,8 +54,8 @@ public abstract class Term implements Cloneable, Serializable{
             for (int i=0; i < positions.length; i++)
                 alia += (i==0?"(":", ")+t.subterm(positions[i].split("@")[1].trim()).toStringInfAbrv(this,s,nTeo).term;
             alia = alia + ")";
-            alias.add(alia);
             aux="\\cssId{agru@alias@"+currentnAlias+"}{\\style{cursor:pointer; color:#08c;}{"+alia +"}}";
+            alias.add(alia.replace("\\", "\\\\"));
             currentnAlias++;
             
             term=aux;
