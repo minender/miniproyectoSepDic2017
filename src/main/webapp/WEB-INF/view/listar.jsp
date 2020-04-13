@@ -66,7 +66,7 @@
     </script>
 
     <table class="table table-hover" border="1">
-      <thead><tr><th style="width: 180px;">Alias</th><th>Término</th></tr></thead>
+      <thead><tr><th style="width: 180px;">Alias</th><th>Term</th></tr></thead>
       <tbody>  
         <c:forEach var="predicado" items="${predicados}"> 
           <tr>
@@ -90,12 +90,12 @@
               <c:when test="${perfil.intValue()==1}">
                 <c:choose>
                   <c:when test="${publicaciones.intValue()==0}">
-                    <td><a href="../${username}/modificar?alias=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modificar</a></td>
-                    <td><a href="../${username}/modificaralias?aliasv=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modificar Alias</a></td>
-                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${username}/eliminar?alias=${predicado.getId().getAlias()}">Eliminar</a></td>
+                    <td><a href="../${username}/modificar?alias=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modify</a></td>
+                    <td><a href="../${username}/modificaralias?aliasv=${predicado.getId().getAlias()}&args=${predicado.getArgumentos()}" >Modify Alias</a></td>
+                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${username}/eliminar?alias=${predicado.getId().getAlias()}">Delete</a></td>
                   </c:when>
                   <c:otherwise>
-                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${username}/eliminarpubl?alias=${predicado.getId().getAlias()}">Eliminar</a></td>
+                    <td><a onclick="return confirm('Seguro que desea eliminar el predicado')" href="../${username}/eliminarpubl?alias=${predicado.getId().getAlias()}">Delete</a></td>
                   </c:otherwise>
                 </c:choose>
   <%--            <c:choose>

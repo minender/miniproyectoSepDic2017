@@ -84,7 +84,7 @@
 		width: 60px;
 	}
 	table.table tr th:last-child {
-		width: 100px;
+		width: 40px;
 	}
     table.table-striped tbody tr:nth-of-type(odd) {
     	background-color: #fcfcfc;
@@ -277,15 +277,15 @@ $(document).ready(function(){
 <body>
         <tiles:insertDefinition name="nav" />
     
-    <div class="container">
-        <div class="table-wrapper">
+    <div class="container-fluid">
+        <div class="table-wrapper" style="overflow-x:auto;">
             <div class="table-title">
                 <div class="row">
                     <div class="col-sm-6">
-			<h2>Simbolos<b>Administrar</b></h2>
+			<h2>Simbols<b>Manage</b></h2>
                     </div>
                     <div class="col-sm-6">
-			<a href="#addEmployeeModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Añadir nuevo símbolo</span></a>
+			<a href="#addEmployeeModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add a new symbol</span></a>
                     </div>
                 </div>
             </div>
@@ -294,15 +294,15 @@ $(document).ready(function(){
                     <tr>
 
                         <th>ID</th>
-                        <th>Símbolo</th>
-                        <th>Notación Latex</th>
-                        <th>Argumentos</th>
-                        <th>Es infijo</th>
-                        <th>Asociatividad</th>
-                        <th>Precedencia</th>
-                        <th>Notacion</th>
-                        <th>Teoria</th>
-                        <th>Acciones</th>
+                        <th>Simbol</th>
+                        <th>Latex notation</th>
+                        <th>Arguments</th>
+                        <th>Is infix</th>
+                        <th>Associativity</th>
+                        <th>Precedence</th>
+                        <th>Notation</th>
+                        <th>Theory</th>
+                        <th>Actions</th>
                         
                         
                     </tr>
@@ -322,20 +322,7 @@ $(document).ready(function(){
                                 <td>No</td>
                             </c:when>
                         </c:choose>
-                        <c:choose>
-                            <c:when test="${simbolo.getAsociatividad() == 0}">
-                                <td>Izquierda</td>
-                            </c:when>   
-                            <c:when test="${simbolo.getAsociatividad() == 1}">
-                                <td>Derecha</td>
-                            </c:when>
-                            <c:when test="${simbolo.getAsociatividad() == 2}">
-                                <td>Izquierda y Derecha</td>
-                            </c:when>
-                            <c:when test="${simbolo.getAsociatividad() == 3}">
-                                <td>Ninguno</td>
-                            </c:when>
-                        </c:choose>
+                                <td></td>
                         <td>${simbolo.getPrecedencia()}</td>
                         <td>${simbolo.getNotacion()}</td>
                         <td>${simbolo.getTeoria().getNombre()}</td>
@@ -356,28 +343,28 @@ $(document).ready(function(){
 				<sf:form class="form" method="POST" modelAttribute="agregarSimbolo">
                                         <sf:input path="modificar" name="edit" type="hidden" value="false"/>
 					<div class="modal-header">						
-						<h4 class="modal-title">Añadir Símbolo</h4>
+						<h4 class="modal-title">Add Symbol</h4>
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 					</div>
 					<div class="modal-body">					
 						<div class="form-group">
-							<label>Notación Latex (*)</label>
+							<label>Latex Notation (*)</label>
                                                         <sf:input path="notacion_latex" name="notacion_latex" type="text" class="form-control"/>
 
 						</div>
 						<div class="form-group">
-							<label>Argumentos (*)</label>
+							<label>Arguments (*)</label>
                                                         <sf:input path="argumentos" type="number" name="argumentos" class="form-control"/>
 						</div>
 						<div class="form-group form-check form-check-inline" style="width: 100%;">
                                                     <div class="row" style="width: 60%;">
                                                         <div class="col-3">
-                                                            <label>Es Infijo (*)</label>
+                                                            <label>Is Infix (*)</label>
 
                                                         </div>
                                                         <div class="col-3">
                                                             <form:radiobutton path="esInfijo" value="true" id="es-infijo" name="esInfijo" class="form-control form-check-input"/>
-                                                            <label for="true" class="form-check-label">Si</label><br>                                                        
+                                                            <label for="true" class="form-check-label">Yes</label><br>                                                        
                                                         </div>
                                                         <div class="col-3">
                                                             <form:radiobutton path="esInfijo" value="false" id="es-infijo" name="esInfijo" class="form-control form-check-input"/>
@@ -389,31 +376,31 @@ $(document).ready(function(){
 						</div>
                                             	<div class="form-group" id="asociatividad-box">
                                                     <div style="width:100%;">
-                                                    <label>Asociatividad (*)</label>
+                                                    <label>Asociativity (*)</label>
                                                     </div>
                                                     <div style="width:100%;">
                                                     <form:select path="asociatividad">
-                                                        <form:option value="0" label="Izquierda"/>
-                                                        <form:option value="1" label="Derecha"/>
-                                                        <form:option value="2" label="Izquierda y Derecha"/>
-                                                        <form:option value="3" label="Ninguno"/>
+                                                        <form:option value="0" label="Left"/>
+                                                        <form:option value="1" label="Right"/>
+                                                        <form:option value="2" label="Left/Right"/>
+                                                        <form:option value="3" label="None"/>
                                                     </form:select>                                                          
                                                     </div>
                                                                                                        
                                                                                                         
 						</div>
                                             	<div class="form-group">
-							<label>Precedencia (*)</label>
+							<label>Precedence (*)</label>
                                                         <sf:input path="precedencia" type="number" class="form-control"/>
 
 						</div>
                                             	<div class="form-group" id="notacion-box">
-							<label>Notación (*)</label>
+							<label>Notation (*)</label>
                                                         <sf:input path="notacion" type="text" class="form-control"/>
 						</div>
                                             	<div class="form-group">
                                                     <div style="width:100%">
-                                                    <label>Teoría (*)</label>                                                   
+                                                    <label>Theory (*)</label>                                                   
                                                     </div>
                                                     <div style="width:100%">
                                                     <form:select path="teoriaid">
@@ -427,7 +414,7 @@ $(document).ready(function(){
   
                                                     
 						</div>
-                                            <label>Todos los campos con (*) son requeridos</label>
+                                            <label>All fields with (*) are required</label>
 					</div>
                                     
 					<div class="modal-footer">
@@ -444,30 +431,30 @@ $(document).ready(function(){
 			<div class="modal-content">
 				<sf:form class="form" method="PUT" modelAttribute="agregarSimbolo">
 					<div class="modal-header">						
-						<h4 class="modal-title">Modificar Símbolo</h4>
+						<h4 class="modal-title">Modify Símbolo</h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="revertirNotacionInfijaEdit()">&times;</button>
 					</div>
 					<div class="modal-body">
                                                 <sf:input path="modificar" name="edit" type="hidden" value="true"/>
                                                 <sf:input path="id" name="id-edit" type="hidden" id="id-edit"/>
 						<div class="form-group">
-							<label>Notación Latex (*)</label>
+							<label>Latex Notation(*)</label>
                                                         <sf:input path="notacion_latex" name="notacion_latex" type="text" class="form-control" id="notacion-latex-edit"/>
 
 						</div>
 						<div class="form-group">
-							<label>Argumentos (*)</label>
+							<label>Arguments (*)</label>
                                                         <sf:input path="argumentos" type="number" name="argumentos" class="form-control" id="argumentos-edit"/>
 						</div>
 						<div class="form-group form-check form-check-inline" style="width: 100%;">
                                                     <div class="row" style="width: 60%;">
                                                         <div class="col-3">
-                                                            <label>Es Infijo (*)</label>
+                                                            <label>Is Infix (*)</label>
 
                                                         </div>
                                                         <div class="col-3">
                                                             <form:radiobutton path="esInfijo" value="true" id="es-infijo-edit1" name="esInfijo" class="form-control form-check-input"/>
-                                                            <label for="true" class="form-check-label">Si</label><br>                                                        
+                                                            <label for="true" class="form-check-label">Yes</label><br>                                                        
                                                         </div>
                                                         <div class="col-3">
                                                             <form:radiobutton path="esInfijo" value="false" id="es-infijo-edit2" name="esInfijo" class="form-control form-check-input"/>
@@ -479,14 +466,14 @@ $(document).ready(function(){
 						</div>
                                             	<div class="form-group" id="asociatividad-box-edit">
                                                     <div style="width:100%;">
-                                                    <label>Asociatividad (*)</label>
+                                                    <label>Asociativity (*)</label>
                                                     </div>
                                                     <div style="width:100%;">
                                                     <form:select path="asociatividad" id="asociatividad-edit">
-                                                        <form:option value="0" label="Izquierda"/>
-                                                        <form:option value="1" label="Derecha"/>
-                                                        <form:option value="2" label="Izquierda y Derecha"/>
-                                                        <form:option value="3" label="Ninguno"/>
+                                                        <form:option value="0" label="Left"/>
+                                                        <form:option value="1" label="Right"/>
+                                                        <form:option value="2" label="Left/Right"/>
+                                                        <form:option value="3" label="None"/>
                                                     </form:select>                                                          
                                                     </div>
                                                                                                        
@@ -517,7 +504,7 @@ $(document).ready(function(){
   
                                                     
 						</div>
-                                            <label>Todos los campos con (*) son requeridos</label>
+                                            <label>All fields with (*) are required</label>
 					</div>
                                     
 					<div class="modal-footer">
@@ -539,7 +526,23 @@ $(document).ready(function(){
                         "drawCallback": function( settings ) {
                         MathJax.Hub.Queue(["Typeset",MathJax.Hub]); 
                     }
+                    
                         });
+                for (let i = 0; i < table.rows().count(); i ++){
+                    var temp = table.row(i).data();
+                    if (temp[7].match(regex_left)){
+                        temp[5] = 'Left';
+                    }else if (temp[7].match(regex_right)){
+                        temp[5] = 'Right';
+                    }else if (temp[7].match(regex_left_right)){
+                        temp[5] = 'Left/Right';
+                    }else if (temp[7].match(regex_none)){
+                        temp[5] = 'None';
+                    }else{
+                        temp[5] = 'None'
+                    }
+                    table.row(i).data(temp).invalidate().draw();
+                }
                 function editSimbol(row_number){
                     fields = table.row(row_number).data();
                     $('#id-edit').val(fields[0]);

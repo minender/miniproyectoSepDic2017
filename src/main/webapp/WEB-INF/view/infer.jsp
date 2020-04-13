@@ -53,26 +53,26 @@
                 $("#metodosDemostracion").change(function(){
                     var metodosDemostracionValue = this.value
                     if(this.value==="1"){
-                        if(confirm("¿Esta seguro que desea utilizar el metodo directo?")){
+                        if(confirm("Are you sure you want to use the direct method?")){
                             $("#selectTeoInicial").val("1");
-                            alert('Seleccione el teorema con el cual va a empezar la demostracion.');
+                            alert('Select the theorem with which the proof will begin.');
                             $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
                             $(".operator").css({"cursor":"","color":""});
                             $("#metodosDiv").hide();
                         }
                     }
                     else if(this.value==="2"){
-                        if(confirm("¿Esta seguro que desea utilizar el metodo partir de un lado?")){
+                        if(confirm("Are you sure you want to use the one-sided method?")){
                             //$("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
-                            alert('Seleccione el lado de donde empezará la demostración.');
+                            alert('Select the side where the demo will start.');
                             $("#metodosDiv").hide();
                             $("#currentTeo").hide();
                             teoremaClickeable();
                         }
                     }
                     else if(this.value==="3"){
-                        if(confirm("¿Esta seguro que desea utilizar el metodo Debilitamiento?")){
+                        if(confirm("Are you sure you want to use the Weakening method?")){
                             //var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             $("#metodosDiv").hide();
@@ -81,7 +81,7 @@
                         }
                     }
                     else if(this.value==="4"){
-                        if(confirm("¿Esta seguro que desea utilizar el metodo Fortalecimiento?")){
+                        if(confirm("Are you sure you want to use the Strengthening method?")){
                             //var nTeo = $("#nTeorema").val();
                             $("#selectTeoInicial").val("0");
                             $("#metodosDiv").hide();
@@ -262,7 +262,7 @@
         <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">-->
         </style>
         <tiles:insertDefinition name="style" />
-        <title>L&oacute;gica | Demostrar</title>
+        <title>Logic | Prove</title>
     </head>
     <body>
         <div id="modalLoading" class="modal" >
@@ -292,36 +292,37 @@
         
         <div style="float: right; width: 40%;">
           <div id="metodosDiv">
-            <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Método de demostración</h3>
+            <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Proof method</h3>
               <select class="form-control" id="metodosDemostracion">
-                <option value="0">Seleccione un método</option>
-                <option value="1">Método Directo</option>
-                <option value="2">Partir de un lado</option>
-                <option value="3">Debilitamiento</option>
-                <option value="4">Fortalecimiento</option>
-                <option value="5">Asumir el antecedente</option>
-                <option value="6">Prueba por casos</option>
-                <option value="7">Prueba por contradicción</option>
+                <option value="0">Select a method</option>
+                <option value="1">Direct method</option>
+                <option value="2">Starting from one side</option>
+                <option value="3">DWeakening</option>
+                <option value="4">Strengthening</option>
+                <option value="5">Assume the antecedent</option>
+                <option value="6">Proof by cases</option>
+                <option value="7">Proof by contradiction</option>
 
               </select>
           </div>
             <article id="teoremas" class="teoremas">
                 <div class="row flex align-items-center">
-                <h3 style="margin-left: 5%; margin-top: 2%;padding:0px;height:40px;"><a>Teoremas</a></h3>
+                <h3 style="margin-left: 5%; margin-top: 2%;padding:0px;height:40px;"><a>Theorems</a></h3>
                 <a data-target="#exampleModal" data-toggle="modal">            
                     <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
                 </a>
                </div>
             <ul>
                 <div id="misteoremasSpace">
-                                   <div id="showNoCategories">
+                                   
+                <div id="misteoremas"> 
+                    <div id="showNoCategories">
                 <c:choose>
                     <c:when test="${showCategorias.size() == 0}">
-                        Actualmente no tienes categorias para mostrar, ajusta tus configuraciones
+                        You currently have no categories to display, adjust your settings
                     </c:when>
                 </c:choose>
                 </div>
-                <div id="misteoremas"> 
               <c:forEach items="${showCategorias}" var="cat"> 
                   <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-${cat.getNombre()}" role="button" aria-expanded="false" aria-controls="collapse-${cat.getNombre()}" class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
                       <ul id="collapse-${cat.getNombre()}" class="collapse">
@@ -382,7 +383,7 @@
                                         <c:choose>
                                         <c:when test="${!resu.isEsAxioma()}">
 
-                                            <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "Usted va a demostrar el teorema ":"Usted ha dejado una demostraci&oacute;n incompleta del teorema"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,mensaje)}$
+                                            <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "You are going to prove the theorem":"You have left an incomplete proof of the theorem"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". To be continued the proof from the point where you left it;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,mensaje)}$
                                         </c:when>
                                         <c:otherwise>
                                         (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,"")}$    
@@ -424,13 +425,13 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title" id="exampleModalLabel">Configuraciones</h4>
+                        <h4 class="modal-title" id="exampleModalLabel">Configurations</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                    <h5>Mostrar Categorias</h5>
+                    <h5>Show categories</h5>
                     <ul>
                     <c:forEach items="${categorias}" var="categoria">
                     <div class="row flex align-items-center"> 
@@ -490,7 +491,8 @@
               -->
          
               <!--\cssId{eq}{\style{cursor:pointer;}{p\equiv q}}-->
-              Teorema a usar:<br>
+              
+                Theorem to use:<br>
               <input name="nStatement" id="nStatement_id" value="${nStatement}"/>
               <%--<select style="width: auto; height: auto; border: none;" class="form-control" id="mensaje" name="nStatement">
                   <c:forEach items="${teoremas}" var="cat">
@@ -498,12 +500,12 @@
                   </c:forEach>  
               </select>--%>
               <br>
-              Sustitución:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
+              Substitution:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
               Leibniz:<br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
               <br>
-              <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Inferir"/> 
-              <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Retroceder"> 
-              <input id="BtnLimpiar" class="btn" type="button" value="limpiar">
+              <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Infer"/> 
+              <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Go back"> 
+              <input id="BtnLimpiar" class="btn" type="button" value="Clean">
               <input id="Btn" type="hidden" name="submitBtn" value=""/>
               <%--<input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>
               <input type="hidden" id="nuevoMetodo" name="nuevoMetodo" value="0"/>--%>
@@ -546,7 +548,7 @@
                      script.type= 'text/javascript';
                      script.innerHTML = '';
                      if (categories.length == 0 ){
-                         newElement.innerHTML = "<div id='showNoCategories'>Actualmente no tienes categorias para mostrar, ajusta tus configuraciones</div>"
+                         newElement.innerHTML = "<div id='showNoCategories'>You currently have no categories to display, adjust your settings</div>"
                      }else{
                         newRows=''
                         for (i=0;i<categories.length;i++){
@@ -628,9 +630,9 @@
                                         }
                                         if (!teoremas[j].isAxioma){
                                             if(teoremas[j].demopendiente == -1){
-                                                newRows = newRows + '<a onclick="return confirm(' + "'" + 'Usted va a demostrar el teorema' + teoremas[j].numeroteorema + "'" + ')" href="../../infer/${usuario.getLogin()}/' + teoremas[j].numeroteorema + '">(' + teoremas[j].numeroteorema + ')' +  teoremas[j].nombreteorema + ':</a> &nbsp; $' + teoremas[j].string + '$'
+                                                newRows = newRows + '<a onclick="return confirm(' + "'" + 'You are going to prove the theorem' + teoremas[j].numeroteorema + "'" + ')" href="../../infer/${usuario.getLogin()}/' + teoremas[j].numeroteorema + '">(' + teoremas[j].numeroteorema + ')' +  teoremas[j].nombreteorema + ':</a> &nbsp; $' + teoremas[j].string + '$'
                                             }else{
-                                                newRows = newRows + '<a onclick="return confirm(' + "'" + 'Usted ha dejado una demostraci&oacute;n incompleta del teorema' + teoremas[j].numeroteorema + '. Continuar&aacute; la demostraci&oacute;n desde el punto en que la dej&oacute;' + "'" + ')" href="../../infer/${usuario.getLogin()}/' + teoremas[j].numeroteorema + '">(' + teoremas[j].numeroteorema + ')' +  teoremas[j].nombreteorema + ':</a> &nbsp; $' + teoremas[j].string + '$'
+                                                newRows = newRows + '<a onclick="return confirm(' + "'" + 'You have left an incomplete proof of the theorem' + teoremas[j].numeroteorema + '. To be continued the proof from the point where you left it;' + "'" + ')" href="../../infer/${usuario.getLogin()}/' + teoremas[j].numeroteorema + '">(' + teoremas[j].numeroteorema + ')' +  teoremas[j].nombreteorema + ':</a> &nbsp; $' + teoremas[j].string + '$'
                                            
                                             }
                                         }else{

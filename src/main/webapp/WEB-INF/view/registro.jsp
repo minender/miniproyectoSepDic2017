@@ -73,7 +73,7 @@
                </c:choose>
             
             <div class="form-group row justify-content-center">
-                <label for="registro_materiaid" class="col-lg-1 col-form-label">Materia:</label>
+                <label for="registro_materiaid" class="col-lg-1 col-form-label">Subject:</label>
                 <div class="col-lg-3">
                     <sf:select path="materiaid" id="registro_materiaid" class="form-control">
                         <sf:option value="0" label="Seleccione una materia"/>

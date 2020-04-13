@@ -30,7 +30,7 @@
     <c:choose>
         <c:when test="${isDifferentUser.intValue()==1}">
             <div class="row flex align-items-center">
-                <h1>Teoremas de ${usuario.getNombre()} ${usuario.getApellido()}</h1>
+                <h1>Theorems from ${usuario.getNombre()} ${usuario.getApellido()}</h1>
                 <a data-target="#exampleModal" data-toggle="modal">            
                     <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
                 </a>
@@ -39,7 +39,7 @@
         <c:otherwise>
             <tiles:insertDefinition name="nav" />
             <div class="row flex align-items-center">
-            <h1>Mis Teoremas</h1>
+            <h1>My Theorems</h1>
             <a data-target="#exampleModal" data-toggle="modal">            
                 <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
             </a>
@@ -52,7 +52,7 @@
          <div id="showNoCategories">
             <c:choose>
                 <c:when test="${showCategorias.size() == 0}">
-                    Actualmente no tienes categorias para mostrar, ajusta tus configuraciones
+                    You currently have no categories to display, adjust your settings                
                 </c:when>
             </c:choose>
          </div>
@@ -126,13 +126,13 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="exampleModalLabel">Configuraciones</h4>
+        <h4 class="modal-title" id="exampleModalLabel">Configurations</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-          <h5>Mostrar Categorias</h5>
+          <h5>Show categories</h5>
           <ul>
               <c:forEach items="${categorias}" var="categoria">
                   <div class="row flex align-items-center">
@@ -193,7 +193,7 @@
                      teoremas = data.resuelves
                     
                      if (categories.length == 0 ){
-                         newElement.innerHTML = "<div id='showNoCategories'>Actualmente no tienes categorias para mostrar, ajusta tus configuraciones</div>"
+                         newElement.innerHTML = "<div id='showNoCategories'>You currently have no categories to display, adjust your settings</div>"
                      }else{
                      newRows=''
                      innerHTML = "<ul>"

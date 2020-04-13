@@ -13,13 +13,13 @@
   <tiles:insertDefinition name="header" />
   <body>
   <tiles:insertDefinition name="nav" />
-  <div class="container">
+  <div class="container" style="margin-top: 20px">
     <h1>Students List</h1>
 
     <table class="table">
   <thead>
     <tr>
-      <th scope="col">Nombre de la asignatura</th>
+      <th scope="col">Name of the subject</th>
     </tr>
   </thead>
   <tbody>
@@ -39,8 +39,8 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Apellido</th>
+                                <th scope="col">First name</th>
+                                <th scope="col">Last name</th>
                             </tr>
                         </thead>
                         <tbody>

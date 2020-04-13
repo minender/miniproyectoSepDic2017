@@ -79,14 +79,14 @@
       <c:choose>
         <c:when test="${!username.equals(admin)}">
           <article id="predefinidos" >
-            <h2 style="margin: 0px;padding:0px;height:40px;"><a href="#!" onclick="desplegar('predefinidos')">Abreviaciones predefinidas</a></h2>
+            <h2 style="margin: 0px;padding:0px;height:40px;"><a href="#!" onclick="desplegar('predefinidos')">Predefined abbreviations</a></h2>
             <iframe width="100%" height="100%" src="../${username}/predef?comb=n">
             </iframe>
           </article>
         </c:when>
       </c:choose>
       <article id="misTerminos" >
-        <h2 style="margin: 0px;padding:0px;height:40px;"><a href="#!" onclick="desplegar('misTerminos')">Mis abreviaciones</a></h2>
+        <h2 style="margin: 0px;padding:0px;height:40px;"><a href="#!" onclick="desplegar('misTerminos')">My abbreviations</a></h2>
         <iframe width="100%" height="100%" src="../${username}/listarocult?comb=n">        
         </iframe>
       </article>

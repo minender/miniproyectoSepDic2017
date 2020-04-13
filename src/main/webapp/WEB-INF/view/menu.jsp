@@ -7,11 +7,11 @@
           <div class="collapse navbar-collapse" id="options">
           <ul class="navbar-nav nav-fill w-100">
             <li class="nav-item ${perfilMenu}"><a href="home" class="nav-link">Profile</a></li>
-	    <li class="nav-item ${guardarMenu}" ><a href="guardar" class="nav-link">Agregar Abreviación</a></li>
-            <li class="nav-item ${listarTerminosMenu}"><a href="listar?comb=n" class="nav-link">Mis Abreviaciones</a></li>
-            <li class="nav-item ${misTeoremasMenu}"><a href="misTeoremas" class="nav-link">Mis Teoremas</a></li>
-            <li class="nav-item ${agregarTeoremaMenu}"><a href="guardarteo" class="nav-link">Agregar Teorema</a></li>
-            <li class="nav-item ${computarMenu}"><a href="${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Demostrar</a></li>
+	    <li class="nav-item ${guardarMenu}" ><a href="guardar" class="nav-link">Add Abbreviation</a></li>
+            <li class="nav-item ${listarTerminosMenu}"><a href="listar?comb=n" class="nav-link">My Abbreviations</a></li>
+            <li class="nav-item ${misTeoremasMenu}"><a href="misTeoremas" class="nav-link">My Theorems</a></li>
+            <li class="nav-item ${agregarTeoremaMenu}"><a href="guardarteo" class="nav-link">Add Theorems</a></li>
+            <li class="nav-item ${computarMenu}"><a href="${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Prove</a></li>
             <c:choose>
                 <c:when test="${isAdmin.intValue()==1}">
                     <li class="nav-item ${students}" ><a href="students" class="nav-link">Students</a></li>
