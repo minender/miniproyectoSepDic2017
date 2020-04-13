@@ -117,7 +117,12 @@ function leibnizMouse(p1,p2){
     	resp = padres[0];
     }
     else{
-    	resp = $("#" + padres[0]).parent().attr("id");      
+        closestCommonAncestor = $("#" + p1[0]).parents().has($("#" + p2[0])).first();
+        if (closestCommonAncestor){
+            resp = closestCommonAncestor.attr("id")
+        }else{
+            resp = $("#" + padres[0]).parent().attr("id");      
+        }
     }
     $('#leibniz_id').val(leibniz[resp]);
     return;

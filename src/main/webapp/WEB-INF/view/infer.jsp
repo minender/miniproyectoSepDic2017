@@ -199,6 +199,11 @@
                                     first_element = $(first_element).next()[0]
                                 }
                             };
+                            if ($(first_element).hasClass("0")){
+                                while(!$(first_element).hasClass("terminoClick")){
+                                    first_element = $(first_element).children()[0]
+                                }
+                            }
                             //Obtenemos el nivel del primer elemento
                             var nivel_first_element = $(first_element).attr('class');
                             if (nivel_first_element && nivel_first_element.length >= 2){
@@ -215,6 +220,12 @@
                                     last_element = $(last_element).prev()[0]
                                 }
                             };
+                            
+                            //Si aun asi el ultimo elemento no tiene ni terminoClick ni clase Numerica (se selecciono algo fuera del teorema sin saber)
+                            if (!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element)){
+                                last_element = $("#0")[0]
+                            }
+
 
                             //Obtenemos el id del primer elemento
                             idt2=last_element.id;
@@ -223,14 +234,16 @@
                             $('#leibniz_id').val(leibniz[idt1]);
                             }
                             //Si no, se usa leibnizMouse(para obtener el comun entre ellos)
-                            else{
-                                var nivel_last_element = $(last_element).attr('class');
-                                if (nivel_last_element && nivel_last_element.length >= 2){
-                                    nivel_last_element = nivel_last_element.split(" ")[1];
-                                    var id_last_element = $(last_element).attr("id");
-                                    p2 = [id_last_element,nivel_last_element];
-                                    leibnizMouse(p1,p2)
+                            else{   
+                                    var nivel_last_element = $(last_element).attr('class');
+                                    if (nivel_last_element && nivel_last_element.length >= 2){
+                                        nivel_last_element = nivel_last_element.split(" ")[1];
+                                        var id_last_element = $(last_element).attr("id");
+                                        p2 = [id_last_element,nivel_last_element];
+                                        leibnizMouse(p1,p2)
+                                                                    
                                 }
+
                                 
                             }
                         
@@ -461,7 +474,7 @@
         </script>
 
         <div style="width: 60%; height: 400px; overflow: scroll;">
-            <h5 id="formula">${formula}</h5>
+            <h5 id="formula" style="width:100%; height: 100%">${formula}</h5>
         </div>    
           <c:choose>
           <c:when test="${!selecTeo}">
