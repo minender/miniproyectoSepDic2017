@@ -469,7 +469,7 @@ insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociativi
 -- Name: simbolo_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-SELECT pg_catalog.setval('userdb.simbolo_id_seq', 9, true);
+SELECT pg_catalog.setval('userdb.simbolo_id_seq', 18, true);
 
 --
 -- Data for Name: categoria; Type: TABLE DATA; Schema: userdb; Owner: userdb
