@@ -59,7 +59,6 @@
                             $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
                             $(".operator").css({"cursor":"","color":""});
                             $("#metodosDiv").hide();
-                            $("#currentTeo").hide();
                         }
                     }
                     else if(this.value==="2"){
@@ -295,7 +294,7 @@
           <div id="metodosDiv">
             <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Método de demostración</h3>
               <select class="form-control" id="metodosDemostracion">
-                <option value="0">Seleccione un método</option>>
+                <option value="0">Seleccione un método</option>
                 <option value="1">Método Directo</option>
                 <option value="2">Partir de un lado</option>
                 <option value="3">Debilitamiento</option>
