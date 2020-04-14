@@ -351,6 +351,17 @@ cons[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value
 
      | LETTER                                 {$value = new Var((int)$LETTER.text.charAt(0));}
 
+| 'C' NUMBER '(' explist[id,pm,sm] ')'   {Simbolo s = sm.getSimbolo(Integer.parseInt($NUMBER.text)); 
+                                               if (s == null)throw new IsNotInDBException(this,"");
+                                               int nArg = s.getArgumentos();
+                                               if ($explist.value.size() != nArg)
+                                                 throw new NoViableAltException(this);
+                                               Term aux = new Const(Integer.parseInt($NUMBER.text),s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                               for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();)
+                                                  aux=new App(aux,i.next());
+                                               $value = aux;
+                                              }
+
      | '(' term[id,pm,sm] ')'                 {$value=$term.value;};
 
 instantiate[PredicadoId id, PredicadoManager pm, SimboloManager sm] 
