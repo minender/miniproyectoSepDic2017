@@ -101,6 +101,7 @@ public class EvaluarController {
             TermParser parser2 = new TermParser(tokens2);
             Term teoTerm2;
             ArrayList<Object> teoTerm;
+            Usuario usr = usuarioManager.getUsuario(username);
             try //si la sintanxis no es correcta ocurre una Exception
             {
 
@@ -176,6 +177,8 @@ public class EvaluarController {
                 map.addAttribute("usuario", username);
                 map.addAttribute("alias", teoTerm2.toStringInfLabeled(simboloManager));//(new TypedApp(I, A)).type().toStringInfFinal());//teoTerm.toStringInfLabeled());
                 map.addAttribute("predserializado", categoriaManager.getAllCategorias().toString());
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+
                 return "PagParaVerPredicado";
             }
             /*catch (TypeVerificationException e)
@@ -195,7 +198,7 @@ public class EvaluarController {
             catch (IsNotInDBException e) {
                 String hdr = parser.getErrorHeader(e);
                 String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
+                map.addAttribute("usuario", usr);
 
                 map.addAttribute("agregarTeoremaMenu", "class=\"active\"");
                 map.addAttribute("listarTerminosMenu", "");
@@ -230,8 +233,9 @@ public class EvaluarController {
         if ((Usuario) session.getAttribute("user") == null || !((Usuario) session.getAttribute("user")).getLogin().equals(username)) {
             return "redirect:/index";
         }
+        Usuario usr = usuarioManager.getUsuario(username);
         if (bindingResult.hasErrors()) {
-            map.addAttribute("usuario", usuarioManager.getUsuario(username));
+            map.addAttribute("usuario", usr);
             map.addAttribute("mensaje", "");
             map.addAttribute("termino", insertarEvaluar.getAlgoritmo());
             map.addAttribute("nombre", insertarEvaluar.getNombre());
@@ -245,6 +249,8 @@ public class EvaluarController {
             map.addAttribute("hrefAMiMismo", "href=../../eval/" + username + "#!");
             map.addAttribute("overflow", "hidden");
             map.addAttribute("anchuraDiv", "1100px");
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+
             return "insertarEvaluar";
         }
 
@@ -287,7 +293,7 @@ public class EvaluarController {
         } */catch (RecognitionException e) {
             String hdr = parser.getErrorHeader(e);
             String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
-            map.addAttribute("usuario", usuarioManager.getUsuario(username));
+            map.addAttribute("usuario", usr);
             map.addAttribute("insertarEvaluar", new InsertarEvaluar());
             map.addAttribute("mensaje", hdr + " " + msg);
             map.addAttribute("nombre", insertarEvaluar.getNombre());
@@ -302,6 +308,8 @@ public class EvaluarController {
             map.addAttribute("hrefAMiMismo", "href=../../eval/" + username + "#!");
             map.addAttribute("overflow", "hidden");
             map.addAttribute("anchuraDiv", "1100px");
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+
             return "insertarEvaluar";
         }
 

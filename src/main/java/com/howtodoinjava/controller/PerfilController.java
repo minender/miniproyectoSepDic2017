@@ -149,6 +149,7 @@ public class PerfilController {
         map.addAttribute("helpMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
+
         return "perfil";
     }
     
@@ -229,6 +230,7 @@ public class PerfilController {
         map.addAttribute("perfilMenu","active");
         map.addAttribute("students","");
         map.addAttribute("helpMenu","");
+        map.addAttribute("isAdmin",user.isAdmin()?new Integer(1):new Integer(0));
         return "editPerfil";
     }
     
@@ -253,6 +255,7 @@ public class PerfilController {
             map.addAttribute("perfilMenu","active");
             map.addAttribute("students","");
             map.addAttribute("helpMenu","");
+            map.addAttribute("isAdmin",user.isAdmin()?new Integer(1):new Integer(0));
             return "editPerfil";
         }
         else{
@@ -269,6 +272,7 @@ public class PerfilController {
                map.addAttribute("perfilMenu","active");
                map.addAttribute("students","");
                map.addAttribute("helpMenu","");
+               map.addAttribute("isAdmin",user.isAdmin()?new Integer(1):new Integer(0));
                return "editPerfil";
             }
 
@@ -295,6 +299,7 @@ public class PerfilController {
         map.addAttribute("helpMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
+        map.addAttribute("isAdmin",user.isAdmin()?new Integer(1):new Integer(0));
         return "perfil";
     }
     
@@ -318,6 +323,8 @@ public class PerfilController {
         map.addAttribute("perfilMenu","");
         map.addAttribute("theoMenu","");
         map.addAttribute("helpMenu","active");
+        map.addAttribute("isAdmin",user.isAdmin()?new Integer(1):new Integer(0));
+
         return "help";
     }
     
@@ -516,7 +523,8 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        Usuario usr = usuarioManager.getUsuario(username);
+        map.addAttribute("usuario",usr);
         map.addAttribute("agregarTeorema",new AgregarTeorema());
         map.addAttribute("modificar",new Integer(0));
         map.addAttribute("teorema","");
@@ -527,6 +535,7 @@ public class PerfilController {
         map.addAttribute("agregarTeoremaMenu","active");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         
         return "agregarTeorema";
     }
@@ -544,9 +553,10 @@ public class PerfilController {
             //aqui se acomoda la estructura de la entidad Termino ya que en la
             // vista lo que se construyo fue un TerminoId nada mas y se uso el 
             // campo login para guardar el String combinador
+            Usuario usr = usuarioManager.getUsuario(username);
             if(bindingResult.hasErrors())
             {
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
+                map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
                 map.addAttribute("teorema",agregarTeorema.getTeorema());
@@ -557,6 +567,7 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
             
@@ -598,7 +609,7 @@ public class PerfilController {
                 Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
                 Dispone dispone = disponeManager.addDispone(disponeAdd);
                      
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
+                map.addAttribute("usuario", usr);
                 map.addAttribute("guardarMenu","");
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
                 map.addAttribute("agregarTeoremaMenu","");
@@ -608,6 +619,7 @@ public class PerfilController {
                 map.addAttribute("perfilMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "perfil";
             }
             catch(NullPointerException e)
@@ -624,6 +636,7 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
             catch(CategoriaException e)
@@ -639,13 +652,14 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1100px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
             catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
+                map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
                 map.addAttribute("teorema",agregarTeorema.getTeorema());
@@ -657,6 +671,7 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
             catch(RecognitionException e)
@@ -675,6 +690,7 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
     }
@@ -692,7 +708,8 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        Usuario usr = usuarioManager.getUsuario(username);
+        map.addAttribute("usuario", usr);
         map.addAttribute("usuarioGuardar",new UsuarioGuardar());
         map.addAttribute("modificar",new Integer(0));
         map.addAttribute("termino","");
@@ -709,6 +726,7 @@ public class PerfilController {
         map.addAttribute("helpMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         
         return "introducirTermino";
     }
@@ -720,14 +738,16 @@ public class PerfilController {
             {
                 return "redirect:/index";
             }
+            
+            Usuario usr = usuarioManager.getUsuario(username);
             //Aqui hay que validar sintaxis se puede hacer como un aspecto con 
             // un @Valid
             //aqui se acomoda la estructura de la entidad Termino ya que en la
             // vista lo que se construyo fue un TerminoId nada mas y se uso el 
             // campo login para guardar el String combinador
             if(bindingResult.hasErrors())
-            {
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
+            {   
+                map.addAttribute("usuario", usr);
                 map.addAttribute("modificar",new Integer(0));
                 map.addAttribute("termino",usuarioGuardar.getTermino());
                 map.addAttribute("alias",usuarioGuardar.getAlias());
@@ -741,6 +761,7 @@ public class PerfilController {
                 map.addAttribute("perfilMenu","");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "introducirTermino";
             }
             
@@ -810,11 +831,10 @@ public class PerfilController {
                     }else{
                      resultado = " 2 Su abreviaci&oacute;n usa variables como: "+check +" que no estan especificada";
                     }
-                    
                     map.addAttribute("usuarioGuardar", usuarioGuardar);
                     map.addAttribute("modificar",new Integer(0));
                     map.addAttribute("mensaje", resultado);
-                    map.addAttribute("usuario", usuarioManager.getUsuario(username));
+                    map.addAttribute("usuario", usr);
                     map.addAttribute("guardarMenu","");
                     map.addAttribute("listarTerminosMenu","");
                     map.addAttribute("verTerminosPublicosMenu","");
@@ -823,10 +843,12 @@ public class PerfilController {
                     map.addAttribute("perfilMenu","active");
                     map.addAttribute("overflow","hidden");
                     map.addAttribute("anchuraDiv","1200px");
+                    map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                     return "introducirTermino";
                 }
                 else
                 {
+
                     map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                     map.addAttribute("usuario",user);
                     map.addAttribute("modificar",new Integer(0));
@@ -842,6 +864,7 @@ public class PerfilController {
                     map.addAttribute("perfilMenu","");
                     map.addAttribute("overflow","hidden");
                     map.addAttribute("anchuraDiv","1200px");
+                    map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                     return "introducirTermino";
                 }
             }
@@ -862,6 +885,7 @@ public class PerfilController {
                 map.addAttribute("perfilMenu","");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "introducirTermino";
             }
             catch(IsNotInDBException e)
@@ -883,6 +907,7 @@ public class PerfilController {
                 map.addAttribute("perfilMenu","");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "introducirTermino";
             }
             catch(RecognitionException e)
@@ -904,6 +929,7 @@ public class PerfilController {
                 map.addAttribute("perfilMenu","");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "introducirTermino";
             }
     }
@@ -915,8 +941,9 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        Usuario usr = usuarioManager.getUsuario(username);
         //map.addAttribute("usuario", usuarioManager.getUsuario(username));
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        map.addAttribute("usuario", usr);
         map.addAttribute("termino","");
         map.addAttribute("modificarAliasForm",new ModificarAliasForm());
         map.addAttribute("modificar",new Integer(2));
@@ -928,6 +955,7 @@ public class PerfilController {
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         
         return "introducirTermino";
     }
@@ -953,7 +981,8 @@ public class PerfilController {
         String term=aux.toStringInf(simboloManager,"").replace("\\", "\\\\");
         //String termino;
         //termino = term.replace("\\","" ).replace("}", "").replaceAll("[_][{]", "");
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        Usuario usr = usuarioManager.getUsuario(username);
+        map.addAttribute("usuario", usr);
         map.addAttribute("termino",term);
         map.addAttribute("modificarForm",new UsuarioGuardar());
         map.addAttribute("modificar",new Integer(1));
@@ -962,6 +991,8 @@ public class PerfilController {
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        
         
         return "introducirTermino";
     }
@@ -979,9 +1010,10 @@ public class PerfilController {
             //aqui se acomoda la estructura de la entidad Termino ya que en la
             // vista lo que se construyo fue un TerminoId nada mas y se uso el 
             // campo login para guardar el String combinador
+            Usuario usr = usuarioManager.getUsuario(username);
             if(bindingResult.hasErrors())
             {
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
+                map.addAttribute("usuario", usr);
                 map.addAttribute("modificar",new Integer(2));
                 map.addAttribute("termino","");
                 map.addAttribute("alias",modificarAliasForm.getAlias());
@@ -989,6 +1021,7 @@ public class PerfilController {
                 map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "introducirTermino";
             }
         
@@ -1022,6 +1055,7 @@ public class PerfilController {
                 map.addAttribute("perfilMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "perfil";
             }
             else
@@ -1032,12 +1066,14 @@ public class PerfilController {
                 map.addAttribute("mensaje", "ya existe un t&eacute;rmino con el alias que usted ha colocado");
                 map.addAttribute("termino","");
                 map.addAttribute("admin","AdminTeoremas");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 if(username.equals("AdminTeoremas"))
                     map.addAttribute("alias",aliasNuevo+"_");
                 else
                     map.addAttribute("alias",aliasNuevo);
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                
                 return "introducirTermino";
             }
     }
@@ -1055,9 +1091,10 @@ public class PerfilController {
             //aqui se acomoda la estructura de la entidad Termino ya que en la
             // vista lo que se construyo fue un TerminoId nada mas y se uso el 
             // campo login para guardar el String combinador
+            Usuario usr = usuarioManager.getUsuario(username);
             if(bindingResult.hasErrors())
             {
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
+                map.addAttribute("usuario", usr);
                 map.addAttribute("modificar",new Integer(1));
                 map.addAttribute("termino",modificarForm.getTermino());
                 map.addAttribute("alias","");
@@ -1065,6 +1102,7 @@ public class PerfilController {
                 map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "introducirTermino";
             }
         
@@ -1112,7 +1150,7 @@ public class PerfilController {
                 }
 
                 map.addAttribute("mensaje", "Su t&eacute;rmino se ha modificado con exito");
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
+                map.addAttribute("usuario", usr);
                 map.addAttribute("guardarMenu","");
                 map.addAttribute("listarTerminosMenu","");
                 map.addAttribute("verTerminosPublicosMenu","");
@@ -1121,12 +1159,13 @@ public class PerfilController {
                 map.addAttribute("perfilMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "perfil";
             }
             catch(AlphaEquivalenceException e)
             {
                 map.addAttribute("terminoid",new TerminoId());
-                map.addAttribute("usuario",usuarioManager.getUsuario(username));
+                map.addAttribute("usuario",usr);
                 map.addAttribute("modificar",new Integer(1));
                 map.addAttribute("mensaje", "No se puede ingresar su t&eacute;rmino ya que es alpha equivalente al t&eacute;rmino ya existente "+e.alias);
                 map.addAttribute("termino",programa);
@@ -1134,6 +1173,7 @@ public class PerfilController {
                 map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "introducirTermino";
             }
             catch(IsNotInDBException e)
@@ -1141,7 +1181,7 @@ public class PerfilController {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("terminoid",new TerminoId());
-                map.addAttribute("usuario",usuarioManager.getUsuario(username));                
+                map.addAttribute("usuario",usr);                
                 map.addAttribute("modificar",new Integer(1));
                 map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
                 map.addAttribute("termino",programa);
@@ -1149,6 +1189,7 @@ public class PerfilController {
                 map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "introducirTermino";
             }
             catch(RecognitionException e)
@@ -1156,7 +1197,7 @@ public class PerfilController {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("terminoid",new TerminoId());
-                map.addAttribute("usuario",usuarioManager.getUsuario(username));                
+                map.addAttribute("usuario",usr);                
                 map.addAttribute("modificar",new Integer(1));
                 map.addAttribute("mensaje", hdr+" "+msg);
                 map.addAttribute("termino",programa);
@@ -1164,6 +1205,7 @@ public class PerfilController {
                 map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "introducirTermino";
             }
     }
@@ -1174,14 +1216,16 @@ public class PerfilController {
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
         {
             return "redirect:/index";
-        }    
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("titulo", "Mis Abreviaciones");
         map.addAttribute("publico", "publico");
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        map.addAttribute("usuario", usr);
         map.addAttribute("predicados", predicadoManager.getAllPredicadosByUser(username));
         map.addAttribute("simboloManager", simboloManager);
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         if (comb.equals("y"))
             map.addAttribute("comb", new Integer(1));
         else
@@ -1199,6 +1243,7 @@ public class PerfilController {
         map.addAttribute("perfilMenu","");
         map.addAttribute("regex","@[12]*");
         map.addAttribute("anchuraDiv","1163px");
+
         
         return "listar";
     }
@@ -1210,11 +1255,12 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("titulo", "Mis Publicaciones");
         map.addAttribute("publico", "publico");
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        map.addAttribute("usuario", usr);
         map.addAttribute("terminos", terminoManager.getAllPublicaciones(username));
         if(comb.equals("y"))
             map.addAttribute("comb", new Integer(1));
@@ -1233,6 +1279,7 @@ public class PerfilController {
         map.addAttribute("perfilMenu","");
         map.addAttribute("overflow","scroll");
         map.addAttribute("anchuraDiv","1163px");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         
         return "listar";
     }
@@ -1244,13 +1291,15 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("titulo", "Mis Abreviaciones");
         map.addAttribute("publico", "publico");
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        map.addAttribute("usuario", usr);
         map.addAttribute("predicados", predicadoManager.getAllPredicadosByUser(username));
         map.addAttribute("simboloManager",simboloManager);
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         if(comb.equals("y"))
             map.addAttribute("comb", new Integer(1));
         else
@@ -1272,12 +1321,14 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("titulo", "Abreviaciones publicas");
         map.addAttribute("publico", "publico");
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
         map.addAttribute("usuario", usuarioManager.getUsuario("publico"));
         map.addAttribute("terminos", terminoManager.getAllTerminos("publico"));
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         if(comb.equals("y"))
             map.addAttribute("comb", new Integer(1));
         else
@@ -1306,12 +1357,14 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("titulo", "Abreviaciones publicas");
         map.addAttribute("publico", "publico");
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
         map.addAttribute("usuario", usuarioManager.getUsuario("publico"));
         map.addAttribute("terminos", terminoManager.getAllTerminos("publico"));
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         if(comb.equals("y"))
             map.addAttribute("comb", new Integer(1));
         else
@@ -1332,12 +1385,14 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("titulo", "Abreviaciones predefinidas");
         map.addAttribute("publico", "publico");
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");
         map.addAttribute("usuario", usuarioManager.getUsuario("publico"));
         map.addAttribute("terminos", terminoManager.getAllTerminos("AdminTeoremas"));
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         if(comb.equals("y"))
             map.addAttribute("comb", new Integer(1));
         else
@@ -1347,6 +1402,7 @@ public class PerfilController {
         map.addAttribute("perfil",new Integer(0));
         map.addAttribute("click","yes");
         map.addAttribute("publicaciones",new Integer(0));
+
         
         return "listar";
     }
@@ -1384,6 +1440,7 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        Usuario usr = usuarioManager.getUsuario(username);
         TerminoId terminoid = new TerminoId(alias,username);
         PublicacionId publicacionId = new PublicacionId(alias.substring(0, alias.length()-1),username);
         TerminoId publicTerminoid = new TerminoId(alias.substring(0, alias.length()-1),"publico");
@@ -1393,7 +1450,7 @@ public class PerfilController {
             map.addAttribute("titulo", "Mis Abreviaciones");
             map.addAttribute("publico", "publico");
             map.addAttribute("admin","AdminTeoremas");
-            map.addAttribute("usuario", usuarioManager.getUsuario(username));
+            map.addAttribute("usuario", usr);
             map.addAttribute("terminos", terminoManager.getAllTerminos(username));
             map.addAttribute("comb", new Integer(0));
             map.addAttribute("perfil",new Integer(1));
@@ -1408,6 +1465,7 @@ public class PerfilController {
             map.addAttribute("perfilMenu","");
             map.addAttribute("overflow","scroll");
             map.addAttribute("anchuraDiv","1163px");
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
             return "listar";
         }
         Termino termino = terminoManager.getTermino(terminoid);
@@ -1424,7 +1482,7 @@ public class PerfilController {
             map.addAttribute("titulo", "Mis Abreviaciones");
             map.addAttribute("publico", "publico");
             map.addAttribute("admin","AdminTeoremas");
-            map.addAttribute("usuario", usuarioManager.getUsuario(username));
+            map.addAttribute("usuario", usr);
             map.addAttribute("terminos", terminoManager.getAllTerminos(username));
             map.addAttribute("comb", new Integer(0));
             map.addAttribute("perfil",new Integer(1));
@@ -1439,6 +1497,7 @@ public class PerfilController {
             map.addAttribute("perfilMenu","");
             map.addAttribute("overflow","scroll");
             map.addAttribute("anchuraDiv","1163px");
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
             return "listar";
         }
         PublicacionId publicacionId2 = new PublicacionId(alias.substring(0, alias.length()-1),username);
@@ -1453,7 +1512,7 @@ public class PerfilController {
         terminoPublico.setUsuario(usuarioManager.getUsuario("publico"));
         terminoManager.addPublicacion(terminoPublico,publicacion);
         map.addAttribute("mensaje", "Su t&eacute;rmino ha sido publicado con exito");
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        map.addAttribute("usuario", usr);
         map.addAttribute("guardarMenu","");
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("verTerminosPublicosMenu","");
@@ -1462,6 +1521,7 @@ public class PerfilController {
         map.addAttribute("perfilMenu","active");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         
         return "perfil";
     }
@@ -1473,7 +1533,8 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        map.addAttribute("usuario", usuarioManager.getUsuario(username));
+        Usuario usr = usuarioManager.getUsuario(username);
+        map.addAttribute("usuario", usr);
         //map.addAttribute("terminoid",new TerminoId());
         map.addAttribute("insertarEvaluar",new InsertarEvaluar());
         map.addAttribute("mensaje","");
@@ -1490,6 +1551,7 @@ public class PerfilController {
         map.addAttribute("hrefAMiMismo","href=ingresar#!");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         
         return "insertarEvaluar";
     }

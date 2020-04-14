@@ -135,6 +135,7 @@ public class InferController {
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("showCategorias",showCategorias);
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
@@ -255,6 +256,8 @@ public class InferController {
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("showCategorias",showCategorias);
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+
         //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
