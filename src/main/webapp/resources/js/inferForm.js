@@ -92,13 +92,29 @@ $(function() {
     
 });
 
+function hasNumericClass(element){
+                    let clases = $(element).attr("class");
+                    isNumeric = false;
+                    if (clases){
+                        clases = clases.split(" ");
+                        for (let i = 0; i<clases.length;i++){
+                            if ($.isNumeric(clases[i])){
+                                isNumeric = true
+                            }
+                        }
+                    }
+                    return isNumeric
+                    
+                }
+
 function leibnizMouse(p1,p2){
 
     var resp;
     var nivel;
     var padres = [];
-    
+
     if(p1[0] == p2[0]){
+
     	resp = p1[0];
         $('#leibniz_id').val(leibniz[resp]);
         return;
@@ -109,6 +125,7 @@ function leibnizMouse(p1,p2){
     	padres[1] = $("#" + p2[0]).parents("." + nivel).attr("id");
     }
     else{
+        
     	nivel = p2[1];
         padres[0] = $("#" + p1[0]).parents("." + nivel).attr("id");
     	padres[1] = p2[0];
@@ -117,9 +134,21 @@ function leibnizMouse(p1,p2){
     	resp = padres[0];
     }
     else{
-        closestCommonAncestor = $("#" + p1[0]).parents().has($("#" + p2[0])).first();
+        closestCommonAncestor = $("#" + p1[0]).parents().has($("#" + p2[0])).first()[0];
         if (closestCommonAncestor){
-            resp = closestCommonAncestor.attr("id")
+            if (hasNumericClass(closestCommonAncestor)){
+                resp = $(closestCommonAncestor).attr("id")
+            }else{
+                current = closestCommonAncestor
+                while ($(current).parent().length > 0 && !hasNumericClass(current)){
+                    current = $(current).parent()[0]
+                }
+                if (!hasNumericClass(current)){
+                    resp = $(".0").attr("id")
+                }else{
+                    resp = $(current).attr("id")
+                }
+            }
         }else{
             resp = $("#" + padres[0]).parent().attr("id");      
         }

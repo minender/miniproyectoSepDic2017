@@ -180,7 +180,7 @@
                 $('#formula').on("mouseup",function(event){
                     //Obtiene toda la expresion bien formada que se puede sustituir
                     var total_expression = $(".0")[0];
-                    //Si esta expresion existe:
+                    //Si esta expresion existe y lo seleccionado tiene un rango (no es un simple click):
                     if (total_expression && window.getSelection().type === 'Range'){
                         //Obtiene el primero y el ultimo elemento del subrayado
                         var first_element = window.getSelection().getRangeAt(0).startContainer;
@@ -191,7 +191,6 @@
                         if (last_element.nodeType !== 1) {
                             last_element = last_element.parentNode;
                         }
-                        //Si estos elementos pertenecen a la expresion total:
                             //Si el primer elemento no es un parte de una subexpresion (digamos un parentesis),
                             // entonces se convierte en el elemento siguiente (su hermano) y asi
                             if (!$(first_element).hasClass("terminoClick") && !hasNumericClass(first_element)){
@@ -236,6 +235,7 @@
                             //Si no, se usa leibnizMouse(para obtener el comun entre ellos)
                             else{   
                                     var nivel_last_element = $(last_element).attr('class');
+
                                     if (nivel_last_element && nivel_last_element.length >= 2){
                                         nivel_last_element = nivel_last_element.split(" ")[1];
                                         var id_last_element = $(last_element).attr("id");
