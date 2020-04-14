@@ -518,7 +518,7 @@ $(document).ready(function(){
                             		                            
         <tiles:insertDefinition name="footer" />
         <script>
-                var regex_none = /%\(na2\)\s*%\(op\)\s*%\(na1\)/
+                var regex_none = /%\(a2\)\s*%\(op\)\s*%\(a1\)/
                 var regex_left = /%\(aa2\)\s*%\(op\)\s*%\(a1\)/
                 var regex_right = /%\(a2\)\s*%\(op\)\s*%\(aa1\)/
                 var regex_left_right = /%\(aa2\)\s*%\(op\)\s*%\(aa1\)/
@@ -601,7 +601,7 @@ $(document).ready(function(){
                     $("#notacion").val("%(aa2) %(op) %(aa1)")
                 }
                 else if (asociatividad.val()==3){
-                    $("#notacion").val("%(na2) %(op) %(na1)")
+                    $("#notacion").val("%(a2) %(op) %(a1)")
                 }
                 
             }
@@ -616,7 +616,7 @@ $(document).ready(function(){
                     $("#notacion-edit").val("%(aa2) %(op) %(aa1)")
                 }
                 else if (asociatividad.val()==3){
-                    $("#notacion-edit").val("%(na2) %(op) %(na1)")
+                    $("#notacion-edit").val("%(a2) %(op) %(a1)")
                 }
                 
             }
