@@ -1218,7 +1218,7 @@ public class PerfilController {
             return "redirect:/index";
         }
         Usuario usr = usuarioManager.getUsuario(username);
-        map.addAttribute("titulo", "Mis Abreviaciones");
+        map.addAttribute("titulo", "My abbreviations");
         map.addAttribute("publico", "publico");
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("yes","yes");

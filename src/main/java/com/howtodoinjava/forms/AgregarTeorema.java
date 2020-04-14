@@ -14,11 +14,11 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class AgregarTeorema {
     
      private boolean axioma;
-     @NotEmpty(message="no debe dejar este campo vacío")
+     @NotEmpty(message="You must not leave this field empty")
      private String teorema;
 //     @NotEmpty(message="no debe dejar este campo vacío")
      private String categoria;
-     @NotEmpty(message="no debe dejar este campo vacío")
+     @NotEmpty(message="You must not leave this field empty")
      private String numeroTeorema;
      private int categoriaSeleccionada;
 

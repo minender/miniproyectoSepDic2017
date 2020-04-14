@@ -13,9 +13,9 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 public class ModificarAliasForm {
     
-     @NotEmpty(message="no debe dejar este campo vacío")
+     @NotEmpty(message="You must not leave this field empty")
 //     @Pattern(regexp="^[A-Z][a-z-]*_$",message="login debe empezar en mayuscula y finalizar en _")
-     @Pattern(regexp="^[A-Z][a-z]*$",message="El alias debe empezar en mayuscula y no tener numeros")
+     @Pattern(regexp="^[A-Z][a-z]*$",message="The alias must start in capital letter and have no numbers")
      private String alias;
 
     public ModificarAliasForm() {

@@ -13,7 +13,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 public class ModificarForm{
     
-     @NotEmpty(message="no debe dejar este campo vacío")
+     @NotEmpty(message="You must not leave this field empty")
      private String termino;
 
     public ModificarForm() {

@@ -20,7 +20,7 @@ public class InfersForm {
     
 //    @NotEmpty(message="no debe dejar este campo vacío")
      private String pasoAnt;     
-     @NotEmpty(message="no debe dejar este campo vacío")
+     @NotEmpty(message="You must not leave this field empty")
      private String nStatement;
 //     @NotEmpty(message="no debe dejar este campo vacío")
      private String instanciacion;

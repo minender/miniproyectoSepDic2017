@@ -13,7 +13,7 @@ public class Usuario  implements java.io.Serializable {
 
 
      private String login;
-     @NotEmpty(message="no debe dejar este campo vacío")
+     @NotEmpty(message="You must not leave this field empty")
      private String nombre;
      private String apellido;
      private String correo;
