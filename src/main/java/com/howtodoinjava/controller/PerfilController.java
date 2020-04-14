@@ -631,7 +631,7 @@ public class PerfilController {
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
                 map.addAttribute("selected",agregarTeorema.getCategoria());
                 map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("mensaje", "No se puede ingresar su teorema porque es invalido");
+                map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
                 map.addAttribute("admin","AdminTeoremas");
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");

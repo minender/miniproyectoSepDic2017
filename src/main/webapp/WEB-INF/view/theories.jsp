@@ -418,8 +418,8 @@ $(document).ready(function(){
 					</div>
                                     
 					<div class="modal-footer">
-						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="submit" class="btn btn-success" value="Añadir">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+						<input type="submit" class="btn btn-success" value="Add">
 					</div>
 				</sf:form>
 			</div>
@@ -431,7 +431,7 @@ $(document).ready(function(){
 			<div class="modal-content">
 				<sf:form class="form" method="PUT" modelAttribute="agregarSimbolo">
 					<div class="modal-header">						
-						<h4 class="modal-title">Modify Símbolo</h4>
+						<h4 class="modal-title">Modify Simbol</h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="revertirNotacionInfijaEdit()">&times;</button>
 					</div>
 					<div class="modal-body">
@@ -480,7 +480,7 @@ $(document).ready(function(){
                                                                                                         
 						</div>
                                             	<div class="form-group">
-							<label>Precedencia (*)</label>
+							<label>Precedence (*)</label>
                                                         <sf:input path="precedencia" type="number" class="form-control" id="precedencia-edit"/>
 
 						</div>
@@ -508,8 +508,8 @@ $(document).ready(function(){
 					</div>
                                     
 					<div class="modal-footer">
-						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="submit" class="btn btn-success" value="Modificar">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+						<input type="submit" class="btn btn-success" value="Modify">
 					</div>
 				</sf:form>
 			</div>
@@ -518,7 +518,7 @@ $(document).ready(function(){
                             		                            
         <tiles:insertDefinition name="footer" />
         <script>
-                var regex_none = /%\(na2\)\s*%\(op\)\s*%\(na1\)/
+                var regex_none = /%\(a2\)\s*%\(op\)\s*%\(a1\)/
                 var regex_left = /%\(aa2\)\s*%\(op\)\s*%\(a1\)/
                 var regex_right = /%\(a2\)\s*%\(op\)\s*%\(aa1\)/
                 var regex_left_right = /%\(aa2\)\s*%\(op\)\s*%\(aa1\)/
@@ -601,7 +601,7 @@ $(document).ready(function(){
                     $("#notacion").val("%(aa2) %(op) %(aa1)")
                 }
                 else if (asociatividad.val()==3){
-                    $("#notacion").val("%(na2) %(op) %(na1)")
+                    $("#notacion").val("%(a2) %(op) %(a1)")
                 }
                 
             }
@@ -616,7 +616,7 @@ $(document).ready(function(){
                     $("#notacion-edit").val("%(aa2) %(op) %(aa1)")
                 }
                 else if (asociatividad.val()==3){
-                    $("#notacion-edit").val("%(na2) %(op) %(na1)")
+                    $("#notacion-edit").val("%(a2) %(op) %(a1)")
                 }
                 
             }
