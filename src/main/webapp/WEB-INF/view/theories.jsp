@@ -418,8 +418,8 @@ $(document).ready(function(){
 					</div>
                                     
 					<div class="modal-footer">
-						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="submit" class="btn btn-success" value="Añadir">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+						<input type="submit" class="btn btn-success" value="Add">
 					</div>
 				</sf:form>
 			</div>
@@ -431,7 +431,7 @@ $(document).ready(function(){
 			<div class="modal-content">
 				<sf:form class="form" method="PUT" modelAttribute="agregarSimbolo">
 					<div class="modal-header">						
-						<h4 class="modal-title">Modify Símbolo</h4>
+						<h4 class="modal-title">Modify Simbol</h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="revertirNotacionInfijaEdit()">&times;</button>
 					</div>
 					<div class="modal-body">
@@ -480,7 +480,7 @@ $(document).ready(function(){
                                                                                                         
 						</div>
                                             	<div class="form-group">
-							<label>Precedencia (*)</label>
+							<label>Precedence (*)</label>
                                                         <sf:input path="precedencia" type="number" class="form-control" id="precedencia-edit"/>
 
 						</div>
@@ -508,8 +508,8 @@ $(document).ready(function(){
 					</div>
                                     
 					<div class="modal-footer">
-						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-						<input type="submit" class="btn btn-success" value="Modificar">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+						<input type="submit" class="btn btn-success" value="Modify">
 					</div>
 				</sf:form>
 			</div>
