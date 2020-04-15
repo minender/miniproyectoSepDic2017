@@ -26,11 +26,11 @@ function clickAlias(Math1,alias,valorAlias)
 
         if(tipo == 'alias')
         {
-            newText = originalText.replace("\\cssId{"+target.id+"}{\\style{cursor:pointer; color:#08c;}{"+ alias[index] +"}}","\\cssId{"+target.id.replace("alias","valor")+"}{\\style{cursor:pointer;}{\\underline{~"+ valorAlias[index] +"}}}");
+            newText = originalText.replace("\\cssId{"+target.id+"}{"+ alias[index] +"}","\\cssId{"+target.id.replace("alias","valor")+"}{\\style{cursor:pointer;}{\\underline{~"+ valorAlias[index] +"}}}");
         }
         else
         {
-            newText = originalText.replace("\\cssId{"+target.id+"}{\\style{cursor:pointer;}{\\underline{~"+ valorAlias[index] +"}}}","\\cssId{"+target.id.replace("valor","alias")+"}{\\style{cursor:pointer; color:#08c;}{"+ alias[index] +"}}");
+            newText = originalText.replace("\\cssId{"+target.id+"}{\\style{cursor:pointer;}{\\underline{~"+ valorAlias[index] +"}}}","\\cssId{"+target.id.replace("valor","alias")+"}{"+ alias[index] +"}");
         }
 
         MathJax.Hub.Queue(["Text",math,newText]);

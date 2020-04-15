@@ -47,18 +47,19 @@ public abstract class Term implements Cloneable, Serializable{
         
         public void setNuevoAlias(String alia,Term t,SimboloManager s,String nTeo)
         {   
-            String aux;
-            String provisional = "P@2, Q@12";
-            valores.add(t.toStringInfAbrv(this,s,nTeo).term.replace("\\", "\\\\"));
-            String[] positions = provisional.split(",");
-            for (int i=0; i < positions.length; i++)
-                alia += (i==0?"(":", ")+t.subterm(positions[i].split("@")[1].trim()).toStringInfAbrv(this,s,nTeo).term;
-            alia = alia + ")";
-            aux="\\cssId{agru@alias@"+currentnAlias+"}{\\style{cursor:pointer; color:#08c;}{"+alia +"}}";
-            alias.add(alia.replace("\\", "\\\\"));
-            currentnAlias++;
+           String provisional = "P@2, Q@12";
+           String[] positions = provisional.split(",");
+           alia = "\\style{cursor:pointer; color:#08c;}{"+alia+"}";
+           for (int k=0; k < positions.length; k++)
+             alia += (k==0?"(":", ")+t.subterm(positions[k].split("@")[1].trim()).toStringInfAbrvFinal(this,s,nTeo).term;
+           alia = alia + ")";
+           valores.add(t.toStringInfAbrv(this,s,nTeo).term.replace("\\", "\\\\"));
+           String aux;
+           aux="\\cssId{agru@alias@"+currentnAlias+"}{"+alia +"}";
+           alias.add(alia.replace("\\", "\\\\"));
+           currentnAlias++;
             
-            term=aux;
+           term=aux;
         }
         
         public void setNuevoAlias(String alia,Term t)
@@ -347,14 +348,22 @@ public abstract class Term implements Cloneable, Serializable{
         return st;
     }
     
+    public ToString toStringInfAbrvFinal(ToString toString, SimboloManager s,String numTeo)
+    {
+        if (alias != null) {
+           toString.setNuevoAlias(alias, this, s, numTeo);
+           return toString;
+        }
+        toStringInfAbrv(toString,s,numTeo);
+        return toString;
+    }
+    
     public String toStringInfJavascript(SimboloManager s, String nTeo, String id)
     {
         ToString tStr=new ToString();
-        this.toStringInfAbrv(tStr,s,nTeo);
+        this.toStringInfAbrvFinal(tStr,s,nTeo);
         
         String st;
-        if (alias != null)
-           tStr.setNuevoAlias(alias, this, s, nTeo);
 
         st="<span id=\"Math"+id+"\">$"+tStr.term +"$</span>";
         st+="<script>var alias=[";
