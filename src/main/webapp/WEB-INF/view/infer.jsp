@@ -512,8 +512,7 @@
           <form> 
           </c:when>
           </c:choose>
-          
- 
+              <a href="misTeoremas" id="linkDemostrar" style="display:none"></a>
           <script>
               function guardarMostrarCategorias(){
             allCategoriasSettings = document.getElementsByClassName("categoria-settings");

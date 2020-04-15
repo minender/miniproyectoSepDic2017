@@ -110,7 +110,7 @@ public class InferController {
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
-        
+        map.addAttribute("usuario",usr);
         map.addAttribute("infer",infersForm);
         map.addAttribute("mensaje","");
         map.addAttribute("nStatement","");
@@ -236,7 +236,7 @@ public class InferController {
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
-        
+        map.addAttribute("usuario",usr);
         map.addAttribute("guardarMenu","");
         map.addAttribute("selecTeo",false);
         map.addAttribute("nSol",solId);

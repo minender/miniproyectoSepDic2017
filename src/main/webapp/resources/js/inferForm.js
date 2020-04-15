@@ -33,7 +33,7 @@ $(function() {
                         $(form).attr('action',url);
                     }*/
                     if(data.resuelto === "1"){
-                        alert("Felicidades ha encontrado una demostracion al teorema!!");
+                        alert("Congratulations you have found a proof of the theorem!!");
                         window.location = $("#linkDemostrar").attr("href");
                     }
                     $('#nStatement_id').val("");
