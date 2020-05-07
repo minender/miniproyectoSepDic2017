@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -238,7 +239,7 @@ public class Bracket extends Term{
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString,SimboloManager s, String nTeo)
+    public ToString toStringInfAbrv(ToString toString,SimboloManager s, PredicadoManager p,String nTeo)
     {
         if(t.alias == null)
         {

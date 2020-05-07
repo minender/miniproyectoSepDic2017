@@ -4,7 +4,9 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.entity.PredicadoId;
 import com.howtodoinjava.entity.Simbolo;
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,15 +47,15 @@ public abstract class Term implements Cloneable, Serializable{
             alias=new LinkedList<String>();
         }
         
-        public void setNuevoAlias(String alia,Term t,SimboloManager s,String nTeo)
-        {   
-           String provisional = "P@2, Q@12";
-           String[] positions = provisional.split(",");
+        public void setNuevoAlias(String alia,Term t,SimboloManager s,PredicadoManager p,String nTeo)
+        {  
+           PredicadoId pid = new PredicadoId(alia, "AdminTeoremas");
+           String[] positions = p.getPredicado(pid).getArgumentos().split(",");
            alia = "\\style{cursor:pointer; color:#08c;}{"+alia+"}";
            for (int k=0; k < positions.length; k++)
-             alia += (k==0?"(":", ")+t.subterm(positions[k].split("@")[1].trim()).toStringInfAbrvFinal(this,s,nTeo).term;
+             alia += (k==0?"(":", ")+t.subterm(positions[k].split("@")[1].trim()).toStringInfAbrvFinal(this,s,p,nTeo).term;
            alia = alia + ")";
-           valores.add(t.toStringInfAbrv(this,s,nTeo).term.replace("\\", "\\\\"));
+           valores.add(t.toStringInfAbrv(this,s,p,nTeo).term.replace("\\", "\\\\"));
            String aux;
            aux="\\cssId{agru@alias@"+currentnAlias+"}{"+alia +"}";
            alias.add(alia.replace("\\", "\\\\"));
@@ -152,7 +154,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract ToString toStringAbrv(ToString toString);
     
-    public abstract ToString toStringInfAbrv(ToString toString, SimboloManager s,String numTeo);
+    public abstract ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager p, String numTeo);
     
     
     public String toStringFinal()
@@ -228,7 +230,7 @@ public abstract class Term implements Cloneable, Serializable{
     public void toStringInfAbrvFinal(ToString toString) 
     {
         String term;
-        ToString st=this.toStringInfAbrv(toString,null,"");
+        ToString st=this.toStringInfAbrv(toString,null,null,"");
         String aux= st.term;
         if(aux.startsWith("("))
             term=aux.substring(1, aux.length()-1);
@@ -348,20 +350,21 @@ public abstract class Term implements Cloneable, Serializable{
         return st;
     }
     
-    public ToString toStringInfAbrvFinal(ToString toString, SimboloManager s,String numTeo)
+    public ToString toStringInfAbrvFinal(ToString toString, SimboloManager s, PredicadoManager p,
+                                         String numTeo)
     {
         if (alias != null) {
-           toString.setNuevoAlias(alias, this, s, numTeo);
+           toString.setNuevoAlias(alias, this, s, p, numTeo);
            return toString;
         }
-        toStringInfAbrv(toString,s,numTeo);
+        toStringInfAbrv(toString,s,p,numTeo);
         return toString;
     }
     
-    public String toStringInfJavascript(SimboloManager s, String nTeo, String id)
+    public String toStringInfJavascript(SimboloManager s, PredicadoManager p, String nTeo, String id)
     {
         ToString tStr=new ToString();
-        this.toStringInfAbrvFinal(tStr,s,nTeo);
+        this.toStringInfAbrvFinal(tStr,s,p,nTeo);
         
         String st;
 

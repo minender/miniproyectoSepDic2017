@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -233,7 +234,8 @@ public class Var extends Term{
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString, SimboloManager s, String nTeo)
+    public ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
+                                    String nTeo)
     {
         if(alias == null)
             toString.term=this.toStringInf(s,"");

@@ -83,7 +83,7 @@
             <td>
               <c:choose>
                 <c:when test="${comb.intValue()==1}">$$${predicado.getPredicado()}$$</c:when>
-                <c:otherwise>${predicado.term.toStringInfJavascript(simboloManager,"",predicado.alias)}</c:otherwise>
+                <c:otherwise>${predicado.term.toStringInfJavascript(simboloManager,predicadoManager,"",predicado.alias)}</c:otherwise>
               </c:choose>
             </td>
             <c:choose>

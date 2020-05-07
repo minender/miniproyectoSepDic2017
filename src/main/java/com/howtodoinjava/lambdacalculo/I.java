@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -176,7 +177,8 @@ public class I extends Term {
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString, SimboloManager s, String nTeo)
+    public ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
+                                    String nTeo)
     {
         toString.term=this.toString();
         return toString;

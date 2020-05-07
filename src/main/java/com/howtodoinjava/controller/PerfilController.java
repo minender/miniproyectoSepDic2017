@@ -371,6 +371,7 @@ public class PerfilController {
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("categoriaManager",categoriaManager);
         map.addAttribute("simboloManager",simboloManager);
+        map.addAttribute("predicadoManager",predicadoManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         return "misTeoremas";

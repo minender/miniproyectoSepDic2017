@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -154,7 +155,7 @@ public class Const extends Term
     
     public Term invBD()
     {
-        return null;
+        return this;
     }
     
     public Term invBDOneStep()
@@ -241,7 +242,8 @@ public class Const extends Term
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString, SimboloManager s, String nTeo)
+    public ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager pm,
+                                    String nTeo)
     {
         toString.term=this.toStringInf(s,"");
         return toString;

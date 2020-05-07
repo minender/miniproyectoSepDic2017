@@ -1,607 +1,145 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 Comb.g 2014-05-18 11:11:23
-package com.howtodoinjava.parse;
+// Generated from Comb.g4 by ANTLR 4.8
 
-import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
-import com.howtodoinjava.lambdacalculo.*;
+	
+package com.howtodoinjava.parse; 
 
+import com.howtodoinjava.lambdacalculo.*;	
+	
+	
+
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.atn.*;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.misc.*;
+
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class CombLexer extends Lexer {
-    public static final int CONSTINDICE=7;
-    public static final int T__16=16;
-    public static final int T__15=15;
-    public static final int T__12=12;
-    public static final int T__14=14;
-    public static final int T__13=13;
-    public static final int K=5;
-    public static final int NUMBER=8;
-    public static final int INITIALDIGIT=9;
-    public static final int WHITESPACE=11;
-    public static final int P=6;
-    public static final int DIGIT=10;
-    public static final int EOF=-1;
-    public static final int X=4;
-
-    // delegates
-    // delegators
-
-    public CombLexer() {;} 
-    public CombLexer(CharStream input) {
-        this(input, new RecognizerSharedState());
-    }
-    public CombLexer(CharStream input, RecognizerSharedState state) {
-        super(input,state);
-
-    }
-    public String getGrammarFileName() { return "Comb.g"; }
-
-    // $ANTLR start "T__12"
-    public final void mT__12() throws RecognitionException {
-        try {
-            int _type = T__12;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:3:7: ( '{' )
-            // Comb.g:3:9: '{'
-            {
-            match('{'); 
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "T__12"
-
-    // $ANTLR start "T__13"
-    public final void mT__13() throws RecognitionException {
-        try {
-            int _type = T__13;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:4:7: ( '}' )
-            // Comb.g:4:9: '}'
-            {
-            match('}'); 
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "T__13"
-
-    // $ANTLR start "T__14"
-    public final void mT__14() throws RecognitionException {
-        try {
-            int _type = T__14;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:5:7: ( '(' )
-            // Comb.g:5:9: '('
-            {
-            match('('); 
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "T__14"
-
-    // $ANTLR start "T__15"
-    public final void mT__15() throws RecognitionException {
-        try {
-            int _type = T__15;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:6:7: ( ')' )
-            // Comb.g:6:9: ')'
-            {
-            match(')'); 
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "T__15"
-
-    // $ANTLR start "T__16"
-    public final void mT__16() throws RecognitionException {
-        try {
-            int _type = T__16;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:7:7: ( ',' )
-            // Comb.g:7:9: ','
-            {
-            match(','); 
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "T__16"
-
-    // $ANTLR start "CONSTINDICE"
-    public final void mCONSTINDICE() throws RecognitionException {
-        try {
-            int _type = CONSTINDICE;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:15:12: ( 'c' | 'b' )
-            // Comb.g:
-            {
-            if ( (input.LA(1)>='b' && input.LA(1)<='c') ) {
-                input.consume();
-
-            }
-            else {
-                MismatchedSetException mse = new MismatchedSetException(null,input);
-                recover(mse);
-                throw mse;}
-
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "CONSTINDICE"
-
-    // $ANTLR start "P"
-    public final void mP() throws RecognitionException {
-        try {
-            int _type = P;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:17:2: ( '\\\\Phi_' )
-            // Comb.g:17:4: '\\\\Phi_'
-            {
-            match("\\Phi_"); 
-
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "P"
-
-    // $ANTLR start "K"
-    public final void mK() throws RecognitionException {
-        try {
-            int _type = K;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:19:2: ( 'K' )
-            // Comb.g:19:4: 'K'
-            {
-            match('K'); 
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "K"
-
-    // $ANTLR start "X"
-    public final void mX() throws RecognitionException {
-        try {
-            int _type = X;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:21:2: ( 'x' NUMBER )
-            // Comb.g:21:4: 'x' NUMBER
-            {
-            match('x'); 
-            mNUMBER(); 
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "X"
-
-    // $ANTLR start "INITIALDIGIT"
-    public final void mINITIALDIGIT() throws RecognitionException {
-        try {
-            int _type = INITIALDIGIT;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:23:13: ( '1' .. '9' )
-            // Comb.g:23:15: '1' .. '9'
-            {
-            matchRange('1','9'); 
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "INITIALDIGIT"
-
-    // $ANTLR start "DIGIT"
-    public final void mDIGIT() throws RecognitionException {
-        try {
-            int _type = DIGIT;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:25:6: ( '0' | INITIALDIGIT )
-            // Comb.g:
-            {
-            if ( (input.LA(1)>='0' && input.LA(1)<='9') ) {
-                input.consume();
-
-            }
-            else {
-                MismatchedSetException mse = new MismatchedSetException(null,input);
-                recover(mse);
-                throw mse;}
-
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "DIGIT"
-
-    // $ANTLR start "NUMBER"
-    public final void mNUMBER() throws RecognitionException {
-        try {
-            int _type = NUMBER;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:27:7: ( '0' | ( INITIALDIGIT )+ ( DIGIT )* )
-            int alt3=2;
-            int LA3_0 = input.LA(1);
-
-            if ( (LA3_0=='0') ) {
-                alt3=1;
-            }
-            else if ( ((LA3_0>='1' && LA3_0<='9')) ) {
-                alt3=2;
-            }
-            else {
-                NoViableAltException nvae =
-                    new NoViableAltException("", 3, 0, input);
-
-                throw nvae;
-            }
-            switch (alt3) {
-                case 1 :
-                    // Comb.g:27:9: '0'
-                    {
-                    match('0'); 
-
-                    }
-                    break;
-                case 2 :
-                    // Comb.g:27:15: ( INITIALDIGIT )+ ( DIGIT )*
-                    {
-                    // Comb.g:27:15: ( INITIALDIGIT )+
-                    int cnt1=0;
-                    loop1:
-                    do {
-                        int alt1=2;
-                        int LA1_0 = input.LA(1);
-
-                        if ( ((LA1_0>='1' && LA1_0<='9')) ) {
-                            alt1=1;
-                        }
-
-
-                        switch (alt1) {
-                    	case 1 :
-                    	    // Comb.g:27:15: INITIALDIGIT
-                    	    {
-                    	    mINITIALDIGIT(); 
-
-                    	    }
-                    	    break;
-
-                    	default :
-                    	    if ( cnt1 >= 1 ) break loop1;
-                                EarlyExitException eee =
-                                    new EarlyExitException(1, input);
-                                throw eee;
-                        }
-                        cnt1++;
-                    } while (true);
-
-                    // Comb.g:27:28: ( DIGIT )*
-                    loop2:
-                    do {
-                        int alt2=2;
-                        int LA2_0 = input.LA(1);
-
-                        if ( ((LA2_0>='0' && LA2_0<='9')) ) {
-                            alt2=1;
-                        }
-
-
-                        switch (alt2) {
-                    	case 1 :
-                    	    // Comb.g:27:29: DIGIT
-                    	    {
-                    	    mDIGIT(); 
-
-                    	    }
-                    	    break;
-
-                    	default :
-                    	    break loop2;
-                        }
-                    } while (true);
-
-
-                    }
-                    break;
-
-            }
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "NUMBER"
-
-    // $ANTLR start "WHITESPACE"
-    public final void mWHITESPACE() throws RecognitionException {
-        try {
-            int _type = WHITESPACE;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Comb.g:29:11: ( ( ' ' | '\\r' )+ )
-            // Comb.g:29:13: ( ' ' | '\\r' )+
-            {
-            // Comb.g:29:13: ( ' ' | '\\r' )+
-            int cnt4=0;
-            loop4:
-            do {
-                int alt4=2;
-                int LA4_0 = input.LA(1);
-
-                if ( (LA4_0=='\r'||LA4_0==' ') ) {
-                    alt4=1;
-                }
-
-
-                switch (alt4) {
-            	case 1 :
-            	    // Comb.g:
-            	    {
-            	    if ( input.LA(1)=='\r'||input.LA(1)==' ' ) {
-            	        input.consume();
-
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;}
-
-
-            	    }
-            	    break;
-
-            	default :
-            	    if ( cnt4 >= 1 ) break loop4;
-                        EarlyExitException eee =
-                            new EarlyExitException(4, input);
-                        throw eee;
-                }
-                cnt4++;
-            } while (true);
-
-            _channel = HIDDEN;
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "WHITESPACE"
-
-    public void mTokens() throws RecognitionException {
-        // Comb.g:1:8: ( T__12 | T__13 | T__14 | T__15 | T__16 | CONSTINDICE | P | K | X | INITIALDIGIT | DIGIT | NUMBER | WHITESPACE )
-        int alt5=13;
-        alt5 = dfa5.predict(input);
-        switch (alt5) {
-            case 1 :
-                // Comb.g:1:10: T__12
-                {
-                mT__12(); 
-
-                }
-                break;
-            case 2 :
-                // Comb.g:1:16: T__13
-                {
-                mT__13(); 
-
-                }
-                break;
-            case 3 :
-                // Comb.g:1:22: T__14
-                {
-                mT__14(); 
-
-                }
-                break;
-            case 4 :
-                // Comb.g:1:28: T__15
-                {
-                mT__15(); 
-
-                }
-                break;
-            case 5 :
-                // Comb.g:1:34: T__16
-                {
-                mT__16(); 
-
-                }
-                break;
-            case 6 :
-                // Comb.g:1:40: CONSTINDICE
-                {
-                mCONSTINDICE(); 
-
-                }
-                break;
-            case 7 :
-                // Comb.g:1:52: P
-                {
-                mP(); 
-
-                }
-                break;
-            case 8 :
-                // Comb.g:1:54: K
-                {
-                mK(); 
-
-                }
-                break;
-            case 9 :
-                // Comb.g:1:56: X
-                {
-                mX(); 
-
-                }
-                break;
-            case 10 :
-                // Comb.g:1:58: INITIALDIGIT
-                {
-                mINITIALDIGIT(); 
-
-                }
-                break;
-            case 11 :
-                // Comb.g:1:71: DIGIT
-                {
-                mDIGIT(); 
-
-                }
-                break;
-            case 12 :
-                // Comb.g:1:77: NUMBER
-                {
-                mNUMBER(); 
-
-                }
-                break;
-            case 13 :
-                // Comb.g:1:84: WHITESPACE
-                {
-                mWHITESPACE(); 
-
-                }
-                break;
-
-        }
-
-    }
-
-
-    protected DFA5 dfa5 = new DFA5(this);
-    static final String DFA5_eotS =
-        "\12\uffff\1\15\5\uffff";
-    static final String DFA5_eofS =
-        "\20\uffff";
-    static final String DFA5_minS =
-        "\1\15\11\uffff\1\60\5\uffff";
-    static final String DFA5_maxS =
-        "\1\175\11\uffff\1\71\5\uffff";
-    static final String DFA5_acceptS =
-        "\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\uffff\1\13\1\15"+
-        "\1\12\1\14\1\13";
-    static final String DFA5_specialS =
-        "\20\uffff}>";
-    static final String[] DFA5_transitionS = {
-            "\1\14\22\uffff\1\14\7\uffff\1\3\1\4\2\uffff\1\5\3\uffff\1\13"+
-            "\11\12\21\uffff\1\10\20\uffff\1\7\5\uffff\2\6\24\uffff\1\11"+
-            "\2\uffff\1\1\1\uffff\1\2",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\12\16",
-            "",
-            "",
-            "",
-            "",
-            ""
-    };
-
-    static final short[] DFA5_eot = DFA.unpackEncodedString(DFA5_eotS);
-    static final short[] DFA5_eof = DFA.unpackEncodedString(DFA5_eofS);
-    static final char[] DFA5_min = DFA.unpackEncodedStringToUnsignedChars(DFA5_minS);
-    static final char[] DFA5_max = DFA.unpackEncodedStringToUnsignedChars(DFA5_maxS);
-    static final short[] DFA5_accept = DFA.unpackEncodedString(DFA5_acceptS);
-    static final short[] DFA5_special = DFA.unpackEncodedString(DFA5_specialS);
-    static final short[][] DFA5_transition;
-
-    static {
-        int numStates = DFA5_transitionS.length;
-        DFA5_transition = new short[numStates][];
-        for (int i=0; i<numStates; i++) {
-            DFA5_transition[i] = DFA.unpackEncodedString(DFA5_transitionS[i]);
-        }
-    }
-
-    class DFA5 extends DFA {
-
-        public DFA5(BaseRecognizer recognizer) {
-            this.recognizer = recognizer;
-            this.decisionNumber = 5;
-            this.eot = DFA5_eot;
-            this.eof = DFA5_eof;
-            this.min = DFA5_min;
-            this.max = DFA5_max;
-            this.accept = DFA5_accept;
-            this.special = DFA5_special;
-            this.transition = DFA5_transition;
-        }
-        public String getDescription() {
-            return "1:1: Tokens : ( T__12 | T__13 | T__14 | T__15 | T__16 | CONSTINDICE | P | K | X | INITIALDIGIT | DIGIT | NUMBER | WHITESPACE );";
-        }
-    }
- 
-
+	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
+
+	protected static final DFA[] _decisionToDFA;
+	protected static final PredictionContextCache _sharedContextCache =
+		new PredictionContextCache();
+	public static final int
+		CONSTANT_C=1, PHI=2, K=3, CB=4, O_PAR=5, C_PAR=6, COMMA=7, C_BRACKET=8, 
+		VARIABLE=9, WHITESPACE=10;
+	public static String[] channelNames = {
+		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
+	};
+
+	public static String[] modeNames = {
+		"DEFAULT_MODE"
+	};
+
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"DIGITS", "C", "X", "CONSTANT_C", "PHI", "K", "CB", "O_PAR", "C_PAR", 
+			"COMMA", "C_BRACKET", "VARIABLE", "WHITESPACE"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
+
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, null, "'\\Phi_{'", "'K'", null, "'('", "')'", "','", "'}'"
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, "CONSTANT_C", "PHI", "K", "CB", "O_PAR", "C_PAR", "COMMA", "C_BRACKET", 
+			"VARIABLE", "WHITESPACE"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
+	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+
+	/**
+	 * @deprecated Use {@link #VOCABULARY} instead.
+	 */
+	@Deprecated
+	public static final String[] tokenNames;
+	static {
+		tokenNames = new String[_SYMBOLIC_NAMES.length];
+		for (int i = 0; i < tokenNames.length; i++) {
+			tokenNames[i] = VOCABULARY.getLiteralName(i);
+			if (tokenNames[i] == null) {
+				tokenNames[i] = VOCABULARY.getSymbolicName(i);
+			}
+
+			if (tokenNames[i] == null) {
+				tokenNames[i] = "<INVALID>";
+			}
+		}
+	}
+
+	@Override
+	@Deprecated
+	public String[] getTokenNames() {
+		return tokenNames;
+	}
+
+	@Override
+
+	public Vocabulary getVocabulary() {
+		return VOCABULARY;
+	}
+
+
+	public CombLexer(CharStream input) {
+		super(input);
+		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
+	}
+
+	@Override
+	public String getGrammarFileName() { return "Comb.g4"; }
+
+	@Override
+	public String[] getRuleNames() { return ruleNames; }
+
+	@Override
+	public String getSerializedATN() { return _serializedATN; }
+
+	@Override
+	public String[] getChannelNames() { return channelNames; }
+
+	@Override
+	public String[] getModeNames() { return modeNames; }
+
+	@Override
+	public ATN getATN() { return _ATN; }
+
+	public static final String _serializedATN =
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\2\fS\b\1\4\2\t\2\4"+
+		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
+		"\13\4\f\t\f\4\r\t\r\4\16\t\16\3\2\3\2\7\2 \n\2\f\2\16\2#\13\2\3\2\5\2"+
+		"&\n\2\3\3\3\3\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6"+
+		"\3\6\3\6\3\7\3\7\3\b\3\b\3\t\3\t\3\n\3\n\3\13\3\13\3\f\3\f\3\r\3\r\3\r"+
+		"\3\r\3\r\3\r\3\r\3\16\6\16N\n\16\r\16\16\16O\3\16\3\16\2\2\17\3\2\5\2"+
+		"\7\2\t\3\13\4\r\5\17\6\21\7\23\b\25\t\27\n\31\13\33\f\3\2\5\3\2\62;\4"+
+		"\2EEee\4\2ZZzz\2R\2\t\3\2\2\2\2\13\3\2\2\2\2\r\3\2\2\2\2\17\3\2\2\2\2"+
+		"\21\3\2\2\2\2\23\3\2\2\2\2\25\3\2\2\2\2\27\3\2\2\2\2\31\3\2\2\2\2\33\3"+
+		"\2\2\2\3%\3\2\2\2\5\'\3\2\2\2\7)\3\2\2\2\t+\3\2\2\2\13\62\3\2\2\2\r9\3"+
+		"\2\2\2\17;\3\2\2\2\21=\3\2\2\2\23?\3\2\2\2\25A\3\2\2\2\27C\3\2\2\2\31"+
+		"E\3\2\2\2\33M\3\2\2\2\35!\4\63;\2\36 \t\2\2\2\37\36\3\2\2\2 #\3\2\2\2"+
+		"!\37\3\2\2\2!\"\3\2\2\2\"&\3\2\2\2#!\3\2\2\2$&\7\62\2\2%\35\3\2\2\2%$"+
+		"\3\2\2\2&\4\3\2\2\2\'(\t\3\2\2(\6\3\2\2\2)*\t\4\2\2*\b\3\2\2\2+,\5\5\3"+
+		"\2,-\7a\2\2-.\7}\2\2./\3\2\2\2/\60\5\3\2\2\60\61\7\177\2\2\61\n\3\2\2"+
+		"\2\62\63\7^\2\2\63\64\7R\2\2\64\65\7j\2\2\65\66\7k\2\2\66\67\7a\2\2\67"+
+		"8\7}\2\28\f\3\2\2\29:\7M\2\2:\16\3\2\2\2;<\4de\2<\20\3\2\2\2=>\7*\2\2"+
+		">\22\3\2\2\2?@\7+\2\2@\24\3\2\2\2AB\7.\2\2B\26\3\2\2\2CD\7\177\2\2D\30"+
+		"\3\2\2\2EF\5\7\4\2FG\7a\2\2GH\7}\2\2HI\3\2\2\2IJ\5\3\2\2JK\7\177\2\2K"+
+		"\32\3\2\2\2LN\7\"\2\2ML\3\2\2\2NO\3\2\2\2OM\3\2\2\2OP\3\2\2\2PQ\3\2\2"+
+		"\2QR\b\16\2\2R\34\3\2\2\2\6\2!%O\3\2\3\2";
+	public static final ATN _ATN =
+		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
+	static {
+		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
+		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
+			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
+		}
+	}
 }

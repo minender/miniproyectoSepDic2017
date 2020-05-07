@@ -5,6 +5,7 @@
 package com.howtodoinjava.lambdacalculo;
 
 import com.howtodoinjava.entity.Simbolo;
+import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -315,7 +316,7 @@ public class App extends Term{
     public Term invBD()
     {
         AppIzq izq=obtenerIzq(this,-1);
-        if(izq.p instanceof Phi || izq.p instanceof Const)
+        if(izq.p instanceof Phi || (izq.p instanceof Const && ((Const)izq.p).con.equals("\\Phi_{K}")))
         {
             if(izq.p instanceof Phi && ((ListaInd)((Phi)izq.p).ind).orden == 0)
                 return new App(izq.p.invBD(),izq.pq.q);
@@ -755,7 +756,8 @@ public class App extends Term{
         return toString;
     }
     
-    private IntXIntXString privateToStringInfAbr(ToString tStr, SimboloManager s, String numTeo) {
+    private IntXIntXString privateToStringInfAbr(ToString tStr, SimboloManager s, PredicadoManager pm,
+                                                 String numTeo) {
         
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
@@ -778,35 +780,35 @@ public class App extends Term{
         while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
          Term arg = stk.pop();
          if (arg.alias != null) {
-             tStr.setNuevoAlias(arg.alias, arg, s, numTeo);
+             tStr.setNuevoAlias(arg.alias, arg, s,pm, numTeo);
              values.put("na"+i,tStr.term);
              values.put("a"+i,tStr.term);
              values.put("aa"+i,tStr.term);
          }
          else {
            if (notation.contains("%(na"+i+")")) {
-             arg.toStringInfAbrv(tStr,s,"");
+             arg.toStringInfAbrv(tStr,s,pm,"");
              values.put("na"+i,tStr.term);
            }
            else if (notation.contains("%(a"+i+")"))
            {
              if (arg instanceof App)
              {
-              IntXIntXString tuple = ((App) arg).privateToStringInfAbr(tStr,s,"");
+              IntXIntXString tuple = ((App) arg).privateToStringInfAbr(tStr,s,pm,"");
               values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
              }
              else 
-              values.put("a"+i,arg.toStringInfAbrv(tStr,s,"").term);
+              values.put("a"+i,arg.toStringInfAbrv(tStr,s,pm,"").term);
            }
            else if (notation.contains("%(aa"+i+")"))
            {
             if (arg instanceof App)
             {
-             IntXIntXString tuple = ((App) arg).privateToStringInfAbr(tStr,s,"");
+             IntXIntXString tuple = ((App) arg).privateToStringInfAbr(tStr,s,pm,"");
              values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
             }
             else 
-             values.put("aa"+i,arg.toStringInfAbrv(tStr,s,"").term);
+             values.put("aa"+i,arg.toStringInfAbrv(tStr,s,pm,"").term);
            }
          }
          i++;
@@ -818,9 +820,9 @@ public class App extends Term{
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString, SimboloManager s,String numTeo)
+    public ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager pm, String numTeo)
     {
-        privateToStringInfAbr(toString,s,numTeo);
+        privateToStringInfAbr(toString,s,pm,numTeo);
         return toString;
         
         /*String izq;
