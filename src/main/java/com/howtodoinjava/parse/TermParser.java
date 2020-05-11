@@ -213,7 +213,7 @@ public class TermParser extends Parser {
 			                                                   Simbolo s = sm.getSimbolo(1); 
 			                                                   if (s == null)
 			                                                      throw new IsNotInDBException(this,"");
-			                                                   aux=new App(new App(new Const(1,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+			                                                   aux=new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
 			                                                }
 
 			                                                ((EqContext)_localctx).value = aux;
@@ -438,14 +438,14 @@ public class TermParser extends Parser {
 				                                                  Simbolo s = sm.getSimbolo(2); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((DisyconjtailContext)_localctx).value =  new App(new Const(2,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((DisyconjtailContext)_localctx).disyconj.value);
+				                                                  ((DisyconjtailContext)_localctx).value =  new App(new Const(2,"c_{2}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((DisyconjtailContext)_localctx).disyconj.value);
 				                                               }
 				                                               else
 				                                               {
 				                                                  Simbolo s = sm.getSimbolo(2); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((DisyconjtailContext)_localctx).value = new App(new Const(2,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((DisyconjtailContext)_localctx).tail2.value,((DisyconjtailContext)_localctx).disyconj.value));
+				                                                  ((DisyconjtailContext)_localctx).value = new App(new Const(2,"c_{2}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((DisyconjtailContext)_localctx).tail2.value,((DisyconjtailContext)_localctx).disyconj.value));
 				                                               }
 				                                              
 				}
@@ -523,7 +523,7 @@ public class TermParser extends Parser {
 			                                                   Simbolo s = sm.getSimbolo(3); 
 			                                                   if (s == null)
 			                                                      throw new IsNotInDBException(this,"");
-			                                                   aux=new App(new App(new Const(3,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+			                                                   aux=new App(new App(new Const(3,"c_{3}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
 			                                                }
 			                                                ((DisyconjContext)_localctx).value = aux;
 			                                              
@@ -680,14 +680,14 @@ public class TermParser extends Parser {
 			                                                           Simbolo s = sm.getSimbolo(4); 
 			                                                           if (s == null)
 			                                                              throw new IsNotInDBException(this,"");
-			                                                           aux=new App(new App(new Const(4,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
+			                                                           aux=new App(new App(new Const(4,"c_{4}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
 			                                                        }
 			                                                        else if (pair.symbolId==5)
 			                                                        {
 			                                                           Simbolo s = sm.getSimbolo(5); 
 			                                                           if (s == null)
 			                                                              throw new IsNotInDBException(this,"");
-			                                                           aux=new App(new App(new Const(5,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
+			                                                           aux=new App(new App(new Const(5,"c_{5}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
 			                                                        }
 			                                                     }
 			                                                     ((ConcContext)_localctx).value = aux;
@@ -874,7 +874,7 @@ public class TermParser extends Parser {
 			                                                   Simbolo s = sm.getSimbolo(6); 
 			                                                   if (s == null)
 			                                                      throw new IsNotInDBException(this,"");
-			                                                   aux=new App(new App(new Const(6,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+			                                                   aux=new App(new App(new Const(6,"c_{6}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
 			                                                }
 			                                                ((NeqContext)_localctx).value = aux;
 			                                              
@@ -1062,7 +1062,7 @@ public class TermParser extends Parser {
 				setState(119);
 				((NegContext)_localctx).n = neg(id,pm,sm);
 				Simbolo s = sm.getSimbolo(7); if (s == null)throw new IsNotInDBException(this,""); 
-				                                               ((NegContext)_localctx).value = new App(new Const(7,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((NegContext)_localctx).n.value);
+				                                               ((NegContext)_localctx).value = new App(new Const(7,"c_{7}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((NegContext)_localctx).n.value);
 				}
 				break;
 			case 2:
@@ -1087,7 +1087,7 @@ public class TermParser extends Parser {
 				setState(126);
 				match(T__14);
 				Simbolo s = sm.getSimbolo(8); if (s == null)throw new IsNotInDBException(this,"");
-				                                               ((NegContext)_localctx).value =  new Const(8,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                               ((NegContext)_localctx).value =  new Const(8,"c_{8}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				                                              
 				}
 				break;
@@ -1097,7 +1097,7 @@ public class TermParser extends Parser {
 				setState(128);
 				match(T__15);
 				Simbolo s = sm.getSimbolo(9); if (s == null)throw new IsNotInDBException(this,"");
-				                                               ((NegContext)_localctx).value =  new Const(9,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                               ((NegContext)_localctx).value =  new Const(9,"c_{9}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				}
 				break;
 			case 6:
@@ -1135,7 +1135,7 @@ public class TermParser extends Parser {
 				setState(140);
 				((NegContext)_localctx).t2 = term(id,pm,sm);
 				Simbolo s = sm.getSimbolo(10); if (s == null)throw new IsNotInDBException(this,"");
-				                                               Term c = new Const(10,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                               Term c = new Const(10,"c_{10}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				                                               ((NegContext)_localctx).value =  new App(new App(c,((NegContext)_localctx).t2.value), ((NegContext)_localctx).t1.value);
 				                                              
 				}
@@ -1186,7 +1186,7 @@ public class TermParser extends Parser {
 				                                               int nArg = s.getArgumentos();
 				                                               if (((NegContext)_localctx).explist.value.size() != nArg)
 				                                                 throw new NoViableAltException(this);
-				                                               Term aux = new Const(Integer.parseInt((((NegContext)_localctx).NUMBER!=null?((NegContext)_localctx).NUMBER.getText():null)),s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                               Term aux = new Const(Integer.parseInt((((NegContext)_localctx).NUMBER!=null?((NegContext)_localctx).NUMBER.getText():null)),"c_{"+(((NegContext)_localctx).NUMBER!=null?((NegContext)_localctx).NUMBER.getText():null)+"}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				                                               for(Iterator<Term> i = ((NegContext)_localctx).explist.value.iterator(); i.hasNext();)
 				                                                  aux=new App(aux,i.next());
 				                                               ((NegContext)_localctx).value =  aux;
@@ -1331,14 +1331,14 @@ public class TermParser extends Parser {
 				                                                  Simbolo s = sm.getSimbolo(11); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((SumsustailContext)_localctx).value =  new App(new Const(11,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((SumsustailContext)_localctx).sumsus.value);
+				                                                  ((SumsustailContext)_localctx).value =  new App(new Const(11,"c_{11}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((SumsustailContext)_localctx).sumsus.value);
 				                                               }
 				                                               else
 				                                               {
 				                                                  Simbolo s = sm.getSimbolo(11); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((SumsustailContext)_localctx).value = new App(new Const(11,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((SumsustailContext)_localctx).tail2.value,((SumsustailContext)_localctx).sumsus.value));
+				                                                  ((SumsustailContext)_localctx).value = new App(new Const(11,"c_{11}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((SumsustailContext)_localctx).tail2.value,((SumsustailContext)_localctx).sumsus.value));
 				                                               }
 				                                              
 				}
@@ -1358,14 +1358,14 @@ public class TermParser extends Parser {
 				                                                  Simbolo s = sm.getSimbolo(12); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((SumsustailContext)_localctx).value =  new App(new Const(12,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((SumsustailContext)_localctx).sumsus.value);
+				                                                  ((SumsustailContext)_localctx).value =  new App(new Const(12,"c_{12}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((SumsustailContext)_localctx).sumsus.value);
 				                                               }
 				                                               else
 				                                               {
 				                                                  Simbolo s = sm.getSimbolo(12); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((SumsustailContext)_localctx).value = new App(new Const(12,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((SumsustailContext)_localctx).tail2.value,((SumsustailContext)_localctx).sumsus.value));
+				                                                  ((SumsustailContext)_localctx).value = new App(new Const(12,"c_{12}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((SumsustailContext)_localctx).tail2.value,((SumsustailContext)_localctx).sumsus.value));
 				                                               }
 				                                              
 				}
@@ -1520,14 +1520,14 @@ public class TermParser extends Parser {
 				                                                  Simbolo s = sm.getSimbolo(13); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((MultdivtailContext)_localctx).value =  new App(new Const(13,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((MultdivtailContext)_localctx).multdiv.value);
+				                                                  ((MultdivtailContext)_localctx).value =  new App(new Const(13,"c_{13}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((MultdivtailContext)_localctx).multdiv.value);
 				                                               }
 				                                               else
 				                                               {
 				                                                  Simbolo s = sm.getSimbolo(13); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((MultdivtailContext)_localctx).value = new App(new Const(13,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((MultdivtailContext)_localctx).tail2.value,((MultdivtailContext)_localctx).multdiv.value));
+				                                                  ((MultdivtailContext)_localctx).value = new App(new Const(13,"c_{13}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((MultdivtailContext)_localctx).tail2.value,((MultdivtailContext)_localctx).multdiv.value));
 				                                               }
 				                                              
 				}
@@ -1547,14 +1547,14 @@ public class TermParser extends Parser {
 				                                                  Simbolo s = sm.getSimbolo(14); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((MultdivtailContext)_localctx).value =  new App(new Const(14,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((MultdivtailContext)_localctx).multdiv.value);
+				                                                  ((MultdivtailContext)_localctx).value =  new App(new Const(14,"c_{14}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((MultdivtailContext)_localctx).multdiv.value);
 				                                               }
 				                                               else
 				                                               {
 				                                                  Simbolo s = sm.getSimbolo(14); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((MultdivtailContext)_localctx).value = new App(new Const(14,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((MultdivtailContext)_localctx).tail2.value,((MultdivtailContext)_localctx).multdiv.value));
+				                                                  ((MultdivtailContext)_localctx).value = new App(new Const(14,"c_{14}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((MultdivtailContext)_localctx).tail2.value,((MultdivtailContext)_localctx).multdiv.value));
 				                                               }
 				                                              
 				}
@@ -1713,14 +1713,14 @@ public class TermParser extends Parser {
 				                                                  Simbolo s = sm.getSimbolo(16); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((ConstailContext)_localctx).value =  new App(new Const(16,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((ConstailContext)_localctx).cons.value);
+				                                                  ((ConstailContext)_localctx).value =  new App(new Const(16,"c_{16}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((ConstailContext)_localctx).cons.value);
 				                                               }
 				                                               else
 				                                               {
 				                                                  Simbolo s = sm.getSimbolo(16); 
 				                                                  if (s == null)
 				                                                     throw new IsNotInDBException(this,"");
-				                                                  ((ConstailContext)_localctx).value = new App(new Const(16,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((ConstailContext)_localctx).tail2.value,((ConstailContext)_localctx).cons.value));
+				                                                  ((ConstailContext)_localctx).value = new App(new Const(16,"c_{16}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App(((ConstailContext)_localctx).tail2.value,((ConstailContext)_localctx).cons.value));
 				                                               }
 				                                              
 				}
@@ -1820,7 +1820,7 @@ public class TermParser extends Parser {
 				setState(211);
 				((ConsContext)_localctx).n = cons(id,pm,sm);
 				Simbolo s = sm.getSimbolo(15); if (s == null)throw new IsNotInDBException(this,""); 
-				                                               ((ConsContext)_localctx).value = new App(new Const(15,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((ConsContext)_localctx).n.value);
+				                                               ((ConsContext)_localctx).value = new App(new Const(15,"c_{15}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),((ConsContext)_localctx).n.value);
 				}
 				break;
 			case T__28:
@@ -1829,7 +1829,7 @@ public class TermParser extends Parser {
 				setState(214);
 				match(T__28);
 				Simbolo s = sm.getSimbolo(17); if (s == null)throw new IsNotInDBException(this,"");
-				                                               ((ConsContext)_localctx).value =  new Const(17,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                               ((ConsContext)_localctx).value =  new Const(17,"c_{17}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				                                              
 				}
 				break;
@@ -1839,7 +1839,7 @@ public class TermParser extends Parser {
 				setState(216);
 				match(T__29);
 				Simbolo s = sm.getSimbolo(18); if (s == null)throw new IsNotInDBException(this,"");
-				                                               ((ConsContext)_localctx).value =  new Const(18,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                               ((ConsContext)_localctx).value =  new Const(18,"c_{18}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				                                              
 				}
 				break;
@@ -1869,7 +1869,7 @@ public class TermParser extends Parser {
 				                                               int nArg = s.getArgumentos();
 				                                               if (((ConsContext)_localctx).explist.value.size() != nArg)
 				                                                 throw new NoViableAltException(this);
-				                                               Term aux = new Const(Integer.parseInt((((ConsContext)_localctx).NUMBER!=null?((ConsContext)_localctx).NUMBER.getText():null)),s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                               Term aux = new Const(Integer.parseInt((((ConsContext)_localctx).NUMBER!=null?((ConsContext)_localctx).NUMBER.getText():null)),"c_{"+(((ConsContext)_localctx).NUMBER!=null?((ConsContext)_localctx).NUMBER.getText():null)+"}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				                                               for(Iterator<Term> i = ((ConsContext)_localctx).explist.value.iterator(); i.hasNext();)
 				                                                  aux=new App(aux,i.next());
 				                                               ((ConsContext)_localctx).value =  aux;

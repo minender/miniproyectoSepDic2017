@@ -24,7 +24,7 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm]
                                                    Simbolo s = sm.getSimbolo(1); 
                                                    if (s == null)
                                                       throw new IsNotInDBException(this,"");
-                                                   aux=new App(new App(new Const(1,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+                                                   aux=new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
                                                 }
 
                                                 $value=aux;
@@ -53,14 +53,14 @@ disyconjtail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Te
                                                   Simbolo s = sm.getSimbolo(2); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value = new App(new Const(2,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$disyconj.value);
+                                                  $value = new App(new Const(2,"c_{2}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$disyconj.value);
                                                }
                                                else
                                                {
                                                   Simbolo s = sm.getSimbolo(2); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value=new App(new Const(2,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$disyconj.value));
+                                                  $value=new App(new Const(2,"c_{2}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$disyconj.value));
                                                }
                                               }
 
@@ -74,7 +74,7 @@ returns [Term value]: conc[id,pm,sm] conctail[id,pm,sm]
                                                    Simbolo s = sm.getSimbolo(3); 
                                                    if (s == null)
                                                       throw new IsNotInDBException(this,"");
-                                                   aux=new App(new App(new Const(3,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+                                                   aux=new App(new App(new Const(3,"c_{3}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
                                                 }
                                                 $value=aux;
                                               };
@@ -99,14 +99,14 @@ conc[PredicadoId id, PredicadoManager pm, SimboloManager sm]
                                                            Simbolo s = sm.getSimbolo(4); 
                                                            if (s == null)
                                                               throw new IsNotInDBException(this,"");
-                                                           aux=new App(new App(new Const(4,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
+                                                           aux=new App(new App(new Const(4,"c_{4}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
                                                         }
                                                         else if (pair.symbolId==5)
                                                         {
                                                            Simbolo s = sm.getSimbolo(5); 
                                                            if (s == null)
                                                               throw new IsNotInDBException(this,"");
-                                                           aux=new App(new App(new Const(5,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
+                                                           aux=new App(new App(new Const(5,"c_{5}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),pair.term),aux); 
                                                         }
                                                      }
                                                      $value=aux;
@@ -140,7 +140,7 @@ neq[PredicadoId id, PredicadoManager pm, SimboloManager sm]
                                                    Simbolo s = sm.getSimbolo(6); 
                                                    if (s == null)
                                                       throw new IsNotInDBException(this,"");
-                                                   aux=new App(new App(new Const(6,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
+                                                   aux=new App(new App(new Const(6,"c_{6}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),i.next()),aux);
                                                 }
                                                 $value=aux;
                                               };
@@ -157,18 +157,18 @@ neqtail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [ArrayLi
 neg[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
 
       ('!' | '\\neg') n=neg[id,pm,sm]         {Simbolo s = sm.getSimbolo(7); if (s == null)throw new IsNotInDBException(this,""); 
-                                               $value=new App(new Const(7,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$n.value);}
+                                               $value=new App(new Const(7,"c_{7}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$n.value);}
 
      | CAPITALLETTER                          {$value = new Var((new Integer((int)$CAPITALLETTER.text.charAt(0))).intValue());}
 
      | LETTER                                 {$value = new Var((new Integer((int)$LETTER.text.charAt(0))).intValue());}
 
      | 'true'                                 {Simbolo s = sm.getSimbolo(8); if (s == null)throw new IsNotInDBException(this,"");
-                                               $value = new Const(8,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                               $value = new Const(8,"c_{8}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
                                               }
 
      | 'false'                                {Simbolo s = sm.getSimbolo(9); if (s == null)throw new IsNotInDBException(this,"");
-                                               $value = new Const(9,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());}
+                                               $value = new Const(9,"c_{9}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());}
 
  | CAPITALLETTER '_{' eq[id,pm,sm] '}^{' LETTER '}' 
                                               {Var letter = new Var((new Integer((int)$LETTER.text.charAt(0))).intValue());
@@ -181,7 +181,7 @@ neg[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]
                                               } 
 
     | t1=term[id,pm,sm] '=' t2=term[id,pm,sm] {Simbolo s = sm.getSimbolo(10); if (s == null)throw new IsNotInDBException(this,"");
-                                               Term c = new Const(10,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                               Term c = new Const(10,"c_{10}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
                                                $value = new App(new App(c,$t2.value), $t1.value);
                                               }
 
@@ -206,7 +206,7 @@ neg[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]
                                                int nArg = s.getArgumentos();
                                                if ($explist.value.size() != nArg)
                                                  throw new NoViableAltException(this);
-                                               Term aux = new Const(Integer.parseInt($NUMBER.text),s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                               Term aux = new Const(Integer.parseInt($NUMBER.text),"c_{"+$NUMBER.text+"}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
                                                for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();)
                                                   aux=new App(aux,i.next());
                                                $value = aux;
@@ -230,14 +230,14 @@ sumsustail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term
                                                   Simbolo s = sm.getSimbolo(11); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value = new App(new Const(11,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$sumsus.value);
+                                                  $value = new App(new Const(11,"c_{11}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$sumsus.value);
                                                }
                                                else
                                                {
                                                   Simbolo s = sm.getSimbolo(11); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value=new App(new Const(11,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$sumsus.value));
+                                                  $value=new App(new Const(11,"c_{11}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$sumsus.value));
                                                }
                                               }
 
@@ -247,14 +247,14 @@ sumsustail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term
                                                   Simbolo s = sm.getSimbolo(12); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value = new App(new Const(12,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$sumsus.value);
+                                                  $value = new App(new Const(12,"c_{12}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$sumsus.value);
                                                }
                                                else
                                                {
                                                   Simbolo s = sm.getSimbolo(12); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value=new App(new Const(12,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$sumsus.value));
+                                                  $value=new App(new Const(12,"c_{12}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$sumsus.value));
                                                }
                                               }
 
@@ -276,14 +276,14 @@ multdivtail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Ter
                                                   Simbolo s = sm.getSimbolo(13); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value = new App(new Const(13,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$multdiv.value);
+                                                  $value = new App(new Const(13,"c_{13}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$multdiv.value);
                                                }
                                                else
                                                {
                                                   Simbolo s = sm.getSimbolo(13); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value=new App(new Const(13,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$multdiv.value));
+                                                  $value=new App(new Const(13,"c_{13}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$multdiv.value));
                                                }
                                               }
 
@@ -293,14 +293,14 @@ multdivtail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Ter
                                                   Simbolo s = sm.getSimbolo(14); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value = new App(new Const(14,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$multdiv.value);
+                                                  $value = new App(new Const(14,"c_{14}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$multdiv.value);
                                                }
                                                else
                                                {
                                                   Simbolo s = sm.getSimbolo(14); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value=new App(new Const(14,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$multdiv.value));
+                                                  $value=new App(new Const(14,"c_{14}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$multdiv.value));
                                                }
                                               }
 
@@ -323,14 +323,14 @@ constail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term v
                                                   Simbolo s = sm.getSimbolo(16); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value = new App(new Const(16,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$cons.value);
+                                                  $value = new App(new Const(16,"c_{16}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$cons.value);
                                                }
                                                else
                                                {
                                                   Simbolo s = sm.getSimbolo(16); 
                                                   if (s == null)
                                                      throw new IsNotInDBException(this,"");
-                                                  $value=new App(new Const(16,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$cons.value));
+                                                  $value=new App(new Const(16,"c_{16}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new App($tail2.value,$cons.value));
                                                }
                                               }
 
@@ -339,14 +339,14 @@ constail[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term v
 cons[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
 
       '-' n=cons[id,pm,sm]                    {Simbolo s = sm.getSimbolo(15); if (s == null)throw new IsNotInDBException(this,""); 
-                                               $value=new App(new Const(15,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$n.value);}
+                                               $value=new App(new Const(15,"c_{15}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),$n.value);}
 
      | '0'                                    {Simbolo s = sm.getSimbolo(17); if (s == null)throw new IsNotInDBException(this,"");
-                                               $value = new Const(17,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                               $value = new Const(17,"c_{17}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
                                               }
 
      | '1'                                    {Simbolo s = sm.getSimbolo(18); if (s == null)throw new IsNotInDBException(this,"");
-                                               $value = new Const(18,s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                               $value = new Const(18,"c_{18}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
                                               }
 
      | LETTER                                 {$value = new Var((int)$LETTER.text.charAt(0));}
@@ -356,7 +356,7 @@ cons[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value
                                                int nArg = s.getArgumentos();
                                                if ($explist.value.size() != nArg)
                                                  throw new NoViableAltException(this);
-                                               Term aux = new Const(Integer.parseInt($NUMBER.text),s.getNotacion_latex(),!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                               Term aux = new Const(Integer.parseInt($NUMBER.text),"c_{"+$NUMBER.text+"}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
                                                for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();)
                                                   aux=new App(aux,i.next());
                                                $value = aux;
