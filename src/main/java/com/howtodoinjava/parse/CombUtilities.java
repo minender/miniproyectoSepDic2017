@@ -1,25 +1,26 @@
 package com.howtodoinjava.parse;
-import org.antlr.v4.runtime.*;
 
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.springframework.stereotype.Component;
+
+import com.howtodoinjava.lambdacalculo.Term;
 
 /**
 * @author jean 11-05-2020
 */
 
-public class ClientComp {
+@Component
+public class CombUtilities {
 	
+	public CombUtilities() {
+	}
 	
-	public static void main(String[] args) {
-		
-		
-		// Only one argument is neccesary
-		if( args.length != 1) {
-			System.out.print("<Usage> java ClientComp MyExpression ");
-			System.exit(0);
-		}
+	public Term getTerm(String input) {
 		
 		// Feed the argument to the parser
-		CharStream in = CharStreams.fromString(args[0]);
+		CharStream in = CharStreams.fromString(input);
 		
 		// Define the lexer for the input and edit its way of catching error
 		CombLexer lexer = new CombLexer(in);
@@ -34,20 +35,11 @@ public class ClientComp {
 		parser.removeErrorListeners();
 		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 		
-		// Try to parse
-		try {		
-			parser.expr();
-		// Catch the error and show it to the user
-		}catch(Exception e) {
-			System.out.print(e.getMessage());
-			System.exit(1);
-		}
-
-		// Success
-		System.out.print("Parsed properly");
+		// get the value of the parser 
+		Term t = parser.expr().value;
+		
+		return t;
+		
 		
 	}
-
 }
-
-

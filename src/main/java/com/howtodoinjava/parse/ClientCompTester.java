@@ -9,8 +9,10 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import com.howtodoinjava.parse.ClientComp.ThrowingErrorListener;
 
+/**
+* @author jean 11-05-2020
+*/
 
 public class ClientCompTester {
 	
@@ -22,7 +24,7 @@ public class ClientCompTester {
 		CombParser parser;
 		
 		try {
-                    BufferedReader br = new BufferedReader(new FileReader("/home/federico/NetBeansProjects/Logica/miniproyectoSepDic2017/src/main/java/com/howtodoinjava/parse/CasosDePrueba.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("/home/federico/NetBeansProjects/Logica/miniproyectoSepDic2017/src/main/java/com/howtodoinjava/parse/CasosDePrueba.txt"));
 		    String line;
 		    int line_no = 1;
 		    while ((line = br.readLine()) != null) {

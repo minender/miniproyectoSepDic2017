@@ -132,6 +132,8 @@
     </bean>
     <bean id="mostrarCategoriaManager" class="com.howtodoinjava.service.MostrarCategoriaManagerImpl">
     </bean>
+    <bean id="combUtilities" class="com.howtodoinjava.parse.CombUtilities">
+    </bean>
  
     <tx:annotation-driven />
     <bean id="transactionManager"

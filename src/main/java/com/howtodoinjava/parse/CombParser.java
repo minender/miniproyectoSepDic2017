@@ -384,7 +384,10 @@ public class CombParser extends Parser {
 				{
 				setState(48);
 				((ConstantContext)_localctx).CONSTANT_C = match(CONSTANT_C);
-				 ((ConstantContext)_localctx).value =  new Const((((ConstantContext)_localctx).CONSTANT_C!=null?((ConstantContext)_localctx).CONSTANT_C.getText():null));
+				 String cons = (((ConstantContext)_localctx).CONSTANT_C!=null?((ConstantContext)_localctx).CONSTANT_C.getText():null) ; // Take string format of the constant
+											  int index = Integer.parseInt(cons.substring(3,cons.length()-1));// Take only the the index of the constant
+											  ((ConstantContext)_localctx).value =  new Const(index ,cons);
+					
 				}
 				break;
 			case PHI:

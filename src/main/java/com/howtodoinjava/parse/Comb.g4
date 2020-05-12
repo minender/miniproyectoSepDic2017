@@ -36,7 +36,10 @@ par_expr returns [Term value]
 
 // All kind of constants
 constant returns [Term value]
-	:	CONSTANT_C 	 		{ $value = new Const($CONSTANT_C.text);}
+	:	CONSTANT_C 	 		{ String cons = $CONSTANT_C.text ; // Take string format of the constant
+							  int index = Integer.parseInt(cons.substring(3,cons.length()-1));// Take only the the index of the constant
+							  $value = new Const(index ,cons);
+	}
 	|	constant_phi 		{ $value = $constant_phi.value;}; 
  
 // All forms of Phi constants for example \Phi_{(cbc,(cb,b))} 

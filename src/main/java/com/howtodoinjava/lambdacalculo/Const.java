@@ -39,6 +39,16 @@ public class Const extends Term
         preced = prec;
         asociat = asoc;
     }
+    
+    public Const(int idd, String cons) 
+    {
+    	id = idd;
+        con=cons;
+        funNotation = false;
+        preced = 0;
+        asociat = 0;
+        
+    }
 
     public int getId() {
         return id;

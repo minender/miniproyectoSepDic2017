@@ -10,12 +10,13 @@ import com.howtodoinjava.dao.SolucionDAO;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
-import com.howtodoinjava.lambdacalculo.Term;
+import com.howtodoinjava.parse.CombUtilities;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.SerializationUtils;
+
 
 /**
  *
@@ -29,6 +30,9 @@ public class ResuelveManagerImpl implements ResuelveManager {
     
     @Autowired
     private SolucionDAO solucionDAO;
+    
+    @Autowired
+    private CombUtilities combUtilities;
     
     @Override
     @Transactional
@@ -100,7 +104,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                 }
                 
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
+                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,7 +118,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
         try {
             for (Resuelve resuelve : resuelves) {
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
+                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,7 +138,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
         Resuelve resuel = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID);
         if (resuel != null) {
             Teorema teo = resuel.getTeorema();
-            teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
+            teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
             resuel.setTeorema(teo);
         }
         return resuel;
@@ -158,7 +162,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                     resuel.setDemopendiente(sol.getId());
             }
             Teorema teo = resuel.getTeorema();
-            teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
+            teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
             resuel.setTeorema(teo);
         }
         return resuel;

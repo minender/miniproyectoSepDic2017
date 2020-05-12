@@ -8,6 +8,8 @@ import com.howtodoinjava.dao.ResuelveDAO;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.entity.Teorema;
 import com.howtodoinjava.lambdacalculo.Term;
+import com.howtodoinjava.parse.CombUtilities;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,6 +29,9 @@ public class TeoremaManagerImpl implements TeoremaManager {
     @Autowired
     private TeoremaDAO teoremaDAO;
     private ResuelveDAO resuelveDAO;
+    
+    @Autowired
+    private CombUtilities combUtilities;
 
     @Override
     @Transactional
@@ -59,7 +64,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
     public Teorema getTeorema(int id) {
         Teorema teo = teoremaDAO.getTeorema(id);
         if (teo != null) {
-            teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
+            teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
         }
         return teo;
     }
@@ -71,7 +76,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
         try {
             for (Teorema teo : teoList) {
                 //ter.setTermObject((Term)ToString.fromString(ter.getSerializado()));
-                teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
+                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,7 +89,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
     public Teorema getTeoremaByEnunciados(String enunciado) {
         Teorema teo = teoremaDAO.getTeoremaByEnunciados(enunciado);
         if (teo != null) {
-            teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
+            teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
         }
         return teo;
     }
@@ -123,7 +128,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
         }
         if (teos != null) {
             for (Teorema teo : teos){
-               teo.setTeoTerm((Term) SerializationUtils.deserialize(teo.getTeoserializado()));
+               teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
             }
         }
         return teos;
