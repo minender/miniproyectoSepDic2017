@@ -917,6 +917,34 @@ public class App extends Term{
         ter.alias=this.alias;
         return ter;
     }
+
+	@Override
+	public String aliases(String position) {
+		
+		// Get aliases from childred
+		String aliases1 = p.aliases(position.concat("1"));
+		String aliases2 = q.aliases(position.concat("2"));
+		
+		
+		// Check if we have an alias right now and create a proper format string if so
+		String currentAlias = "";
+		if( this.alias != null) {
+			currentAlias = this.alias + ':' + position;	
+			if(!aliases1.equals("") || !aliases2.equals("") ) {
+				currentAlias = ", " + currentAlias;
+			}
+		}
+		
+		
+		// Check if we actually need a comma between alias1 and alias2
+		String commaString = ", ";
+		if( aliases1.equals("") || aliases2.equals("")) {
+			commaString = "";
+		}
+		
+		// Return formated string
+		return aliases1 + commaString + aliases2 + currentAlias;
+	}
     
     
     

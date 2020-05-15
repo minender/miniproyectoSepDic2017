@@ -325,6 +325,12 @@ public class Bracket extends Term{
         
         return this;
     }
+    
+    @Override
+	public String aliases(String position) {
+		
+		return "";
+	}
 
     
     }

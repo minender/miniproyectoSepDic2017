@@ -277,4 +277,10 @@ public class Sust extends Term{
         return this;
     }
     
+    @Override
+	public String aliases(String position) {
+		
+		return "";
+	}
+    
 }

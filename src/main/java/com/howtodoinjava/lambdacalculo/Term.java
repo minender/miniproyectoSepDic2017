@@ -49,7 +49,7 @@ public abstract class Term implements Cloneable, Serializable{
         
         public void setNuevoAlias(String alia,Term t,SimboloManager s,PredicadoManager p,String nTeo)
         {  
-           PredicadoId pid = new PredicadoId(alia, "AdminTeoremas");
+           PredicadoId pid = new PredicadoId(alia, "admin");
            String[] positions = p.getPredicado(pid).getArgumentos().split(",");
            alia = "\\style{cursor:pointer; color:#08c;}{"+alia+"}";
            for (int k=0; k < positions.length; k++)
@@ -155,6 +155,14 @@ public abstract class Term implements Cloneable, Serializable{
     public abstract ToString toStringAbrv(ToString toString);
     
     public abstract ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager p, String numTeo);
+    
+    
+    /**
+     * Function to get the list of aliases and their position in the AST of this expression
+     * @param position of the current node represented with 1's and 2's
+     * @return a String that represents all the aliases in this Term and its subterms
+     */
+    public abstract String aliases(String position);
     
     
     public String toStringFinal()

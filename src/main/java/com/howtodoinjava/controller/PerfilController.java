@@ -596,7 +596,9 @@ public class PerfilController {
                     throw new CategoriaException("Ese numero de categoria no existe");
                 }
                 // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
-                Teorema teoremaAdd = new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false);
+                
+                String aliases = teoTerm.aliases("");
+                Teorema teoremaAdd = new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false,aliases);
                 Teorema teorema = teoremaManager.addTeorema(teoremaAdd); 
                 Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma(), categoria);
                 Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);

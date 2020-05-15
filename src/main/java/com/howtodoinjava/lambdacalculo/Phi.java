@@ -213,6 +213,12 @@ public class Phi extends Term{
     public Term checkApp() {
         return this;
     }
+    
+    @Override
+	public String aliases(String position) {
+		
+		return "";
+	}
 
     
 }

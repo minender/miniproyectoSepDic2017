@@ -104,7 +104,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
         
         for (Resuelve res : resList) {
             teorema = res.getTeorema();
-            teorema.setTeoTerm((Term) SerializationUtils.deserialize(teorema.getTeoserializado()));
+            teorema.setTeoTerm(combUtilities.getTerm(teorema.getEnunciado()));
             teoList.add(teorema);
         }
 

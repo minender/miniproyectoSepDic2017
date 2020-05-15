@@ -19,6 +19,9 @@
         <property name="esquema" type="boolean">
             <column name="esquema" not-null="true" />
         </property>
+        <property name="aliases" type="string">
+            <column name="aliases" not-null="true" />
+        </property>
         <set name="resuelves" inverse="true">
             <key>
                 <column name="teoremaid" not-null="true" />

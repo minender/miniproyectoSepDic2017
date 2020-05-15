@@ -280,7 +280,11 @@ CREATE TABLE userdb.teorema (
     id integer NOT NULL,
     enunciado text NOT NULL,
     teoserializado bytea NOT NULL,
-    esquema boolean NOT NULL
+    esquema boolean NOT NULL,
+    aliases text NOT NULL,
+    
+    -- aliases is a string that represents a list like the next example Or:1223, Cos:12, Sen:12...
+    CONSTRAINT aliases_regex CHECK ( (aliases ~ '(^(([A-Z][a-z]*:(1|2)*),\s)*([A-Z][a-z]*:(1|2)*))$') or (aliases LIKE '') )
 );
 
 
@@ -594,7 +598,7 @@ SELECT pg_catalog.setval('userdb.solucion_id_seq', 1, false);
 -- Data for Name: teorema; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY userdb.teorema (id, enunciado, teoserializado, esquema) FROM stdin;
+COPY userdb.teorema (id, enunciado, teoserializado, esquema, aliases) FROM stdin;
 \.
 
 

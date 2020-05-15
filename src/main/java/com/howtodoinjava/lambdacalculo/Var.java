@@ -342,5 +342,16 @@ public class Var extends Term{
     public Term checkApp() {
         return this;
     }
+    
+    @Override
+	public String aliases(String position) {
+
+		String currentAlias = "";
+		if( this.alias != null) {
+			currentAlias = this.alias + ':' + position;
+		}
+		
+		return currentAlias;
+	}
   
 }
