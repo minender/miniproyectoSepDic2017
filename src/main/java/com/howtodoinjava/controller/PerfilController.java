@@ -524,7 +524,13 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        
         Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        
         map.addAttribute("usuario",usr);
         map.addAttribute("agregarTeorema",new AgregarTeorema());
         map.addAttribute("modificar",new Integer(0));
@@ -536,6 +542,9 @@ public class PerfilController {
         map.addAttribute("agregarTeoremaMenu","active");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         
         return "agregarTeorema";
@@ -555,6 +564,11 @@ public class PerfilController {
             // vista lo que se construyo fue un TerminoId nada mas y se uso el 
             // campo login para guardar el String combinador
             Usuario usr = usuarioManager.getUsuario(username);
+            List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+            List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+            predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+            String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+            
             if(bindingResult.hasErrors())
             {
                 map.addAttribute("usuario", usr);
@@ -568,6 +582,9 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("predicadoList", predicadoList); map.addAttribute("predicadoList", predicadoList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
@@ -622,6 +639,8 @@ public class PerfilController {
                 map.addAttribute("perfilMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "perfil";
             }
@@ -639,6 +658,8 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
@@ -655,6 +676,8 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1100px");
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
@@ -674,6 +697,8 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
@@ -693,6 +718,8 @@ public class PerfilController {
                 map.addAttribute("agregarTeoremaMenu","active");
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
                 return "agregarTeorema";
             }
@@ -711,7 +738,13 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
+        
+        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
         Usuario usr = usuarioManager.getUsuario(username);
+        
         map.addAttribute("usuario", usr);
         map.addAttribute("usuarioGuardar",new UsuarioGuardar());
         map.addAttribute("modificar",new Integer(0));
@@ -730,11 +763,59 @@ public class PerfilController {
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
         
         return "introducirTermino";
     }
     
-@RequestMapping(value="/{username}/guardar", method=RequestMethod.POST)
+    /**
+     * Author: Jean
+     * This function takes a a list of symbols and returns a javascript dictionary 
+     * formated string with the ket/value pair for arguments, precedence and a list of 
+     * notation variables
+     * @param simboloList symbol list to make the dictionary
+     * @return string in dictionary format
+     */
+    public String simboloDictionaryCode(List<Simbolo> simboloList, 	List<Predicado> predicadoList) {
+    	
+    	// List of char where we'll store the answer
+    	StringBuilder result = new StringBuilder("{");
+    	String idString;
+    	String argumentsString;
+    	String precedenceString;
+    	String simboloString;
+    	String notacionVariables;
+    	
+    	//Add every symbol to the dictionary
+    	for (Simbolo simbolo : simboloList) {
+			
+    		idString = String.valueOf(simbolo.getId());
+    		argumentsString = String.valueOf(simbolo.getArgumentos());
+    		precedenceString = String.valueOf(simbolo.getPrecedencia());
+    		notacionVariables = simbolo.getNotacionVariables().toString();
+    		
+    		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + "}"; 
+    		result.append(idString+":  " + simboloString + ",");
+		}
+    	
+    	precedenceString = "100";
+    	//Add every alias to the dictionary
+    	for(Predicado alias : predicadoList) {
+    		
+    		idString = alias.getId().getAlias();
+    		argumentsString = String.valueOf(alias.getArgumentos().split(",").length);
+    		notacionVariables = alias.getNotacionVariables().toString();
+    		
+    		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + ", numericId: -1" +  "}"; 
+    		result.append(idString+":  " + simboloString + ",");
+    	}
+    	result.append('}');
+    	return result.toString();
+    }
+    
+    @RequestMapping(value="/{username}/guardar", method=RequestMethod.POST)
     public String guardar(@Valid UsuarioGuardar usuarioGuardar, BindingResult bindingResult, @PathVariable String username, ModelMap map)
     {
             if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
@@ -743,6 +824,10 @@ public class PerfilController {
             }
             
             Usuario usr = usuarioManager.getUsuario(username);
+            List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+            List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+            predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+            String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
             //Aqui hay que validar sintaxis se puede hacer como un aspecto con 
             // un @Valid
             //aqui se acomoda la estructura de la entidad Termino ya que en la
@@ -765,6 +850,9 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("predicadoList", predicadoList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 return "introducirTermino";
             }
             
@@ -803,6 +891,7 @@ public class PerfilController {
                 {
                     //System.out.println(terminoManager.getTermino(terminoid));
                     term=parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+                    predicado.setAliases(term.aliases(""));
                     
                     //term.setAlias(predicadoid.getAlias());
                     //aqui se traduce y luego se llama a toString para tener el
@@ -813,6 +902,7 @@ public class PerfilController {
                     Comprobacion comprobar = new Comprobacion();
                     Brackear bk = new Brackear();
                     Term res = bk.appBrack(tk.getVars(), term).traducBD();
+                    
                     String check  = comprobar.dfs(res);
                     String resultado;
                     if (check.equals("")) {
@@ -829,6 +919,7 @@ public class PerfilController {
                         i++;
                      }
                      predicado.setArgumentos(pos);
+                     predicado.setNotacion(usuarioGuardar.getNotacion());
                      predicadoManager.addPredicado(predicado);
                      resultado  = " 1 Su abreviaci&oacute;n ha sido guardado con exito";
                     }else{
@@ -847,6 +938,9 @@ public class PerfilController {
                     map.addAttribute("overflow","hidden");
                     map.addAttribute("anchuraDiv","1200px");
                     map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                    map.addAttribute("simboloList", simboloList);
+                    map.addAttribute("predicadoList", predicadoList);
+                    map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                     return "introducirTermino";
                 }
                 else
@@ -868,6 +962,9 @@ public class PerfilController {
                     map.addAttribute("overflow","hidden");
                     map.addAttribute("anchuraDiv","1200px");
                     map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                    map.addAttribute("simboloList", simboloList);
+                    map.addAttribute("predicadoList", predicadoList);
+                    map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                     return "introducirTermino";
                 }
             }
@@ -889,6 +986,9 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("predicadoList", predicadoList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 return "introducirTermino";
             }
             catch(IsNotInDBException e)
@@ -911,6 +1011,9 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("predicadoList", predicadoList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 return "introducirTermino";
             }
             catch(RecognitionException e)
@@ -933,6 +1036,9 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                map.addAttribute("simboloList", simboloList);
+                map.addAttribute("predicadoList", predicadoList);
+                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 return "introducirTermino";
             }
     }

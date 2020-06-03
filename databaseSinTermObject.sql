@@ -22,6 +22,14 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 
+-- Domains 
+
+--
+-- Name: alias_list
+--
+CREATE DOMAIN userdb."alias_list" AS
+  TEXT NOT NULL CHECK ( (value ~ '(^(([A-Z][a-z]*:(1|2)*),\s)*([A-Z][a-z]*:(1|2)*))$') or (value LIKE '') );
+
 --
 -- Name: categoria; Type: TABLE; Schema: userdb; Owner: userdb; Tablespace: 
 --
@@ -181,7 +189,9 @@ CREATE TABLE userdb.predicado (
     alias text NOT NULL,
     predserializado bytea NOT NULL,
     login text NOT NULL,
-    argumentos text NOT NULL
+    argumentos text NOT NULL,
+    aliases userdb.alias_list NOT NULL,
+    notacion text NOT NULL
 );
 
 
@@ -281,10 +291,7 @@ CREATE TABLE userdb.teorema (
     enunciado text NOT NULL,
     teoserializado bytea NOT NULL,
     esquema boolean NOT NULL,
-    aliases text NOT NULL,
-    
-    -- aliases is a string that represents a list like the next example Or:1223, Cos:12, Sen:12...
-    CONSTRAINT aliases_regex CHECK ( (aliases ~ '(^(([A-Z][a-z]*:(1|2)*),\s)*([A-Z][a-z]*:(1|2)*))$') or (aliases LIKE '') )
+    aliases userdb.alias_list NOT NULL
 );
 
 
@@ -465,7 +472,7 @@ insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociativi
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (13,'.', 2, TRUE, 0, 7,'%(aa2) %(op) %(a1)',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (14,' ', 2, TRUE, 0, 7,'\frac{%(na2)}{%(na1)}',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (15,'-', 1, TRUE, 0, 8,'%(op)%(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (16,'^', 1, TRUE, 0, 9,'(a2)%(op){%(a1)}',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (16,'^', 1, TRUE, 0, 9,'%(a2)%(op){%(a1)}',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (17,'0', 0, TRUE, 0, 0,'%(op)',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (18,'1', 0, TRUE, 0, 0,'%(op)',1);
 

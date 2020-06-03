@@ -217,7 +217,12 @@ public class Phi extends Term{
     @Override
 	public String aliases(String position) {
 		
-		return "";
+    	String currentAlias = "";
+		if( this.alias != null) {
+			currentAlias =  this.alias + ':' + position;
+		}
+		
+		return currentAlias;
 	}
 
     

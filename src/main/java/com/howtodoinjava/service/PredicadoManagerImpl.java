@@ -10,6 +10,8 @@ import com.howtodoinjava.entity.PredicadoId;
 import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Term;
 import com.howtodoinjava.lambdacalculo.Var;
+import com.howtodoinjava.parse.CombUtilities;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,9 @@ public class PredicadoManagerImpl implements PredicadoManager {
        
     @Autowired
     private PredicadoDAO predicadoDAO;
+    
+    @Autowired
+    private CombUtilities combUtilities;
     
     
     @Override
@@ -46,7 +51,7 @@ public class PredicadoManagerImpl implements PredicadoManager {
         Predicado p=predicadoDAO.getPredicado(id);
         if(p!=null)
         {
-            p.setTerm((Term)SerializationUtils.deserialize(p.getPredserializado()));    
+            p.setTerm(combUtilities.getTerm(p.getPredicado()));    
         }
         return  p;
     }
@@ -55,7 +60,7 @@ public class PredicadoManagerImpl implements PredicadoManager {
         Predicado t=predicadoDAO.getPredicado(username, comb);
         if(t != null)
         {
-            t.setTerm((Term)SerializationUtils.deserialize(t.getPredserializado()));    
+            t.setTerm(combUtilities.getTerm(t.getPredicado()));    
             return t;
         }
         
@@ -92,7 +97,7 @@ public class PredicadoManagerImpl implements PredicadoManager {
         {
             for(Predicado pre: pres) {
                 String[] args = pre.getArgumentos().split(",");
-                Term aux = (Term)SerializationUtils.deserialize(pre.getPredserializado());
+                Term aux = combUtilities.getTerm(pre.getPredicado());
                 for (int i=0; i < args.length; i++) 
                     aux=new App(aux,new Var(args[i].split("@")[0].trim().charAt(0)));
                 aux = aux.evaluar();

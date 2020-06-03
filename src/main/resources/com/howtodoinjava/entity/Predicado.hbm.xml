@@ -24,5 +24,11 @@
         <property name="argumentos" type="string">
             <column name="argumentos" not-null="true" />
         </property>
+        <property name="aliases" type="string">
+            <column name="aliases" not-null="true" />
+        </property>
+        <property name="notacion" type="string">
+            <column name="notacion" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>

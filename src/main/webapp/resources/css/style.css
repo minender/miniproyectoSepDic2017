@@ -343,6 +343,14 @@ iframe{
   animation-delay: -0.15s;
 }
 
+.SymbolsJaxDiv {
+  border: 2px solid #03A9F4;
+  border-radius: 5px;
+  padding: 3%;
+  word-break: break-word;
+  margin: 5%;
+}
+
 @keyframes lds-ring {
   0% {
     transform: rotate(0deg);

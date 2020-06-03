@@ -4,6 +4,7 @@
     Author     : federico
 --%>
 
+<%@page import="com.howtodoinjava.entity.Simbolo"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
@@ -20,19 +21,30 @@
       <c:when test="${modificar.intValue()==0}">
         <sf:form method="POST" modelAttribute="usuarioGuardar">
            <div class="form-group row justify-content-center">
-              <label for="termino_alias" class="col-lg-1 col-form-label">Alias:</label>
-            <div class="col-lg-3">
-               <sf:input path="alias" id="termino_alias" value="${alias}" class="form-control"/><sf:errors path="alias" cssClass="error" /><br/>
-            </div>
+             <label for="termino_alias" class="col-lg-1 col-form-label">Alias:</label>
+            	<div class="col-lg-3">
+              		<sf:input path="alias" id="termino_alias" value="${alias}" class="form-control"/><sf:errors path="alias" cssClass="error" /><br/>
+            	</div>
+             <label for="termino_notacion" class="col-lg-1 col-form-label">Notation:</label>
+             	<div class="col-lg-3">
+            		<sf:input path="notacion" id="termino_notacion" class="form-control"/><sf:errors path="notacion" cssClass="error" /><br/>
+           		</div>
            </div>
+           
+           <c:set var="rootId" value="symbolsId" scope="request"/>
+		   <tiles:insertDefinition name="symbolButtons" />
            <div class="form-group row justify-content-center">
+           	<button type="button" class="btn btn-default" onclick="setInputValueOnParser('symbolsId','termino_string')">Save</button>
+            <button type="submit" class="btn btn-default" onclick="setInputValueOnParser('symbolsId','termino_string')">Save</button>&nbsp;
+            <button type="button" onclick="cleanJax('symbolsId', 'termino_string')" class="btn btn-default">Clean</button>
+           </div>
+           
+     
+           <div class="form-group row justify-content-center" id="input_alias" style="display: none;">
             <label for="termino_string" class="col-lg-1 col-form-label">Term:</label>
             <sf:textarea path="termino" id="termino_string" rows="3" class="form-control col-lg-6" /><sf:errors path="termino" cssClass="error" /><br/>
            </div> 
-           <div class="form-group row justify-content-center">
-            <button type="submit" class="btn btn-default">Save</button>&nbsp;
-            <button type="button" onclick="limpiar()" class="btn btn-default">Clean</button>
-           </div>
+          
         </sf:form>${mensaje}
       </c:when>
       <c:otherwise>
@@ -72,9 +84,14 @@
     <!--<a href="./">Perfil</a>-->
     
     <script>
+    
         t=document.getElementById('termino_string');
         t.innerText="${termino}";
+      	   	                
     </script>
+    
+    
+    
     <div style="height: 50vh;">
       <c:choose>
         <c:when test="${!username.equals(admin)}">

@@ -41,7 +41,13 @@
             </c:when>
           </c:choose>
               
+          <c:set var="rootId" value="teoremaSymbolsId" scope="request"/>   
+          <tiles:insertDefinition name="symbolButtons" />
           <div class="form-group row justify-content-center">
+            <button type="button" onclick="cleanJax('teoremaSymbolsId', 'teorema')" class="btn btn-default">Clean</button>
+          </div>    
+              
+          <div class="form-group row justify-content-center" style="display: none;">
               <label for="teorema" class="col-lg-1 col-form-label">Theorem:</label>
             <div class="col-lg-3">
                <sf:input path="teorema" id="teorema" value="${teorema}" class="form-control"/><sf:errors path="teorema" cssClass="error" /><br/>
@@ -81,7 +87,7 @@
           </div>
           <div class="row justify-content-center" >
                <div class="offset-lg-1 col-lg-3">
-                   <button type="submit" class="btn btn-default">Save</button>
+                   <button type="submit" class="btn btn-default" onclick="setInputValueOnParser('teoremaSymbolsId','teorema')">Save</button>
                </div>
           </div>
           <div class="row justify-content-center" >
