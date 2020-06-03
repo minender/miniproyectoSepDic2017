@@ -113,7 +113,7 @@
                                 //$('#teoremaInicial').val("ST-"+teoId + "@d");
                                 $("#inferForm").show();
                                 //$("#nuevoMetodo").val("1");
-                                var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+                                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
                                 if(nSol==="new"){
                                    //$('#nSolucion').val(data.nSol);
                                    //nSol = $('#nSolucion').val();
@@ -141,12 +141,12 @@
                             //$('#teoremaInicial').val("ST-"+teoId + "@i");
                             $("#inferForm").show();
                             //$("#nuevoMetodo").val("1");
-                            var nSol = $(form).attr('action').split('/')[5];//$('#nSolucion').val();
+                            var nSol = $(form).attr('action').split('/').pop();//$('#nSolucion').val();
                             if(nSol==="new"){
                                 //$('#nSolucion').val(data.nSol);
                                 //nSol = $('#nSolucion').val();
                                 var url = $(form).attr('action');
-                                url = url.substring(0,url.length-3)+nSol;
+                                url = url.substring(0,url.length-3)+data.nSol;
                                 $(form).attr('action',url);
                             }
                         },
@@ -254,7 +254,7 @@
             
 
         </script>
-        <base href="/Miniproyecto/perfil/${usuario.login}/"/>
+        <base href="${pageContext.request.contextPath}/perfil/${usuario.login}/"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
@@ -324,8 +324,8 @@
                 </c:choose>
                 </div>
               <c:forEach items="${showCategorias}" var="cat"> 
-                  <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-${cat.getNombre()}" role="button" aria-expanded="false" aria-controls="collapse-${cat.getNombre()}" class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
-                      <ul id="collapse-${cat.getNombre()}" class="collapse">
+                  <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href='#collapse-${cat.getNombre().replaceAll(" ","-")}' role="button" aria-expanded="false" aria-controls='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
+                      <ul id='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse">
                     <c:forEach items="${resuelves}" var="resu">
                       <c:choose>
                         <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
@@ -479,7 +479,7 @@
         </div>    
           <c:choose>
           <c:when test="${!selecTeo}">
-          <form id="inferForm" action="/Miniproyecto/infer/${usuario.getLogin()}/${nTeo}/${nSol}" method="POST" style="display:none">
+          <form id="inferForm" action="${pageContext.request.contextPath}/infer/${usuario.getLogin()}/${nTeo}/${nSol}" method="POST" style="display:none">
               <%--Paso anterior:<br><sf:input path="pasoAnt" id="pasoAnt_id" value="${pasoAnt}"/><sf:errors path="pasoAnt" cssClass="error" />--%>
               <br>
               <!--<div class="nn-box-loading">
@@ -551,8 +551,8 @@
                      }else{
                         newRows=''
                         for (i=0;i<categories.length;i++){
-                            newRows = newRows + '<li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-' + categories[i].categoryname + '" role="button" aria-expanded="false" aria-controls="collapse-' + categories[i].categoryname + '" class="collapse-link">' + categories[i].categoryname + '</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4>';
-                            newRows = newRows + '<ul id="collapse-' + categories[i].categoryname + '" class="collapse">';
+                            newRows = newRows + '<li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-' + categories[i].categoryname.split(" ").join("-") + '" role="button" aria-expanded="false" aria-controls="collapse-' + categories[i].categoryname.split(" ").join("-") + '" class="collapse-link">' + categories[i].categoryname + '</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4>';
+                            newRows = newRows + '<ul id="collapse-' + categories[i].categoryname.split(" ").join("-") + '" class="collapse">';
                             for (j=0;j < teoremas.length ;j++){
                                 if (teoremas[j].categoryid == categories[i].categoryid){
                                     <c:choose>
