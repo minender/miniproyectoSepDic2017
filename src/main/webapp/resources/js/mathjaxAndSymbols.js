@@ -206,7 +206,6 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 		return;
 	}
 	
-	console.log(window[rootId + 'parserString']);
 	
 	// Set in the global dictionary which symbol id is 
 	// associated to the new created inputs 
@@ -581,8 +580,6 @@ function setInputValueOnParser(rootId,textareaId){
 	    	parserString = parserString.replace(new RegExp('C' + alias['numericId'], 'g'), key);
 	    }
 	}
-	
-	console.log(parserString);
 	
 	// Set the text we'll send to the controller
 	var textarea = $('#'+textareaId);
