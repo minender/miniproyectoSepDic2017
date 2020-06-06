@@ -2,47 +2,43 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 
-<%-- THIS SECTION IF FOR SYMBOL BUTTONS--%>
+
 <div class="row justify-content-center form-group">
 	<a class="btn btn-primary" data-toggle="collapse" href="#${rootId}symbolsTable" role="button" aria-expanded="false" aria-controls="symbolsTable">
-		Available symbols:
+		Operators:
 	</a>
 </div>
 <div class="collapse form-group" id="${rootId}symbolsTable">
-          <div class="btn-toolbar justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
-		  <div class="btn-group mr-2" role="group" aria-label="First group">
-		  	<c:forEach items="${simboloList}" var="symbol"> 
-		  		<button style="font-size: 50%;" type="button" class="btn btn-secondary" 
-		  		onmousedown="insertAtMathjaxDiv('${rootId}', '${symbol.fullLatexNotation('\\FormInput{0}', true)}', ${symbol.getId()}, false);return false;">
-		  		$$${symbol.fullLatexNotation("\\Box", false)}$$
-		  		</button>
-		  	</c:forEach> 
-		  </div> 
+       <div class="btn-toolbar justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
+       <%-- THIS SECTION IF FOR SYMBOL BUTTONS--%>
+	   <div class="btn-group mr-2 flex-wrap" role="group" aria-label="First group">
+	  	<c:forEach items="${simboloList}" var="symbol"> 
+	  		<button style="font-size: 50%;" type="button" class="btn btn-secondary" 
+	  		onmousedown="insertAtMathjaxDiv('${rootId}', '${symbol.fullLatexNotation('\\FormInput{0}', true)}', ${symbol.getId()}, false);return false;">
+	  		$$${symbol.fullLatexNotation("\\Box", false)}$$
+	  		</button>
+	  	</c:forEach> 
+	   </div> 
+	   <%-- THIS SECTION IF FOR ALIAS BUTTONS --%>
+	   <div class="btn-group mr-2 flex-wrap" role="group" aria-label="First group">
+	  	<c:forEach items="${predicadoList}" var="alias"> 
+	  		<button style="font-size: 50%;" type="button" class="btn btn-secondary" 
+	  		onmousedown="insertAtMathjaxDiv('${rootId}', '${alias.fullLatexNotation('\\FormInput{0}', true)}', '${alias.getId().getAlias()}', true);return false;">
+	  		$$${alias.fullLatexNotation("\\Box", false)}$$
+	  		</button>
+	  	</c:forEach> 
 	   </div>
-</div>
-
-<%-- THIS SECTION IF FOR ALIAS BUTTONS --%>
-<div class="row justify-content-center form-group">
-	<a class="btn btn-primary" data-toggle="collapse" href="#${rootId}aliasesTable" role="button" aria-expanded="false" aria-controls="aliasesTable">
-		Available aliases:
-	</a>
-</div>
-<div class="collapse form-group" id="${rootId}aliasesTable">
-          <div class="btn-toolbar justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
-		  <div class="btn-group mr-2" role="group" aria-label="First group">
-		  	<c:forEach items="${predicadoList}" var="alias"> 
-		  		<button style="font-size: 50%;" type="button" class="btn btn-secondary" 
-		  		onmousedown="insertAtMathjaxDiv('${rootId}', '${alias.fullLatexNotation('\\FormInput{0}', true)}', '${alias.getId().getAlias()}', true);return false;">
-		  		$$${alias.fullLatexNotation("\\Box", false)}$$
-		  		</button>
-		  	</c:forEach> 
-		  </div> 
 	   </div>
 </div>
 
 
-<div id="${rootId}MathJaxDiv" class="row justify-content-center form-group SymbolsJaxDiv">
+<div id="${rootId}MathJaxDiv" class="row form-group card text-center border-primary">
+	<div class="card-header">
+   		${labelName}
+ 	</div>
+ 	<div class="card-body d-flex align-items-center justify-content-center">
        \({}\)
+    </div>
 </div>
 
 
@@ -65,8 +61,6 @@
 	window['${rootId}' + 'jaxInputDictionary'] = {};
 	// Parser readable expression associated to the input
 	window['${rootId}' + 'parserString'] = "";
-	
-	console.log(window['${rootId}' + 'simboloDic'] );
 	
 	// If a new MathJax input gets added this sets its attributes
 	document.getElementById('${rootId}' + "MathJaxDiv").addEventListener('DOMNodeInserted', function( event ) {

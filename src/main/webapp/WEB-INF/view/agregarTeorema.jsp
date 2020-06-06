@@ -41,7 +41,8 @@
             </c:when>
           </c:choose>
               
-          <c:set var="rootId" value="teoremaSymbolsId" scope="request"/>   
+          <c:set var="rootId" value="teoremaSymbolsId" scope="request"/>  
+          <c:set var="labelName" value="Theorem:" scope="request"/>
           <tiles:insertDefinition name="symbolButtons" />
           <div class="form-group row justify-content-center">
             <button type="button" onclick="cleanJax('teoremaSymbolsId', 'teorema')" class="btn btn-default">Clean</button>

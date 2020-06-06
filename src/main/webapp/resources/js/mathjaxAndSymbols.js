@@ -36,7 +36,7 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 		        		
 		// SET THE NEW MATHJAX 
 		
-		var parentBox = "\\FormInput{" + idParentBox + "}"; // this is how the old box should look in the old text
+		var parentBox = "\\FormInput{" + idParentBox + "}"; // this is how the old box should look in the old  mathjax text
 		var idLeftChild = idParentBox + "1";
 		var idRightChild = idParentBox + "2";
 		var parserRight = '';
@@ -79,12 +79,8 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 			parserRight = tmp.slice(0, -1);
 		}
 		
-		if(replaced1 || replaced2){
-			parserExp =  parserExp + '(' + parserLeft + parserRight + ')';
-		}else{
-			parserExp = parserExp + '()';
-		}
-		
+		parserExp =  parserExp + '(' + parserLeft + parserRight + ')';
+			
 		// Update the global expression
 		var oldExpr = 'Input{' + idParentBox + '}';
 		window[ rootId + 'parserString'] = window[ rootId + 'parserString'].replace(oldExpr, parserExp);
@@ -112,7 +108,7 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 		var arguments = simboloDic[simboloId]['arguments'];
 		
 		// Rule 1
-		if(arguments > 0 && n > m && (variableName.match(/^aa?(1|2)$/))){
+		if(n > m && (variableName.match(/^aa?(1|2)$/))){
 			leftPar = '';
 			rightPar = '';
 		}
@@ -130,7 +126,7 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 		}
 		
 		// Rule 4
-		if((variableName.match(/^an(1|2)$/))){
+		if((variableName.match(/^na(1|2)$/))){
 			leftPar = '';
 			rightPar = '';
 		}
@@ -188,11 +184,8 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 		}
 		
 		// GENERATE THE NEW PARSER STRING
-		if(leftChildExists || rightChildExists){
-			parserExp =  parserExp + '(' + leftParser + rightParser + ')';
-		}else{
-			parserExp = parserExp + '()';
-		}
+		parserExp =  parserExp + '(' + leftParser + rightParser + ')';
+		
 		
 		window[ rootId + 'parserString'] = parserExp;
 			

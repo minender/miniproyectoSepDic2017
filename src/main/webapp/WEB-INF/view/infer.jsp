@@ -254,7 +254,7 @@
             
 
         </script>
-        <base href="/Miniproyecto/perfil/${usuario.login}/"/>
+        <base href="${pageContext.request.contextPath}/perfil/${usuario.login}/"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
@@ -479,7 +479,7 @@
         </div>    
           <c:choose>
           <c:when test="${!selecTeo}">
-          <form id="inferForm" action="/Miniproyecto/infer/${usuario.getLogin()}/${nTeo}/${nSol}" method="POST" style="display:none">
+          <form id="inferForm" action="${pageContext.request.contextPath}/infer/${usuario.getLogin()}/${nTeo}/${nSol}" method="POST" style="display:none">
               <%--Paso anterior:<br><sf:input path="pasoAnt" id="pasoAnt_id" value="${pasoAnt}"/><sf:errors path="pasoAnt" cssClass="error" />--%>
               <br>
               <!--<div class="nn-box-loading">
