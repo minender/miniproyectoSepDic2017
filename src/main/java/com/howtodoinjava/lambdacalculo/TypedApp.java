@@ -25,7 +25,7 @@ public class TypedApp extends App{
             try
             {
               String op = ((Const)((App)((App)t2Type).p).p).getCon().trim();
-              if (!op.equals("\\equiv") && !op.equals("="))
+              if (!op.equals("c_{1}") && !op.equals("c_{10}"))
                   throw new TypeVerificationException();
             }
             catch (ClassCastException e)
@@ -39,21 +39,21 @@ public class TypedApp extends App{
             try
             {
               String op1 = ((Const)((App)((App)t1Type).p).p).getCon().trim();
-              if (!op1.equals("\\equiv") && !op1.equals("=") && !op1.equals("\\Rightarrow") && !op1.equals("\\Leftarrow"))
+              if (!op1.equals("c_{1}") && !op1.equals("c_{10}") && !op1.equals("\\Rightarrow") && !op1.equals("\\Leftarrow"))
                   throw new TypeVerificationException();
-              if (!op1.equals("\\equiv") || !t1Izq.equals(t2Type)) 
+              if (!op1.equals("c_{1}") || !t1Izq.equals(t2Type)) 
               {
                 Term t1Der = ((App)((App)t1Type).p).q;
                 Term t2Izq = ((App)t2Type).q;
                 String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
         
-                boolean eq = op1.equals("=") && op2.equals("=");
-                boolean eqAndOp = op1.equals("\\equiv") && (op2.equals("\\equiv")
+                boolean eq = op1.equals("c_{10}") && op2.equals("c_{10}");
+                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
                         || op2.equals("\\Leftarrow") || op2.equals("\\Rightarrow"));
                 boolean leftAndOp = op1.equals("\\Leftarrow") && 
-                        (op2.equals("\\Leftarrow") || op2.equals("\\equiv"));
+                        (op2.equals("\\Leftarrow") || op2.equals("c_{1}"));
                 boolean rightAndOp = op1.equals("\\Rightarrow") && 
-                        (op2.equals("\\Rightarrow") || op2.equals("\\equiv"));
+                        (op2.equals("\\Rightarrow") || op2.equals("c_{1}"));
                 if (!((eq || eqAndOp || leftAndOp || rightAndOp) && t1Der.equals(t2Izq)))
                   throw new TypeVerificationException();
               }
@@ -91,7 +91,7 @@ public class TypedApp extends App{
            
            if (op1.equals(op2))
                return new App(new App(op1, qDer), pIzq);
-           else if (op1.getCon().trim().equals("\\equiv"))
+           else if (op1.getCon().trim().equals("c_{1}"))
                return new App(new App(op2, qDer), pIzq);
            else
                return new App(new App(op1, qDer), pIzq);
