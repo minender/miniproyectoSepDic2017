@@ -3,7 +3,7 @@ package com.howtodoinjava.entity;
 
 import com.howtodoinjava.lambdacalculo.Term;
 
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+//import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.springframework.util.SerializationUtils;
 
 

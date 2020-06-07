@@ -13,7 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
 import org.antlr.v4.parse.ANTLRParser.throwsSpec_return;
-import org.apache.naming.java.javaURLContextFactory;
+//import org.apache.naming.java.javaURLContextFactory;
 
 
 
