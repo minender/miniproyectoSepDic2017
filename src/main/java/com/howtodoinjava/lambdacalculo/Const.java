@@ -4,6 +4,7 @@
  */
 package com.howtodoinjava.lambdacalculo;
 
+import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.util.ArrayList;
@@ -226,9 +227,16 @@ public class Const extends Term
     
     @Override
     public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, Id id, int nivel){
-        String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}";
+    	Simbolo c1 = s.getSimbolo(this.id);
+        String term;
+        if (c1 != null) 
+           term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+c1.getNotacion_latex()+"}}";
+        else 
+           term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}"; 
+
         leibniz.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
         id.id++;
+        
         return term;
     }
 

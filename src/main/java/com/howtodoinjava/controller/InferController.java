@@ -270,7 +270,6 @@ public class InferController {
         String pasoPost = "";
         
         /*ArrayList<String> teoremaInicialInfo = new ArrayList();
-
         for (String retval: teoremaInicial.split("@")) {
             teoremaInicialInfo.add(retval);
         }*/
@@ -320,7 +319,6 @@ public class InferController {
             
             term = (Term) in.readObject();
             in.close();
-
         } catch (IOException ex) {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -395,7 +393,6 @@ public class InferController {
                  //   paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
                 }
                 else{
-
                     if(teoremaInicialInfo.size() == 1){
                         if (resuelInicial != null)
                           pasoAntTerm = resuelInicial.getTeorema().getTeoTerm();
@@ -489,13 +486,13 @@ public class InferController {
                 if (typedTerm.type() == null)
                 {
                     try{
-                    new TypedApp(new TypedA(new App(new App(new Const(1,"\\equiv ",false,1,1),
+                    new TypedApp(new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),
                             typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
                                                              //es valida con respecto a la primera exp
                     }
                     catch (TypeVerificationException e)
                     {
-                        new TypedApp(new TypedA(new App(new App(new Const(1,"=",false,1,1),
+                        new TypedApp(new TypedA(new App(new App(new Const(1,"c_{10}",false,1,1),
                             typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
                                                              //es valida con respecto a la primera exp
                     }
@@ -514,13 +511,13 @@ public class InferController {
                     if (typedTerm.type() == null)
                     {
                        try {
-                         new TypedApp(new TypedA(new App(new App(new Const(1,"\\equiv ",false,1,1),
+                         new TypedApp(new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),
                             typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
                                                              //es valida con respecto a la primera exp
                        }
                        catch (TypeVerificationException ex)
                        {
-                          new TypedApp(new TypedA(new App(new App(new Const(1,"=",false,1,1),
+                          new TypedApp(new TypedA(new App(new App(new Const(1,"c_{10}",false,1,1),
                              typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
                                                              //es valida con respecto a la primera exp    
                        }
@@ -571,7 +568,23 @@ public class InferController {
                     
                 Term stTeorema = resuel.getTeorema().getTeoTerm();
                 
-                if(true/*teoremaInicialInfo.size() == 1*/){//cableado para metodo directo
+                /**
+                 *
+                 * Este if debe ser suplantado por medio de un Query a la tabla solucion
+                 * a la cual se le agrega una columna nueva con la informacion de que
+                 * metodo de demostracion se esta usando
+                 * 
+                 **/
+                boolean mDirecto;
+                if (stTeorema instanceof App && ((App)stTeorema).p instanceof App) {
+                    mDirecto = !(((App)(((App)stTeorema).p)).q.equals(expIniTerm) || 
+                                 ((App)stTeorema).q.equals(expIniTerm));
+                }
+                else {
+                    mDirecto = true;
+                }
+                
+                if(mDirecto/*teoremaInicialInfo.size() == 1*/){//cableado para metodo directo
 
                     if(stTeorema.equals(expIniTerm)){
                         //buscar en bd
@@ -579,7 +592,7 @@ public class InferController {
                         Term temp;
                         for(Resuelve resu: resuelves){
                             temp = resu.getTeorema().getTeoTerm();
-                            Term mt = new App(new App(new Const("\\equiv"),new Const("true")),resu.getTeorema().getTeoTerm());
+                            Term mt = new App(new App(new Const("c_{1}"),new Const("true")),resu.getTeorema().getTeoTerm());
                             if(!temp.equals(stTeorema) &&
                                   (temp.equals(pasoPostExp) ||
                                        (mt.equals(pasoPostExp) && !mt.equals(stTeorema))
@@ -614,7 +627,17 @@ public class InferController {
                         }*/
                     }
                 }
-                //else{
+                else{
+                    if(pasoPostExp.equals(((App)stTeorema).q)){
+                        try{
+                           solucion.setTypedTerm(new TypedApp(new TypedS(type), solucion.getTypedTerm()));
+                           type = solucion.getTypedTerm().type();
+                        }
+                        catch (TypeVerificationException e){
+                           Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                        }
+                    }
+                }
 
                 if(teoremaTerm.equals(type)){
                         response.setResuelto("1");
@@ -728,8 +751,8 @@ public class InferController {
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();
         String equiv = ((Const)((App)((App)term).p).p).getCon();
-        
-        if(!equiv.startsWith("\\equiv") && !equiv.startsWith("=")){
+
+        if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{10}")){
             response.setLado("0");
             return response;
         }

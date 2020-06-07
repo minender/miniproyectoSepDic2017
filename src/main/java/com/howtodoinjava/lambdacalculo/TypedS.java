@@ -18,11 +18,11 @@ public class TypedS extends Const{
         super("S");
         String con = ((Const)((App)((App)simetry).p).p).getCon().trim();
         int id = ((Const)((App)((App)simetry).p).p).getId();
-        if (!con.equals("\\equiv") && !con.equals("="))
+        if (!con.equals("c_{1}") && !con.equals("c_{10}"))
            throw new TypeVerificationException();
         Term t1 = ((App)simetry).q;
         Term t2 = ((App)((App)simetry).p).q;
-        simetry_ = new App(new App(new Const(1,"\\equiv ",false,1,1),
+        simetry_ = new App(new App(new Const(1,"c_{1}",false,1,1),
                    new App(new App(new Const(id,con,false,1,1),t1),t2)),simetry);
     }
     

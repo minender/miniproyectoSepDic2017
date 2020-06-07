@@ -97,7 +97,6 @@
                     var form = $('#inferForm');
                     //var teoSol = $("#nSolucion").val();
                     //var teoId = $("#nTeorema").val();
-
                     //data["teoSol"] = teoSol;
                     if(this.id==='d'){
                         data["lado"] = "d";
@@ -107,13 +106,12 @@
                             dataType: 'json',
                             data: data,
                             success: function(data) {
-
                                 $('#formula').html(data.historial);
                                 MathJax.Hub.Typeset();
                                 //$('#teoremaInicial').val("ST-"+teoId + "@d");
                                 $("#inferForm").show();
                                 //$("#nuevoMetodo").val("1");
-                                var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+                                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
                                 if(nSol==="new"){
                                    //$('#nSolucion').val(data.nSol);
                                    //nSol = $('#nSolucion').val();
@@ -135,18 +133,17 @@
                         dataType: 'json',
                         data: data,
                         success: function(data) {
-
                             $('#formula').html(data.historial);
                             MathJax.Hub.Typeset();
                             //$('#teoremaInicial').val("ST-"+teoId + "@i");
                             $("#inferForm").show();
                             //$("#nuevoMetodo").val("1");
-                            var nSol = $(form).attr('action').split('/')[5];//$('#nSolucion').val();
+                            var nSol = $(form).attr('action').split('/').pop();//$('#nSolucion').val();
                             if(nSol==="new"){
                                 //$('#nSolucion').val(data.nSol);
                                 //nSol = $('#nSolucion').val();
                                 var url = $(form).attr('action');
-                                url = url.substring(0,url.length-3)+nSol;
+                                url = url.substring(0,url.length-3)+data.nSol;
                                 $(form).attr('action',url);
                             }
                         },
@@ -176,7 +173,6 @@
                     return isNumeric
                     
                 }
-
                 $('#formula').on("mouseup",function(event){
                     //Obtiene toda la expresion bien formada que se puede sustituir
                     var total_expression = $(".0")[0];
@@ -224,8 +220,6 @@
                             if (!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element)){
                                 last_element = $("#0")[0]
                             }
-
-
                             //Obtenemos el id del primer elemento
                             idt2=last_element.id;
                             //Si ambos id son iguales, se puede obtener la subexpresion
@@ -235,7 +229,6 @@
                             //Si no, se usa leibnizMouse(para obtener el comun entre ellos)
                             else{   
                                     var nivel_last_element = $(last_element).attr('class');
-
                                     if (nivel_last_element && nivel_last_element.length >= 2){
                                         nivel_last_element = nivel_last_element.split(" ")[1];
                                         var id_last_element = $(last_element).attr("id");
@@ -243,7 +236,6 @@
                                         leibnizMouse(p1,p2)
                                                                     
                                 }
-
                                 
                             }
                         
@@ -252,7 +244,6 @@
                 
 })
             
-
         </script>
         <base href="${pageContext.request.contextPath}/perfil/${usuario.login}/"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
@@ -324,8 +315,8 @@
                 </c:choose>
                 </div>
               <c:forEach items="${showCategorias}" var="cat"> 
-                  <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-${cat.getNombre()}" role="button" aria-expanded="false" aria-controls="collapse-${cat.getNombre()}" class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
-                      <ul id="collapse-${cat.getNombre()}" class="collapse">
+                  <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href='#collapse-${cat.getNombre().replaceAll(" ","-")}' role="button" aria-expanded="false" aria-controls='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
+                      <ul id='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse">
                     <c:forEach items="${resuelves}" var="resu">
                       <c:choose>
                         <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
@@ -392,7 +383,6 @@
 
                                         <%--<span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
                                            <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-
                                            <c:choose>
                                                 <c:when test="${resu.isResuelto()}">
                                                     <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
@@ -401,9 +391,7 @@
                                                     <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
                                                 </c:otherwise>
                                             </c:choose>
-
                                             (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$  
-
                                            <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
                                        </span>--%>
                                         </c:otherwise>
@@ -466,7 +454,6 @@
                     elem.style.display = "none";
                 else
                     elem.style.display = "inline";
-
             };
         
             //function getMetateo(id) {
@@ -551,8 +538,8 @@
                      }else{
                         newRows=''
                         for (i=0;i<categories.length;i++){
-                            newRows = newRows + '<li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-' + categories[i].categoryname + '" role="button" aria-expanded="false" aria-controls="collapse-' + categories[i].categoryname + '" class="collapse-link">' + categories[i].categoryname + '</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4>';
-                            newRows = newRows + '<ul id="collapse-' + categories[i].categoryname + '" class="collapse">';
+                            newRows = newRows + '<li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-' + categories[i].categoryname.split(" ").join("-") + '" role="button" aria-expanded="false" aria-controls="collapse-' + categories[i].categoryname.split(" ").join("-") + '" class="collapse-link">' + categories[i].categoryname + '</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4>';
+                            newRows = newRows + '<ul id="collapse-' + categories[i].categoryname.split(" ").join("-") + '" class="collapse">';
                             for (j=0;j < teoremas.length ;j++){
                                 if (teoremas[j].categoryid == categories[i].categoryid){
                                     <c:choose>
@@ -561,7 +548,6 @@
                                         </c:when>
                                         <c:otherwise>
                                             if  (${!selecTeo} && teoremas[j].numeroteorema == ""){                     
-
                                         </c:otherwise>
                                     </c:choose>
                                         newRows = newRows + '<li id="currentTeo" style="list-style: none;">'
@@ -644,7 +630,6 @@
                                        
                                        
                                    }
-
                                 }
                                 newRows = newRows + "</ul></li>"
                             }
@@ -663,15 +648,12 @@
                         $("#currentTeo").hide();
                     }
                         document.body.appendChild(script);
-
                      }
-
                 
                  });
         }
         document.getElementById("saveConfig").onclick = function(){
             guardarMostrarCategorias();
-
         }
           </script>
                     <script>
@@ -684,11 +666,8 @@
                       $(this).next().removeClass("fa-chevron-up");
                       $(this).next().addClass("fa-chevron-down");
                   }
-
               })
           </script>
-
     <tiles:insertDefinition name="footer" /> 
     </body>
-
 </html>

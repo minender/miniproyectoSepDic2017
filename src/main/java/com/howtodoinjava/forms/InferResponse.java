@@ -298,7 +298,8 @@ public class InferResponse {
                 primExp = ((App)aux).q.toStringInfFinal(s)+(aux.equals(goal)?equanimityHint:"");
               } 
           
-              String op = ((Const)((App)((App)ultInf.type()).p).p).getCon().trim();
+              int conId = ((Const)((App)((App)ultInf.type()).p).p).getId();
+              String op = s.getSimbolo(conId).getNotacion_latex();
               Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
               if (theo == null)
               {
