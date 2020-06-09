@@ -634,7 +634,7 @@ public class App extends Term{
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
         String term = sub.replace("\\class{"+nivel+"}{"+sym.getNotacion()+"}");
         term = "\\cssId{"+id.id+"}{"+term+"}";
-        l.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
+        l.add(t.leibniz(z, this).toStringFormatC(s).replace("\\", "\\\\"));
         id.id++;
         return new IntXIntXString(sym.getId(),sym.getPr(),term);
     }
@@ -642,83 +642,31 @@ public class App extends Term{
     public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, Id id, int nivel)
     {
         return privateToStringInfLabeled(s, z, t, l, id, nivel).x3;
-        /*String term;
-        Const c1, c2;
-        System.out.println(this.toString());
-        if ( p instanceof Const && q instanceof App && ((App) q).p instanceof Const && 
-              (c1 = (Const)p) != null && (c2 = (Const)((App) q).p) != null &&
-             !c1.funNotation && ( c2.preced > c1.preced  || (c2.preced == c1.preced && c1.asociat == 1) )    ) 
-           // Const(Const p)
-           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
-           // agregas lambda z. Const z, lambda z. Const (Const z) y lambda z.z dentro de un contexto E es decir
-        else if ( p instanceof Const && q instanceof App && ((App)q).p instanceof App && ((App)((App)q).p).p instanceof Const &&
-                  (c1 = (Const)p) != null && (c2 = (Const)((App)((App)q).p).p ) != null  && 
-                  !c1.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c1.asociat == 1) ))
-           // Const(Const p q)
-           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+c1.toStringInf(null,"") +"} "+ q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
-        else if ( p instanceof App && q instanceof App && ((App)p).p instanceof Const && ((App)q).p instanceof Const &&
-                  (c1 = (Const)((App)p).p ) != null && (c2 = (Const)((App)q).p) != null && 
-                  !c2.funNotation && (c2.preced > c1.preced || (c2.preced == c1.preced && c2.asociat ==0)))
-           // Const p (Const q)
-            if ((new App(new App(c1,((App)p).q),new Const(""))).toStringInfFinal(null).endsWith(")"))
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+ ((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
-            else
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+ ((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
-        else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && ((App)((App)p).q).p instanceof Const &&
-                  (c1 = (Const)((App)p).p) != null && (c2 = (Const)((App)((App)p).q).p) != null)
-            if (new App(new App(c1,new Const("")),q).toStringInfFinal(null).startsWith("("))
-               term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
-            else
-               term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}"; 
-        else if ( p instanceof Const )
-           // Const p
-           term = "\\class{"+nivel+"}{(\\class{terminoClick}{"+p.toStringInf(null,"")+"}"+q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
-        else if ( p instanceof App && ((App)p).p instanceof App )
-           // (App p) q
-        {
-           Stack<String> stk = new Stack<String>();
-           stk.push(q.toStringInfFinal(null));
-           Term aux = p;
-           while ( aux instanceof App )
-           {
-              stk.add(((App)aux).q.toStringInfFinal(null));
-              aux = ((App)aux).p;
-           }
-           String termStr = aux.toStringInf(null,"")+" ( "+stk.pop();
-           while ( !stk.empty() )
-              termStr = termStr + " , " + stk.pop();
-           term = termStr + " )";
-           return term;
-        }
-        else if ( p instanceof App && ((App)p).p instanceof Const && ((App)p).q instanceof App && 
-                
-                  ((App)((App)p).q).p instanceof App && ((App)((App)((App)p).q).p).p instanceof Const && 
-                  (c1 = (Const)((App)p).p)!= null && (c2 = (Const)((App)((App)((App)p).q).p).p)!=null &&
-                  (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 1)))
-           // Const (Const p q) r
-            if (new App(new App(c1,new Const("")),q).toStringInfFinal(null).startsWith("("))
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
-            else
-              term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";  
-        else if ( p instanceof App && ((App)p).p instanceof Const && q instanceof App && ((App)q).p instanceof App &&
-                  ((App)((App)q).p).p instanceof Const && 
-                  (c1 = (Const)((App)p).p)!= null && (c2 = (Const)((App)((App)q).p).p) != null &&
-                  (c2.preced > c1.preced ||(c2.preced == c1.preced && c2.asociat == 0)))
-           // (Const p)(Const p q)
-           if (new App(new App(c1,((App)p).q),new Const("")).toStringInfFinal(null).endsWith(")"))
-             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
-           else
-             term = "\\class{"+nivel+"}{("+q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+c1.toStringInf(null,"")+"} "+((App)p).q.toStringInfLabeledFinal(z,t,l,id,nivel+1)+")}";
-        else if ( p instanceof App && ((App)p).p instanceof Const )
-           // Const p q
-           term = "\\class{"+nivel+"}{("+q.toStringInfLabeled(z,t,l,id,nivel+1)+" \\class{terminoClick}{"+((App)p).p.toString()+"} "+((App)p).q.toStringInfLabeled(z,t,l,id,nivel+1)+")}";
-        else
-           term = this.toString();
-        term = "\\cssId{"+id.id+"}{"+term+"}";
-        l.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
-        id.id++;
-        return term;*/
     }   
+    
+    public String toStringFormatC(SimboloManager s) {
+        
+        Stack<Term> stk = new Stack<Term>();
+        String term;
+        stk.push(q);
+        Term aux = p;
+        while ( aux instanceof App )
+        {
+           stk.push(((App)aux).q);
+           aux = ((App)aux).p;
+        }
+        Const c = (Const) aux;
+        Simbolo sym = s.getSimbolo(c.getId());
+        term = "C"+sym.getId();
+        int i=0;
+        while (!stk.empty()) {
+         Term arg = stk.pop();
+         term += (i == 0?"(":",")+arg.toStringFormatC(s);
+         i++;
+        }
+        
+        return term+")";
+    }
     
     public ToString toStringAbrv(ToString toString)
     {

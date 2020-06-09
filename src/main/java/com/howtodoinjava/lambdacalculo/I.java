@@ -154,6 +154,11 @@ public class I extends Term {
             return ""; //"|";
     }
         
+    @Override
+    public String toStringFormatC(SimboloManager s)
+    {
+        return toString();
+    }
     
     public String toStringInFin() {
         return ""; //"|";

@@ -221,6 +221,13 @@ public class Bracket extends Term{
         }
     }
     
+    @Override
+    public String toStringFormatC(SimboloManager s)
+    {
+        char ascii = (char) x.indice; 
+        return "(\\lambda "+ascii+"."+t.toStringFormatC(s)+")";
+    }
+    
     public ToString toStringAbrv(ToString toString)
     {
         if(t.alias == null)

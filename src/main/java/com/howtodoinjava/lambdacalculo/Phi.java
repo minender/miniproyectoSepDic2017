@@ -160,6 +160,12 @@ public class Phi extends Term{
         return "\\Phi_{"+ind.toString()+"}";
     }
     
+    @Override
+    public String toStringFormatC(SimboloManager s)
+    {
+        return toString();
+    }
+    
     public ToString toStringAbrvV1(ToString toString)
     {
         toString.term=this.toString();

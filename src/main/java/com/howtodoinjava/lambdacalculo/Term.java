@@ -150,6 +150,8 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract String toStringInfLabeled(SimboloManager s,int z, Term initTerm, List<String> leibniz, Id id, int nivel);
     
+    public abstract String toStringFormatC(SimboloManager s);
+    
     public abstract ToString toStringAbrvV1(ToString toString);
     
     public abstract ToString toStringAbrv(ToString toString);

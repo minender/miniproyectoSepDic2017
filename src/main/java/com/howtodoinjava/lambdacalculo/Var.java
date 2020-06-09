@@ -183,13 +183,18 @@ public class Var extends Term{
     
     public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, Id id, int nivel){
         id.id++;
-        leibniz.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringFormatC(s).replace("\\", "\\\\"));
         if(alias == null ) {
             char ascii = (char) indice; 
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+ascii+"}}";
         }else {
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+alias+"}}";
         }
+    }
+    
+    public String toStringFormatC(SimboloManager s) {
+        char ascii = (char) indice; 
+            return ""+ascii;
     }
     
     /*@Override

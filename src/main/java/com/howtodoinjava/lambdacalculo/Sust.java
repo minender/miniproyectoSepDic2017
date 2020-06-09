@@ -199,6 +199,11 @@ public class Sust extends Term{
         return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{["+varss+" := "+termss+"]}}";
     }
 
+    @Override
+    public String toStringFormatC(SimboloManager s)
+    {
+        return toString();
+    }
     /*public String toStringInFin() {
         String varss = "";
         String termss = "";

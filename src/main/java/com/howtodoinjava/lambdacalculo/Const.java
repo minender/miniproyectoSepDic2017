@@ -234,8 +234,20 @@ public class Const extends Term
         else 
            term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}"; 
 
-        leibniz.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringFormatC(s).replace("\\", "\\\\"));
         id.id++;
+        
+        return term;
+    }
+    
+    @Override
+    public String toStringFormatC(SimboloManager s){
+        Simbolo c1 = s.getSimbolo(this.id);
+        String term;
+        if (c1 != null) 
+           term = "C"+c1.getId()+"()";
+        else 
+           term = con; 
         
         return term;
     }
