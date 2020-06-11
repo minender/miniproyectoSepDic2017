@@ -219,14 +219,15 @@ public class Const extends Term
         
     @Override
     public String toStringInf(SimboloManager s,String numTeo) {
-        if (id == 0)
+        Simbolo c1 = s.getSimbolo(this.id);
+        if (c1 == null)
            return con;
         else
-           return s.getSimbolo(id).getNotacion_latex();
+           return c1.getNotacion_latex();
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, List<String> leibnizL, Id id, int nivel){
         Simbolo c1 = s.getSimbolo(this.id);
         String term;
         if (c1 != null) 
@@ -234,14 +235,15 @@ public class Const extends Term
         else 
            term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}"; 
 
-        leibniz.add(t.leibniz(z, this).toStringFormatC(s).replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
+        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
         id.id++;
         
         return term;
     }
     
     @Override
-    public String toStringFormatC(SimboloManager s){
+    public String toStringFormatC(SimboloManager s, String pos, int id){
         Simbolo c1 = s.getSimbolo(this.id);
         String term;
         if (c1 != null) 
@@ -250,6 +252,15 @@ public class Const extends Term
            term = con; 
         
         return term;
+    }
+    
+    @Override
+    public String toStringWithInputs(SimboloManager s, String position) {
+        Simbolo c1 = s.getSimbolo(this.id);
+        if (c1 == null)
+           return con;
+        else
+           return c1.getNotacion_latex();
     }
 
     /*public Tripla toStringInfLabeled(Id id, int nivel, Tripla tri){

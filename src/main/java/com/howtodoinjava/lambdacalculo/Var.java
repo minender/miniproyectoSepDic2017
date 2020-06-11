@@ -181,9 +181,11 @@ public class Var extends Term{
         }
     }
     
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, Id id, int nivel){
+    @Override
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, List<String> leibnizL, Id id, int nivel){
         id.id++;
-        leibniz.add(t.leibniz(z, this).toStringFormatC(s).replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
+        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
         if(alias == null ) {
             char ascii = (char) indice; 
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+ascii+"}}";
@@ -192,9 +194,20 @@ public class Var extends Term{
         }
     }
     
-    public String toStringFormatC(SimboloManager s) {
+    @Override
+    public String toStringFormatC(SimboloManager s,String pos,int id) {
         char ascii = (char) indice; 
-            return ""+ascii;
+            return "Input{"+ascii+",leibnizSymbolsId"+pos+",phatherOpId"+(id!=0?id:"")+"}";
+    }
+    
+    @Override
+    public String toStringWithInputs(SimboloManager s, String position) {
+        if(alias == null ) {
+            char ascii = (char) indice; 
+            return "\\FormInput{leibnizSymbolsId"+position+"}";
+        }else {
+            return alias;
+        }
     }
     
     /*@Override

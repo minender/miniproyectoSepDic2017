@@ -150,12 +150,12 @@ public class I extends Term {
     }     
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, List<String> l2, Id id, int nivel){
             return ""; //"|";
     }
         
     @Override
-    public String toStringFormatC(SimboloManager s)
+    public String toStringFormatC(SimboloManager s, String pos, int id)
     {
         return toString();
     }
@@ -168,6 +168,10 @@ public class I extends Term {
         return ""; //"|:";
     }
     
+    @Override
+    public String toStringWithInputs(SimboloManager s, String position) {
+        return "";
+    }
     
     public ToString toStringAbrvV1(ToString toString)
     {

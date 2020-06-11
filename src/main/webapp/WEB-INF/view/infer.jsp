@@ -23,10 +23,10 @@
         
         <script type="text/x-mathjax-config">
           MathJax.Hub.Config({
-          tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-          processEscapes: true
-          }
+          extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
+          jax: ["input/TeX","output/HTML-CSS"],
+          tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true},
+          TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}
          });
         </script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -230,7 +230,7 @@
                             idt2=last_element.id;
                             //Si ambos id son iguales, se puede obtener la subexpresion
                             if(idt1 === idt2){
-                            $('#leibniz_id').val(leibniz[idt1]);
+                            leibnizMouse(idt1,idt2)
                             }
                             //Si no, se usa leibnizMouse(para obtener el comun entre ellos)
                             else{   
@@ -501,7 +501,7 @@
               </select>--%>
               <br>
               Substitution:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
-              Leibniz:<br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
+              Leibniz: <span id="leibniz_latex_id">$ { } $</span><br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
               <br>
               <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Infer"/> 
               <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Go back"> 

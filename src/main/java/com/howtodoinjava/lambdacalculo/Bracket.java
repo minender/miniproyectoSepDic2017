@@ -209,9 +209,11 @@ public class Bracket extends Term{
         }//.split("@")[0].replace("_", "\\_") +")";
     }
     
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, Id id, int nivel){
+    @Override
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, List<String> leibnizL, Id id, int nivel){
         id.id++;
         leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
+        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal(null)+"."+t.toStringInfFinal(null)+")}}";
@@ -222,10 +224,16 @@ public class Bracket extends Term{
     }
     
     @Override
-    public String toStringFormatC(SimboloManager s)
+    public String toStringFormatC(SimboloManager s, String pos, int id)
     {
         char ascii = (char) x.indice; 
-        return "(\\lambda "+ascii+"."+t.toStringFormatC(s)+")";
+        return "(\\lambda "+ascii+"."+t.toStringFormatC(s,pos,id)+")";
+    }
+    
+    @Override
+    public String toStringWithInputs(SimboloManager s, String position) {
+        char ascii = (char) x.indice; 
+        return "(E^{"+ascii+"}:"+t.toStringWithInputs(s,position)+")";
     }
     
     public ToString toStringAbrv(ToString toString)

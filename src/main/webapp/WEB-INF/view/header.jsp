@@ -10,7 +10,7 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
         <c:choose>
           <c:when test='${!perfilMenu.equals("active") && !agregarTeoremaMenu.equals("active")}'>
-            <script type="text/x-mathjax-config">
+           <script type="text/x-mathjax-config">
               MathJax.Hub.Config({
               tex2jax: {
               inlineMath: [ ['$','$'], ["\\(","\\)"] ],

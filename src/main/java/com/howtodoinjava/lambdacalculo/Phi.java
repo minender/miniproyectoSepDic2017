@@ -148,9 +148,11 @@ public class Phi extends Term{
         return "\\Phi_{"+ind.toString()+"}";
     }
     
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, Id id, int nivel){
+    @Override
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, List<String> leibnizL, Id id, int nivel){
         String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{\\Phi_{"+ind.toString()+"}}}";
-        leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
+        leibnizL.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
         id.id++;
         return term;
     }
@@ -161,9 +163,14 @@ public class Phi extends Term{
     }
     
     @Override
-    public String toStringFormatC(SimboloManager s)
+    public String toStringFormatC(SimboloManager s, String pos, int id)
     {
         return toString();
+    }
+    
+    @Override
+    public String toStringWithInputs(SimboloManager s, String position) {
+        return "\\Phi_{"+ind.toString()+"}";
     }
     
     public ToString toStringAbrvV1(ToString toString)

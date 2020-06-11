@@ -586,7 +586,60 @@ public class App extends Term{
         */
     }
     
-    private IntXIntXString privateToStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, 
+    private IntXIntXString privateToStringWithInputs(SimboloManager s, String position) {
+        
+        Stack<Term> stk = new Stack<Term>();
+        stk.push(q);
+        Term aux = p;
+        while ( aux instanceof App )
+        {
+           stk.push(((App)aux).q);
+           aux = ((App)aux).p;
+        }
+        Const c = (Const) aux;
+        Simbolo sym = s.getSimbolo(c.getId());
+        
+        Map<String,String> values = new HashMap<String, String>();
+        values.put("op", sym.getNotacion_latex());
+        String notation = sym.getNotacion();
+        int i = 1;
+        while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
+         Term arg = stk.pop();
+         if (notation.contains("%(na"+i+")"))
+               values.put("na"+i,arg.toStringWithInputs(s,position+i));
+         else if (notation.contains("%(a"+i+")"))
+         {
+           if (arg instanceof App)
+           {
+            IntXIntXString tuple = ((App) arg).privateToStringWithInputs(s,position+i);
+            values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
+           }
+           else
+            values.put("a"+i,arg.toStringWithInputs(s,position+i));
+         }
+         else if (notation.contains("%(aa"+i+")"))
+         {
+          if (arg instanceof App)
+          {
+           IntXIntXString tuple = ((App) arg).privateToStringWithInputs(s,position+i);
+           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
+          }
+          else
+           values.put("aa"+i,arg.toStringWithInputs(s,position+i));
+         }
+          i++;
+        }
+        
+        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
+        return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace("\\ {"+sym.getNotacion()+"}\\"));
+    }
+
+    public String toStringWithInputs(SimboloManager s, String position)
+    {
+        return privateToStringWithInputs(s,position).x3;
+    }
+    
+    private IntXIntXString privateToStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, List<String> l2, 
                                                      Id id, int nivel) {
         
         Stack<Term> stk = new Stack<Term>();
@@ -607,26 +660,26 @@ public class App extends Term{
         while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
          Term arg = stk.pop();
          if (notation.contains("%(na"+i+")"))
-               values.put("na"+i,arg.toStringInfLabeled(s,z,t,l,id,nivel+1));
+               values.put("na"+i,arg.toStringInfLabeled(s,z,t,l,l2,id,nivel+1));
          else if (notation.contains("%(a"+i+")"))
          {
            if (arg instanceof App)
            {
-            IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,id,nivel+1);
+            IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,l2,id,nivel+1);
             values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
            }
            else
-            values.put("a"+i,arg.toStringInfLabeled(s,z,t,l,id,nivel+1));
+            values.put("a"+i,arg.toStringInfLabeled(s,z,t,l,l2,id,nivel+1));
          }
          else if (notation.contains("%(aa"+i+")"))
          {
           if (arg instanceof App)
           {
-           IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,id,nivel+1);
+           IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,l2,id,nivel+1);
            values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
           }
           else
-           values.put("aa"+i,arg.toStringInfLabeled(s,z,t,l,id,nivel+1));
+           values.put("aa"+i,arg.toStringInfLabeled(s,z,t,l,l2,id,nivel+1));
          }
           i++;
         }
@@ -634,17 +687,19 @@ public class App extends Term{
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
         String term = sub.replace("\\class{"+nivel+"}{"+sym.getNotacion()+"}");
         term = "\\cssId{"+id.id+"}{"+term+"}";
-        l.add(t.leibniz(z, this).toStringFormatC(s).replace("\\", "\\\\"));
+        l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
+        l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
         id.id++;
         return new IntXIntXString(sym.getId(),sym.getPr(),term);
     }
     
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, Id id, int nivel)
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> l1, List<String> l2, Id id, int nivel)
     {
-        return privateToStringInfLabeled(s, z, t, l, id, nivel).x3;
+        return privateToStringInfLabeled(s, z, t, l1, l2, id, nivel).x3;
     }   
     
-    public String toStringFormatC(SimboloManager s) {
+    @Override
+    public String toStringFormatC(SimboloManager s, String pos, int id) {
         
         Stack<Term> stk = new Stack<Term>();
         String term;
@@ -657,11 +712,12 @@ public class App extends Term{
         }
         Const c = (Const) aux;
         Simbolo sym = s.getSimbolo(c.getId());
-        term = "C"+sym.getId();
-        int i=0;
+        id = sym.getId();
+        term = "C"+id;
+        int i=1;
         while (!stk.empty()) {
          Term arg = stk.pop();
-         term += (i == 0?"(":",")+arg.toStringFormatC(s);
+         term += (i == 1?"(":",")+arg.toStringFormatC(s,pos+i,id);
          i++;
         }
         

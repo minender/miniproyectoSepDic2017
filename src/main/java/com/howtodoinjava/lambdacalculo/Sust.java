@@ -182,7 +182,7 @@ public class Sust extends Term{
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term init, List<String> leibniz, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term init, List<String> leibniz, List<String> leibnizL, Id id, int nivel){
         id.id++;
         String varss = "";
         String termss = "";
@@ -195,12 +195,13 @@ public class Sust extends Term{
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
          leibniz.add(init.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
+         leibnizL.add(init.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
         
         return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{["+varss+" := "+termss+"]}}";
     }
 
     @Override
-    public String toStringFormatC(SimboloManager s)
+    public String toStringFormatC(SimboloManager s, String pos, int id)
     {
         return toString();
     }
@@ -218,6 +219,22 @@ public class Sust extends Term{
         
         return "["+varss+" := "+termss+"]";
     }*/
+    
+    @Override
+    public String toStringWithInputs(SimboloManager s, String position) {
+        String varss = "";
+        String termss = "";
+        for (Var v : vars)
+            varss += v.toStringInf(s,"")+",";
+        
+        for (Term t : terms)
+            termss += t.toStringInfFinal(s)+",";
+        
+         varss = varss.substring(0, varss.length()-1);
+         termss = termss.substring(0, termss.length()-1);
+        
+        return "["+varss+" := "+termss+"]";
+    }
     
     public ToString toStringAbrvV1(ToString toString)
     {
