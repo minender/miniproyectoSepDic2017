@@ -4,7 +4,9 @@ import com.howtodoinjava.entity.Categoria;
 import com.howtodoinjava.entity.Dispone;
 import com.howtodoinjava.entity.PredicadoId;
 import com.howtodoinjava.entity.MostrarCategoria;
+import com.howtodoinjava.entity.Predicado;
 import com.howtodoinjava.entity.Resuelve;
+import com.howtodoinjava.entity.Simbolo;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
 import com.howtodoinjava.entity.TerminoId;
@@ -110,6 +112,12 @@ public class InferController {
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
+        
+        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = PerfilController.simboloDictionaryCode(simboloList, predicadoList);
+        
         map.addAttribute("usuario",usr);
         map.addAttribute("infer",infersForm);
         map.addAttribute("mensaje","");
@@ -135,6 +143,9 @@ public class InferController {
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("showCategorias",showCategorias);
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
@@ -236,6 +247,12 @@ public class InferController {
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
+        
+        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = PerfilController.simboloDictionaryCode(simboloList, predicadoList);
+        
         map.addAttribute("usuario",usr);
         map.addAttribute("guardarMenu","");
         map.addAttribute("selecTeo",false);
@@ -256,6 +273,9 @@ public class InferController {
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("showCategorias",showCategorias);
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
 
         //map.addAttribute("makeTerm",new MakeTerm());

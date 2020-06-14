@@ -116,10 +116,9 @@ function leibnizMouse(p1,p2){
     if(p1[0] == p2[0]){
 
     	resp = p1[0];
-        $('#leibniz_id').val(leibniz[resp]);
-        //$('#leibniz_latex_id').html('$'+leibnizLatex[resp]+'$');
-        var math = MathJax.Hub.getAllJax('leibniz_latex_id')[0];
-        MathJax.Hub.Queue(["Text",math,leibnizLatex[resp]]);
+        
+    	// Modify notation properly and set it to the view
+        $('#leibniz_id').val(inferRecoverC(leibniz[resp], leibnizLatex[resp]));
         return;
     }  
     if(p1[1] <= p2[1]){
@@ -156,10 +155,10 @@ function leibnizMouse(p1,p2){
             resp = $("#" + padres[0]).parent().attr("id");      
         }
     }
-    $('#leibniz_id').val(leibniz[resp]);
-    //$('#leibniz_latex_id').html('$'+leibnizLatex[resp]+'$');
-    var math = MathJax.Hub.getAllJax('leibniz_latex_id')[0];
-    MathJax.Hub.Queue(["Text",math,leibnizLatex[resp]]);
+    
+    // Modify notation properly and set it to the view
+    $('#leibniz_id').val(inferRecoverC(leibniz[resp], leibnizLatex[resp]));
+    
     return;
 }
 

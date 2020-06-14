@@ -468,7 +468,7 @@
                     elem.style.display = "inline";
 
             };
-        
+            
             //function getMetateo(id) {
             
             //}
@@ -499,17 +499,38 @@
                       <option value="${cat.getId()}" >${cat.getCategoria().getNombre()} - ${cat.getEnunciadoizq()} == ${cat.getEnunciadoder()}</option>
                   </c:forEach>  
               </select>--%>
+              
+              
               <br>
               Substitution:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
-              Leibniz: <span id="leibniz_latex_id">$ { } $</span><br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
+              
+              <c:set var="rootId" value="substitutionSymbolsId" scope="request"/>
+          	  <c:set var="labelName" value="Substitution:" scope="request"/>
+		  	  <tiles:insertDefinition name="symbolButtons" />
+              
+              Leibniz: <br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
               <br>
-              <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Infer"/> 
+              
+              <c:set var="rootId" value="leibnizSymbolsId" scope="request"/>
+          	  <c:set var="labelName" value="Leibniz:" scope="request"/>
+          	  <c:set var="prefixMathJax" value="E^{z}: " scope="request"/>
+          	  <c:set var="prefixCnotation" value="lambda z." scope="request"/>
+		  	  <tiles:insertDefinition name="symbolButtons" />
+              
+              <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Infer"
+              onclick="setInputValueOnParser('substitutionSymbolsId', 'instanciacion_id'); setInputValueOnParser('leibnizSymbolsId', 'leibniz_id')"/> 
               <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Go back"> 
-              <input id="BtnLimpiar" class="btn" type="button" value="Clean">
+              <input id="BtnLimpiar" class="btn" type="button" value="Clean"
+              onclick="cleanJax('substitutionSymbolsId', 'instanciacion_id'); cleanJax('leibnizSymbolsId', 'leibniz_id')">
               <input id="Btn" type="hidden" name="submitBtn" value=""/>
               <%--<input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>
               <input type="hidden" id="nuevoMetodo" name="nuevoMetodo" value="0"/>--%>
-          <form> 
+          </form>
+          
+          
+          
+		  
+		  
           </c:when>
           </c:choose>
               <a href="misTeoremas" id="linkDemostrar" style="display:none"></a>
@@ -686,6 +707,7 @@
                   }
 
               })
+        
           </script>
 
     <tiles:insertDefinition name="footer" /> 

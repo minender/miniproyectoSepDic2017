@@ -17,6 +17,7 @@ import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.entity.Teorema;
 import com.howtodoinjava.entity.Teoria;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -778,7 +779,7 @@ public class PerfilController {
      * @param simboloList symbol list to make the dictionary
      * @return string in dictionary format
      */
-    public String simboloDictionaryCode(List<Simbolo> simboloList, 	List<Predicado> predicadoList) {
+    public static String simboloDictionaryCode(List<Simbolo> simboloList, 	List<Predicado> predicadoList) {
     	
     	// List of char where we'll store the answer
     	StringBuilder result = new StringBuilder("{");
@@ -787,6 +788,7 @@ public class PerfilController {
     	String precedenceString;
     	String simboloString;
     	String notacionVariables;
+    	String notacionString;
     	
     	//Add every symbol to the dictionary
     	for (Simbolo simbolo : simboloList) {
@@ -795,6 +797,7 @@ public class PerfilController {
     		argumentsString = String.valueOf(simbolo.getArgumentos());
     		precedenceString = String.valueOf(simbolo.getPrecedencia());
     		notacionVariables = simbolo.getNotacionVariables().toString();
+    		notacionString = simbolo.getNotacion();
     		
     		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + "}"; 
     		result.append(idString+":  " + simboloString + ",");
@@ -807,6 +810,7 @@ public class PerfilController {
     		idString = alias.getId().getAlias();
     		argumentsString = String.valueOf(alias.getArgumentos().split(",").length);
     		notacionVariables = alias.getNotacionVariables().toString();
+    		notacionString = alias.getNotacion();
     		
     		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + ", numericId: -1" +  "}"; 
     		result.append(idString+":  " + simboloString + ",");

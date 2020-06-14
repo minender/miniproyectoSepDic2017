@@ -25,6 +25,9 @@
             	<div class="col-lg-3">
               		<sf:input path="alias" id="termino_alias" value="${alias}" class="form-control"/><sf:errors path="alias" cssClass="error" /><br/>
             	</div>
+           </div>
+           
+           <div class="form-group row justify-content-center">
              <label for="termino_notacion" class="col-lg-1 col-form-label">Notation:</label>
              	<div class="col-lg-3">
             		<sf:input path="notacion" id="termino_notacion" class="form-control"/><sf:errors path="notacion" cssClass="error" /><br/>

@@ -85,7 +85,7 @@ public abstract class notacionOwner {
     	
     	// If we are inserting a form input we need to know in order to add a proper id
     	boolean forminput = false;
-    	String newId = "{1}";
+    	String newId;
     
     	if( newVariables.length() > 11 && newVariables.substring(0, 10).equals("\\FormInput")) {
     		forminput = true;
@@ -138,8 +138,8 @@ public abstract class notacionOwner {
     				
     				// In case we are seeing a forminput we must change its id
     				if(forminput) {
+    					newId = "{" + notacionString.charAt(i-1) + "}";
     					currentVariable = currentVariable.replaceFirst("\\{.*\\}", newId);
-    					newId = "{2}";
     				}
     			}
     			

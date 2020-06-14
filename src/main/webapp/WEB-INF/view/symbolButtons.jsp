@@ -61,6 +61,21 @@
 	window['${rootId}' + 'jaxInputDictionary'] = {};
 	// Parser readable expression associated to the input
 	window['${rootId}' + 'parserString'] = "";
+	// Prefix for the jax element
+	window['${rootId}' + 'prefixMathJax'] = '${prefixMathJax}';
+	// Prefix for the C notation
+	window['${rootId}' + 'prefixCnotation'] = '${prefixCnotation}';
+	
+	// IMPORTANT: there is some weird bug in mathjax forms were the first time you create a form 
+	// it gets deleted and duplicated by mathjax, so you cant work with the first instance, because 
+	// all you do with it will get deleted and overwritten by a new fresh FormInput
+	// THIS takes cares of it 
+	setTimeout(function() {
+		preSet('${rootId}');
+	}, 1000);
+	
+	
+	
 	
 	// If a new MathJax input gets added this sets its attributes
 	document.getElementById('${rootId}' + "MathJaxDiv").addEventListener('DOMNodeInserted', function( event ) {

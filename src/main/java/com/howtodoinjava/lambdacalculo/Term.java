@@ -202,11 +202,11 @@ public abstract class Term implements Cloneable, Serializable{
         String st = this.toStringInfLabeled(s,z, this, l1, l2, new Id(), 0)+"$\n";
         st+="<script>\nvar leibniz=[";
         for(String it: l1)
-            st+="\n\"lambda "+new Var(z).toStringInf(null,"")+"."+it+"\",";        
+            st+="\n\""+it+"\",";        
         st = st.substring(0, st.length()-1)+"];\n";
         st += "leibnizLatex=[";
         for(String it: l2)
-            st+="\n\"E^{"+new Var(z).toStringInf(null,"")+"}:"+it+"\",";        
+            st+="\n\""+it+"\",";        
         st = st.substring(0, st.length()-1)+"];\n</script>";
         return st;
     }
