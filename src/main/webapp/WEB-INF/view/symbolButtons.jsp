@@ -3,6 +3,8 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 
 
+<c:set var="rootId" value="${rootId}_" scope="request"/>
+
 <div class="row justify-content-center form-group">
 	<a class="btn btn-primary" data-toggle="collapse" href="#${rootId}symbolsTable" role="button" aria-expanded="false" aria-controls="symbolsTable">
 		Operators:
@@ -37,7 +39,7 @@
    		${labelName}
  	</div>
  	<div class="card-body d-flex align-items-center justify-content-center">
-       \({}\)
+       \({${prefixMathJax} \FormInput{${rootId}1}}\)
     </div>
 </div>
 
@@ -60,7 +62,7 @@
 	// Initialize a global dictionary for the mathjax input tree  
 	window['${rootId}' + 'jaxInputDictionary'] = {};
 	// Parser readable expression associated to the input
-	window['${rootId}' + 'parserString'] = "";
+	window['${rootId}' + 'parserString'] = 'Input{${rootId}1}';
 	// Prefix for the jax element
 	window['${rootId}' + 'prefixMathJax'] = '${prefixMathJax}';
 	// Prefix for the C notation
@@ -70,9 +72,9 @@
 	// it gets deleted and duplicated by mathjax, so you cant work with the first instance, because 
 	// all you do with it will get deleted and overwritten by a new fresh FormInput
 	// THIS takes cares of it 
-	setTimeout(function() {
+	/* setTimeout(function() {
 		preSet('${rootId}');
-	}, 1000);
+	}, 1000); */
 	
 	
 	

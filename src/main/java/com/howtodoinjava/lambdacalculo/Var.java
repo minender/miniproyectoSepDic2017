@@ -197,14 +197,14 @@ public class Var extends Term{
     @Override
     public String toStringFormatC(SimboloManager s,String pos,int id) {
         char ascii = (char) indice; 
-            return "Input{"+ascii+",leibnizSymbolsId"+pos+",phatherOpId"+(id!=0?id:"")+"}";
+            return "Input{"+ascii+",leibnizSymbolsId_"+pos+",phatherOpId"+(id!=0?id:"")+"}";
     }
     
     @Override
     public String toStringWithInputs(SimboloManager s, String position) {
         if(alias == null ) {
             char ascii = (char) indice; 
-            return "\\FormInput{leibnizSymbolsId"+position+"}";
+            return "\\FormInput{leibnizSymbolsId_"+position+"}";
         }else {
             return alias;
         }

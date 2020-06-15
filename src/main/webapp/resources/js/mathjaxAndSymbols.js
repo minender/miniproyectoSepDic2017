@@ -14,14 +14,20 @@
  */
 function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 	
+	var input = document.activeElement; // get the input box where the cursor was
+	
+	// if the cursor was not on any element, or the element wasnt a Math_Jax 
+	// input field, return
+	if(!input || !(input.classList.contains("MathJax_Input"))){
+		return 
+	}
+	
 	// Get global variables from the outside
 	var id = rootId + 'MathJaxDiv';// id of the jax div
 	var jaxInputDictionary = window[rootId + "jaxInputDictionary"];// get the global dictionary of the jax expression
 	var simboloDic = window[rootId + 'simboloDic'];
 	
-	
 	// Request jax elements
-	var input = document.activeElement; // get the input box where the cursor was
 	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div
 	var originalMathJax = math.originalText; // get the old mathjax text
 
@@ -30,76 +36,89 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 	var createdChilds = []; // here the created child id's must be saved
 	var notacionLatexVariables = simboloDic[simboloId]['notacionVariables'];//get the notation variables of the symbol
 	
-	// if the class is MathJax_Input its a proper input box 
-	if(input && (input.classList.contains("MathJax_Input"))){
-		
-		// SAVE THE OLD CONTENT FROM THE BOXES
-		var saveDictionary = saveMathJaxFormContent(id);
-		        		
-		// SET THE NEW MATHJAX 
-		
-		var parentBox = "\\FormInput{" + idParentBox + "}"; // this is how the old box should look in the old  mathjax text
-		var idLeftChild = idParentBox + "1";
-		var idRightChild = idParentBox + "2";
-		var parserRight = '';
-		var parserLeft = '';
-		var leftChildInLatex1 = false;
-		var leftChildInLatex2;
-		
-		var replaced1 = false;	
-		var newNotation = text.replace("\\FormInput{1}",function(token){replaced1 = true; return "\\FormInput{" + idLeftChild + "}";}); // we replace left child's id with the proper position
-		
-		// If left child was inserted
-		if(replaced1){
-			parserLeft = 'Input{' + idLeftChild + '}';
-			
-			// Check if the node is also left in the latex notation order 
-			var var1 = notacionLatexVariables[0];
-			if(var1[var1.length - 1] == '1'){leftChildInLatex1 = true;}
-			createdChilds.push([idLeftChild, {'simboloId' : simboloId,'isLeftLatex' : leftChildInLatex1 }]);
-		}
-		
-		var replaced2 = false;
-		newNotation = newNotation.replace("\\FormInput{2}", function(token){replaced2 = true; return "\\FormInput{" + idRightChild + "}";});// we replace right child's id with the proper position
-		
-		// If right child was inserted
-		if(replaced2){
-			parserRight = 'Input{' + idRightChild + '}';
-			// 2nd child is the opposite of first child 
-			leftChildInLatex2 = !leftChildInLatex1;
-			createdChilds.push([idRightChild, {'simboloId' : simboloId,'isLeftLatex' : leftChildInLatex2 }]);
-		}
-		
-		// UPDATE STRING FOR PARSER
-		
-		var parserExp = 'C' + simboloId;
-		
-		var comma = '';
-		if(replaced2){
-			comma = ',';
-		}
-		
-		// If is an alias use its numericId and redefine left and right
-		if(isAlias){
-			parserExp = 'C' + simboloDic[simboloId]['numericId'];
-		}
-		
-		parserExp =  parserExp + '(' + parserLeft + comma +  parserRight + ')';
-			
-		// Update the global expression
-		var oldExpr = 'Input{' + idParentBox + '}';
-		window[ rootId + 'parserString'] = window[ rootId + 'parserString'].replace(oldExpr, parserExp);
-		
-		
-		// CHECK IF THE NEW NOTATION NEEDS PARS OR NOT
-		
-		var leftPar = '(';
-		var rightPar = ')';
-		
-		var variableName;
-		var parentSimboloId = jaxInputDictionary[idParentBox]['simboloId'];
-		
 	
+	// SAVE THE OLD CONTENT FROM THE BOXES
+	var saveDictionary = saveMathJaxFormContent(id);
+	        		
+	// SET THE NEW MATHJAX 
+	
+	var parentBox = "\\FormInput{" + idParentBox + "}"; // this is how the old box should look in the old  mathjax text
+	var idLeftChild = idParentBox + "1";
+	var idRightChild = idParentBox + "2";
+	var parserRight = '';
+	var parserLeft = '';
+	var leftChildInLatex1 = false;
+	var leftChildInLatex2;
+	
+	var replaced1 = false;	
+	var newNotation = text.replace("\\FormInput{1}",function(token){replaced1 = true; return "\\FormInput{" + idLeftChild + "}";}); // we replace left child's id with the proper position
+	
+	// If left child was inserted
+	if(replaced1){
+		parserLeft = 'Input{' + idLeftChild + '}';
+		
+		// Check if the node is also left in the latex notation order 
+		var var1 = notacionLatexVariables[0];
+		if(var1[var1.length - 1] == '1'){leftChildInLatex1 = true;}
+		createdChilds.push([idLeftChild, {'simboloId' : simboloId,'isLeftLatex' : leftChildInLatex1 }]);
+	}
+	
+	var replaced2 = false;
+	newNotation = newNotation.replace("\\FormInput{2}", function(token){replaced2 = true; return "\\FormInput{" + idRightChild + "}";});// we replace right child's id with the proper position
+	
+	// If right child was inserted
+	if(replaced2){
+		parserRight = 'Input{' + idRightChild + '}';
+		// 2nd child is the opposite of first child 
+		leftChildInLatex2 = !leftChildInLatex1;
+		createdChilds.push([idRightChild, {'simboloId' : simboloId,'isLeftLatex' : leftChildInLatex2 }]);
+	}
+	
+	// UPDATE STRING FOR PARSER
+	
+	var parserExp = 'C' + simboloId;
+	
+	var comma = '';
+	if(replaced2){
+		comma = ',';
+	}
+	
+	// If is an alias use its numericId and redefine left and right
+	if(isAlias){
+		parserExp = 'C' + simboloDic[simboloId]['numericId'];
+	}
+	
+	parserExp =  parserExp + '(' + parserLeft + comma +  parserRight + ')';
+		
+	// Update the global expression
+	var oldExpr = 'Input{' + idParentBox + '}';
+	window[ rootId + 'parserString'] = window[ rootId + 'parserString'].replace(oldExpr, parserExp);
+	
+	
+	// CHECK IF THE NEW NOTATION NEEDS PARS OR NOT
+	
+	var leftPar = '(';
+	var rightPar = ')';
+	
+	
+	// Data for the rules
+	var variableName;
+	var m;
+	var n;
+	var arguments;
+	var parentSimboloId;
+	// If it was the first box there is no symbol associated to it 
+	if(idParentBox.length <= rootId.length + 1){
+		//Generate fake data to trigger rule1
+		variableName = 'a1';
+		m = 0;
+		n = 1;
+		arguments = 0;
+		parentSimboloId = "";
+	}else{
+		
+		parentSimboloId = jaxInputDictionary[idParentBox]['simboloId'];
+		
 		// Depending on the fact that the parent is left or not we get our notacion variable name
 		if(jaxInputDictionary[idParentBox]['isLeftLatex']){
 			variableName = simboloDic[parentSimboloId]['notacionVariables'][0];
@@ -107,102 +126,45 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 			variableName = simboloDic[parentSimboloId]['notacionVariables'][1];
 		}
 		
-		var m = simboloDic[parentSimboloId]['precedence'];
-		var n = simboloDic[simboloId]['precedence'];
-		var arguments = simboloDic[simboloId]['arguments'];
-		
-		// Rule 1
-		if(n > m && (variableName.match(/^aa?(1|2)$/))){
-			leftPar = '';
-			rightPar = '';
-		}
-		
-		// Rule 2
-		if(simboloId == parentSimboloId && variableName.match(/^aa(1|2)$/)){
-			leftPar = '';
-			rightPar = '';
-		}
-		
-		// Rule 3
-		if(arguments == 0){
-			leftPar = '';
-			rightPar = '';
-		}
-		
-		// Rule 4
-		if((variableName.match(/^na(1|2)$/))){
-			leftPar = '';
-			rightPar = '';
-		}
-	
-		
-		var newMathJax = originalMathJax.replace(parentBox, "\\ {" + leftPar + newNotation + rightPar + "}\\ " );// Finally we replace the old box with the whole new notation 
-		
-		MathJax.Hub.Queue(["Text",math,newMathJax]);// refresh the mathjax div
-		
-		// LOAD THE OLD INPUT IN THE RESPECTIVE BOXES 
-		loadMathJaxFormContent(id, saveDictionary);
-		
-	// In case nothing has been written yet
-	}else if (originalMathJax == "{}"){
-		
-		// Define the base id's
-		var leftId = rootId + '1';
-		var rightId = rootId + '2';
-		
-		var leftChildExists = false;
-		var rightChildExists = false;
-		var leftChildInLatex1 = false;//this tells us if the node is at the left in latex expresion
-		var leftChildInLatex2;
-		
-		//Replace the "FormInput{1}" for "FormInput{rootId1}"
-		var newMathJax = text.replace("\\FormInput{1}", function(token){leftChildExists = true; return "\\FormInput{" + leftId + "}";});
-		newMathJax = newMathJax.replace("\\FormInput{2}", function(token){rightChildExists = true; return "\\FormInput{" + rightId + "}";});
-		
-		parserExp = 'C' + simboloId;
-		
-		
-		var rightParser = '';
-		var leftParser = '';
-	
-		if(leftChildExists){
-		
-			leftParser = 'Input{' + leftId +'}';
-			
-			// Check if the node is also left in the latex notation order 
-			var var1 = notacionLatexVariables[0];
-			if(var1[var1.length - 1] == '1'){leftChildInLatex1 = true;}
-			createdChilds.push([leftId, {'simboloId' : simboloId,'isLeftLatex' : leftChildInLatex1 }]);
-		}
-		if(rightChildExists){
-			
-			rightParser = 'Input{' + rightId +'}';
-			leftChildInLatex2 = !leftChildInLatex1;
-			createdChilds.push([rightId, {'simboloId' : simboloId,'isLeftLatex' : leftChildInLatex2 }]);
-		}
-		
-		// If is an alias use its numericId and redefine left and right
-		if(isAlias){
-			parserExp = 'C' + simboloDic[simboloId]['numericId'];
-		}
-		
-		var comma  = '';
-		if(rightChildExists){ comma = ','; }
-		
-		// GENERATE THE NEW PARSER STRING
-		parserExp =  parserExp + '(' + leftParser + comma + rightParser + ')';
-		
-		window[ rootId + 'parserString'] = parserExp;
-			
-		newMathJax =  window[rootId + 'prefixMathJax'] + "\\ {" + newMathJax+"}\\ ";
-		
-		// Render the new text in the div 
-        MathJax.Hub.Queue(["Text",math,newMathJax]);
-        
-	// In other case do nothing
-	}else{
-		return;
+		m = simboloDic[parentSimboloId]['precedence'];
+		n = simboloDic[simboloId]['precedence'];
+		arguments = simboloDic[simboloId]['arguments'];
 	}
+	
+
+	// Rule 1
+	if(n > m && (variableName.match(/^aa?(1|2)$/))){
+		leftPar = '';
+		rightPar = '';
+	}
+	
+	// Rule 2
+	if(simboloId == parentSimboloId && variableName.match(/^aa(1|2)$/)){
+		leftPar = '';
+		rightPar = '';
+	}
+	
+	// Rule 3
+	if(arguments == 0){
+		leftPar = '';
+		rightPar = '';
+	}
+	
+	// Rule 4
+	if((variableName.match(/^na(1|2)$/))){
+		leftPar = '';
+		rightPar = '';
+	}
+
+	
+	var newMathJax = originalMathJax.replace(parentBox, "\\ {" + leftPar + newNotation + rightPar + "}\\ " );// Finally we replace the old box with the whole new notation 
+	
+	MathJax.Hub.Queue(["Text",math,newMathJax]);// refresh the mathjax div
+	
+	// LOAD THE OLD INPUT IN THE RESPECTIVE BOXES 
+	loadMathJaxFormContent(id, saveDictionary);
+		
+	
 	
 	console.log(window[ rootId + 'parserString']);
 	console.log(newMathJax);
@@ -310,10 +272,7 @@ function deleteOperator(FormId, rootId){
 	// If the deleted input box was one of the first ones to be born
 	// return empty string 
 	if( FormId.length < rootId.length + 2){
-		result = "{}";
-		// Render the new text in the div 
-        MathJax.Hub.Queue(["Text",math,result]);
-		return "{}";
+		return cleanMathJax(rootId);
 	}
 	
 	
@@ -453,7 +412,7 @@ function deleteOperatorParserString(formId, rootId){
 	// If the deleted input box was one of the first ones to be born
 	// return empty string 
 	if( formId.length < rootId.length + 2){
-		parserString = "";
+		cleanParserString(rootId);
 		return;
 	}
 	
@@ -598,12 +557,24 @@ function setInputValueOnParser(rootId,textareaId){
  */
 function cleanJax(rootId, textareaId){
 	
+	cleanMathJax(rootId);// Reset math jax div
+	cleanParserString(rootId);// Reset Parser string
+	$('#' + textareaId).val("");// Make input be empty
+	
+}
+
+function cleanMathJax(rootId){
 	var jaxDivId = rootId + "MathJaxDiv";
 	var math = MathJax.Hub.getAllJax(jaxDivId)[0]; // get the jax alement from the div
-	MathJax.Hub.Queue(["Text",math,"{}"]);
-	window[rootId + 'parserString'] = "";
-	$('#' + textareaId).val("");
-	
+	var startText = "{" + window[rootId + 'prefixMathJax'] + "\\FormInput{" + rootId + "1}}";
+	MathJax.Hub.Queue(["Text",math,startText]);
+	return startText;
+}
+
+function cleanParserString(rootId){
+	var startText = "Input{" + rootId + "1}";
+	window[rootId + 'parserString'] = startText;
+	return startText;
 }
 
 /**
@@ -626,7 +597,7 @@ function stringToIntString(string){
  * notation into the proper C notation and sets the parseString 
  * This function is meant to be used when the user generates a leibnz by using 
  * the mouse. This function also sets the new latex notation in mathjax
- * An example of what this method takes as argument is ambda z.C1(Input{q,leibnizSymbolsId2,phatherOpId1},Input{z,leibnizSymbolsId1,phatherOpId1})
+ * An example of what this method takes as argument is ambda z.C1(Input{q,leibnizSymbolsId_2,phatherOpId1},Input{z,leibnizSymbolsId_1,phatherOpId1})
  * @param cNotation C notation to recover from
  * @param latexNotation latex notation to display
  * @returns
@@ -642,12 +613,12 @@ function inferRecoverC(cNotation, latexNotation){
 	var variablesSaved = {};
 	
 	//Add prefix to latexNotation
-	latexNotation = window['leibnizSymbolsIdprefixMathJax'] + latexNotation;
+	latexNotation = window['leibnizSymbolsId_prefixMathJax'] + latexNotation;
 	
 	
 	// Global Variables
-	var jaxInputDictionary = window["leibnizSymbolsIdjaxInputDictionary"];
-	var simboloDic = window['leibnizSymbolsIdsimboloDic'];
+	var jaxInputDictionary = window["leibnizSymbolsId_jaxInputDictionary"];
+	var simboloDic = window['leibnizSymbolsId_simboloDic'];
 	
 	// Iteration variables
 	var id;
@@ -712,18 +683,18 @@ function inferRecoverC(cNotation, latexNotation){
     
     
     // Change all the aliases for their C representation
-    newParserString = setAliases(newParserString, 'leibnizSymbolsId');
+    newParserString = setAliases(newParserString, 'leibnizSymbolsId_');
   
     
     // Update the global parser string 
-    window['leibnizSymbolsIdparserString'] = newParserString;
+    window['leibnizSymbolsId_parserString'] = newParserString;
     
     // Update the jax expression
-    var math = MathJax.Hub.getAllJax('leibnizSymbolsIdMathJaxDiv')[0];
+    var math = MathJax.Hub.getAllJax('leibnizSymbolsId_MathJaxDiv')[0];
     MathJax.Hub.Queue(["Text",math,latexNotation]);
     
     // Load the variables on the input boxes
-    loadMathJaxFormContent('leibnizSymbolsIdMathJaxDiv',  variablesSaved);
+    loadMathJaxFormContent('leibnizSymbolsId_MathJaxDiv',  variablesSaved);
     return newParserString;
 	
 }
