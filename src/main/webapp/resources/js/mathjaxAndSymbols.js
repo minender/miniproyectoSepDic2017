@@ -12,7 +12,7 @@
  * @param alias string that represents the alias name
  * @returns nothing
  */
-function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
+function insertAtMathjaxDiv(text,simboloId, isAlias){
 	
 	var input = document.activeElement; // get the input box where the cursor was
 	
@@ -21,6 +21,8 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 	if(!input || !(input.classList.contains("MathJax_Input"))){
 		return 
 	}
+	
+	var rootId = input.getAttribute('data-rootId');
 	
 	// Get global variables from the outside
 	var id = rootId + 'MathJaxDiv';// id of the jax div
@@ -188,6 +190,7 @@ function insertAtMathjaxDiv(rootId,text,simboloId, isAlias){
 function setMathJaxFormAttributes(form, maxlength, rootId) {
 
 	form.maxLength = maxlength;
+	form.setAttribute('data-rootId', rootId);
 	form.onkeydown = function() {
 	    var key = event.keyCode || event.charCode;
 
@@ -522,6 +525,8 @@ function deleteOperatorParserString(formId, rootId){
  */
 function setInputValueOnParser(rootId,textareaId){
 	
+	rootId += '_';
+	
 	// Get all input boxes from the div
 	var inputs = $('#' + rootId + 'MathJaxDiv' + ' .MathJax_Input').toArray();
 	var parserString = window[rootId + 'parserString'];
@@ -557,6 +562,8 @@ function setInputValueOnParser(rootId,textareaId){
  */
 function cleanJax(rootId, textareaId){
 	
+	rootId += '_';
+	 
 	cleanMathJax(rootId);// Reset math jax div
 	cleanParserString(rootId);// Reset Parser string
 	$('#' + textareaId).val("");// Make input be empty

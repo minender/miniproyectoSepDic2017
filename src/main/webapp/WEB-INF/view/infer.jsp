@@ -504,9 +504,13 @@
               <br>
               Substitution:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
               
+              
+              <tiles:insertDefinition name="jaxButtons" />
+              
+              
               <c:set var="rootId" value="substitutionSymbolsId" scope="request"/>
           	  <c:set var="labelName" value="Substitution:" scope="request"/>
-		  	  <tiles:insertDefinition name="symbolButtons" />
+		  	  <tiles:insertDefinition name="jaxDiv" />
               
               Leibniz: <br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
               <br>
@@ -515,7 +519,7 @@
           	  <c:set var="labelName" value="Leibniz:" scope="request"/>
           	  <c:set var="prefixMathJax" value="E^{z}: " scope="request"/>
           	  <c:set var="prefixCnotation" value="lambda z." scope="request"/>
-		  	  <tiles:insertDefinition name="symbolButtons" />
+		  	  <tiles:insertDefinition name="jaxDiv" />
               
               <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Infer"
               onclick="setInputValueOnParser('substitutionSymbolsId', 'instanciacion_id'); setInputValueOnParser('leibnizSymbolsId', 'leibniz_id')"/> 

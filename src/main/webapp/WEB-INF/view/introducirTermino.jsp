@@ -34,9 +34,10 @@
            		</div>
            </div>
            
+           <tiles:insertDefinition name="jaxButtons" />
            <c:set var="rootId" value="symbolsId" scope="request"/>
            <c:set var="labelName" value="Term:" scope="request"/>
-		   <tiles:insertDefinition name="symbolButtons" />
+		   <tiles:insertDefinition name="jaxDiv" />
            <div class="form-group row justify-content-center">
             <button type="submit" class="btn btn-default" onclick="setInputValueOnParser('symbolsId','termino_string')">Save</button>&nbsp;
             <button type="button" onclick="cleanJax('symbolsId', 'termino_string')" class="btn btn-default">Clean</button>

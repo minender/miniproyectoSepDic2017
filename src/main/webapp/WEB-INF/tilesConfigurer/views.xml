@@ -11,6 +11,10 @@
    </definition>
    <definition name="symbolButtons" template="/WEB-INF/view/symbolButtons.jsp">
    </definition>
+   <definition name="jaxButtons" template="/WEB-INF/view/jaxButtons.jsp">
+   </definition>
+   <definition name="jaxDiv" template="/WEB-INF/view/jaxDiv.jsp">
+   </definition>
    <definition name="perfil" extends="template">
      <put-attribute name="body" value="/WEB-INF/view/perfil_body.jsp" />
    </definition>
