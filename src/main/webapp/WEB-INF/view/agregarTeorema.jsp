@@ -44,9 +44,10 @@
           <tiles:insertDefinition name="jaxButtons" />
           <c:set var="rootId" value="teoremaSymbolsId" scope="request"/>  
           <c:set var="labelName" value="Theorem:" scope="request"/>
+          <c:set var="inputForm" value="teorema" scope="request"/>
           <tiles:insertDefinition name="jaxDiv" />
           <div class="form-group row justify-content-center">
-            <button type="button" onclick="cleanJax('teoremaSymbolsId', 'teorema')" class="btn btn-default">Clean</button>
+            <button type="button" onclick="cleanJax('teoremaSymbolsId')" class="btn btn-default">Clean</button>
           </div>    
               
           <div class="form-group row justify-content-center" style="display: none;">
@@ -89,7 +90,7 @@
           </div>
           <div class="row justify-content-center" >
                <div class="offset-lg-1 col-lg-3">
-                   <button type="submit" class="btn btn-default" onclick="setInputValueOnParser('teoremaSymbolsId','teorema')">Save</button>
+                   <button type="submit" class="btn btn-default" onclick="setInputValueOnParser('teoremaSymbolsId')">Save</button>
                </div>
           </div>
           <div class="row justify-content-center" >

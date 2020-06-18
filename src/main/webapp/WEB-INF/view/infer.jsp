@@ -508,24 +508,33 @@
               <tiles:insertDefinition name="jaxButtons" />
               
               
-              <c:set var="rootId" value="substitutionSymbolsId" scope="request"/>
+              <c:set var="rootId" value="substitutionButtonsId" scope="request"/>
           	  <c:set var="labelName" value="Substitution:" scope="request"/>
-		  	  <tiles:insertDefinition name="jaxDiv" />
+          	  <c:set var="inputForm" value="instanciacion_id" scope="request"/>
+		  	  <tiles:insertDefinition name="jaxSubstitutionDiv" />
               
+              <button type="button" onclick="setJaxSubstitutionVariables('a,b,c', 'substitutionButtonsId')">Click Me! abc</button>
+              <button type="button" onclick="setJaxSubstitutionVariables('x,y,a', 'substitutionButtonsId')">Click Me! xya</button>
+              <button type="button" onclick="setJaxSubstitutionVariables('q', 'substitutionButtonsId')">Click Me! q</button>
+              <button type="button" onclick="setSubstitutionOnInput('substitutionButtonsId')">Send Me!</button>
+              <button type="button" onclick="cleanJaxSubstitution('substitutionButtonsId')">Clean Me!</button>
+              
+          
               Leibniz: <br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
               <br>
               
               <c:set var="rootId" value="leibnizSymbolsId" scope="request"/>
           	  <c:set var="labelName" value="Leibniz:" scope="request"/>
+          	  <c:set var="inputForm" value="leibniz_id" scope="request"/>
           	  <c:set var="prefixMathJax" value="E^{z}: " scope="request"/>
           	  <c:set var="prefixCnotation" value="lambda z." scope="request"/>
 		  	  <tiles:insertDefinition name="jaxDiv" />
               
               <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Infer"
-              onclick="setInputValueOnParser('substitutionSymbolsId', 'instanciacion_id'); setInputValueOnParser('leibnizSymbolsId', 'leibniz_id')"/> 
+              onclick="setInputValueOnParser('leibnizSymbolsId'); setSubstitutionOnInput('substitutionButtonsId')"/> 
               <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Go back"> 
               <input id="BtnLimpiar" class="btn" type="button" value="Clean"
-              onclick="cleanJax('substitutionSymbolsId', 'instanciacion_id'); cleanJax('leibnizSymbolsId', 'leibniz_id')">
+              onclick="cleanJax('leibnizSymbolsId'); cleanJaxSubstitution('substitutionButtonsId')">
               <input id="Btn" type="hidden" name="submitBtn" value=""/>
               <%--<input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>
               <input type="hidden" id="nuevoMetodo" name="nuevoMetodo" value="0"/>--%>

@@ -189,6 +189,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
  */
 function setMathJaxFormAttributes(form, maxlength, rootId) {
 
+	
 	form.maxLength = maxlength;
 	form.setAttribute('data-rootId', rootId);
 	form.onkeydown = function() {
@@ -520,12 +521,15 @@ function deleteOperatorParserString(formId, rootId){
    String for the current value there is on the actual input boxes
    It will also replace the numericId used for the aliases with their name
    for example 'C23232' by 'Or'
- * @param textareaId if of the textarea where u need to put the expression to send
+   Finally it will send the properly formated expression to textarea id
+ * @param textareaId if of the textarea where you need to put the expression to send
  * @returns
  */
-function setInputValueOnParser(rootId,textareaId){
+function setInputValueOnParser(rootId){
 	
 	rootId += '_';
+	
+	var textareaId = window[rootId + '_InputForm'];
 	
 	// Get all input boxes from the div
 	var inputs = $('#' + rootId + 'MathJaxDiv' + ' .MathJax_Input').toArray();
@@ -535,6 +539,8 @@ function setInputValueOnParser(rootId,textareaId){
 	// Key will be the id of the form, the value its content
 	inputs.forEach(element => parserString = parserString.replace("Input{" + element.id + '}', element.value));
 	
+	
+	//Change C form of the aliaes to their actual name 
 	var alias;
 	for (var key in simboloDic) {
 	    // check if is an alias
@@ -560,10 +566,13 @@ function setInputValueOnParser(rootId,textareaId){
  * @param textareaId String id of the input box
  * @returns nothing
  */
-function cleanJax(rootId, textareaId){
+function cleanJax(rootId){
+	
 	
 	rootId += '_';
 	 
+	var textareaId = window[rootId + '_InputForm'];
+	
 	cleanMathJax(rootId);// Reset math jax div
 	cleanParserString(rootId);// Reset Parser string
 	$('#' + textareaId).val("");// Make input be empty
@@ -688,10 +697,11 @@ function inferRecoverC(cNotation, latexNotation){
     	
     }
     
-    
+    console.log("BEFORE ALIASES: " + newParserString);
     // Change all the aliases for their C representation
     newParserString = setAliases(newParserString, 'leibnizSymbolsId_');
-  
+    
+    console.log("AFTER ALIASES: " + newParserString);
     
     // Update the global parser string 
     window['leibnizSymbolsId_parserString'] = newParserString;
@@ -732,6 +742,8 @@ function setAliases(Cnotation, rootId){
 	    	result = result.replace(new RegExp(aliasToReplace,'g'), replacement);
 	    }
 	}
+	
+	return result;
 }
 
 /**
