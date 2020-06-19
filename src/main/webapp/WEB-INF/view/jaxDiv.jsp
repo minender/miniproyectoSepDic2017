@@ -10,7 +10,7 @@
    		${labelName}
  	</div>
  	<div class="card-body d-flex align-items-center justify-content-center">
-       \({${prefixMathJax} \FormInput{${rootId}1}}\)
+       \({${prefixMathJax} \FormInput{${rootId}}}\)
     </div>
 </div>
 
@@ -33,7 +33,7 @@
 	// Initialize a global dictionary for the mathjax input tree  
 	window['${rootId}' + 'jaxInputDictionary'] = {};
 	// Parser readable expression associated to the input
-	window['${rootId}' + 'parserString'] = 'Input{${rootId}1}';
+	window['${rootId}' + 'parserString'] = 'Input{${rootId}}';
 	// Prefix for the jax element
 	window['${rootId}' + 'prefixMathJax'] = '${prefixMathJax}';
 	// Prefix for the C notation

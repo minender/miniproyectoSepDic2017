@@ -57,22 +57,32 @@
 	    	
 	    	// First find the fist dot
 	    	var formId = event.target.id;
+	    	var n = formId.length;
 	    	var end;
-	    	for(var k = 0; k<formId.length; k++){
+	    	for(var k = 0; k<n; k++){
 	    		if(formId[k] == '.'){
-	    			end = k;
+	    			end = k + 1;
 	    		}
 	    	}
 	    	
 	    	// Next find the first one, the id is all till the one
-	    	for(var k = end; k<formId.length; k++){
-	    		if(formId[k] == '1'){
+	    	for(var k = end; k<n; k++){
+	    		if(formId[k] == '1' || formId[k] == '2'){
 	    			end = k;
 	    			break;
 	    		}
+	    		if(k == n - 1){
+	    			end = k + 1;
+	    		}
 	    	}
 	    	
+	    	console.log("SETTING ID");
+	    	console.log("OLD: " + formId);
+	    	console.log(end);
+	    	
 	    	var rootId = formId.substring(0, end);
+	    	
+	    	console.log("NEW: " +  rootId);
 	    	
   	  		setMathJaxFormAttributes(event.target, 1, rootId);
 	    	

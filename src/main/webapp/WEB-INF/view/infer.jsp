@@ -502,11 +502,13 @@
               
               
               <br>
-              Substitution:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
               
               
               <tiles:insertDefinition name="jaxButtons" />
               
+              <div style="display: none;">
+              	Substitution:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
+              </div>
               
               <c:set var="rootId" value="substitutionButtonsId" scope="request"/>
           	  <c:set var="labelName" value="Substitution:" scope="request"/>
@@ -519,8 +521,10 @@
               <button type="button" onclick="setSubstitutionOnInput('substitutionButtonsId')">Send Me!</button>
               <button type="button" onclick="cleanJaxSubstitution('substitutionButtonsId')">Clean Me!</button>
               
-          
-              Leibniz: <br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
+          	
+          	  <div style="display: none;">
+	              Leibniz: <br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
+          	  </div>
               <br>
               
               <c:set var="rootId" value="leibnizSymbolsId" scope="request"/>

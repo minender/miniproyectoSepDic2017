@@ -110,7 +110,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	var arguments;
 	var parentSimboloId;
 	// If it was the first box there is no symbol associated to it 
-	if(idParentBox.length <= rootId.length + 1){
+	if(idParentBox.length <= rootId.length){
 		//Generate fake data to trigger rule1
 		variableName = 'a1';
 		m = 0;
@@ -271,11 +271,11 @@ function deleteOperator(FormId, rootId){
 	var jaxInputDictionary = window[rootId + "jaxInputDictionary"];// get the global dictionary of the jax expression
 
 	//FIRST DELETE FROM THE ACTUAL PARSER STRING
-	deleteOperatorParserString(FormId, rootId)
+	deleteOperatorParserString(FormId, rootId);
 	
-	// If the deleted input box was one of the first ones to be born
+	// If the deleted input box was the first one to be born
 	// return empty string 
-	if( FormId.length < rootId.length + 2){
+	if( FormId.length <= rootId.length){
 		return cleanMathJax(rootId);
 	}
 	
@@ -413,9 +413,9 @@ function deleteOperatorParserString(formId, rootId){
 	var lastChar = formId[formId.length-1];// the last char of the id tells us if is right or left child
 
 	
-	// If the deleted input box was one of the first ones to be born
+	// If the deleted input box was the first one to be born
 	// return empty string 
-	if( formId.length < rootId.length + 2){
+	if( formId.length <= rootId.length){
 		cleanParserString(rootId);
 		return;
 	}
@@ -541,14 +541,7 @@ function setInputValueOnParser(rootId){
 	
 	
 	//Change C form of the aliaes to their actual name 
-	var alias;
-	for (var key in simboloDic) {
-	    // check if is an alias
-		alias = simboloDic[key];
-	    if (alias.hasOwnProperty('numericId')) {           
-	    	parserString = parserString.replace(new RegExp('C' + alias['numericId'], 'g'), key);
-	    }
-	}
+	parserString = setCtoAliases(parserString, rootId);
 	
 	// Set the text we'll send to the controller
 	var textarea = $('#'+textareaId);
@@ -582,13 +575,13 @@ function cleanJax(rootId){
 function cleanMathJax(rootId){
 	var jaxDivId = rootId + "MathJaxDiv";
 	var math = MathJax.Hub.getAllJax(jaxDivId)[0]; // get the jax alement from the div
-	var startText = "{" + window[rootId + 'prefixMathJax'] + "\\FormInput{" + rootId + "1}}";
+	var startText = "{" + window[rootId + 'prefixMathJax'] + "\\FormInput{" + rootId + "}}";
 	MathJax.Hub.Queue(["Text",math,startText]);
 	return startText;
 }
 
 function cleanParserString(rootId){
-	var startText = "Input{" + rootId + "1}";
+	var startText = "Input{" + rootId + "}";
 	window[rootId + 'parserString'] = startText;
 	return startText;
 }
@@ -683,9 +676,12 @@ function inferRecoverC(cNotation, latexNotation){
     		
     		jaxInputDictionary[id] = {};
     		
-    		// set left or right child in latex notation
-    		var1 = simboloDic[parentSymbolId]['notacionVariables'][0];
-    		jaxInputDictionary[id]['isLeftLatex'] = (var1[var1.length - 1] == id[id.length - 1]);
+    		// If the element is different than the root
+    		if(parentSymbolId != ""){
+    			// set left or right child in latex notation
+    			var1 = simboloDic[parentSymbolId]['notacionVariables'][0];
+    			jaxInputDictionary[id]['isLeftLatex'] = (var1[var1.length - 1] == id[id.length - 1]);
+    		}
     		
     		// set parent symbol
     		jaxInputDictionary[id]['simboloId'] = parentSymbolId;
@@ -699,7 +695,7 @@ function inferRecoverC(cNotation, latexNotation){
     
     console.log("BEFORE ALIASES: " + newParserString);
     // Change all the aliases for their C representation
-    newParserString = setAliases(newParserString, 'leibnizSymbolsId_');
+    newParserString = setAliasesToC(newParserString, 'leibnizSymbolsId_');
     
     console.log("AFTER ALIASES: " + newParserString);
     
@@ -722,7 +718,7 @@ function inferRecoverC(cNotation, latexNotation){
  * @param Cnotation String 
  * @returns result : String updated notation 
  */
-function setAliases(Cnotation, rootId){
+function setAliasesToC(Cnotation, rootId){
 	
 	var simboloDic = window[rootId + 'simboloDic'];
 	
@@ -743,7 +739,33 @@ function setAliases(Cnotation, rootId){
 	    }
 	}
 	
+	cosole.log(result);
 	return result;
+}
+
+function setCtoAliases(Cnotation, rootId){
+var simboloDic = window[rootId + 'simboloDic'];
+	
+	var result = Cnotation;
+	
+	var aliasToReplace;
+	var replacement;
+	// Set a numeric (but still a string) Id for all aliases, that way we can use them as symbols
+	for (var key in simboloDic) {
+	    // check if is an alias
+	    if (simboloDic[key].hasOwnProperty('numericId')) {
+	    	
+	    	replacement = key + '(';
+	    	aliasToReplace = 'C' + simboloDic[key]['numericId'] + '\\(';
+	    	
+	    	// Replace all instances of this aliases by its C representation
+	    	result = result.replace(new RegExp(aliasToReplace,'g'), replacement);
+	    }
+	}
+	
+	console.log(result);
+	return result;
+	
 }
 
 /**

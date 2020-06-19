@@ -34,7 +34,7 @@ function setJaxSubstitutionVariables(newVariables, rootId){
 		id = rootId + variables[i] ;
 		newDiv.id = id + 'MathJaxDiv';
 		newDiv.style.display = 'inline-block';
-		newDiv.innerHTML = '\\( { \\FormInput{'+id+'1} } \\)' 
+		newDiv.innerHTML = '\\( { \\FormInput{'+id+'} } \\)' 
 		
 
 		varsDiv.appendChild(newDiv);
@@ -45,7 +45,7 @@ function setJaxSubstitutionVariables(newVariables, rootId){
 		//SET GLOBAL VARIABLES ASSOCIATED TO THE NEW DIV 
 		window[id + 'simboloDic'] = dictionarySym;
 		window[id + 'jaxInputDictionary'] = {};
-		window[id + 'parserString'] = 'Input{' +id+ '1}';
+		window[id + 'parserString'] = 'Input{' +id+ '}';
 		window[id + 'prefixMathJax'] = '';
 		window[id + 'prefixCnotation'] = '';
 		
@@ -100,13 +100,7 @@ function setSubstitutionOnInput(rootId){
 		}
 			
 		//Change C form of the aliaes to their actual name 
-		for (var key in simboloDic) {
-		    // check if is an alias
-			alias = simboloDic[key];
-		    if (alias.hasOwnProperty('numericId')) {           
-		    	parserString = parserString.replace(new RegExp('C' + alias['numericId'], 'g'), key);
-		    }
-		}
+		parserString = setCtoAliases(Cnotation, variableRootId);
 		
 		//Check if the parserString was empty
 		parserStringEmpty = true;
