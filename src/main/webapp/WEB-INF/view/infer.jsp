@@ -352,7 +352,7 @@
  <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,resu.getNumeroteorema())}$</span>
 
                                     <script>clickTeoremaInicial('ST-${resu.getNumeroteorema()}');
-                                            clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}');
+                                            clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().freeVars()}');
                                     </script>
                                <c:choose>
                                 <c:when test="${!resu.getNumeroteorema().equals(nTeo)}">
@@ -362,7 +362,7 @@
  <span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) Metatheorem:</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span>  
                                        
                                    <script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
-                                           clickOperator('clickmeta${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}');
+                                           clickOperator('clickmeta${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().freeVars()}');
                                    </script>
                                </span>
                                </c:when>

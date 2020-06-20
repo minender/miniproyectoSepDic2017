@@ -191,9 +191,8 @@ function clickTeoremaInicial(teoid)
     };
 }
 
-function clickOperator(Math1,myField,teoid)
+function clickOperator(Math1,myField,teoid,vars)
 {
-    
     var render=document.getElementById(Math1);
     render.onclick = function (event) {
     var targetString = "";
@@ -221,11 +220,13 @@ function clickOperator(Math1,myField,teoid)
             else{
                 var inputStatement = document.getElementById(myField);
                 inputStatement.value = teoid;
+                setJaxSubstitutionVariables(vars,'substitutionButtonsId');
             }
         }
         else{
             var inputStatement = document.getElementById(myField);
             inputStatement.value = teoid;
+            setJaxSubstitutionVariables(vars,'substitutionButtonsId');
         }
       }
     };    

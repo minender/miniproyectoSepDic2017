@@ -10,6 +10,7 @@ import com.howtodoinjava.service.PredicadoManager;
 import com.howtodoinjava.service.SimboloManager;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -168,6 +169,26 @@ public abstract class Term implements Cloneable, Serializable{
      */
     public abstract String aliases(String position);
     
+    public String freeVars(){
+        //String st = "";
+        HashSet<String> hset =new HashSet<String>();
+        Stack<Term> pila = new Stack<Term>();
+        pila.push(this);
+        int i=0;
+        while (!pila.isEmpty()) {
+            Term actual = pila.pop();
+            if (actual instanceof Var) {
+               //st += (i!=0?",":"") + actual.toStringInf(null,"");
+               hset.add(actual.toStringInf(null,""));
+            }
+            else if (actual instanceof App) {
+              pila.push(((App)actual).q);
+              pila.push(((App)actual).p);
+            }
+            i++;
+        } 
+        return hset.toString().replaceAll("[\\s\\[\\]]", "");
+    }
     
     public String toStringFinal()
     {
