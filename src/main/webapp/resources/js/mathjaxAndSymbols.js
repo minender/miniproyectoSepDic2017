@@ -5,11 +5,9 @@
    This function takes the id of a div (that must have a mathjax jax element) and some text (latex formated)
    and replaces the input box where the user was holding its mouse with the recently clicked
    operator
- * @param rootId string given by the user to represent this whole functionality
- * @param text string that represents the notation of the button that was clicked
+ * @param text string that represents the notation of symbol associated to the button that was clicked
  * @param simboloId int that is the id of the symbol of the button that as clicked
  * @param isAlias boolean that tells us if is an alias what we need to insert 
- * @param alias string that represents the alias name
  * @returns nothing
  */
 function insertAtMathjaxDiv(text,simboloId, isAlias){
@@ -49,7 +47,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	var idRightChild = idParentBox + "2";
 	var parserRight = '';
 	var parserLeft = '';
-	var leftChildInLatex1 = false;
+	var leftChildInLatex1 = false;//Will be true if in the latex notation the left child is supossed to be also left
 	var leftChildInLatex2;
 	
 	var replaced1 = false;	
@@ -109,7 +107,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	var n;
 	var arguments;
 	var parentSimboloId;
-	// If it was the first box there is no symbol associated to it 
+	// If parent was the first box there is no symbol associated to it 
 	if(idParentBox.length <= rootId.length){
 		//Generate fake data to trigger rule1
 		variableName = 'a1';
@@ -166,22 +164,16 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	// LOAD THE OLD INPUT IN THE RESPECTIVE BOXES 
 	loadMathJaxFormContent(id, saveDictionary);
 		
-	
-	
-	console.log(window[ rootId + 'parserString']);
-	console.log(newMathJax);
 	// Set in the global dictionary which symbol id is 
 	// associated to the new created inputs and also extra information
 	createdChilds.forEach(element => jaxInputDictionary[element[0]]=element[1]);
-	
 	
 };
 
 
 /**
- * This function set the mathjax form currently displaying 
-   to the correct attributes, maxlength is a string that 
-   that represents how many characters can the input have
+ * This function set the mathjax form 
+   to the correct attributes
  * @param form mathjax form to set attributes of
  * @param maxlength how many characters to allow in the input box
  * @param rootId id that identifies this whole functionality
@@ -210,8 +202,8 @@ function setMathJaxFormAttributes(form, maxlength, rootId) {
  * This function receives the id of the mathjax div 
    and saves the content of all forms in there in a 
    dictionary
- * @param divId if of the jax div
- * @returns dinctionary with saved data of the input boxes by id
+ * @param divId id of the jax div
+ * @returns dinctionary with key the id of the input form and value its content
  */
 function saveMathJaxFormContent(divId){
 	
@@ -232,7 +224,7 @@ function saveMathJaxFormContent(divId){
  * This function loads the content from the save function 
    dictionary
  * @param divId if of the jax div
- * @param dictionarySave
+ * @param dictionarySave dictionary from save
  * @returns nothing
  */
 function loadMathJaxFormContent(divId, dictionarySave){
@@ -255,8 +247,8 @@ function loadMathJaxFormContent(divId, dictionarySave){
    if the div had this (x + (y - _)) and we delete the form
    we'll now have (x + _)
  * @param FormId id of them form input where delete was requested
- * @param rootId id that identifies this whole functionality
- * @returns new string jax without the deleted stuff
+ * @param rootId id that identifies the jaxDiv 
+ * @returns new string for jax to display 
  */
 function deleteOperator(FormId, rootId){
 	
@@ -404,6 +396,7 @@ function deleteOperator(FormId, rootId){
 /**
  * similar to deleteOperator but is in charge of the ParserString
  * @param formId id of a form inside the operator we want to delete
+ * @param rootId id associated to the jaxDiv 
  * @returns nothing
  */
 function deleteOperatorParserString(formId, rootId){
@@ -437,9 +430,7 @@ function deleteOperatorParserString(formId, rootId){
 	var result;
 	var currentChar = parserString[i];
 	
-	
-	
-	
+
 	if(leftChild){
 		
 		var toReplace = "C";
@@ -522,7 +513,7 @@ function deleteOperatorParserString(formId, rootId){
    It will also replace the numericId used for the aliases with their name
    for example 'C23232' by 'Or'
    Finally it will send the properly formated expression to textarea id
- * @param textareaId if of the textarea where you need to put the expression to send
+ * @param rootId id of the jaxDiv
  * @returns
  */
 function setInputValueOnParser(rootId){
@@ -553,10 +544,8 @@ function setInputValueOnParser(rootId){
 
 
 /**
- * This function resets the jax div with the given id, the textare with the given id 
-   and the global variable parserString
- * @param rootId id that user uses to identify thins functionality
- * @param textareaId String id of the input box
+ * This function resets the jax div with the given id
+ * @param rootId id of the jaxDiv
  * @returns nothing
  */
 function cleanJax(rootId){
@@ -572,6 +561,11 @@ function cleanJax(rootId){
 	
 }
 
+/**
+ * clean mathjax in jaxDiv
+ * @param rootId id of the jaxDiv with '_' appended to the end
+ * @returns
+ */
 function cleanMathJax(rootId){
 	var jaxDivId = rootId + "MathJaxDiv";
 	var math = MathJax.Hub.getAllJax(jaxDivId)[0]; // get the jax alement from the div
@@ -579,7 +573,11 @@ function cleanMathJax(rootId){
 	MathJax.Hub.Queue(["Text",math,startText]);
 	return startText;
 }
-
+/**
+ * clean parserString in jaxDiv
+ * @param rootId id of the jaxDiv with '_' appended to the end
+ * @returns
+ */
 function cleanParserString(rootId){
 	var startText = "Input{" + rootId + "}";
 	window[rootId + 'parserString'] = startText;
@@ -613,9 +611,7 @@ function stringToIntString(string){
  */
 function inferRecoverC(cNotation, latexNotation){
 	
-	console.log(cNotation);
-	console.log(latexNotation);
-	
+
 	var n = cNotation.length;
 	const error = "Wrong Input, missing closing } or a , ";
 	var newParserString = "";
@@ -693,11 +689,8 @@ function inferRecoverC(cNotation, latexNotation){
     	
     }
     
-    console.log("BEFORE ALIASES: " + newParserString);
     // Change all the aliases for their C representation
     newParserString = setAliasesToC(newParserString, 'leibnizSymbolsId_');
-    
-    console.log("AFTER ALIASES: " + newParserString);
     
     // Update the global parser string 
     window['leibnizSymbolsId_parserString'] = newParserString;
@@ -739,10 +732,15 @@ function setAliasesToC(Cnotation, rootId){
 	    }
 	}
 	
-	cosole.log(result);
 	return result;
 }
 
+/**
+ * This function is meant to replace all C notation of aliases 
+ * for their alias representation for example  C012323(a,b) by Or(a,b)
+ * @param Cnotation String 
+ * @returns result : String updated notation 
+ */
 function setCtoAliases(Cnotation, rootId){
 var simboloDic = window[rootId + 'simboloDic'];
 	
@@ -763,7 +761,6 @@ var simboloDic = window[rootId + 'simboloDic'];
 	    }
 	}
 	
-	console.log(result);
 	return result;
 	
 }

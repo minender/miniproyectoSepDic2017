@@ -514,13 +514,7 @@
           	  <c:set var="labelName" value="Substitution:" scope="request"/>
           	  <c:set var="inputForm" value="instanciacion_id" scope="request"/>
 		  	  <tiles:insertDefinition name="jaxSubstitutionDiv" />
-              
-              <button type="button" onclick="setJaxSubstitutionVariables('a,b,c', 'substitutionButtonsId')">Click Me! abc</button>
-              <button type="button" onclick="setJaxSubstitutionVariables('x,y,a', 'substitutionButtonsId')">Click Me! xya</button>
-              <button type="button" onclick="setJaxSubstitutionVariables('q', 'substitutionButtonsId')">Click Me! q</button>
-              <button type="button" onclick="setSubstitutionOnInput('substitutionButtonsId')">Send Me!</button>
-              <button type="button" onclick="cleanJaxSubstitution('substitutionButtonsId')">Clean Me!</button>
-              
+             
           	
           	  <div style="display: none;">
 	              Leibniz: <br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>

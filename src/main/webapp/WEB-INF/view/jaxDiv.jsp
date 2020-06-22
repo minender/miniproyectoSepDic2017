@@ -44,7 +44,7 @@
 	// IMPORTANT: there is some weird bug in mathjax forms were the first time you create a form 
 	// it gets deleted and duplicated by mathjax, so you cant work with the first instance, because 
 	// all you do with it will get deleted and overwritten by a new fresh FormInput
-	// THIS takes cares of it 
+	// THIS takes cares of it, in case the bug appears again
 	/* setTimeout(function() {
 		preSet('${rootId}');
 	}, 1000); */
@@ -53,8 +53,7 @@
 	document.getElementById('${rootId}' + "MathJaxDiv").addEventListener('DOMNodeInserted', function( event ) {
 	    
 	    if(event.target.className == "MathJax_Input"){
-  	  	setMathJaxFormAttributes(event.target, 1, '${rootId}');
-	    	
+  	  		setMathJaxFormAttributes(event.target, 1, '${rootId}');
 	    }
 	}, false); 
 	

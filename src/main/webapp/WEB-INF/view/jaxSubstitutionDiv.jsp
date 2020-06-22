@@ -39,6 +39,7 @@
 	//SET SYMBOL DICTIONARY 
 	window['${rootId}simboloDic'] = ${simboloDictionaryCode};
 	var dictionarySym = window['${rootId}simboloDic'];
+	
 	// Set a numeric (but still a string) Id for all aliases, that way we can use them as symbols
 	for (var key in dictionarySym) {
 	    // check if is an alias
@@ -53,7 +54,6 @@
 	varsDiv.addEventListener('DOMNodeInserted', function( event ) {
 	
 	    if(event.target.className == "MathJax_Input"){
-	    	// Find the id associated to the added input 
 	    	
 	    	// First find the fist dot
 	    	var formId = event.target.id;
@@ -75,14 +75,8 @@
 	    			end = k + 1;
 	    		}
 	    	}
-	    	
-	    	console.log("SETTING ID");
-	    	console.log("OLD: " + formId);
-	    	console.log(end);
-	    	
+	    	    	
 	    	var rootId = formId.substring(0, end);
-	    	
-	    	console.log("NEW: " +  rootId);
 	    	
   	  		setMathJaxFormAttributes(event.target, 1, rootId);
 	    	

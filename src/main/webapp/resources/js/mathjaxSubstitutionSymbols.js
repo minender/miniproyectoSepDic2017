@@ -1,14 +1,20 @@
 
 /**
- * This function takes the id of a div on which there is jaxSubstitution 
- * and only that, removes wathever was on it, and creates a new fres jaxSubstitution
+ * This function takes the id of a jaxSubstitutionDiv 
+ * , removes wathever was on it, and creates a new fresh jaxSubstitutionDiv
  * based on a new variables list
- * @param divId
- * @param newVariables
- * @param rootId
+ * @param newVariables string of variables for example "a,b,c"
+ * @param rootId string id of the substitution div
  * @returns
  */
 function setJaxSubstitutionVariables(newVariables, rootId){
+	
+	
+	//IF THE LIST IS EMPTY JUST CLEAN THE DIV
+	if(emptyString(newVariables)){
+		cleanJaxSubstitution(rootId);
+		return;
+	}
 	
 	rootId = rootId + '.';
 	
@@ -19,7 +25,7 @@ function setJaxSubstitutionVariables(newVariables, rootId){
 	//Get the simbolo dicctionary defined within the jaxSubstitution tile
 	var dictionarySym = window[rootId+'simboloDic'];
 	
-	//Get the id of the div where will put the mathjax divs
+	//Get div where will put the mathjax divs
 	var varsDivId = rootId+'VariablesDiv';
 	var varsDiv = document.getElementById(varsDivId);
 	
@@ -61,25 +67,27 @@ function setJaxSubstitutionVariables(newVariables, rootId){
    String of each variable for the current value there is on the actual input boxes
    It will also replace the numericId used for the aliases with their name
    for example 'C23232' by 'Or'
- * @param textareaId if of the textarea where u need to put the expression to send
- * @rootId id of the jaxSubstitution tile
+   At the end it will put the whole expression in the substitution div in the input form
+   to send to the controller
+ * @param rootId id of the jaxSubstitution tile
  * @returns
  */
 function setSubstitutionOnInput(rootId){
 	
 	rootId = rootId + '.';
 	
+	// Get id of the form we'll send the expression to
 	var textareaId = window[rootId + '_InputForm'];
 	
-	//Get the variables that are right now displaying on the jaxSubstitutionSymbols
+	// Get the variables that are right now displaying on the jaxSubstitutionSymbols
 	var variables = window[rootId + '_variables'];
 	var n = variables.length;
 	
-	//The result we'll write to the input of textareaid will be saved here
+	// The result we'll write to the input of textareaid will be saved here
 	var leftSide = "";
 	var rightSide = "";
 	
-	//Iteration variables
+	// Iteration variables
 	var variableRootId;//rootId of the variable
 	var inputs;//array of all inputs inside the variable id
 	var parserString;//parserString of the current variable
@@ -100,15 +108,10 @@ function setSubstitutionOnInput(rootId){
 		}
 			
 		//Change C form of the aliaes to their actual name 
-		parserString = setCtoAliases(Cnotation, variableRootId);
+		parserString = setCtoAliases(parserString, variableRootId);
 		
 		//Check if the parserString was empty
-		parserStringEmpty = true;
-		for(var j = 0; j < parserString.length; j++){
-			if(parserString[j] != ' '){
-				parserStringEmpty = false;
-			}
-		}
+		parserStringEmpty = emptyString(parserString);
 		
 		if( !parserStringEmpty ) {
 			leftSide = leftSide + variables[i] + ',';
@@ -129,8 +132,7 @@ function setSubstitutionOnInput(rootId){
 	}
 	
 	// Set the text we'll send to the controller
-	var textarea = $('#'+textareaId);
-	
+	var textarea = $('#'+textareaId);	
 	textarea.val(parserString);
 	return parserString;
 }
@@ -139,7 +141,7 @@ function setSubstitutionOnInput(rootId){
 
 /**
  * This function is supossed to delete all contents from the given 
- * jaxSubstitution with id rootId, it will also clean the input area associated to 
+ * jaxSubstitutionDiv with id rootId, it will also clean the input area associated to 
  * it 
  * @param rootId string id of the jaxSubstitution
  * @returns
@@ -163,4 +165,21 @@ function cleanJaxSubstitution(rootId){
 	textarea.val("");
 }
 
+/**
+ * This function checks if a string is "" or is made of white spaces
+ * @param str
+ * @returns true or false
+ */
+
+function emptyString(str){
+	
+	for(var i = 0; i < str.length; i++){
+		if(str[i] != " "){
+			return false;
+		}
+	}
+	
+	return true;
+	
+}
 
