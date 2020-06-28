@@ -631,7 +631,7 @@ public class App extends Term{
         }
         
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
-        return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace("\\ {"+sym.getNotacion()+"}\\"));
+        return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace("\\ {"+sym.getNotacion()+"}\\ "));
     }
 
     public String toStringWithInputs(SimboloManager s, String position)

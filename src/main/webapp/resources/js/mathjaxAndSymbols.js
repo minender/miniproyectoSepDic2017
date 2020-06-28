@@ -281,7 +281,6 @@ function deleteOperator(FormId, rootId){
 	
 	// Must know if this was a right side or left side in the latex string
 	var leftChild = jaxInputDictionary[FormId]['isLeftLatex'];
-	
 	// Get the index from which we'll start studying the string to replace the expression
 	var indexFormId = originalMathJax.indexOf("\\FormInput{" + FormId + '}');
 	
@@ -378,8 +377,8 @@ function deleteOperator(FormId, rootId){
 		toReplace = "\\ " + toReplace + "\\ ";
 		
 		// Now toReplace should have the whole expression we need to delete	
-		result =  originalMathJax.replace(toReplace, "\\FormInput{" + oldParentId + "}");
-		
+		result = originalMathJax.replace(toReplace, "\\FormInput{" + oldParentId + "}");
+				
 	}
 	
 	// Render the new text, also set the new input box attributes
@@ -611,7 +610,6 @@ function stringToIntString(string){
  */
 function inferRecoverC(cNotation, latexNotation){
 	
-
 	var n = cNotation.length;
 	const error = "Wrong Input, missing closing } or a , ";
 	var newParserString = "";
@@ -619,7 +617,6 @@ function inferRecoverC(cNotation, latexNotation){
 	
 	//Add prefix to latexNotation
 	latexNotation = window['leibnizSymbolsId_prefixMathJax'] + latexNotation;
-	
 	
 	// Global Variables
 	var jaxInputDictionary = window["leibnizSymbolsId_jaxInputDictionary"];
@@ -697,7 +694,7 @@ function inferRecoverC(cNotation, latexNotation){
     
     // Update the jax expression
     var math = MathJax.Hub.getAllJax('leibnizSymbolsId_MathJaxDiv')[0];
-    MathJax.Hub.Queue(["Text",math,latexNotation]);
+    MathJax.Hub.Queue(["Text",  math, "{" +latexNotation + "}"]);
     
     // Load the variables on the input boxes
     loadMathJaxFormContent('leibnizSymbolsId_MathJaxDiv',  variablesSaved);
