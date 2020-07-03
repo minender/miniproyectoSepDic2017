@@ -26,12 +26,11 @@ public class Solucion implements java.io.Serializable {
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "solucion_id_seq")
     @SequenceGenerator(name = "solucion_id_seq", sequenceName = "solucion_id_seq")
     private int id;
-    private byte[] arregloSerializado;
     //private List<PasoInferencia> arregloInferencias = new ArrayList<PasoInferencia>();
     private Term typedTerm;
     private Resuelve resuelve;
     private boolean resuelto;
-//    private String nteoinicial;
+    private String demostracion;
 
     /*public String getNteoinicial() {
         return nteoinicial;
@@ -55,11 +54,16 @@ public class Solucion implements java.io.Serializable {
     public void setTypedTerm(Term typedTerm)
     {
         this.typedTerm = typedTerm;
+        this.demostracion = typedTerm.toString();
     }
     
     public Term getTypedTerm()
     {
         return typedTerm;
+    }
+    
+    public String getDemostracion() {
+    	return demostracion;
     }
     
     public Solucion(Term typeTerm) {
@@ -70,6 +74,7 @@ public class Solucion implements java.io.Serializable {
         this.resuelve = resuelve;
         this.resuelto = resuelto;
         this.typedTerm = typeTerm;
+        this.demostracion = typeTerm.toString();
     }
 
    /* public Solucion(PasoInferencia paso) {
@@ -106,10 +111,6 @@ public class Solucion implements java.io.Serializable {
         this.id = id;
     }
 
-    public void setArregloSerializado(byte[] arregloSerializado) {
-        this.arregloSerializado = arregloSerializado;
-    }
-
     /*public void setArregloInferencias(List<PasoInferencia> arregloInferencias) {
         this.arregloInferencias = arregloInferencias;
 //        this.arregloSerializado = SerializationUtils.serialize(arregloInferencias);
@@ -120,13 +121,13 @@ public class Solucion implements java.io.Serializable {
     public void setResuelve(Resuelve resuelve) {
         this.resuelve = resuelve;
     }
+    
+    public void setDemostracion(String demostracion) {
+    	this.demostracion = demostracion;
+    }
 
     public int getId() {
         return id;
-    }
-
-    public byte[] getArregloSerializado() {
-        return arregloSerializado;
     }
 
     /*public List<PasoInferencia> getArregloInferencias() {
@@ -162,27 +163,6 @@ public class Solucion implements java.io.Serializable {
         this.arregloSerializado = SerializationUtils.serialize(newArray);
 
     }*/
-
-    public void deserialize() {
-        /*List<byte[]> theArray = new ArrayList<byte[]>();
-        theArray = (List<byte[]>) SerializationUtils.deserialize(this.arregloSerializado);
-        List<PasoInferencia> newArray = new ArrayList<PasoInferencia>();
-        
-        Iterator<byte[]> solIter = theArray.iterator();
-        while (solIter.hasNext())  {
-            PasoInferencia paso = new PasoInferencia();
-            paso.setExpresion((Term) SerializationUtils.deserialize(solIter.next()));
-            paso.setTeoIzq((Term) SerializationUtils.deserialize(solIter.next()));
-            paso.setTeoDer((Term) SerializationUtils.deserialize(solIter.next()));
-            paso.setLeibniz((Term) SerializationUtils.deserialize(solIter.next()));
-            paso.setInstancia((String) SerializationUtils.deserialize(solIter.next()));
-            paso.setResult((Term) SerializationUtils.deserialize(solIter.next()));            
-            newArray.add(paso);
-        }
-        this.arregloInferencias = newArray;*/
-        Term term = (Term) SerializationUtils.deserialize(this.arregloSerializado);
-        this.typedTerm = term;
-    }
 
     public int retrocederPaso(){
     

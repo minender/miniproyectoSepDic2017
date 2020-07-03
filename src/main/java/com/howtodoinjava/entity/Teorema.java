@@ -26,7 +26,6 @@ public class Teorema  implements java.io.Serializable {
     @SequenceGenerator(name="teorema_id_seq", sequenceName="teorema_id_seq")
      private int id;
      private String enunciado;
-     private byte[] teoserializado;
      private Term teoTerm;
      private Term metateoTerm;
      private boolean esquema;
@@ -38,7 +37,6 @@ public class Teorema  implements java.io.Serializable {
 
     public Teorema(String enunciado, Term teoTerm, boolean esquema, String aliases) {
         this.enunciado = enunciado;
-        this.teoserializado = SerializationUtils.serialize(teoTerm);
         this.teoTerm = teoTerm;
         this.esquema = esquema;
         this.aliases = aliases;
@@ -87,7 +85,6 @@ public class Teorema  implements java.io.Serializable {
     	
     	
         this.teoTerm = teoTerm;
-        this.teoserializado = SerializationUtils.serialize(teoTerm);
     }
 
     public Term getTeoTerm() {
@@ -109,16 +106,8 @@ public class Teorema  implements java.io.Serializable {
         return this.enunciado;
     }
 
-    public void setTeoserializado(byte[] teoserializado) {
-        this.teoserializado = teoserializado;
-    }
-
     public void setResuelves(Set resuelves) {
         this.resuelves = resuelves;
-    }
-
-    public byte[] getTeoserializado() {
-        return teoserializado;
     }
 
     public Set getResuelves() {

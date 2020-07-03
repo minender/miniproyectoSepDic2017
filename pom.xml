@@ -371,7 +371,7 @@
       <version>2.4.0.v200706111738</version>
       <type>jar</type>
       <scope>system</scope>
-      <systemPath>/home/federico/NetBeansProjects/Logica/lib/javax.servlet-2.4.0.v200706111738.jar</systemPath>
+      <systemPath>/Users/capi/Desktop/mini_desktop/Universidad/MiniProyecto/javax.servlet-2.4.0.v200706111738.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
