@@ -210,10 +210,13 @@ public class Bracket extends Term{
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
+                                     List<String> l2, Id id, int nivel){
         id.id++;
-        leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
-        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
+        //leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
+        //leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this));
+        l2.add(l2.remove(0)+id.id+",");
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal(null)+"."+t.toStringInfFinal(null)+")}}";

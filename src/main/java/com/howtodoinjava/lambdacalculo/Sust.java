@@ -182,7 +182,7 @@ public class Sust extends Term{
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term init, List<String> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term init, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
         id.id++;
         String varss = "";
         String termss = "";
@@ -194,8 +194,9 @@ public class Sust extends Term{
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
-         leibniz.add(init.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
-         leibnizL.add(init.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
+         leibniz.add(init.leibniz(z, this));
+//         leibniz.add(init.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
+//         leibnizL.add(init.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
         
         return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{["+varss+" := "+termss+"]}}";
     }

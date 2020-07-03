@@ -4,7 +4,7 @@
 package com.howtodoinjava.parse; 
 
 import com.howtodoinjava.lambdacalculo.*;	
-	
+import java.util.LinkedList;	
 	
 
 
@@ -23,6 +23,18 @@ public class CombBaseListener implements CombListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterStart_rule(CombParser.Start_ruleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStart_rule(CombParser.Start_ruleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpr(CombParser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -35,13 +47,85 @@ public class CombBaseListener implements CombListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAux_expr(CombParser.Aux_exprContext ctx) { }
+	@Override public void enterTerm(CombParser.TermContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAux_expr(CombParser.Aux_exprContext ctx) { }
+	@Override public void exitTerm(CombParser.TermContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTerm_base(CombParser.Term_baseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTerm_base(CombParser.Term_baseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTerm_tail(CombParser.Term_tailContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTerm_tail(CombParser.Term_tailContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVariable_list(CombParser.Variable_listContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariable_list(CombParser.Variable_listContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVariable_list_tail(CombParser.Variable_list_tailContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariable_list_tail(CombParser.Variable_list_tailContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTerm_list(CombParser.Term_listContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTerm_list(CombParser.Term_listContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTerm_list_tail(CombParser.Term_list_tailContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTerm_list_tail(CombParser.Term_list_tailContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -54,18 +138,6 @@ public class CombBaseListener implements CombListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitVariable(CombParser.VariableContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterPar_expr(CombParser.Par_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPar_expr(CombParser.Par_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -95,6 +167,18 @@ public class CombBaseListener implements CombListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPhi_tail(CombParser.Phi_tailContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPhi_tail(CombParser.Phi_tailContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterComb_index(CombParser.Comb_indexContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -114,6 +198,18 @@ public class CombBaseListener implements CombListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCb_pair(CombParser.Cb_pairContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterProve_base(CombParser.Prove_baseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitProve_base(CombParser.Prove_baseContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

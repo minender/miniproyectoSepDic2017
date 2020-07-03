@@ -227,7 +227,8 @@ public class Const extends Term
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
+                                     List<String> l2, Id id, int nivel){
         Simbolo c1 = s.getSimbolo(this.id);
         String term;
         if (c1 != null) 
@@ -235,8 +236,10 @@ public class Const extends Term
         else 
            term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}"; 
 
-        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
-        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this));
+        l2.add(l2.size(),id.id+",");
+//        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
+//        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
         id.id++;
         
         return term;

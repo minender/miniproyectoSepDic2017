@@ -150,7 +150,7 @@ public class I extends Term {
     }     
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, List<String> l2, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> l, List<String> l2, Id id, int nivel){
             return ""; //"|";
     }
         

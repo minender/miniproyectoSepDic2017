@@ -180,6 +180,34 @@
                 $('#formula').on("mouseup",function(event){
                     //Obtiene toda la expresion bien formada que se puede sustituir
                     var total_expression = $(".0")[0];
+                    /*var range = window.getSelection().getRangeAt(0);
+                    var _iterator = document.createNodeIterator(
+                        range.commonAncestorContainer,
+                        NodeFilter.SHOW_ALL, // pre-filter
+                        {
+                            // custom filter
+                            acceptNode: function (node) {
+                                return NodeFilter.FILTER_ACCEPT;
+                            }
+                        }
+                    );
+
+                    _nodes = [];
+                    while (_iterator.nextNode()) {
+                        if (_nodes.length === 0 && _iterator.referenceNode !== range.startContainer) continue;
+                        _nodes.push(_iterator.referenceNode);                           
+                        if (_iterator.referenceNode === range.endContainer) break;
+                    }
+                    var index = 0;
+                    while (index < _nodes.length) {
+                        if (typeof(_nodes[index].className)!='undefined' && 
+                               _nodes[index].className.includes('terminoClick') && 
+                               typeof(_nodes[index].id)!='undefined' && 
+                               !isNaN(parseInt(_nodes[index].id)) 
+                           )
+                         alert(_nodes[index].id);
+                        index ++;
+                    }*/
                     //Si esta expresion existe y lo seleccionado tiene un rango (no es un simple click):
                     if (total_expression && window.getSelection().type === 'Range'){
                         //Obtiene el primero y el ultimo elemento del subrayado

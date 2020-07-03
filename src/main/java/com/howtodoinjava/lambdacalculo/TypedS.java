@@ -9,7 +9,7 @@ package com.howtodoinjava.lambdacalculo;
  *
  * @author federico
  */
-public class TypedS extends Const{
+public class TypedS extends Const implements TypedTerm{
     
     private final Term simetry_;
     
@@ -24,6 +24,12 @@ public class TypedS extends Const{
         Term t2 = ((App)((App)simetry).p).q;
         simetry_ = new App(new App(new Const(1,"c_{1}",false,1,1),
                    new App(new App(new Const(id,con,false,1,1),t1),t2)),simetry);
+    }
+    
+    public TypedS(Term simetry, int i) throws TypeVerificationException, ClassCastException
+    {
+        super("S");
+        simetry_ = simetry;
     }
     
     public Term type()

@@ -9,7 +9,7 @@ package com.howtodoinjava.lambdacalculo;
  *
  * @author federico
  */
-public class TypedApp extends App{
+public class TypedApp extends App implements TypedTerm{
     
     
     public TypedApp(Term t1, Term t2)  throws TypeVerificationException

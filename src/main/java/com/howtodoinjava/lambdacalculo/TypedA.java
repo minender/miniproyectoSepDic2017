@@ -9,7 +9,7 @@ package com.howtodoinjava.lambdacalculo;
  *
  * @author federico
  */
-public class TypedA extends Const{
+public class TypedA extends Const implements TypedTerm{
     
     private final Term type_;
     

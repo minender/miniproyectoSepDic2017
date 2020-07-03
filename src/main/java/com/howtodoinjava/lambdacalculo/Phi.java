@@ -149,10 +149,11 @@ public class Phi extends Term{
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
         String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{\\Phi_{"+ind.toString()+"}}}";
-        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
-        leibnizL.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
+        leibniz.add(t.leibniz(z, this));
+//        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
+//        leibnizL.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
         id.id++;
         return term;
     }

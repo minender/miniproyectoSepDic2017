@@ -639,9 +639,10 @@ public class App extends Term{
         return privateToStringWithInputs(s,position).x3;
     }
     
-    private IntXIntXString privateToStringInfLabeled(SimboloManager s,int z, Term t, List<String> l, List<String> l2, 
+    private IntXIntXString privateToStringInfLabeled(SimboloManager s,int z, Term t, 
+                                                     List<Term> l, List<String> l2, 
                                                      Id id, int nivel) {
-        
+        String setVar = "";
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
         Term aux = p;
@@ -657,19 +658,24 @@ public class App extends Term{
         values.put("op", "\\class{terminoClick}{"+sym.getNotacion_latex()+"}");
         String notation = sym.getNotacion();
         int i = 1;
-        while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
+        while (!stk.empty()) {
          Term arg = stk.pop();
-         if (notation.contains("%(na"+i+")"))
+         if (notation.contains("%(na"+i+")")) {
                values.put("na"+i,arg.toStringInfLabeled(s,z,t,l,l2,id,nivel+1));
+               setVar += l2.get(l2.size()-1);
+         }
          else if (notation.contains("%(a"+i+")"))
          {
            if (arg instanceof App)
            {
             IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,l2,id,nivel+1);
             values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
+            setVar += l2.get(l2.size()-1);
            }
-           else
+           else {
             values.put("a"+i,arg.toStringInfLabeled(s,z,t,l,l2,id,nivel+1));
+            setVar += l2.get(l2.size()-1);
+           }
          }
          else if (notation.contains("%(aa"+i+")"))
          {
@@ -677,9 +683,12 @@ public class App extends Term{
           {
            IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,l2,id,nivel+1);
            values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
+           setVar += l2.get(l2.size()-1);
           }
-          else
+          else {
            values.put("aa"+i,arg.toStringInfLabeled(s,z,t,l,l2,id,nivel+1));
+           setVar += l2.get(l2.size()-1);
+          }
          }
           i++;
         }
@@ -687,13 +696,15 @@ public class App extends Term{
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
         String term = sub.replace("\\class{"+nivel+"}{"+sym.getNotacion()+"}");
         term = "\\cssId{"+id.id+"}{"+term+"}";
-        l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
-        l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
+        l2.add(l2.size(),setVar+id.id+",");
+        //l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
+        //l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
+        l.add(t.leibniz(z, this));
         id.id++;
         return new IntXIntXString(sym.getId(),sym.getPr(),term);
     }
     
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<String> l1, List<String> l2, Id id, int nivel)
+    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> l1, List<String> l2, Id id, int nivel)
     {
         return privateToStringInfLabeled(s, z, t, l1, l2, id, nivel).x3;
     }   

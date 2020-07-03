@@ -9,18 +9,8 @@ package com.howtodoinjava.lambdacalculo;
  *
  * @author federico
  */
-public class TypedL extends Const implements TypedTerm{
+public interface TypedTerm {
     
-    private final Bracket lambda_;
+    public Term type();
     
-    public TypedL(Bracket lambda)
-    {
-        super("L");
-        lambda_ = lambda;
-    }
-    
-    public Term type()
-    {
-        return lambda_;
-    }
 }
