@@ -57,6 +57,7 @@ import com.howtodoinjava.lambdacalculo.TypedApp;
 import com.howtodoinjava.lambdacalculo.TypedI;
 import com.howtodoinjava.lambdacalculo.TypedS;
 import com.howtodoinjava.lambdacalculo.Var;
+import com.howtodoinjava.parse.CombUtilities;
 import com.howtodoinjava.parse.IsNotInDBException;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermParser;
@@ -120,6 +121,8 @@ public class PerfilController {
     private TeoriaManager teoriaManager;
     @Autowired
     private MostrarCategoriaManager mostrarCategoriaManager;
+    @Autowired
+    private CombUtilities combUtilities;
     
     
     @RequestMapping(value="/{username}/close", method=RequestMethod.GET)
@@ -914,7 +917,6 @@ public class PerfilController {
                      Predicado predicado2=predicadoManager.getPredicado(username, predicado.getPredicado());
                      if(predicado2 != null) 
                         throw new AlphaEquivalenceException(predicado2.getId().getAlias());
-                     predicado.setPredserializado(res);
                      String pos = "";
                      int i = 0;
                      for (String var: tk.getVars())
@@ -1087,7 +1089,7 @@ public class PerfilController {
         Predicado p=predicadoManager.getPredicado(id);
         Tokenizar tk = new Tokenizar();
         tk.tokenArgs(p.getArgumentos());
-        Term aux = (Term)SerializationUtils.deserialize(p.getPredserializado());
+        Term aux = combUtilities.getTerm(p.getPredicado());
         for (String var : tk.getVars()) 
             aux=new App(aux,new Var(var.charAt(0)));
         aux = aux.evaluar();
@@ -1255,7 +1257,6 @@ public class PerfilController {
                     Predicado predicado2=predicadoManager.getPredicado(username, predicado.getPredicado());
                     if(predicado2 != null && !predicado2.getId().getAlias().equals(alias)) 
                         throw new AlphaEquivalenceException(predicado2.getId().getAlias());
-                    predicado.setPredserializado(res);
                     predicadoManager.updatePredicado(predicado);
                     resultado  = " 1 Su abreviaci&oacute;n ha sido guardado con exito";
                 }else{

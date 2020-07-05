@@ -45,18 +45,18 @@
 	// it gets deleted and duplicated by mathjax, so you cant work with the first instance, because 
 	// all you do with it will get deleted and overwritten by a new fresh FormInput
 	// THIS takes cares of it, in case the bug appears again
-	/* setTimeout(function() {
-		preSet('${rootId}');
-	}, 1000); */
+	setTimeout(function() {
+		setMathJaxFormAttributes(document.getElementById('${rootId}'), 1, '${rootId}');
+		//preSet('${rootId}');
+	}, 10000); 
 	
 	// If a new MathJax input gets added this sets its attributes
 	document.getElementById('${rootId}' + "MathJaxDiv").addEventListener('DOMNodeInserted', function( event ) {
-	    
 	    if(event.target.className == "MathJax_Input"){
   	  		setMathJaxFormAttributes(event.target, 1, '${rootId}');
 	    }
 	}, false); 
-	
+		
 	// Set a numeric (but still a string) Id for all aliases, that way we can use them as symbols
 	for (var key in window['${rootId}' + 'simboloDic']) {
 	    // check if is an alias

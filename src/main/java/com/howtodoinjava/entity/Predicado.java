@@ -19,7 +19,6 @@ public class Predicado extends notacionOwner implements java.io.Serializable {
      private Usuario usuario;
      private String predicado;
      private String alias;
-     private byte[] predserializado;
      private String argumentos;
      private String aliases;
      private String notacion;
@@ -29,12 +28,11 @@ public class Predicado extends notacionOwner implements java.io.Serializable {
     public Predicado() {
     }
 
-    public Predicado(PredicadoId id, Usuario usuario, String predicado, String alias, byte[] predserializado, String argumentos, String aliases, String notacion) {
+    public Predicado(PredicadoId id, Usuario usuario, String predicado, String alias, String argumentos, String aliases, String notacion) {
        this.id = id;
        this.usuario = usuario;
        this.predicado = predicado;
        this.alias = alias;
-       this.predserializado = predserializado;
        this.argumentos = argumentos;
        this.aliases = aliases;
        setNotacion(notacion);
@@ -68,17 +66,7 @@ public class Predicado extends notacionOwner implements java.io.Serializable {
     public void setAlias(String alias) {
         this.alias = alias;
     }
-    public byte[] getPredserializado() {
-        return this.predserializado;
-    }
-    
-    public void setPredserializado(Term t) {
-        this.predserializado= SerializationUtils.serialize(t);
-    }
-    
-    public void setPredserializado(byte[] predserializado) {
-        this.predserializado = predserializado;
-    }
+  
     public String getArgumentos() {
         return this.argumentos;
     }
