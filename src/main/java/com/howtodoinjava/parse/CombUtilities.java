@@ -36,7 +36,7 @@ public class CombUtilities {
 		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 		
 		// get the value of the parser 
-		Term t = parser.expr().value;
+		Term t = parser.start_rule().value;
 		
 		return t;
 		

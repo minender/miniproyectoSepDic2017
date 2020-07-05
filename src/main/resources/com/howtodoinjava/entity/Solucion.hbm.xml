@@ -13,15 +13,11 @@
         <many-to-one name="resuelve" class="com.howtodoinjava.entity.Resuelve" lazy="false" fetch="select">
             <column name="resuelveid" not-null="true" />
         </many-to-one>
-        <property name="arregloSerializado" type="binary">
-            <column name="arregloserializado" not-null="true" />
-        </property>
         <property name="resuelto" type="boolean">
             <column name="resuelto" not-null="true" />
         </property>   
-        <!--<property name="nteoinicial" type="string">
-            <column name="nteoinicial" not-null="false" />
+        <property name="demostracion" type="string">
+            <column name="demostracion" not-null="true" />
         </property>
-        -->
     </class>
 </hibernate-mapping>

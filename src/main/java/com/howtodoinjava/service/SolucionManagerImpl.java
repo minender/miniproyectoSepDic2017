@@ -8,6 +8,8 @@ import com.howtodoinjava.dao.SolucionDAO;
 import com.howtodoinjava.entity.Solucion;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
 import com.howtodoinjava.lambdacalculo.Term;
+import com.howtodoinjava.parse.CombUtilities;
+
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,13 @@ public class SolucionManagerImpl implements SolucionManager {
     @Autowired
     private SolucionDAO solucionDAO;
     
+    @Autowired
+    private CombUtilities combUtilities;
+    
     
     @Override
     @Transactional
     public void addSolucion(Solucion sol){        
-        sol.setArregloSerializado(SerializationUtils.serialize(sol.getTypedTerm()));
         solucionDAO.addSolucion(sol);
     }
     
@@ -48,14 +52,12 @@ public class SolucionManagerImpl implements SolucionManager {
     public void updateSolucion(int solucionId, Term typedTerm){
         Solucion sol = solucionDAO.getSolucion(solucionId);
         sol.setTypedTerm(typedTerm);
-        sol.setArregloSerializado(SerializationUtils.serialize(typedTerm));
         solucionDAO.updateSolucion(sol);
     }
     
     @Override
     @Transactional
     public void updateSolucion(Solucion sol){
-        sol.setArregloSerializado(SerializationUtils.serialize(sol.getTypedTerm()));
         solucionDAO.updateSolucion(sol);
     }
     
@@ -70,7 +72,7 @@ public class SolucionManagerImpl implements SolucionManager {
     @Transactional
     public Solucion getSolucion(int id){
         Solucion solucion = solucionDAO.getSolucion(id);
-        solucion.deserialize();
+        solucion.setTypedTerm(combUtilities.getTerm(solucion.getDemostracion()));
         return solucion;
     }
     
@@ -80,7 +82,7 @@ public class SolucionManagerImpl implements SolucionManager {
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId){
         List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelveId);
         for (Solucion sol: sols)
-            sol.deserialize();
+        	sol.setTypedTerm(combUtilities.getTerm(sol.getDemostracion()));
         return sols;
     }
     

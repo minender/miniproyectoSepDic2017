@@ -13,9 +13,6 @@
         <property name="enunciado" type="string">
             <column name="enunciado" not-null="true" />
         </property>
-        <property name="teoserializado" type="binary">
-            <column name="teoserializado" not-null="true" />
-        </property>
         <property name="esquema" type="boolean">
             <column name="esquema" not-null="true" />
         </property>

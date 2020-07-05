@@ -24,7 +24,7 @@ public class ClientCompTester {
 		CombParser parser;
 		
 		try {
-            BufferedReader br = new BufferedReader(new FileReader("/home/federico/NetBeansProjects/Logica/miniproyectoSepDic2017/src/main/java/com/howtodoinjava/parse/CasosDePrueba.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("/Users/capi/Desktop/mini_desktop/Universidad/MiniProyecto/git-miniproyecto/miniproyectoSepDic2017/src/main/java/com/howtodoinjava/parse/CasosDePrueba.txt"));
 		    String line;
 		    int line_no = 1;
 		    while ((line = br.readLine()) != null) {

@@ -18,9 +18,6 @@
         <property name="predicado" type="string">
             <column name="predicado" not-null="true" />
         </property>
-        <property name="predserializado" type="binary">
-            <column name="predserializado" not-null="true" />
-        </property>
         <property name="argumentos" type="string">
             <column name="argumentos" not-null="true" />
         </property>

@@ -187,7 +187,6 @@ ALTER SEQUENCE userdb.metateorema_id_seq OWNED BY userdb.metateorema.id;
 CREATE TABLE userdb.predicado (
     predicado text NOT NULL,
     alias text NOT NULL,
-    predserializado bytea NOT NULL,
     login text NOT NULL,
     argumentos text NOT NULL,
     aliases userdb.alias_list NOT NULL,
@@ -255,7 +254,8 @@ CREATE TABLE userdb.solucion (
     id integer NOT NULL,
     resuelveid integer NOT NULL,
     resuelto boolean DEFAULT false NOT NULL,
-    arregloserializado bytea
+    demostracion text NOT NULL
+    
 );
 
 
@@ -289,7 +289,6 @@ ALTER SEQUENCE userdb.solucion_id_seq OWNED BY userdb.solucion.id;
 CREATE TABLE userdb.teorema (
     id integer NOT NULL,
     enunciado text NOT NULL,
-    teoserializado bytea NOT NULL,
     esquema boolean NOT NULL,
     aliases userdb.alias_list NOT NULL
 );
@@ -559,7 +558,7 @@ SELECT pg_catalog.setval('userdb.metateorema_id_seq', 1, false);
 -- Data for Name: predicado; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY userdb.predicado (predicado, alias, predserializado, login, argumentos) FROM stdin;
+COPY userdb.predicado (predicado, alias, login, argumentos) FROM stdin;
 \.
 
 
@@ -590,7 +589,7 @@ SELECT pg_catalog.setval('userdb.resuelve_id_seq', 1, false);
 -- Data for Name: solucion; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY userdb.solucion (id, resuelveid, resuelto, arregloserializado) FROM stdin;
+COPY userdb.solucion (id, resuelveid, resuelto, demostracion) FROM stdin;
 \.
 
 
@@ -605,7 +604,7 @@ SELECT pg_catalog.setval('userdb.solucion_id_seq', 1, false);
 -- Data for Name: teorema; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY userdb.teorema (id, enunciado, teoserializado, esquema, aliases) FROM stdin;
+COPY userdb.teorema (id, enunciado, esquema, aliases) FROM stdin;
 \.
 
 
