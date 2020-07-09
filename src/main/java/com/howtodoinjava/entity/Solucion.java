@@ -31,6 +31,7 @@ public class Solucion implements java.io.Serializable {
     private Resuelve resuelve;
     private boolean resuelto;
     private String demostracion;
+    private String metodo;
 
     /*public String getNteoinicial() {
         return nteoinicial;
@@ -66,15 +67,24 @@ public class Solucion implements java.io.Serializable {
     	return demostracion;
     }
     
+	public String getMetodo() {
+		return metodo;
+	}
+
+	public void setMetodo(String metodo) {
+		this.metodo = metodo;
+	}
+    
     public Solucion(Term typeTerm) {
         this.typedTerm = typeTerm;
     }
     
-    public Solucion(Resuelve resuelve, boolean resuelto, Term typeTerm) {
+    public Solucion(Resuelve resuelve, boolean resuelto, Term typeTerm, String metodo) {
         this.resuelve = resuelve;
         this.resuelto = resuelto;
         this.typedTerm = typeTerm;
         this.demostracion = typeTerm.toString();
+        this.metodo = metodo;
     }
 
    /* public Solucion(PasoInferencia paso) {
@@ -193,4 +203,5 @@ public class Solucion implements java.io.Serializable {
                 return 1;
             }
     }
+
 }

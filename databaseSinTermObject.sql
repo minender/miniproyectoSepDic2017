@@ -254,7 +254,8 @@ CREATE TABLE userdb.solucion (
     id integer NOT NULL,
     resuelveid integer NOT NULL,
     resuelto boolean DEFAULT false NOT NULL,
-    demostracion text NOT NULL
+    demostracion text NOT NULL,
+    metodo text NOT NULL
     
 );
 
@@ -589,7 +590,7 @@ SELECT pg_catalog.setval('userdb.resuelve_id_seq', 1, false);
 -- Data for Name: solucion; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
-COPY userdb.solucion (id, resuelveid, resuelto, demostracion) FROM stdin;
+COPY userdb.solucion (id, resuelveid, resuelto, demostracion, metodo) FROM stdin;
 \.
 
 

@@ -52,6 +52,7 @@
                     
                 $("#metodosDemostracion").change(function(){
                     var metodosDemostracionValue = this.value
+                    $('#nuevoMetodo_id').val(this.options[this.selectedIndex].text);
                     if(this.value==="1"){
                         if(confirm("Are you sure you want to use the direct method?")){
                             $("#selectTeoInicial").val("1");
@@ -94,6 +95,7 @@
                 
                 $('#formula').on('click','.teoremaClick',function(event){
                     var data = {};
+                    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
                     var form = $('#inferForm');
                     //var teoSol = $("#nSolucion").val();
                     //var teoId = $("#nTeorema").val();
@@ -519,6 +521,8 @@
               -->
          
               <!--\cssId{eq}{\style{cursor:pointer;}{p\equiv q}}-->
+              
+              <input name="nuevoMetodo" id="nuevoMetodo_id" value='' style="display: none;"/>
               
                 Theorem to use:<br>
               <input name="nStatement" id="nStatement_id" value="${nStatement}"/>

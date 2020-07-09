@@ -284,7 +284,7 @@ public class InferController {
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir",headers="Accept=application/json", produces= MediaType.APPLICATION_JSON_VALUE)    
     public @ResponseBody InferResponse infer(@RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion, @PathVariable String username, 
-            @PathVariable String nTeo, @PathVariable String nSol/*, @RequestParam(value="teoremaInicial") String teoremaInicial, @RequestParam(value="nuevoMetodo") String nuevoMetodo */)
+            @PathVariable String nTeo, @PathVariable String nSol, @RequestParam(value="nuevoMetodo") String nuevoMetodo/*, @RequestParam(value="teoremaInicial") String teoremaInicial, @RequestParam(value="nuevoMetodo") String nuevoMetodo */)
     {
         InferResponse response = new InferResponse();
         String pasoPost = "";
@@ -565,7 +565,7 @@ public class InferController {
             {
                 // paso.setResult(pasoPostTerm);
                 // solucion = new Solucion(resuel,false,paso);
-                solucion = new Solucion(resuel,false,pasoPostTerm);
+                solucion = new Solucion(resuel,false,pasoPostTerm,nuevoMetodo);
                 //solucion.setNteoinicial(teoremaInicial);
                 solucionManager.addSolucion(solucion);
                 nSol = ""+solucion.getId();
@@ -718,7 +718,7 @@ public class InferController {
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialMD( @RequestParam(value="teoid") String teoid, @PathVariable String nSol, @PathVariable String username, 
+    public @ResponseBody InferResponse teoremaInicialMD( @RequestParam(value="nuevoMetodo") String nuevoMetodo, @RequestParam(value="teoid") String teoid, @PathVariable String nSol, @PathVariable String username, 
             @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
@@ -744,7 +744,7 @@ public class InferController {
         
         if (nSol.equals("new"))
         {
-            Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm);
+            Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         }
@@ -752,6 +752,7 @@ public class InferController {
         {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));        
             solucion.setTypedTerm(formulaTerm);
+            solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
         }
         
@@ -797,11 +798,11 @@ public class InferController {
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialPL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialPL(@PathVariable String nSol, @RequestParam(value="lado") String lado, @PathVariable String username, 
+    public @ResponseBody InferResponse teoremaInicialPL(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @PathVariable String nSol, @RequestParam(value="lado") String lado, @PathVariable String username, 
             @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
-        
+                
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         String formulaAnterior = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
         
@@ -818,7 +819,7 @@ public class InferController {
         
         if (nSol.equals("new"))
         {
-            Solucion solucion = new Solucion(resuelve,false,formulaTerm);
+            Solucion solucion = new Solucion(resuelve,false,formulaTerm, nuevoMetodo);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         }
@@ -826,6 +827,7 @@ public class InferController {
         {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));        
             solucion.setTypedTerm(formulaTerm);
+            solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
         }
         
@@ -838,7 +840,7 @@ public class InferController {
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialD(@RequestParam(value="teoSol") String teoSol, @PathVariable String username, @PathVariable String nTeo)
+    public @ResponseBody InferResponse teoremaInicialD(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @RequestParam(value="teoSol") String teoSol, @PathVariable String username, @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
         
@@ -866,7 +868,7 @@ public class InferController {
         
         if (teoSol.equals("new"))
         {
-            Solucion solucion = new Solucion(resuelve,false,formulaTerm);
+            Solucion solucion = new Solucion(resuelve,false,formulaTerm, nuevoMetodo);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         }
@@ -874,6 +876,7 @@ public class InferController {
         {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(teoSol));        
             solucion.setTypedTerm(formulaTerm);
+            solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
         }
         
@@ -886,7 +889,7 @@ public class InferController {
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialF", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialF(@RequestParam(value="teoSol") String teoSol, @PathVariable String username, @PathVariable String nTeo)
+    public @ResponseBody InferResponse teoremaInicialF(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @RequestParam(value="teoSol") String teoSol, @PathVariable String username, @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
         
@@ -915,7 +918,7 @@ public class InferController {
         
         if (teoSol.equals("new"))
         {
-            Solucion solucion = new Solucion(resuelve,false,formulaTerm);
+            Solucion solucion = new Solucion(resuelve,false,formulaTerm,nuevoMetodo);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         }
@@ -923,6 +926,7 @@ public class InferController {
         {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(teoSol));        
             solucion.setTypedTerm(formulaTerm);
+            solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
         }
         
