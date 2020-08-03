@@ -209,7 +209,7 @@ public class InferResponse {
           {
             typedTerm = ((TypedApp)typedTerm).q;
             type = typedTerm.type();
-            pasoPost= ((App)((App)type).p).q.toStringInfFinal(s)+equanimityHint+"$";
+            pasoPost= ((App)((App)type).p).q.toStringInf(s,"")+equanimityHint+"$";
           }
           else
             pasoPost= ((App)((App)type).p).q.toStringInfLabeled(s);
@@ -247,34 +247,34 @@ public class InferResponse {
                   if (((App)((App)ultInf).q).q instanceof App)
                   {
                     Term aux = ((App)ultInf.type()).q;
-                    primExp = aux.toStringInfFinal(s)+(aux.equals(goal)?equanimityHint:"");
+                    primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
                     teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
-                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInfFinal(s);
+                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s,"");
                     inst = "~with~" + inst.substring(1, inst.length()-1);
-                    leib = ((App)((App)ultInf).q).p.type().toStringInfFinal(s);
+                    leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
                     leib = "~and~" + leib;
                   }
                   else
                   {
                     Term aux = ((App)ultInf.type()).q;
-                    primExp = aux.toStringInfFinal(s)+(aux.equals(goal)?equanimityHint:"");
+                    primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
                     teo = ((App)((App)ultInf).q).q.type().toStringFinal();
                     if (((App)ultInf).p instanceof TypedS)
                       if (((App)((App)ultInf).q).p instanceof TypedI)
                       {
-                        inst = ((App)((App)ultInf).q).p.type().toStringInfFinal(s);
+                        inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
                         inst = "~with~" + inst.substring(1, inst.length()-1);
                       }
                       else
                       {
-                        leib = ((App)((App)ultInf).q).p.type().toStringInfFinal(s);
+                        leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
                         leib = "~and~" + leib;
                       }
                     else
                     {
-                        inst = ((App)((App)ultInf).q).p.type().toStringInfFinal(s);
+                        inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
                         inst = "~with~" + inst.substring(1, inst.length()-1);
-                        leib = ((App)ultInf).p.type().toStringInfFinal(s);
+                        leib = ((App)ultInf).p.type().toStringInf(s,"");
                         leib = "~and~" + leib;
                     }
                   }
@@ -282,20 +282,20 @@ public class InferResponse {
                 {
                   if (((App)ultInf).p instanceof TypedI)
                   {
-                    inst = ((App)ultInf).p.type().toStringInfFinal(s);
+                    inst = ((App)ultInf).p.type().toStringInf(s,"");
                     inst = "~with~" + inst.substring(1, inst.length()-1);
                   }
                   else if (((App)ultInf).p instanceof TypedL)
-                    leib = "~and~" + ((App)ultInf).p.type().toStringInfFinal(s);
+                    leib = "~and~" + ((App)ultInf).p.type().toStringInf(s,"");
                   teo = ((App)ultInf).q.type().toStringFinal();
                   Term aux = ((App)ultInf.type()).q;
-                  primExp = aux.toStringInfFinal(s)+(aux.equals(goal)?equanimityHint:"");
+                  primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
                 }
               else
               {
                 Term aux = ultInf.type();
                 teo = aux.toStringFinal();
-                primExp = ((App)aux).q.toStringInfFinal(s)+(aux.equals(goal)?equanimityHint:"");
+                primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
               } 
           
               int conId = ((Const)((App)((App)ultInf.type()).p).p).getId();

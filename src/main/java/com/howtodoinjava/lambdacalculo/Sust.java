@@ -173,7 +173,7 @@ public class Sust extends Term{
             varss += v.toStringInf(s,"")+",";
         
         for (Term t : terms)
-            termss += t.toStringInfFinal(s)+",";
+            termss += t.reducir().toStringInfFinal(s)+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
@@ -190,7 +190,7 @@ public class Sust extends Term{
             varss += v.toStringInf(null,"")+",";
         
         for (Term t : terms)
-            termss += t.toStringInf(null,"")+",";
+            termss += t.reducir().toStringInf(null,"")+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
@@ -229,7 +229,7 @@ public class Sust extends Term{
             varss += v.toStringInf(s,"")+",";
         
         for (Term t : terms)
-            termss += t.toStringInfFinal(s)+",";
+            termss += t.reducir().toStringInfFinal(s)+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
