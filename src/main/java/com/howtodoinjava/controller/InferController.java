@@ -215,7 +215,7 @@ public class InferController {
             infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
             InferResponse response = new InferResponse();
             Term typedTerm = solucion.getTypedTerm();
-            response.generarHistorial(username,formula, nTeo, typedTerm, true, resuelveManager, disponeManager,simboloManager);
+            response.generarHistorial(username,formula, nTeo, typedTerm, true,solucion.getMetodo(), resuelveManager, disponeManager,simboloManager);
 
             if (typedTerm == null){
                 map.addAttribute("elegirMetodo","1");
@@ -679,7 +679,7 @@ public class InferController {
             }
 
             String formula = resuel.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
-            response.generarHistorial(username,formula, nTeo,valida?pasoPostTerm:typedTerm,valida,
+            response.generarHistorial(username,formula, nTeo,valida?pasoPostTerm:typedTerm,valida,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
 
         return response;
@@ -705,7 +705,7 @@ public class InferController {
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         String formula = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
 
-        response.generarHistorial(username,formula, nTeo,respRetroceder==0?null:solucion.getTypedTerm(),true,resuelveManager,disponeManager,simboloManager);
+        response.generarHistorial(username,formula, nTeo,respRetroceder==0?null:solucion.getTypedTerm(),true,solucion.getMetodo(),resuelveManager,disponeManager,simboloManager);
         if(/*respRetroceder==1 ||*/ respRetroceder==0){
             response.setCambiarMetodo("1");
         }
@@ -756,7 +756,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
         //String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         //response.setHistorial(historial);  
@@ -831,7 +831,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial); */
@@ -880,7 +880,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
@@ -930,7 +930,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */

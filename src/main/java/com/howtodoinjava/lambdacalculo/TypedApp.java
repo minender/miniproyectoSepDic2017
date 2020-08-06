@@ -15,8 +15,8 @@ public class TypedApp extends App implements TypedTerm{
     public TypedApp(Term t1, Term t2)  throws TypeVerificationException
     {
         super(t1, t2);
-        Term t1Type = t1.type();
-        Term t2Type = t2.type();
+        Term t1Type = t1.type().reducir();
+        Term t2Type = t2.type().reducir();
         
         if (t1Type instanceof Sust )
             ;
@@ -39,9 +39,9 @@ public class TypedApp extends App implements TypedTerm{
             try
             {
               String op1 = ((Const)((App)((App)t1Type).p).p).getCon().trim();
-              if (!op1.equals("c_{1}") && !op1.equals("c_{10}") && !op1.equals("\\Rightarrow") && !op1.equals("\\Leftarrow"))
+              if (!op1.equals("c_{1}") && !op1.equals("c_{10}") && !op1.equals("c_{2}") && !op1.equals("c_{3}"))
                   throw new TypeVerificationException();
-              if (!op1.equals("c_{1}") || !t1Izq.equals(t2Type)) 
+              if ((!op1.equals("c_{1}") &&  !op1.equals("c_{2}")) || !t1Izq.equals(t2Type)) 
               {
                 Term t1Der = ((App)((App)t1Type).p).q;
                 Term t2Izq = ((App)t2Type).q;
@@ -49,11 +49,11 @@ public class TypedApp extends App implements TypedTerm{
         
                 boolean eq = op1.equals("c_{10}") && op2.equals("c_{10}");
                 boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
-                        || op2.equals("\\Leftarrow") || op2.equals("\\Rightarrow"));
-                boolean leftAndOp = op1.equals("\\Leftarrow") && 
-                        (op2.equals("\\Leftarrow") || op2.equals("c_{1}"));
-                boolean rightAndOp = op1.equals("\\Rightarrow") && 
-                        (op2.equals("\\Rightarrow") || op2.equals("c_{1}"));
+                        || op2.equals("c_{3}") || op2.equals("c_{2}"));
+                boolean leftAndOp = op1.equals("c_{3}") && 
+                        (op2.equals("c_{3}") || op2.equals("c_{1}"));
+                boolean rightAndOp = op1.equals("c_{2}") && 
+                        (op2.equals("c_{2}") || op2.equals("c_{1}"));
                 if (!((eq || eqAndOp || leftAndOp || rightAndOp) && t1Der.equals(t2Izq)))
                   throw new TypeVerificationException();
               }
@@ -69,14 +69,14 @@ public class TypedApp extends App implements TypedTerm{
     
     public Term type()
     {
-        Term pType = p.type();
-        Term qType = q.type();
+        Term pType = p.type().evaluar();
+        Term qType = q.type().evaluar();
         if (pType instanceof Sust )
             return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms);
         else if (pType instanceof Bracket)
         {
-            Term t1 = new App(pType,((App)qType).q).reducir();
-            Term t2 = new App(pType,((App)((App)qType).p).q).reducir();
+            Term t1 = new App(pType,((App)qType).q).evaluar();
+            Term t2 = new App(pType,((App)((App)qType).p).q).evaluar();
             Term op2 = ((App)((App)qType).p).p; // incluir paridad aqui
             return new App(new App(op2, t2),t1);
         }

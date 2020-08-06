@@ -443,8 +443,17 @@ public class App extends Term{
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
         }
-        Const c = (Const) aux;
-        Simbolo sym = s.getSimbolo(c.getId());
+        Simbolo sym;
+        int opId;
+        if (aux instanceof Var) {
+            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 6, "%(op)_{%(na1)}^{z}", null);
+            opId = -1;
+        }
+        else {
+          Const c = (Const) aux;
+          sym = s.getSimbolo(c.getId());
+          opId = c.getId();
+        }
         
         Map<String,String> values = new HashMap<String, String>();
         if (numTeo.equals(""))
@@ -472,7 +481,7 @@ public class App extends Term{
           if (arg instanceof App)
           {
            IntXIntXString tuple = ((App) arg).privateToStringInf(s,"");
-           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
+           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
           }
           else
            values.put("aa"+i,arg.toStringInf(s,""));
@@ -596,8 +605,17 @@ public class App extends Term{
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
         }
-        Const c = (Const) aux;
-        Simbolo sym = s.getSimbolo(c.getId());
+        Simbolo sym;
+        int opId;
+        if (aux instanceof Var) {
+            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 6, "%(op)_{%(na1)}^{z}", null);
+            opId = -1;
+        }
+        else {
+          Const c = (Const) aux;
+          sym = s.getSimbolo(c.getId());
+          opId = c.getId();
+        }
         
         Map<String,String> values = new HashMap<String, String>();
         values.put("op", sym.getNotacion_latex());
@@ -622,7 +640,7 @@ public class App extends Term{
           if (arg instanceof App)
           {
            IntXIntXString tuple = ((App) arg).privateToStringWithInputs(s,position+i);
-           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
+           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
           }
           else
            values.put("aa"+i,arg.toStringWithInputs(s,position+i));
@@ -651,8 +669,17 @@ public class App extends Term{
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
         }
-        Const c = (Const) aux;
-        Simbolo sym = s.getSimbolo(c.getId());
+        Simbolo sym;
+        int opId;
+        if (aux instanceof Var) {
+            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 6, "%(op)_{%(na1)}^{z}", null);
+            opId = -1;
+        }
+        else {
+          Const c = (Const) aux;
+          sym = s.getSimbolo(c.getId());
+          opId = c.getId();
+        }
         
         Map<String,String> values = new HashMap<String, String>();
         values.put("op", "\\class{terminoClick}{"+sym.getNotacion_latex()+"}");
@@ -682,7 +709,7 @@ public class App extends Term{
           if (arg instanceof App)
           {
            IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,l2,id,nivel+1);
-           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
+           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
            setVar += l2.get(l2.size()-1);
           }
           else {
@@ -782,8 +809,17 @@ public class App extends Term{
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
         }
-        Const c = (Const) aux;
-        Simbolo sym = s.getSimbolo(c.getId());
+        Simbolo sym;
+        int opId;
+        if (aux instanceof Var) {
+            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 6, "%(op)_{%(na1)}^{z}", null);
+            opId = -1;
+        }
+        else {
+          Const c = (Const) aux;
+          sym = s.getSimbolo(c.getId());
+          opId = c.getId();
+        }
         
         Map<String,String> values = new HashMap<String, String>();
         if (numTeo.equals(""))
@@ -820,7 +856,7 @@ public class App extends Term{
             if (arg instanceof App)
             {
              IntXIntXString tuple = ((App) arg).privateToStringInfAbr(tStr,s,pm,"");
-             values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == c.getId())?tuple.x3:"("+tuple.x3+")");
+             values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
             }
             else 
              values.put("aa"+i,arg.toStringInfAbrv(tStr,s,pm,"").term);

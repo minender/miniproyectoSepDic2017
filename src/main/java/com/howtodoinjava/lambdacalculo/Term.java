@@ -566,6 +566,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public Term reducir()
     {
+    	
         Redex r=buscarRedexIzq(null,false);
         if(r!=null)
         {
@@ -573,26 +574,32 @@ public abstract class Term implements Cloneable, Serializable{
             {
                 if(r.tipo.c)
                     return this.kappa();
+                else if(r.tipo.l)
+                    return ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);                    
                 else
-                    return ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);
+                    return this.invBraBD();
             }
             else if(r.context instanceof App)
             {
                  if(r.p)
                  {
                      Term t=((App)r.context).p; 
-                     if(r.tipo.c)
+                     if (r.tipo.c)
                         ((App)r.context).p=t.kappa();
-                     else
+                     else if (r.tipo.l)
                         ((App)r.context).p=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
+                     else
+                        ((App)r.context).p=t.invBraBD();
                  }
                  else
                  {
                      Term t=((App)r.context).q; 
                      if(r.tipo.c)
                         ((App)r.context).q=t.kappa();
-                     else
+                     else if(r.tipo.l)
                         ((App)r.context).q=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
+                     else
+                        ((App)r.context).q=t.invBraBD();
                  }
             }
             else if(r.context instanceof Bracket)
@@ -600,9 +607,10 @@ public abstract class Term implements Cloneable, Serializable{
                  Term t=((Bracket)r.context).t; 
                  if(r.tipo.c)
                      ((Bracket)r.context).t=t.kappa();
-                 else
+                 else if(r.tipo.l)
                      ((Bracket)r.context).t=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-
+                 else
+                     ((Bracket)r.context).t=t.invBraBD();
             }
         }
         

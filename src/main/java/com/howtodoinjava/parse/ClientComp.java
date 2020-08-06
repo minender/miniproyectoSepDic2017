@@ -36,7 +36,7 @@ public class ClientComp {
 		
 		// Try to parse
 		try {		
-			parser.expr();
+			System.out.println(parser.expr().value.toString()) ;
 		// Catch the error and show it to the user
 		}catch(Exception e) {
 			System.out.print(e.getMessage());
