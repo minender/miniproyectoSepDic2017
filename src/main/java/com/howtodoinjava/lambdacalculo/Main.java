@@ -28,6 +28,8 @@ public class Main {
         System.out.println("\\neg %(a1)".contains("%(a1)"));
         String s = sub.replace("\\neg %(a1)");
         System.out.println(s);
+        Term t = new Bracket(new Var(32),new App(new App(new Const("c_{1}"),new Var(32)),new Const("c_{8}")));
+        System.out.println(t.traducBD().reducir().toStringFinal());
         /*ArrayList<Object> lisObj = new ArrayList<Object>();
         ArrayList<Term> lisTerm = new ArrayList<Term>();
         ArrayList<Var> lisVar = new ArrayList<Var>();

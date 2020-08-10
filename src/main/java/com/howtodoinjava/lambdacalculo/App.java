@@ -275,8 +275,8 @@ public class App extends Term{
     
     public Redex buscarRedexIzq(Term contexto,boolean pp)
     {
-        Tipo tipo=this.esRedex();
-        if(tipo.c || tipo.l)
+        Tipo tipo=this.esRedexFinal();
+        if(tipo.c || tipo.l || tipo.t)
         {
             return new Redex(contexto,tipo,pp);
         }
@@ -696,7 +696,7 @@ public class App extends Term{
            if (arg instanceof App)
            {
             IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,l2,id,nivel+1);
-            values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
+            values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:addParenthesis(tuple.x3));
             setVar += l2.get(l2.size()-1);
            }
            else {
@@ -709,7 +709,7 @@ public class App extends Term{
           if (arg instanceof App)
           {
            IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,l2,id,nivel+1);
-           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
+           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:addParenthesis(tuple.x3));
            setVar += l2.get(l2.size()-1);
           }
           else {

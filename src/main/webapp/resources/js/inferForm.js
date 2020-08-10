@@ -109,7 +109,12 @@ function hasNumericClass(element){
 
 function leibnizMouse(p1,p2){
 
-    var resp;
+    if (p1===p2) {
+       $('#leibniz_id').val(inferRecoverC(leibniz[p1-0], leibnizLatex[p1-0]));
+       return;
+    }
+
+    /*var resp;
     var nivel;
     var padres = [];
 
@@ -159,6 +164,6 @@ function leibnizMouse(p1,p2){
     // Modify notation properly and set it to the view
     $('#leibniz_id').val(inferRecoverC(leibniz[resp], leibnizLatex[resp]));
     
-    return;
+    return;*/
 }
 

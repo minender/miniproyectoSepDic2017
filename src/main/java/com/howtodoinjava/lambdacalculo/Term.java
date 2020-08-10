@@ -161,7 +161,18 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager p, String numTeo);
     
-    
+    protected String addParenthesis(String str) {
+        
+        int i =0;
+        int size = str.length();
+        while ( i < size-1 )
+        {
+            if (str.charAt(i)=='}' && str.charAt(i+1)=='{')
+                break;
+            i++;
+        }
+        return str.substring(0, i+2)+"("+str.substring(i+2, size-1)+")}";
+    }
     /**
      * Function to get the list of aliases and their position in the AST of this expression
      * @param position of the current node represented with 1's and 2's
@@ -221,7 +232,6 @@ public abstract class Term implements Cloneable, Serializable{
         if (z <= 122)
             z = 122;
         String st = this.toStringInfLabeled(s,z,this,l1,l2,new Id(),0)+"$\n";
-        System.out.println("hola"+l2);
         String st2 = "";
         st+="<script>\nvar leibniz=[";
         for(Term it: l1) {
@@ -602,7 +612,7 @@ public abstract class Term implements Cloneable, Serializable{
                  }
             }
             else if(r.context instanceof Bracket)
-            {           
+            {     
                  Term t=((Bracket)r.context).t; 
                  if(r.tipo.c)
                      ((Bracket)r.context).t=t.kappa();

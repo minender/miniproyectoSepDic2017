@@ -176,12 +176,40 @@
                     return isNumeric
                     
                 }
+                
+                function hasNumericId(element){
+                    let id = $(element).attr("id");
+                    isNumeric = false;
+                    if (id){
+                        id = id.split(" ");
+                        for (let i = 0; i<id.length;i++){
+                            if ($.isNumeric(id[i])){
+                                isNumeric = true
+                            }
+                        }
+                    }
+                    return isNumeric
+                    
+                }
+                
+                function completeSelection(ancestor, range){
+                    while (!hasNumericId(ancestor)) {
+                        ancestor = ancestor.parentNode;
+                    }
+                    range.setStart(ancestor.firstChild,0);
+                    var lastChild = ancestor.lastChild;
+                    while ( lastChild.hasChildNodes() ) {
+                        lastChild = lastChild.lastChild;
+                    }
+                    range.setEnd(lastChild,1);
+                    return ancestor.id;
+                }
 
                 $('#formula').on("mouseup",function(event){
                     //Obtiene toda la expresion bien formada que se puede sustituir
-                    var total_expression = $(".0")[0];
+                    var total_expression = $(".0");
                     var range = window.getSelection().getRangeAt(0);
-                    var _iterator = document.createNodeIterator(
+                    /*var _iterator = document.createNodeIterator(
                         range.commonAncestorContainer,
                         NodeFilter.SHOW_ALL, // pre-filter
                         {
@@ -190,9 +218,38 @@
                                 return NodeFilter.FILTER_ACCEPT;
                             }
                         }
-                    );
-
-                    _nodes = [];
+                    );*/
+                    var id = "";
+                    var ancestor = range.commonAncestorContainer;
+                    if (total_expression && total_expression.find(ancestor).length){//window.getSelection().type === 'Range'){                        
+                        id = completeSelection(ancestor, range);
+                        leibnizMouse(id,id);
+                    }
+                    else if (total_expression && window.getSelection().type === 'Range') {
+                       isStartInside = total_expression.find(range.startContainer).length;
+                       isEndInside = total_expression.find(range.endContainer).length;
+                       if (isStartInside && !isEndInside) {
+                           var lastChild = total_expression[0].lastChild;
+                           while ( lastChild.hasChildNodes() ) {
+                                lastChild = lastChild.lastChild;
+                           }
+                           range.setEnd(lastChild,1);
+                           ancestor = range.commonAncestorContainer;
+                           id = completeSelection(ancestor, range);
+                           leibnizMouse(id,id);
+                       }
+                       else if (!isStartInside && isEndInside) {
+                           var firstChild = total_expression[0].firstChild;
+                           while ( firstChild.hasChildNodes() ) {
+                               firstChild = firstChild.firstChild;
+                           }
+                           range.setStart(firstChild,0);
+                           ancestor = range.commonAncestorContainer;
+                           id = completeSelection(ancestor, range);
+                           leibnizMouse(id,id);
+                       }
+                    }
+                    /*_nodes = [];
                     while (_iterator.nextNode()) {
                         if (_nodes.length === 0 && _iterator.referenceNode !== range.startContainer) continue;
                         _nodes.push(_iterator.referenceNode);                           
@@ -205,11 +262,9 @@
                                typeof(_nodes[index].id)!='undefined' && 
                                !isNaN(parseInt(_nodes[index].id)) 
                            )
-                         alert(_nodes[index].id);
                         index ++;
                     }
                     //Si esta expresion existe y lo seleccionado tiene un rango (no es un simple click):
-                    if (total_expression && window.getSelection().type === 'Range'){
                         //Obtiene el primero y el ultimo elemento del subrayado
                         var first_element = window.getSelection().getRangeAt(0).startContainer;
                         if (first_element.nodeType !== 1) {
@@ -218,7 +273,8 @@
                         var last_element = window.getSelection().getRangeAt(0).endContainer
                         if (last_element.nodeType !== 1) {
                             last_element = last_element.parentNode;
-                        }
+                        }*/
+                        /*
                             //Si el primer elemento no es un parte de una subexpresion (digamos un parentesis),
                             // entonces se convierte en el elemento siguiente (su hermano) y asi
                             if (!$(first_element).hasClass("terminoClick") && !hasNumericClass(first_element)){
@@ -274,13 +330,10 @@
 
                                 
                             }
-                        
-                    }
-                })
-                
-})
-            
-
+                        */
+                    //}
+                });
+            })
         </script>
         <base href="${pageContext.request.contextPath}/perfil/${usuario.login}/"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
