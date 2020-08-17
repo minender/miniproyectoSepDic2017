@@ -356,6 +356,7 @@ public class InferResponse {
     		
     		boolean ultInfApp = ultInf instanceof App;
     		
+    		// CASE 1 : ultInf.q.q is App
     		if(ultInfApp && ((App)ultInf).q instanceof App  && ((App)((App)ultInf).q).q instanceof App) {
     			
     			Term aux = ((App)ultInf.type()).q;
@@ -385,7 +386,8 @@ public class InferResponse {
 					leib = nsLeiBracket.toStringInf(s, "");
 				}
 				leib = "~and~" + leib;
-    			
+				
+			// CASE 2 : ultInf.q is App
     		}else if (ultInfApp && ((App)ultInf).q instanceof App) {
     			
     			Term aux = ((App)ultInf.type()).q;
@@ -443,7 +445,8 @@ public class InferResponse {
 					}
 					leib = "~and~" + leib;
 				}
-    			
+    		
+			// CASE 3 : ultInf is App
     		}else if (ultInfApp) {
     			
     			teo = ((App)ultInf).q.type().toStringFinal();
@@ -479,7 +482,8 @@ public class InferResponse {
 					aux = ((App)((App)aux).p).q;	
 				}
 				primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-    			
+				
+			// CASE 4 : ultInf is not App	
     		}else {
     			Term aux = ultInf.type();
 

@@ -162,6 +162,19 @@ public abstract class Term implements Cloneable, Serializable{
     public abstract ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager p, String numTeo);
     
     
+    protected String addParenthesis(String str) {
+
+        int i =0;
+        int size = str.length();
+        while ( i < size-1 )
+        {
+            if (str.charAt(i)=='}' && str.charAt(i+1)=='{')
+                break;
+            i++;
+        }
+        return str.substring(0, i+2)+"("+str.substring(i+2, size-1)+")}";
+    }
+    
     /**
      * Function to get the list of aliases and their position in the AST of this expression
      * @param position of the current node represented with 1's and 2's

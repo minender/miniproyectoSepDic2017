@@ -99,7 +99,6 @@
                     var form = $('#inferForm');
                     //var teoSol = $("#nSolucion").val();
                     //var teoId = $("#nTeorema").val();
-
                     //data["teoSol"] = teoSol;
                     if(this.id==='d'){
                         data["lado"] = "d";
@@ -109,7 +108,6 @@
                             dataType: 'json',
                             data: data,
                             success: function(data) {
-
                                 $('#formula').html(data.historial);
                                 MathJax.Hub.Typeset();
                                 //$('#teoremaInicial').val("ST-"+teoId + "@d");
@@ -137,7 +135,6 @@
                         dataType: 'json',
                         data: data,
                         success: function(data) {
-
                             $('#formula').html(data.historial);
                             MathJax.Hub.Typeset();
                             //$('#teoremaInicial').val("ST-"+teoId + "@i");
@@ -178,12 +175,39 @@
                     return isNumeric
                     
                 }
-
+                
+                function hasNumericId(element){
+                    let id = $(element).attr("id");
+                    isNumeric = false;
+                    if (id){
+                        id = id.split(" ");
+                        for (let i = 0; i<id.length;i++){
+                            if ($.isNumeric(id[i])){
+                                isNumeric = true
+                            }
+                        }
+                    }
+                    return isNumeric
+                    
+                }
+                
+                function completeSelection(ancestor, range){
+                    while (!hasNumericId(ancestor)) {
+                        ancestor = ancestor.parentNode;
+                    }
+                    range.setStart(ancestor.firstChild,0);
+                    var lastChild = ancestor.lastChild;
+                    while ( lastChild.hasChildNodes() ) {
+                        lastChild = lastChild.lastChild;
+                    }
+                    range.setEnd(lastChild,1);
+                    return ancestor.id;
+                }
                 $('#formula').on("mouseup",function(event){
                     //Obtiene toda la expresion bien formada que se puede sustituir
-                    var total_expression = $(".0")[0];
+                    var total_expression = $(".0");
                     var range = window.getSelection().getRangeAt(0);
-                    var _iterator = document.createNodeIterator(
+                    /*var _iterator = document.createNodeIterator(
                         range.commonAncestorContainer,
                         NodeFilter.SHOW_ALL, // pre-filter
                         {
@@ -192,9 +216,38 @@
                                 return NodeFilter.FILTER_ACCEPT;
                             }
                         }
-                    );
-
-                    _nodes = [];
+                    );*/
+                    var id = "";
+                    var ancestor = range.commonAncestorContainer;
+                    if (total_expression && total_expression.find(ancestor).length){//window.getSelection().type === 'Range'){                        
+                        id = completeSelection(ancestor, range);
+                        leibnizMouse(id,id);
+                    }
+                    else if (total_expression && window.getSelection().type === 'Range') {
+                       isStartInside = total_expression.find(range.startContainer).length;
+                       isEndInside = total_expression.find(range.endContainer).length;
+                       if (isStartInside && !isEndInside) {
+                           var lastChild = total_expression[0].lastChild;
+                           while ( lastChild.hasChildNodes() ) {
+                                lastChild = lastChild.lastChild;
+                           }
+                           range.setEnd(lastChild,1);
+                           ancestor = range.commonAncestorContainer;
+                           id = completeSelection(ancestor, range);
+                           leibnizMouse(id,id);
+                       }
+                       else if (!isStartInside && isEndInside) {
+                           var firstChild = total_expression[0].firstChild;
+                           while ( firstChild.hasChildNodes() ) {
+                               firstChild = firstChild.firstChild;
+                           }
+                           range.setStart(firstChild,0);
+                           ancestor = range.commonAncestorContainer;
+                           id = completeSelection(ancestor, range);
+                           leibnizMouse(id,id);
+                       }
+                    }
+                    /*_nodes = [];
                     while (_iterator.nextNode()) {
                         if (_nodes.length === 0 && _iterator.referenceNode !== range.startContainer) continue;
                         _nodes.push(_iterator.referenceNode);                           
@@ -207,11 +260,9 @@
                                typeof(_nodes[index].id)!='undefined' && 
                                !isNaN(parseInt(_nodes[index].id)) 
                            )
-                         alert(_nodes[index].id);
                         index ++;
                     }
                     //Si esta expresion existe y lo seleccionado tiene un rango (no es un simple click):
-                    if (total_expression && window.getSelection().type === 'Range'){
                         //Obtiene el primero y el ultimo elemento del subrayado
                         var first_element = window.getSelection().getRangeAt(0).startContainer;
                         if (first_element.nodeType !== 1) {
@@ -220,7 +271,8 @@
                         var last_element = window.getSelection().getRangeAt(0).endContainer
                         if (last_element.nodeType !== 1) {
                             last_element = last_element.parentNode;
-                        }
+                        }*/
+                        /*
                             //Si el primer elemento no es un parte de una subexpresion (digamos un parentesis),
                             // entonces se convierte en el elemento siguiente (su hermano) y asi
                             if (!$(first_element).hasClass("terminoClick") && !hasNumericClass(first_element)){
@@ -254,8 +306,6 @@
                             if (!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element)){
                                 last_element = $("#0")[0]
                             }
-
-
                             //Obtenemos el id del primer elemento
                             idt2=last_element.id;
                             //Si ambos id son iguales, se puede obtener la subexpresion
@@ -265,7 +315,6 @@
                             //Si no, se usa leibnizMouse(para obtener el comun entre ellos)
                             else{   
                                     var nivel_last_element = $(last_element).attr('class');
-
                                     if (nivel_last_element && nivel_last_element.length >= 2){
                                         nivel_last_element = nivel_last_element.split(" ")[1];
                                         var id_last_element = $(last_element).attr("id");
@@ -273,16 +322,12 @@
                                         leibnizMouse(p1,p2)
                                                                     
                                 }
-
                                 
                             }
-                        
-                    }
-                })
-                
-})
-            
-
+                        */
+                    //}
+                });
+            })
         </script>
         <base href="${pageContext.request.contextPath}/perfil/${usuario.login}/"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
@@ -422,7 +467,6 @@
 
                                         <%--<span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
                                            <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-
                                            <c:choose>
                                                 <c:when test="${resu.isResuelto()}">
                                                     <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
@@ -431,9 +475,7 @@
                                                     <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
                                                 </c:otherwise>
                                             </c:choose>
-
                                             (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$  
-
                                            <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
                                        </span>--%>
                                         </c:otherwise>
@@ -496,7 +538,6 @@
                     elem.style.display = "none";
                 else
                     elem.style.display = "inline";
-
             };
             
             //function getMetateo(id) {
@@ -625,7 +666,6 @@
                                         </c:when>
                                         <c:otherwise>
                                             if  (${!selecTeo} && teoremas[j].numeroteorema == ""){                     
-
                                         </c:otherwise>
                                     </c:choose>
                                         newRows = newRows + '<li id="currentTeo" style="list-style: none;">'
@@ -708,7 +748,6 @@
                                        
                                        
                                    }
-
                                 }
                                 newRows = newRows + "</ul></li>"
                             }
@@ -727,15 +766,12 @@
                         $("#currentTeo").hide();
                     }
                         document.body.appendChild(script);
-
                      }
-
                 
                  });
         }
         document.getElementById("saveConfig").onclick = function(){
             guardarMostrarCategorias();
-
         }
           </script>
                     <script>
@@ -748,12 +784,9 @@
                       $(this).next().removeClass("fa-chevron-up");
                       $(this).next().addClass("fa-chevron-down");
                   }
-
               })
         
           </script>
-
     <tiles:insertDefinition name="footer" /> 
     </body>
-
 </html>
