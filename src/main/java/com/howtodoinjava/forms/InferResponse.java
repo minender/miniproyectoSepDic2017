@@ -372,18 +372,18 @@ public class InferResponse {
 				teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
 				inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s, "");
 				inst = "~with~" + inst;
-				leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
 				if(isModusPonens.equals("S(IAIA)")){// Modus ponens case S(IAIA)
-					// Add the theorem we are using, leib will be in the TypedI intance, in the 4th Sust variable E
-					inst = "~~" + ((App)((App)ultInf).q).q.type().toStringInf(s, "") + "~" + inst;
-					Term phiTerm =  ((TypedI)((App)((App)((App)ultInf).q).p).p).getInstantiation().getTerms().get(3).reducir();
-					leib = phiTerm.toStringFinal();
+					// Leib will be in the TypedI intance, in the 4th Sust variable E
+				    Term phiTerm =  new App((Term)( ((TypedI)((App)((App)((App)ultInf).q).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
+					leib = "E^{z}:~" + phiTerm.toStringInf(s,"");
 				}else if(naturalDirect) {
 					Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q).p).q);
 					leib = ndLeiBracket.toStringInf(s, "");
 				}else if(naturalSide){
 					Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q);
 					leib = nsLeiBracket.toStringInf(s, "");
+				}else {
+					leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
 				}
 				leib = "~and~" + leib;
 				
@@ -409,18 +409,18 @@ public class InferResponse {
 					}
 					else
 					{
-						leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
 						if(isModusPonens.equals("S(IAA)")) {
-							// Add the theorem we are using, leib will be in the TypedI intance, in the 4th Sust variable E
-							inst = "~~" + ((App)((App)ultInf).q).q.type().toStringInf(s, "") + "~" + inst;
-							Term phiTerm =  ((TypedI)((App)((App)((App)ultInf).q).p).p).getInstantiation().getTerms().get(3).reducir();
-							leib = phiTerm.toStringFinal();
+							// Leib will be in the TypedI intance, in the 4th Sust variable E
+						    Term phiTerm =  new App((Term)( ((TypedI)((App)((App)((App)ultInf).q).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
+							leib = "E^{z}:~" + phiTerm.toStringInf(s,"");
 						}else if(naturalDirect) {
 							Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q).p).q);
 							leib = ndLeiBracket.toStringInf(s, "");
 						}else if(naturalSide){
 							Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q);
 							leib = nsLeiBracket.toStringInf(s, "");
+						}else {
+							leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
 						}
 						leib = "~and~" + leib;
 
@@ -429,19 +429,19 @@ public class InferResponse {
 				{
 					inst = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
 					inst = "~with~" + inst;
-
-					leib = ((App)ultInf).p.type().toStringInf(s, "");
+					
 					if(isModusPonens.equals("IAIA")) {
-						// Add the theorem we are using, leib will be in the TypedI intance, in the 4th Sust variable E
-						inst = "~~" + ((App)((App)ultInf).q).q.type().toStringInf(s, "") + "~" + inst;
-						Term phiTerm =  ((TypedI)((App)((App)ultInf).p).p).getInstantiation().getTerms().get(3).reducir();
-						leib = phiTerm.toStringFinal();
+						// Leib will be in the TypedI intance, in the 4th Sust variable E
+					    Term phiTerm =  new App((Term)(((TypedI)((App)((App)ultInf).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
+						leib = "E^{z}:~" + phiTerm.toStringInf(s,"");
 					}else if(naturalDirect) {
 						Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q).p).q);
 						leib = ndLeiBracket.toStringInf(s, "");
 					}else if(naturalSide){
 						Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q);
 						leib = nsLeiBracket.toStringInf(s, "");
+					}else {
+						leib = ((App)ultInf).p.type().toStringInf(s, "");
 					}
 					leib = "~and~" + leib;
 				}
@@ -467,10 +467,9 @@ public class InferResponse {
 					}
 				}
 				else if (isModusPonens.equals("IAA")){ // In case we are seeing a naturalDeduction special hint
-					// Add the theorem we are using, leib will be in the TypedI intance, in the 4th Sust variable E
-					inst = "~~" + ((App)ultInf).q.type().toStringInf(s, "") + "~" + inst;
-					Term phiTerm =  ((TypedI)((App)((App)ultInf).p).p).getInstantiation().getTerms().get(3).reducir();
-					leib = "~and~" + phiTerm.toStringFinal();
+					// Leib will be in the TypedI intance, in the 4th Sust variable E
+				    Term phiTerm =  new App((Term)(((TypedI)((App)((App)ultInf).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
+					leib = "~and~E^{z}:~" + phiTerm.toStringInf(s,"");
 				} 
 				Term aux = ((App)ultInf.type()).q;
 

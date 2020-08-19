@@ -1032,6 +1032,14 @@ public abstract class Term implements Cloneable, Serializable{
     
     @Override
     protected abstract Object clone() throws CloneNotSupportedException;
-    
-    
+
+    public Object clone2() {
+    	try {
+    		return this.clone();
+    	}catch (Exception e) {
+			System.out.println("CloneNotSupportedException");
+			return null;
+		}
+    	
+    };
 }
