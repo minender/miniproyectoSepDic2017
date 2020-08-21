@@ -50,6 +50,8 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
+import org.hibernate.classic.Validatable;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -282,44 +284,103 @@ public class InferController {
         return "infer";
     }
     
+    
+    /**
+     * This function will only be correct if called when using DirectMethod
+     * This function will return a new prove tree in case it finds out that the last hint of prove
+     * caused the whole prove to be correct under the DirectMethod. In other case it will return 
+     * the prove given as argument.
+     * 
+     * To understand the arguments assume we have a prove that so far has proved A == ... == F
+     * @param initialExpr: Term that represents A
+     * @param teoremProved: The teorem the user is trying to prove
+     * @param finalExpr: Term that represents F
+     * @param proof: The proof tree so far
+     * @param username: name of the user doing the prove
+     * @return
+     */
+    private Term finishedDirectMethodProve(Term initialExpr, Term teoremProved,Term finalExpr, Term proof, String username) {
+    	
+    	// Case when the direct method started from the teorem being proved
+    	if(teoremProved.equals(initialExpr)) {
+    		// List of teorems solved by the user
+    		List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username);
+    		Term teorem;
+    		Term mt;
+    		for(Resuelve resu: resuelves){
+    			teorem = resu.getTeorema().getTeoTerm();
+    			mt = new App(new App(new Const("c_{1}"),new Const("true")),teorem);
+    			// If the current teorem or teorem==true matches the final expression (and this teorem is not the one being proved) 
+    			if(!teorem.equals(teoremProved) && (teorem.equals(finalExpr) || mt.equals(finalExpr))) {
+    				try {
+    					return new TypedApp(new TypedApp(new TypedS(proof.type()), proof),new TypedA(finalExpr)); 
+    				}catch (TypeVerificationException e) {
+    					 Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+					}
+    			}	
+    		}
+    		
+    		// If the prove hasnt finished
+    		return proof;
+    	}
+    	
+    	// Case when the direct method started from another teorem
+    	
+    	// Finished
+    	if(finalExpr.equals(teoremProved)) {
+    		try {
+				return new TypedApp(proof, new TypedA(((App)proof.type()).q));
+			}catch (TypeVerificationException e) {
+				 Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+			}
+    	}
+    	
+    	// If the prove hasnt finished
+    	return proof;
+    }
+   
+    /**
+     * This function will only be correct if called when using Starting from one side method
+     * This function will return a new prove tree in case it finds out that the last hint of prove
+     * caused the whole prove to be correct under the One side method. In other case it will return 
+     * the prove given as argument.
+     * 
+     * To understand the arguments assume we have a prove that so far has proved A == ... == F
+     * @param initialExpr: Term that represents A
+     * @param finalExpr: Term that represents F
+     * @param teoremProved: The teorem the user is trying to prove
+     * @param proof: The proof tree so far
+     * @return
+     */
+    private Term finishedOneSideProve(Term initialExpr, Term finalExpr, Term teoremProved, Term proof) {
+
+    	// If the one side prove started from the right side
+    	if(initialExpr.equals(((App)((App)teoremProved).p).q) && finalExpr.equals(((App)teoremProved).q)){
+    		try {
+				return new TypedApp(new TypedS(proof.type()), proof);
+			}catch (TypeVerificationException e) {
+				 Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+			} 
+    	}
+    	
+    	// If the prove hasnt finished
+    	return proof;
+    }
+    
+   
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir",headers="Accept=application/json", produces= MediaType.APPLICATION_JSON_VALUE)    
     public @ResponseBody InferResponse infer(@RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion, @PathVariable String username, 
-            @PathVariable String nTeo, @PathVariable String nSol, @RequestParam(value="nuevoMetodo") String nuevoMetodo/*, @RequestParam(value="teoremaInicial") String teoremaInicial, @RequestParam(value="nuevoMetodo") String nuevoMetodo */)
+            @PathVariable String nTeo, @PathVariable String nSol, @RequestParam(value="nuevoMetodo") String nuevoMetodo/*, @RequestParam(value="teoremaInicial") String teoremaInicial, @RequestParam(value="nuevoMetodo") String nuevoMetodo */) 
     {
         InferResponse response = new InferResponse();
-        String pasoPost = "";
-        
-        /*ArrayList<String> teoremaInicialInfo = new ArrayList();
-
-        for (String retval: teoremaInicial.split("@")) {
-            teoremaInicialInfo.add(retval);
-        }*/
-
-        /*
-        Resuelve resuelInicial = null;
-        Dispone disponeInicial = null;
-        String nTeoInicial = teoremaInicialInfo.get(0);
-        if ("ST-".equals(nTeoInicial.substring(0,3)))
-        {
-          resuelInicial = resuelveManager.getResuelveByUserAndTeoNum(username,nTeoInicial.substring(3,nTeoInicial.length()));
-        }
-        else if ("MT-".equals(nTeoInicial.substring(0,3)))
-        {
-          disponeInicial = disponeManager.getDisponeByUserAndTeoNum(username,nTeoInicial.substring(3,nTeoInicial.length()));
-        }*/
-        
         
         PredicadoId predicadoid=new PredicadoId();
         predicadoid.setLogin(username);
         
-        String tipoTeo = nStatement.substring(0, 2);
-        String numeroTeo = nStatement.substring(3, nStatement.length());
 
-        /*Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
-        Teorema teorema = resuelve.getTeorema();
-        int idTeorema = teorema.getId();
-        Metateorema metateorema = metateoremaManager.getMetateorema(idTeorema);
-        */
+        // FIND THE THEOREM BEING USED IN THE HINT
+    	String tipoTeo = nStatement.substring(0, 2);
+        String numeroTeo = nStatement.substring(3, nStatement.length());
         Term statementTerm = null;
         if (tipoTeo.equals("ST")){
             Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
@@ -329,359 +390,179 @@ public class InferController {
             Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
             statementTerm = dispone.getMetateorema().getTeoTerm();
         }
-        /*ObjectInputStream in = null;
-        try {
-            if(tipoTeo.equals("ST")){
-                in = new ObjectInputStream(new ByteArrayInputStream(teorema.getTeoserializado()));
-            }
-            else if(tipoTeo.equals("MT")){
-                in = new ObjectInputStream(new ByteArrayInputStream(metateorema.getMetateoserializado()));
-            }
-            
-            term = (Term) in.readObject();
-            in.close();
-
-        } catch (IOException ex) {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-
-        ArrayList<Object> arr = null;
-        if (!instanciacion.equals(""))
-        {
+    	
+        // CREATE THE INSTANTIATION
+    	ArrayList<Object> arr = null;
+        if (!instanciacion.equals("")){
           CharStream in2 = CharStreams.fromString(instanciacion);
           TermLexer lexer2 = new TermLexer(in2);
           CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
           TermParser parser2 = new TermParser(tokens2);
-          try
-          {
+          try{
              arr=parser2.instantiate(predicadoid,predicadoManager,simboloManager).value;
           }
-          catch(RecognitionException e)
-          {
-
+          catch(RecognitionException e){ // Wrong instantiation sent by the user
               String hdr = parser2.getErrorHeader(e);
-              String msg = e.getMessage(); //parser2.getErrorMessage(e, TermParser.tokenNames);
+              String msg = e.getMessage(); 
               response.setErrorParser2(hdr + " " + msg);
                 
               return response;
           }
         }
         
+        // CREATE LEIBNIZ
         Term leibnizTerm = null;
-        if (!leibniz.equals(""))
-        {
+        if (!leibniz.equals("")){
             CharStream in3 = CharStreams.fromString(leibniz);
             TermLexer lexer3 = new TermLexer(in3);
             CommonTokenStream tokens3 = new CommonTokenStream(lexer3);
             TermParser parser3 = new TermParser(tokens3);
-            try
-            {
+            try{
                leibnizTerm =parser3.lambda(predicadoid,predicadoManager,simboloManager).value;
             }
-            catch(RecognitionException e)
-            {
+            catch(RecognitionException e) { // Wrong leibniz sent by the user
                 String hdr = parser3.getErrorHeader(e);
-                String msg = e.getMessage(); //parser3.getErrorMessage(e, TermParser.tokenNames);
+                String msg = e.getMessage(); 
                 response.setErrorParser3(hdr + " " + msg);
                 
                 return response;
             }
         }   
-            /*statementTerm = statementTerm.sustParall((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1));
-            Term izq,der;
-            izq = ((App)term).q;
-            der = ((App)((App)term).p).q;*/
+
             
-            Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            Term typedTerm = solucion.getTypedTerm();
-            Term expIniTerm = null;
-            Term aux = typedTerm.type();
-            if (aux == null)
-                expIniTerm = typedTerm;
-            else
-                expIniTerm = ((App)aux).q;
-            /*
-            PasoInferencia paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
-            */
-            
-            /*if (resuel.getDemopendiente() == -1)
-            {
-                if(teoremaInicial.equals("")){
-                    
-                    pasoAntTerm = resuel.getTeorema().getTeoTerm();
-                 //   paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
-                }
-                else{
+        Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+        Term typedTerm = solucion.getTypedTerm();
+        String formula = resuel.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
+        
 
-                    if(teoremaInicialInfo.size() == 1){
-                        if (resuelInicial != null)
-                          pasoAntTerm = resuelInicial.getTeorema().getTeoTerm();
-                        else if (disponeInicial != null)
-                          pasoAntTerm = disponeInicial.getMetateorema().getTeoTerm();
-                 //       paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
-                    }
-                    else{
-                        if(teoremaInicialInfo.get(1).equals("d")){
-                            
-                            pasoAntTerm = ((App)((App)resuelInicial.getTeorema().getTeoTerm()).p).q;
-                   //         paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
-                        }
-                        else if (teoremaInicialInfo.get(1).equals("i")){
-                            
-                            pasoAntTerm = ((App)resuelInicial.getTeorema().getTeoTerm()).q;
-                     //       paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
-                        }
-                        
-                    }
-                    
-                }
-                
-            }
-            else
-            {                
-                solucion = solucionManager.getSolucion(resuel.getDemopendiente());
-                
-                if(nuevoMetodo.equals("1")){
-                    
-                    if(teoremaInicialInfo.size() == 1){
-                        if (resuelInicial != null)
-                          pasoAntTerm = resuelInicial.getTeorema().getTeoTerm();
-                        else if (disponeInicial != null)
-                          pasoAntTerm = disponeInicial.getMetateorema().getTeoTerm();
-                 //       paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
-                    }
-                    else{
-                        if(teoremaInicialInfo.get(1).equals("d")){
-                            
-                            pasoAntTerm = ((App)((App)resuelInicial.getTeorema().getTeoTerm()).p).q;
-                   //         paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
-                        }
-                        else if (teoremaInicialInfo.get(1).equals("i")){
-                            
-                            pasoAntTerm = ((App)resuelInicial.getTeorema().getTeoTerm()).q;
-                     //       paso = new PasoInferencia(pasoAntTerm, izq, der, leibnizTerm, instanciacion);
-                        }
-                        
-                    }
-                }
-                else{
-                    pasoAntTerm = solucion.getTypedTerm();
-                }
-            }*/
+        // CREATE THE NEW HINT
+        Term infer = null;
+        try {
+        	if (instanciacion.equals("") && leibniz.equals(""))
+        		infer = new TypedA(statementTerm);
+        	else if (instanciacion.equals(""))
+        	{
+        		TypedA A = new TypedA(statementTerm);
+        		TypedL L = new TypedL((Bracket)leibnizTerm);
+        		infer = new TypedApp(L,A);
+        	}
+        	else if (leibniz.equals(""))
+        	{
+        		TypedA A = new TypedA(statementTerm);
+        		TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
+        		infer = new TypedApp(I,A);
+        	}
+        	else
+        	{
+        		TypedA A = new TypedA(statementTerm);
+        		TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
+        		TypedL L = new TypedL((Bracket)leibnizTerm);
+        		infer = new TypedApp(L,new TypedApp(I,A));
+        	} 
+        }catch(TypeVerificationException e) {
+        	response.generarHistorial(username,formula, nTeo,typedTerm,false,nuevoMetodo,resuelveManager,disponeManager,simboloManager);
+        	return response;
+        } 
 
-            boolean valida = true;
-            Term pasoPostTerm =null;
-            Term infer = null;
-            boolean exception = false;
-            try
-            {
-                try {
-                  if (instanciacion.equals("") && leibniz.equals(""))
-                    infer = new TypedA(statementTerm);
-                  else if (instanciacion.equals(""))
-                  {
-                    TypedA A = new TypedA(statementTerm);
-                    TypedL L = new TypedL((Bracket)leibnizTerm);
-                    infer = new TypedApp(L,A);
-                  }
-                  else if (leibniz.equals(""))
-                  {
-                    TypedA A = new TypedA(statementTerm);
-                    TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
-                    infer = new TypedApp(I,A);
-                  }
-                  else
-                  {
-                    TypedA A = new TypedA(statementTerm);
-                    TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
-                    TypedL L = new TypedL((Bracket)leibnizTerm);
-                    infer = new TypedApp(L,new TypedApp(I,A));
-                  }              
-                }
-                catch (TypeVerificationException e)
-                {
-                    exception = true;
-                    throw new TypeVerificationException();
-                }
-                if (typedTerm.type() == null)
-                {
-                    try{
-                    new TypedApp(new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),
-                            typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
-                                                             //es valida con respecto a la primera exp
-                    }
-                    catch (TypeVerificationException e)
-                    {
-                        new TypedApp(new TypedA(new App(new App(new Const(1,"c_{10}",false,1,1),
-                            typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
-                                                             //es valida con respecto a la primera exp
-                    }
-                    pasoPostTerm = infer;                                                             
-                }
-                else
-                    pasoPostTerm = new TypedApp(typedTerm, infer);
-            }
-            catch (TypeVerificationException e)
-            {
-                try
-                {
-                    if (exception)
-                        throw new TypeVerificationException();
-                    infer = new TypedApp(new TypedS(infer.type()), infer);
-                    if (typedTerm.type() == null)
-                    {
-                       try {
-                         new TypedApp(new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),
-                            typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
-                                                             //es valida con respecto a la primera exp
-                       }
-                       catch (TypeVerificationException ex)
-                       {
-                          new TypedApp(new TypedA(new App(new App(new Const(1,"c_{10}",false,1,1),
-                             typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
-                                                             //es valida con respecto a la primera exp    
-                       }
-                       pasoPostTerm = infer;
-                    }
-                    else
-                       pasoPostTerm = new TypedApp(typedTerm, infer);
-                }
-                catch (TypeVerificationException ex)
-                {
-                  pasoPost = "Regla~de~inferencia~no~valida";
-                  valida = false;
-                }
-                catch (ClassCastException ex)
-                {
-                  pasoPost = "Regla~de~inferencia~no~valida";
-                  valida = false;
-                }
-            }
-            
-            if (resuel.getDemopendiente() == -1 && valida)
-            {
-                // paso.setResult(pasoPostTerm);
-                // solucion = new Solucion(resuel,false,paso);
-                solucion = new Solucion(resuel,false,pasoPostTerm,nuevoMetodo);
-                //solucion.setNteoinicial(teoremaInicial);
-                solucionManager.addSolucion(solucion);
-                nSol = ""+solucion.getId();
-                response.setnSol(nSol);
-            }
-            else if (valida)
-            {
-                solucion.setTypedTerm(pasoPostTerm);
-                solucionManager.updateSolucion(solucion);
-            }
-            response.setResuelto("0");
-            if (valida){
-                Term type = pasoPostTerm.type();
-                Term teoremaTerm = resuel.getTeorema().getTeoTerm();
-                Term pasoPostExp = ((App)((App)type).p).q;
-                /*Term expIniTerm = null; 
-                if (resuelInicial != null)
-                   expIniTerm = resuelInicial.getTeorema().getTeoTerm();
-                else if (disponeInicial != null)
-                   expIniTerm = disponeInicial.getMetateorema().getTeoTerm();*/
-                //String teoremaIniStr = pasoAntTerm.toStringInfFinal();
-                //teoremaIniStr = resuelInicial.getTeorema().getTeoTerm().toStringInfFinal();
-                    
-                Term stTeorema = resuel.getTeorema().getTeoTerm();
-                
-                /**
-                 *
-                 * Este if debe ser suplantado por medio de un Query a la tabla solucion
-                 * a la cual se le agrega una columna nueva con la informacion de que
-                 * metodo de demostracion se esta usando
-                 * 
-                 **/
-                boolean mDirecto;
-                if (stTeorema instanceof App && ((App)stTeorema).p instanceof App) {
-                    mDirecto = !(((App)(((App)stTeorema).p)).q.equals(expIniTerm) || 
-                                 ((App)stTeorema).q.equals(expIniTerm));
-                }
-                else {
-                    mDirecto = true;
-                }
-                
-                if(mDirecto/*teoremaInicialInfo.size() == 1*/){//cableado para metodo directo
+        // CREATE THE NEW PROOF TREE BY ADDING THE NEW HINT
+        Term pasoPostTerm =null;
+        try
+        {
+        	
+        	if (typedTerm.type() == null)// If the proof only has one line so far
+        	{
+        		try{
+        			new TypedApp(new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),
+        					typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
+        			//es valida con respecto a la primera exp
+        		}
+        		catch (TypeVerificationException e)
+        		{
+        			new TypedApp(new TypedA(new App(new App(new Const(1,"c_{10}",false,1,1),
+        					typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
+        			//es valida con respecto a la primera exp
+        		}
+        		pasoPostTerm = infer;                                                             
+        	}
+        	else
+        		pasoPostTerm = new TypedApp(typedTerm, infer);
+        }
+        catch (TypeVerificationException e)
+        {
+        	try
+        	{
+        		infer = new TypedApp(new TypedS(infer.type()), infer);
+        		if (typedTerm.type() == null)
+        		{
+        			try {
+        				new TypedApp(new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),
+        						typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
+        				//es valida con respecto a la primera exp
+        			}
+        			catch (TypeVerificationException ex)
+        			{
+        				new TypedApp(new TypedA(new App(new App(new Const(1,"c_{10}",false,1,1),
+        						typedTerm),typedTerm)),infer); // si no da excepcion la inferencia 
+        				//es valida con respecto a la primera exp    
+        			}
+        			pasoPostTerm = infer;
+        		}
+        		else
+        			pasoPostTerm = new TypedApp(typedTerm, infer);
+        	}
+        	catch (TypeVerificationException ex)
+        	{
+        		response.generarHistorial(username,formula, nTeo,typedTerm,false,nuevoMetodo,resuelveManager,disponeManager,simboloManager);
+        		return response;
+        	}
+        	catch (ClassCastException ex)
+        	{
+        		response.generarHistorial(username,formula, nTeo,typedTerm,false,nuevoMetodo,resuelveManager,disponeManager,simboloManager);
+        		return response;
+        	}
+        }
+        
+        
+        // IF HERE THEN THE HINT WAS VALID
+        
+        response.setResuelto("0");
+             
+        Term proof = pasoPostTerm;
+        Term expr = proof.type();
+    	Term initialExpr = ((App)expr).q;
+    	Term finalExpr = ((App)((App)expr).p).q;
+    	Term teoremProved = resuel.getTeorema().getTeoTerm();
+    	String metodo = solucion.getMetodo();
+    	
+    	// CHECK IF THE PROOF FINISHED
+    	
+    	Term newProof = null;
+    	
+    	// Depending on the method we create a new proof if we finished
+    	if(metodo.equals("Direct method")) {
+    		newProof = finishedDirectMethodProve(initialExpr, teoremProved, finalExpr, proof, username);
+    	}else if(metodo.equals("Starting from one side")) {
+    		newProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
+    	}
+    	
+    	// newProve might or might not be different than pasoPostTerm
+    	
+    	// UPDATE SOLUCION 
+    	solucion.setTypedTerm(newProof);
+    	solucionManager.updateSolucion(solucion);
 
-                    if(stTeorema.equals(expIniTerm)){
-                        //buscar en bd
-                        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username);
-                        Term temp;
-                        for(Resuelve resu: resuelves){
-                            temp = resu.getTeorema().getTeoTerm();
-                            Term mt = new App(new App(new Const("c_{1}"),new Const("true")),resu.getTeorema().getTeoTerm());
-                            if(!temp.equals(stTeorema) &&
-                                  (temp.equals(pasoPostExp) ||
-                                       (mt.equals(pasoPostExp) && !mt.equals(stTeorema))
-                                  ) 
-                              )
-                            {
-                           //     response.setResuelto("1");
-                                try{
-                                  solucion.setTypedTerm(new TypedApp(new TypedApp(new TypedS(type), solucion.getTypedTerm()),new TypedA( ((App)((App)type).p).q))); 
-                                  type = solucion.getTypedTerm().type();
-                                }
-                                catch (TypeVerificationException e){
-                                     Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    else{
-                        if(pasoPostExp.equals(stTeorema)){
-                           // response.setResuelto("1");
-                            try{
-                               solucion.setTypedTerm(new TypedApp(solucion.getTypedTerm(), new TypedA(((App)type).q)));
-                               type = solucion.getTypedTerm().type();
-                            }
-                            catch (TypeVerificationException e){
-                               Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-                            }
-                        }
-                        /*else{
-                            response.setResuelto("0");
-                        }*/
-                    }
-                }
-                else{
-                    if(pasoPostExp.equals(((App)stTeorema).q)){
-                        try{
-                           solucion.setTypedTerm(new TypedApp(new TypedS(type), solucion.getTypedTerm()));
-                           type = solucion.getTypedTerm().type();
-                        }
-                        catch (TypeVerificationException e){
-                           Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-                        }
-                    }
-                }
-
-                if(teoremaTerm.equals(type)){
-                        response.setResuelto("1");
-                }
-                else{
-                        response.setResuelto("0");
-                }            
-                //}
-
-                if(response.getResuelto().equals("1")){
-                    solucion.setResuelto(true);
-                    resuel.setResuelto(true);
-                    resuelveManager.updateResuelve(resuel);
-                    solucionManager.updateSolucion(solucion);
-                }
-            }
-
-            String formula = resuel.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
-            response.generarHistorial(username,formula, nTeo,valida?pasoPostTerm:typedTerm,valida,nuevoMetodo,
-                                      resuelveManager,disponeManager,simboloManager);
-
+    	// If we finished mark solucion as solved
+        if(teoremProved.equals(newProof.type())){
+        	response.setResuelto("1");
+        	solucion.setResuelto(true);
+        	resuel.setResuelto(true);
+        	resuelveManager.updateResuelve(resuel);
+        	solucionManager.updateSolucion(solucion);
+        }       
+        
+        response.generarHistorial(username,formula, nTeo,pasoPostTerm,true,nuevoMetodo,
+        		resuelveManager,disponeManager,simboloManager);
         return response;
     }
     
