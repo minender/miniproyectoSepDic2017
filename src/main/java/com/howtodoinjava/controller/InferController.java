@@ -25,6 +25,7 @@ import com.howtodoinjava.lambdacalculo.TypedApp;
 import com.howtodoinjava.lambdacalculo.TypedI;
 import com.howtodoinjava.lambdacalculo.TypedL;
 import com.howtodoinjava.lambdacalculo.TypedS;
+import com.howtodoinjava.parse.CombUtilities;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermParser;
 import com.howtodoinjava.service.ResuelveManager;
@@ -46,6 +47,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
+
+import org.antlr.v4.parse.ANTLRParser.throwsSpec_return;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -92,6 +95,8 @@ public class InferController {
     private DisponeManager disponeManager;
     @Autowired
     private MostrarCategoriaManager mostrarCategoriaManager;
+    @Autowired
+    private CombUtilities combUtilities;
     
     @RequestMapping(value="/{username}", method=RequestMethod.GET)
     public String selectTeoView(@PathVariable String username, ModelMap map) {
@@ -289,7 +294,7 @@ public class InferController {
      * This function will only be correct if called when using DirectMethod
      * This function will return a new prove tree in case it finds out that the last hint of prove
      * caused the whole prove to be correct under the DirectMethod. In other case it will return 
-     * the prove given as argument.
+     * the proof given as argument.
      * 
      * To understand the arguments assume we have a prove that so far has proved A == ... == F
      * @param initialExpr: Term that represents A
@@ -343,12 +348,13 @@ public class InferController {
      * This function will only be correct if called when using Starting from one side method
      * This function will return a new prove tree in case it finds out that the last hint of prove
      * caused the whole prove to be correct under the One side method. In other case it will return 
-     * the prove given as argument.
+     * the proof given as argument.
      * 
      * To understand the arguments assume we have a prove that so far has proved A == ... == F
      * @param initialExpr: Term that represents A
      * @param finalExpr: Term that represents F
-     * @param teoremProved: The teorem the user is trying to prove
+     * @param teoremProved: The teorem the user is trying to prove (even if the original is of the form H => A == B 
+     * in this case H /\ A ==  H /\ B must be given instead)
      * @param proof: The proof tree so far
      * @return
      */
@@ -365,6 +371,141 @@ public class InferController {
     	
     	// If the prove hasnt finished
     	return proof;
+    }
+    
+    /**
+     * This function will only be correct if called when using Starting from one side method with natural deduction
+     * This function will return a new prove tree in case it finds out that the last hint of prove
+     * caused the whole prove to be correct under the One side natural deduction method. In other case it will return 
+     * the proof given as argument.
+     * 
+     * To understand the arguments assume we have a prove that so far has proved A == ... == F
+     * @param initialExpr: Term that represents A
+     * @param finalExpr: Term that represents F
+     * @param teoremProved: The teorem the user is trying to prove
+     * @param proof: The proof tree so far
+     * @return
+     */
+    private Term finishedDeductionOneSideProve(Term initialExpr, Term finalExpr, Term teoremProved, Term proof) {
+
+    	return finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
+    	
+    	
+    }
+    
+    private Term createDirectMethodHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Term leibniz, String leibnizString ) {
+    	
+    	Term hint = null;
+    	try {
+        	if (instantiationString.equals("") && leibnizString.equals(""))
+        		hint = new TypedA(teorem);
+        	else if (instantiationString.equals(""))
+        	{
+        		TypedA A = new TypedA(teorem);
+        		TypedL L = new TypedL((Bracket)leibniz);
+        		hint = new TypedApp(L,A);
+        	}
+        	else if (leibnizString.equals(""))
+        	{
+        		TypedA A = new TypedA(teorem);
+        		TypedI I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
+        		hint = new TypedApp(I,A);
+        	}
+        	else
+        	{
+        		TypedA A = new TypedA(teorem);
+        		TypedI I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
+        		TypedL L = new TypedL((Bracket)leibniz);
+        		hint = new TypedApp(L,new TypedApp(I,A));
+        	} 
+        }catch(TypeVerificationException e) { // If something went wrong return null
+        	e.printStackTrace();
+        	return null;
+        } 
+    	
+    	return hint;
+    }
+    
+    private Term createOneSideHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Term leibniz, String leibnizString) {
+    	return createDirectMethodHint(teorem, instantiation, instantiationString, leibniz, leibnizString);
+    }
+    
+    private Term createDeductionOneSideHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Term leibniz, String leibnizString, Term teoremProved) {
+
+    	try {
+    	
+    	// First must check if we are dealing with a special modus ponens hint 
+    	
+    	// If its not a special hint just return the same we would do with the direct method
+    	if(!((App)((App)teorem).p).p.toStringInf(simboloManager, "").equals("\\Rightarrow")){
+    		
+    		// But first add the H to leibniz 
+    		if( !leibnizString.equals("")) {    			
+    			leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), ((Bracket)leibniz).t), ((App)teoremProved).q));
+    		}else {
+    			leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), new Var('z')), ((App)teoremProved).q));
+    			leibnizString = "69";
+    		}
+    		return createDirectMethodHint(teorem, instantiation, instantiationString, leibniz, leibnizString);
+    	}
+    	
+    	System.out.println("Caso correcto");
+    	
+    	// If here then need to construct a modus ponens hint
+    	TypedI I = null;
+    	String e = "\\Phi"; // by default use empty phi which represents leibniz z
+    	Term iaRighTerm = new TypedA(teorem);
+    	
+    	// Example of left IA
+    	// I^{[A,B,C,E := \equiv true q,\equiv q q,\equiv true true, \Phi_{cb} true \equiv]}A^{\Rightarrow (\equiv (\wedge (E C) A) (\wedge (E B) A)) (\Rightarrow (\equiv C B) A)}
+    	
+    	// A,B and C are in the hint being used 
+    	
+    	Term cTerm = ((App)((App)((App)((App)teorem).p).q).p).q;
+    	Term bTerm = ((App)((App)((App)teorem).p).q).q;
+    	Term aTerm = ((App)teorem).q;
+    
+    	// If there is instantiation change a,b and c properly
+    	if(!instantiationString.equals("")) {
+    		I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
+    		cTerm = (new TypedApp(I, new TypedA(cTerm))).type();
+    		bTerm = (new TypedApp(I, new TypedA(bTerm))).type();
+    		aTerm = (new TypedApp(I, new TypedA(aTerm))).type();
+    		// Need to add I to the right side
+    		iaRighTerm = new TypedApp(I, iaRighTerm);
+    	}
+    	
+    	// If there is leibniz change e properly
+    	if(!leibnizString.equals("")) {
+    		Term phiLeibniz = leibniz.traducBD();
+    		e = phiLeibniz.toStringFinal();
+    	}
+    	
+    	String c = cTerm.toStringFinal();
+    	String b = bTerm.toStringFinal();
+    	String a = aTerm.toStringFinal();
+ 
+    	System.out.println("A: " + a);
+    	System.out.println("B: " + b);
+    	System.out.println("C: " + c);
+    	System.out.println("E: " + e);
+    	
+    	
+    	// Here is the left IA side of the modus ponens hint 
+    	String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
+    	System.out.println("Before parsing");
+    	Term iaLefTerm = combUtilities.getTerm(iaLeftString);
+    	
+    	System.out.println("Returned special hint");
+    	//throw new TypeVerificationException();
+    	return new TypedApp(iaLefTerm, iaRighTerm);
+    	
+    	
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    		return null;
+    	}
+
     }
     
    
@@ -434,37 +575,28 @@ public class InferController {
         Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
         Term typedTerm = solucion.getTypedTerm();
         String formula = resuel.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
+        String metodo = solucion.getMetodo();
         
 
-        // CREATE THE NEW HINT
+        // CREATE THE NEW HINT DEPENDING ON THE PROVE TYPE
         Term infer = null;
-        try {
-        	if (instanciacion.equals("") && leibniz.equals(""))
-        		infer = new TypedA(statementTerm);
-        	else if (instanciacion.equals(""))
-        	{
-        		TypedA A = new TypedA(statementTerm);
-        		TypedL L = new TypedL((Bracket)leibnizTerm);
-        		infer = new TypedApp(L,A);
-        	}
-        	else if (leibniz.equals(""))
-        	{
-        		TypedA A = new TypedA(statementTerm);
-        		TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
-        		infer = new TypedApp(I,A);
-        	}
-        	else
-        	{
-        		TypedA A = new TypedA(statementTerm);
-        		TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
-        		TypedL L = new TypedL((Bracket)leibnizTerm);
-        		infer = new TypedApp(L,new TypedApp(I,A));
-        	} 
-        }catch(TypeVerificationException e) {
-        	response.generarHistorial(username,formula, nTeo,typedTerm,false,nuevoMetodo,resuelveManager,disponeManager,simboloManager);
+        if(metodo.equals("Direct method")) {
+        	infer = createDirectMethodHint(statementTerm, arr, instanciacion, leibnizTerm, leibniz);
+        }else if(metodo.equals("Starting from one side")) {
+        	infer = createOneSideHint(statementTerm, arr, instanciacion, leibnizTerm, leibniz);
+        }else if(metodo.equals("Natural Deduction,one-sided")) {
+        	infer = createDeductionOneSideHint(statementTerm, arr, instanciacion, leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+        }
+        
+        // If something went wrong building the new hint
+        if( infer == null) {
+        	System.out.println("Wrong hint");
+        	response.generarHistorial(username,formula, nTeo,typedTerm,false,metodo,resuelveManager,disponeManager,simboloManager);
         	return response;
-        } 
+        }
 
+        
+        System.out.println("Before new proof");
         // CREATE THE NEW PROOF TREE BY ADDING THE NEW HINT
         Term pasoPostTerm =null;
         try
@@ -513,19 +645,24 @@ public class InferController {
         	}
         	catch (TypeVerificationException ex)
         	{
-        		response.generarHistorial(username,formula, nTeo,typedTerm,false,nuevoMetodo,resuelveManager,disponeManager,simboloManager);
+        		ex.printStackTrace();
+        		response.generarHistorial(username,formula, nTeo,typedTerm,false,metodo,resuelveManager,disponeManager,simboloManager);
         		return response;
         	}
         	catch (ClassCastException ex)
         	{
-        		response.generarHistorial(username,formula, nTeo,typedTerm,false,nuevoMetodo,resuelveManager,disponeManager,simboloManager);
+        		ex.printStackTrace();
+        		response.generarHistorial(username,formula, nTeo,typedTerm,false,metodo,resuelveManager,disponeManager,simboloManager);
         		return response;
         	}
         }
         
+        System.out.println("After creating hint");
+        
         
         // IF HERE THEN THE HINT WAS VALID
         
+        System.out.println("So far so good");
         response.setResuelto("0");
              
         Term proof = pasoPostTerm;
@@ -533,18 +670,25 @@ public class InferController {
     	Term initialExpr = ((App)expr).q;
     	Term finalExpr = ((App)((App)expr).p).q;
     	Term teoremProved = resuel.getTeorema().getTeoTerm();
-    	String metodo = solucion.getMetodo();
     	
     	// CHECK IF THE PROOF FINISHED
     	
-    	Term newProof = null;
+    	Term newProof = proof;
     	
     	// Depending on the method we create a new proof if we finished
     	if(metodo.equals("Direct method")) {
     		newProof = finishedDirectMethodProve(initialExpr, teoremProved, finalExpr, proof, username);
     	}else if(metodo.equals("Starting from one side")) {
     		newProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
-    	}
+    	}else if(metodo.equals("Natural Deduction,one-sided")) {
+    		// In this case we can just replace the teorem being proved by its one sided versionso we can reuse the one sided version
+    		Term leftSide = new App(new App(new Const("c_{5}"), ((App)((App)((App)teoremProved).p).q).q), ((App)teoremProved).q);
+        	Term rightSide = new App(new App(new Const("c_{5}"), ((App)((App)((App)((App)teoremProved).p).q).p).q), ((App)teoremProved).q);
+        	teoremProved = new App(new App(new Const("c_{1}"), rightSide), leftSide);
+        	System.out.println("Before finished");
+        	newProof = finishedDeductionOneSideProve(initialExpr, finalExpr, teoremProved, proof);
+        	System.out.println("After finished");
+        }
     	
     	// newProve might or might not be different than pasoPostTerm
     	
@@ -561,7 +705,10 @@ public class InferController {
         	solucionManager.updateSolucion(solucion);
         }       
         
-        response.generarHistorial(username,formula, nTeo,pasoPostTerm,true,nuevoMetodo,
+       
+        System.out.println("NEW PROOF: "+newProof.type().toString());
+        
+        response.generarHistorial(username,formula, nTeo,newProof,true,metodo,
         		resuelveManager,disponeManager,simboloManager);
         return response;
     }

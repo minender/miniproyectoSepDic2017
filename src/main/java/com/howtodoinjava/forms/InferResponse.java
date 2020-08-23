@@ -222,10 +222,10 @@ public class InferResponse {
     	if(isIAIA(root, s)) return "IAIA";
     	
     	// Case 3: S(IAIA)
-    	if( ((App)root).p instanceof TypedS && isIAA(((App)root).q, s)) return "S(IAIA)";
+    	if( ((App)root).p instanceof TypedS && isIAIA(((App)root).q, s)) return "S(IAIA)";
     	
     	// Case 4: S(IAA)
-    	if( ((App)root).p instanceof TypedS && isIAIA(((App)root).q, s)) return "S(IAA)";
+    	if( ((App)root).p instanceof TypedS && isIAA(((App)root).q, s)) return "S(IAA)";
     	
     	return "NoModus";
     }
@@ -252,15 +252,24 @@ public class InferResponse {
             this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$Regla~de~inferencia~no~valida$$");
             return;
         }
-        if(type == null && valida)
+        if(type == null && valida)// Case where what we want to print is the first line
         {
-            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"</center>");
+        	String firstLine = "";
+        	if(naturalDirect) {
+        		firstLine = ((App)((App)((App)((App)typedTerm).p).q).p).q.toStringInf(s, "");	
+    		}else if(naturalSide){
+    			firstLine = ((App)((App)typedTerm).p).q.toStringInf(s, "");	
+    		}else {
+    			firstLine = typedTerm.toStringInf(s, "");
+    		}
+            this.setHistorial(header+"<center>$"+firstLine+"$</center>");
             return;
         }
 
     	boolean equanimity;
     	try{
-    		if (!(((TypedApp)typedTerm).p instanceof TypedS) && ((App)((TypedApp)typedTerm).p.type()).q.equals(((TypedApp)typedTerm).q.type()))
+    		if (!(((TypedApp)typedTerm).p instanceof TypedS) && ((App)((TypedApp)typedTerm).p.type()).q.equals(((TypedApp)typedTerm).q.type()) 
+    				&& ((App)((App)((TypedApp)typedTerm).p.type()).p).p.toString().equals("c_{1}"))
     			equanimity = true;
     		else
     			equanimity = false;
@@ -307,6 +316,7 @@ public class InferResponse {
     		if(naturalDirect) {
     			pasoPost= ((App)((App)((App)((App)((App)((App)type).p).q).p).q).p).q.toStringInf(s, "")+equanimityHint+"$";
     		}else if(naturalSide){
+    			System.out.println("Type: " + type.toString());
     			pasoPost= ((App)((App)((App)((App)type).p).q).p).q.toStringInf(s, "")+equanimityHint+"$";	
     		}else {
     			pasoPost= ((App)((App)type).p).q.toStringInf(s, "")+equanimityHint+"$";	
@@ -385,7 +395,12 @@ public class InferResponse {
 				}else {
 					leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
 				}
+				
 				leib = "~and~" + leib;
+				// If leibniz is z dont print it
+				if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
+					leib = "";
+				}
 				
 			// CASE 2 : ultInf.q is App
     		}else if (ultInfApp && ((App)ultInf).q instanceof App) {
@@ -423,6 +438,10 @@ public class InferResponse {
 							leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
 						}
 						leib = "~and~" + leib;
+						// If leibniz is z dont print it
+						if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
+							leib = "";
+						}
 
 					}
 				else
@@ -444,6 +463,10 @@ public class InferResponse {
 						leib = ((App)ultInf).p.type().toStringInf(s, "");
 					}
 					leib = "~and~" + leib;
+					// If leibniz is z dont print it
+					if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
+						leib = "";
+					}
 				}
     		
 			// CASE 3 : ultInf is App
@@ -464,6 +487,10 @@ public class InferResponse {
 					}else if(naturalSide){
 						Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)ultInf).p.type()).t).p).q);
 						leib = "~and~" + nsLeiBracket.toStringInf(s, "");
+					}
+					// If leibniz is z dont print it
+					if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
+						leib = "";
 					}
 				}
 				else if (isModusPonens.equals("IAA")){ // In case we are seeing a naturalDeduction special hint
