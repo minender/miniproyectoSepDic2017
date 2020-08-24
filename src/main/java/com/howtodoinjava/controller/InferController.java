@@ -387,13 +387,21 @@ public class InferController {
      * @return
      */
     private Term finishedDeductionOneSideProve(Term initialExpr, Term finalExpr, Term teoremProved, Term proof) {
-
+    	
     	return finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
-    	
-    	
     }
     
-    private Term createDirectMethodHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Term leibniz, String leibnizString ) {
+    /**
+     * This function will create a hint for the direct method given the hint's elements
+     * In case the elements dont make sense it will return null
+     * @param teorem: teorem used on the hint
+     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
+     * @param instantiationString: string that was used to parse instantiation
+     * @param leibniz: bracket that represents leibniz on the hint
+     * @param leibnizString: string that was used to parse leibniz
+     * @return a hint for the direct method
+     */
+    private Term createDirectMethodHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString ) {
     	
     	Term hint = null;
     	try {
@@ -402,7 +410,7 @@ public class InferController {
         	else if (instantiationString.equals(""))
         	{
         		TypedA A = new TypedA(teorem);
-        		TypedL L = new TypedL((Bracket)leibniz);
+        		TypedL L = new TypedL(leibniz);
         		hint = new TypedApp(L,A);
         	}
         	else if (leibnizString.equals(""))
@@ -426,23 +434,45 @@ public class InferController {
     	return hint;
     }
     
-    private Term createOneSideHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Term leibniz, String leibnizString) {
+    /**
+     * This function will create a hint for the one side method given the hint's elements
+     * In case the elements dont make sense it will return null
+     * @param teorem: teorem used on the hint
+     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
+     * @param instantiationString: string that was used to parse instantiation
+     * @param leibniz: bracket that represents leibniz on the hint
+     * @param leibnizString: string that was used to parse leibniz
+     * @return a hint for the one side method
+     */
+    private Term createOneSideHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString) {
     	return createDirectMethodHint(teorem, instantiation, instantiationString, leibniz, leibnizString);
     }
     
-    private Term createDeductionOneSideHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Term leibniz, String leibnizString, Term teoremProved) {
+    /**
+     * This function will create a hint for the natural deduction one side method given the hint's elements
+     * In case the elements dont make sense it will return null
+     * @param teorem: teorem used on the hint
+     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
+     * @param instantiationString: string that was used to parse instantiation
+     * @param leibniz: bracket that represents leibniz on the hint
+     * @param leibnizString: string that was used to parse leibniz
+     * @param teoremProved: teorem that we are proving using this hint
+     * @return a hint for the natural deduction one side method
+     */
+    private Term createDeductionOneSideHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) {
 
     	try {
     	
     	// First must check if we are dealing with a special modus ponens hint 
     	
-    	// If its not a special hint just return the same we would do with the direct method
+    	// If its not a special hint (is not an implication) just return the same we would do with the direct method
     	if(!((App)((App)teorem).p).p.toStringInf(simboloManager, "").equals("\\Rightarrow")){
     		
-    		// But first add the H to leibniz 
-    		if( !leibnizString.equals("")) {    			
-    			leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), ((Bracket)leibniz).t), ((App)teoremProved).q));
+    		if( !leibnizString.equals("")) { // If there is a leibniz
+    			// Add H to it 
+    			leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), leibniz.t), ((App)teoremProved).q));
     		}else {
+    			// Use a leibniz that represents H /\ z
     			leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), new Var('z')), ((App)teoremProved).q));
     			leibnizString = "69";
     		}
@@ -451,7 +481,8 @@ public class InferController {
     	
     	System.out.println("Caso correcto");
     	
-    	// If here then need to construct a modus ponens hint
+    	// IF REACHED HERE WE NEED A MODUS PONENS HINT
+    	
     	TypedI I = null;
     	String e = "\\Phi"; // by default use empty phi which represents leibniz z
     	Term iaRighTerm = new TypedA(teorem);
@@ -501,7 +532,7 @@ public class InferController {
     	return new TypedApp(iaLefTerm, iaRighTerm);
     	
     	
-    	}catch(Exception e) {
+    	}catch(Exception e) { // If something goes wrong return null
     		e.printStackTrace();
     		return null;
     	}
@@ -581,11 +612,11 @@ public class InferController {
         // CREATE THE NEW HINT DEPENDING ON THE PROVE TYPE
         Term infer = null;
         if(metodo.equals("Direct method")) {
-        	infer = createDirectMethodHint(statementTerm, arr, instanciacion, leibnizTerm, leibniz);
+        	infer = createDirectMethodHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
         }else if(metodo.equals("Starting from one side")) {
-        	infer = createOneSideHint(statementTerm, arr, instanciacion, leibnizTerm, leibniz);
+        	infer = createOneSideHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
         }else if(metodo.equals("Natural Deduction,one-sided")) {
-        	infer = createDeductionOneSideHint(statementTerm, arr, instanciacion, leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+        	infer = createDeductionOneSideHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
         }
         
         // If something went wrong building the new hint
@@ -681,7 +712,7 @@ public class InferController {
     	}else if(metodo.equals("Starting from one side")) {
     		newProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
     	}else if(metodo.equals("Natural Deduction,one-sided")) {
-    		// In this case we can just replace the teorem being proved by its one sided versionso we can reuse the one sided version
+    		// In this case we can just replace the teorem being proved by its one sided version so we can reuse the one sided version
     		Term leftSide = new App(new App(new Const("c_{5}"), ((App)((App)((App)teoremProved).p).q).q), ((App)teoremProved).q);
         	Term rightSide = new App(new App(new Const("c_{5}"), ((App)((App)((App)((App)teoremProved).p).q).p).q), ((App)teoremProved).q);
         	teoremProved = new App(new App(new Const("c_{1}"), rightSide), leftSide);
@@ -696,7 +727,7 @@ public class InferController {
     	solucion.setTypedTerm(newProof);
     	solucionManager.updateSolucion(solucion);
 
-    	// If we finished mark solucion as solved
+    	// If finished mark solucion as solved
         if(teoremProved.equals(newProof.type())){
         	response.setResuelto("1");
         	solucion.setResuelto(true);
