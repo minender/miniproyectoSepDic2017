@@ -1,5 +1,6 @@
 package com.howtodoinjava.controller;
 
+import com.google.gson.TypeAdapter;
 import com.howtodoinjava.entity.Categoria;
 import com.howtodoinjava.entity.Dispone;
 import com.howtodoinjava.entity.PredicadoId;
@@ -25,6 +26,7 @@ import com.howtodoinjava.lambdacalculo.TypedApp;
 import com.howtodoinjava.lambdacalculo.TypedI;
 import com.howtodoinjava.lambdacalculo.TypedL;
 import com.howtodoinjava.lambdacalculo.TypedS;
+import com.howtodoinjava.lambdacalculo.TypedTerm;
 import com.howtodoinjava.parse.CombUtilities;
 import com.howtodoinjava.parse.TermLexer;
 import com.howtodoinjava.parse.TermParser;
@@ -32,6 +34,7 @@ import com.howtodoinjava.service.ResuelveManager;
 import com.howtodoinjava.service.SolucionManager;
 import com.howtodoinjava.service.TerminoManager;
 import com.howtodoinjava.service.UsuarioManager;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.howtodoinjava.service.CategoriaManager;
 import com.howtodoinjava.service.DisponeManager;
 import com.howtodoinjava.service.MetateoremaManager;
@@ -53,6 +56,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
+import org.apache.jasper.tagplugins.jstl.core.If;
 import org.hibernate.classic.Validatable;
 import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -302,7 +306,7 @@ public class InferController {
      * @param finalExpr: Term that represents F
      * @param proof: The proof tree so far
      * @param username: name of the user doing the prove
-     * @return
+     * @return new proof if finished, else return the same proof
      */
     private Term finishedDirectMethodProve(Term initialExpr, Term teoremProved,Term finalExpr, Term proof, String username) {
     	
@@ -356,14 +360,14 @@ public class InferController {
      * @param teoremProved: The teorem the user is trying to prove (even if the original is of the form H => A == B 
      * in this case H /\ A ==  H /\ B must be given instead)
      * @param proof: The proof tree so far
-     * @return
+     * @return new proof if finished, else return the same proof
      */
     private Term finishedOneSideProve(Term initialExpr, Term finalExpr, Term teoremProved, Term proof) {
 
     	// If the one side prove started from the right side
     	if(initialExpr.equals(((App)((App)teoremProved).p).q) && finalExpr.equals(((App)teoremProved).q)){
     		try {
-				return new TypedApp(new TypedS(proof.type()), proof);
+				 return new TypedApp(new TypedS(proof.type()), proof);
 			}catch (TypeVerificationException e) {
 				 Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
 			} 
@@ -379,16 +383,220 @@ public class InferController {
      * caused the whole prove to be correct under the One side natural deduction method. In other case it will return 
      * the proof given as argument.
      * 
-     * To understand the arguments assume we have a prove that so far has proved A == ... == F
-     * @param initialExpr: Term that represents A
-     * @param finalExpr: Term that represents F
+     * To understand the arguments assume we have a prove that so far has proved  H /\ Bi == ... == H /\ Bn
+     * @param initialExpr: Term that represents H /\ Bi
+     * @param finalExpr: Term that represents H /\ Bn
      * @param teoremProved: The teorem the user is trying to prove
      * @param proof: The proof tree so far
-     * @return
+     * @return new proof if finished, else return the same proof
      */
     private Term finishedDeductionOneSideProve(Term initialExpr, Term finalExpr, Term teoremProved, Term proof) {
     	
-    	return finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
+    	try {
+    	initialExpr = ((App)((App)initialExpr).p).q;
+    	finalExpr = ((App)((App)finalExpr).p).q;
+    	
+    	Term b1 = ((App)((App)((App)teoremProved).p).q).q;
+    	Term bf = ((App)((App)((App)((App)teoremProved).p).q).p).q;
+    	Term H = ((App)teoremProved).q;
+    	
+    	
+    	Boolean finishedFromRight = initialExpr.equals(bf) && finalExpr.equals(b1);
+    	// If didnt finish
+        if( !(initialExpr.equals(b1) && finalExpr.equals(bf))  && !finishedFromRight){
+        	return proof;
+        }
+       
+        // If here then finished
+        
+        
+        TypedApp newProof = (TypedApp)proof;
+        
+        // If started from the right 
+        if (finishedFromRight) {
+        	newProof = new TypedApp(new TypedS(proof.type()),proof);
+        }
+        
+        // (p => ( q == r)) == p /\ q == p /\ r
+        TypedA A = new TypedA(new App(new App(new Const("c_{1}"), 
+        		new App( new App(new Const("c_{1}"),new App(new App(new Const("c_{5}"),new Var('r')),new Var('p'))),new App(new App(new Const("c_{5}"),new Var('q')),new Var('p')))),
+        		new App(new App(new Const("c_{2}"),new App(new App(new Const("c_{1}"),new Var('r')),new Var('q'))), new Var('p'))));
+        
+        // p,q,q := H,B1,Bn
+		ArrayList<Var> vars = new ArrayList<Var>();
+		vars.add(new Var('p')); 
+		vars.add(new Var('q'));   
+		vars.add(new Var('r'));  
+		ArrayList<Term> terms = new ArrayList<Term>();
+		terms.add(H);
+		terms.add(b1);
+		terms.add(bf);
+		Sust instantiation = new Sust(vars, terms);
+		TypedI I = new TypedI(instantiation);
+		
+		TypedApp left = new TypedApp(I, A);
+		left = new TypedApp(new TypedS(left.type()),left);
+		
+		newProof = new TypedApp(left, newProof);
+		
+		return newProof;
+		
+    	}catch (Exception e) {
+    		Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+			return proof;
+		}
+        
+    }
+    
+    /**
+     * This function will only be correct if called when using Direct method with natural deduction
+     * This function will return a new prove tree in case it finds out that the last hint of proof
+     * caused the whole prove to be correct under the Direct natural deduction method. In other case it will return 
+     * the proof given as argument.
+     * 
+     * To understand the arguments assume we have a prove that so far has proved (H == H /\ B1) == ... == (H == H /\ Bn)
+     * @param initialExpr: Term that represents (H == H /\ B1)
+     * @param finalExpr: Term that represents (H == H /\ Bn)
+     * @param teoremProved: The teorem the user is trying to prove
+     * @param proof: The proof tree so far
+     * @return new proof if finished, else return the same proof
+     */
+    private Term finishedDeductionDirectProve(Term initialExpr, Term teoremProved,Term finalExpr, Term proof, String username) {
+    	
+    	// Take away H == H /\
+    	finalExpr = ((App)((App)((App)((App)finalExpr).p).q).p).q;
+    	Term H = ((App)teoremProved).q;	
+    	// Take away H from H => B
+    	teoremProved = ((App)((App)teoremProved).p).q;
+    	
+    	if(initialExpr.equals(new Const("c_{8}"))) {// Started with another theorem
+    		
+    		if(finalExpr.equals(teoremProved)) {// if finished
+    			
+    			try {
+    			// HINT (H => B) == (H == H /\ B) 
+    			
+    			// p,q := H,B
+    			ArrayList<Var> vars = new ArrayList<Var>();
+    			vars.add(new Var('p')); 
+    			vars.add(new Var('q'));   
+    			ArrayList<Term> terms = new ArrayList<Term>();
+    			terms.add(H);
+    			terms.add(finalExpr);
+    			Sust instantiation = new Sust(vars, terms);
+    			TypedI I = new TypedI(instantiation);
+    			
+    			// p => q == (p == p /\ q)
+    			
+    			TypedA A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"),new Var('q')),new Var('p'))), new Var('p'))),
+    					new App(new App(new Const("c_{2}"), new Var('q')), new Var('p'))));
+    			
+    			TypedApp hint = new TypedApp(I, A);
+    			hint = new TypedApp(new TypedS(hint.type()), hint);
+    			
+    			TypedApp newProof = new TypedApp(proof, hint);
+    			
+    			// Need to add equanimity since proved true == H => B
+    			newProof = new TypedApp(newProof, new TypedA(new Const("c_{8}")));
+    			return newProof;
+    			
+    			
+    			}catch (TypeVerificationException e) {
+    				Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+					return proof;
+				}
+    			
+    			
+    			
+    		}
+    		
+    	}else {// Started with the theorem being proved
+    		
+    		
+    		// CHECK IF ANY TEHEOREM MATCHES THE FINAL EXPR
+    		List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username);
+    		Term teorem;
+    		Term mt;
+    		for(Resuelve resu: resuelves){
+    			teorem = resu.getTeorema().getTeoTerm();
+    			mt = new App(new App(new Const("c_{1}"),new Const("true")),teorem);
+    			
+    			// If the current teorem or teorem==true matches the final expression (and this teorem is not the one being proved) 
+    			if(!teorem.equals(teoremProved) && (teorem.equals(finalExpr) || mt.equals(finalExpr))) {
+    				try {
+    					// HINT 1
+    	    			
+    	    			// H = H ^ z
+    	    			Bracket leib = new Bracket(new Var('z'), new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), H)), H));
+    	    			TypedL L = new TypedL(leib);
+    	    			// Create teorema == true
+    	    			TypedApp metaTheorem= metaTheorem(teorem);
+    	    			
+    	    			TypedApp hint1 = new TypedApp(L, metaTheorem);
+    	    			
+    	    			// HINT 2
+    	    			
+    	    			// H == z
+    	    			leib = new Bracket(new Var('z'), new App(new App(new Const("c_{1}"), new Var('z')), H));
+    	    			L = new TypedL(leib);
+    	    			
+    	    			// p := H
+    	    			ArrayList<Var> vars = new ArrayList<Var>();
+    	    			vars.add(new Var('p'));   
+    	    			ArrayList<Term> terms = new ArrayList<Term>();
+    	    			terms.add(H);
+    	    			Sust instantiation = new Sust(vars, terms);
+    	    			TypedI I = new TypedI(instantiation);
+    	    			
+    	    			// p /\ true == p
+    	    			TypedA A = new TypedA(new App( new App( new Const("c_{1}") ,new Var('p')), new App(new App(new Const("c_{5}"), new Const("c_{8}")), new Var('p'))));
+    	    			
+    	    			TypedApp hint2 = new TypedApp(I, A);
+    	    			hint2 = new TypedApp(L, hint2);
+    	    			
+    	    			// HINT 3
+    	    			
+    	    			// need  true == (q == q) gotta prove it with associativity and true == q == q
+    	    			
+    	    			// true == (q == q)
+    	    			A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new Var('q')),new Var('q'))),new Const("c_{8}")));
+    	    			
+    	    			// q := H
+    	    			vars = new ArrayList<Var>();
+    	    			vars.add(new Var('q'));   
+    	    			instantiation = new Sust(vars, terms);
+    	    			I = new TypedI(instantiation);
+    	    			
+    	    			TypedApp hint3 = new TypedApp(I,A);
+    	    			
+    	    			TypedS S = new TypedS(hint3.type());
+    	    			
+    	    			hint3 = new TypedApp(S, hint3);
+    	    			
+    	    			
+    	    			// BUILD THE NEW PROOF
+    	    			
+    	    			TypedApp newProof = new TypedApp(proof, hint1);
+    	    			newProof = new TypedApp(newProof, hint2);
+    	    			newProof = new TypedApp(newProof, hint3);
+    	    			
+    	    			
+    	    			// Need to add equanimity since proved H => B == true
+    	    			newProof = new TypedApp(new TypedApp(new TypedS(newProof.type()), newProof),new TypedA(new Const("c_{8}")));
+    	    			return newProof;
+    	    			
+    				}catch (TypeVerificationException e) {
+    					 Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+    					 return proof;
+					}
+    			}	
+    		}
+    	
+    	}
+    	
+    	// If the proof hasnt finished
+		return proof;
+    	
     }
     
     /**
@@ -479,12 +687,10 @@ public class InferController {
     		return createDirectMethodHint(teorem, instantiation, instantiationString, leibniz, leibnizString);
     	}
     	
-    	System.out.println("Caso correcto");
-    	
     	// IF REACHED HERE WE NEED A MODUS PONENS HINT
     	
     	TypedI I = null;
-    	String e = "\\Phi"; // by default use empty phi which represents leibniz z
+    	String e = "\\Phi_{}"; // by default use empty phi which represents leibniz z
     	Term iaRighTerm = new TypedA(teorem);
     	
     	// Example of left IA
@@ -515,19 +721,11 @@ public class InferController {
     	String c = cTerm.toStringFinal();
     	String b = bTerm.toStringFinal();
     	String a = aTerm.toStringFinal();
- 
-    	System.out.println("A: " + a);
-    	System.out.println("B: " + b);
-    	System.out.println("C: " + c);
-    	System.out.println("E: " + e);
-    	
     	
     	// Here is the left IA side of the modus ponens hint 
     	String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
-    	System.out.println("Before parsing");
     	Term iaLefTerm = combUtilities.getTerm(iaLeftString);
     	
-    	System.out.println("Returned special hint");
     	//throw new TypeVerificationException();
     	return new TypedApp(iaLefTerm, iaRighTerm);
     	
@@ -537,6 +735,125 @@ public class InferController {
     		return null;
     	}
 
+    }
+    
+    /**
+     * This function will create a hint for the natural deduction with direct method given the hint's elements
+     * In case the elements dont make sense it will return null
+     * @param teorem: teorem used on the hint
+     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
+     * @param instantiationString: string that was used to parse instantiation
+     * @param leibniz: bracket that represents leibniz on the hint
+     * @param leibnizString: string that was used to parse leibniz
+     * @param teoremProved: teorem that we are proving using this hint
+     * @return a hint for the natural deduction with direct method
+     */
+    private Term createDeductionDirectHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) {
+
+    	try {
+    	
+    	// First must check if we are dealing with a special modus ponens hint 
+    	
+    	// If its not modus ponens (is not an implication) just return the same we would do with the direct method
+    	if(!((App)((App)teorem).p).p.toStringInf(simboloManager, "").equals("\\Rightarrow")){
+    		
+    		if( !leibnizString.equals("")) { // If there is a leibniz
+    			// Add H == H /\ to it 
+    			leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), leibniz.t), ((App)teoremProved).q)) ,((App)teoremProved).q));
+    		}else {
+    			// Use a leibniz that represents H /\ z
+    			leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), ((App)teoremProved).q)) ,((App)teoremProved).q));
+    			leibnizString = "69";
+    		}
+    		return createDirectMethodHint(teorem, instantiation, instantiationString, leibniz, leibnizString);
+    	}
+    	
+    	// IF REACHED HERE WE NEED A MODUS PONENS HINT
+    	
+    	TypedI I = null;
+    	String e = "\\Phi_{}"; // by default use empty phi which represents leibniz z
+    	Term iaRighTerm = new TypedA(teorem);
+    	
+    	// Example of left IA
+    	// I^{[A,B,C,E := \equiv true q,\equiv q q,\equiv true true, \Phi_{cb} true \equiv]}A^{\Rightarrow (\equiv (\wedge (E C) A) (\wedge (E B) A)) (\Rightarrow (\equiv C B) A)}
+    	
+    	// A,B and C are in the hint being used 
+    	
+    	Term cTerm = ((App)((App)((App)((App)teorem).p).q).p).q;
+    	Term bTerm = ((App)((App)((App)teorem).p).q).q;
+    	Term aTerm = ((App)teorem).q;
+    
+    	// If there is instantiation change a,b and c properly
+    	if(!instantiationString.equals("")) {
+    		I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
+    		cTerm = (new TypedApp(I, new TypedA(cTerm))).type();
+    		bTerm = (new TypedApp(I, new TypedA(bTerm))).type();
+    		aTerm = (new TypedApp(I, new TypedA(aTerm))).type();
+    		// Need to add I to the right side
+    		iaRighTerm = new TypedApp(I, iaRighTerm);
+    	}
+    	
+    	// If there is leibniz change e properly
+    	if(!leibnizString.equals("")) {
+    		Term phiLeibniz = leibniz.traducBD();
+    		e = phiLeibniz.toStringFinal();
+    	}
+    	
+    	String c = cTerm.toStringFinal();
+    	String b = bTerm.toStringFinal();
+    	String a = aTerm.toStringFinal();
+    	
+    	// Here is the left IA side of the modus ponens hint                                                      
+    	String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{1}  (c_{5} (x_{69} x_{67}) x_{65}) x_{65}) (c_{1}  (c_{5} (x_{69} x_{66}) x_{65}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
+    	Term iaLefTerm = combUtilities.getTerm(iaLeftString);
+    	
+    	//throw new TypeVerificationException();
+    	return new TypedApp(iaLefTerm, iaRighTerm);
+    	
+    	
+    	}catch(Exception e) { // If something goes wrong return null
+    		e.printStackTrace();
+    		return null;
+    	}
+
+    }
+    
+    /**
+     * This method will return the typedTerm that represents the metaTheorem teo == true
+     * @param teo: theorem to be turned into metaTheorem 
+     * @return new metaTheorem for the given theorem, null if the argument isnt valid
+     */
+    public static TypedApp metaTheorem(Term teo) {
+    
+        Term A1 = new TypedA( new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"),new Var(112)),new Var(113)) ), new App(new App(new Const("c_{1}"),new Var(113)),new Var(112))) );
+        Term A2 = new TypedA( new App(new App(new Const("c_{1}"),new Var(113)),
+                                     new App(new App(new Const("c_{1}"),new Var(113)),
+                                                               new Const("c_{8}"))));
+        Term A3 = new TypedA(teo);
+        List<Var> list1 = new ArrayList<Var>();
+        list1.add(new Var(112));
+        list1.add(new Var(113));
+        List<Term> list2 = new ArrayList<Term>();
+        list2.add(teo);
+        list2.add(new Const("c_{8}"));
+        Term I1 = new TypedI(new Sust(list1,list2));
+        
+        List<Var> lis1 = new ArrayList<Var>();
+        lis1.add(new Var(113));
+        List<Term> lis2 = new ArrayList<Term>();
+        lis2.add(teo);
+        Term I2 = new TypedI(new Sust(lis1,lis2));
+        
+        TypedApp typedTerm = null;
+        try {
+          typedTerm = new TypedApp(new TypedApp(I1,A1), new TypedApp(I2,A2));
+          typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),A3);
+          return typedTerm;
+        }
+        catch (TypeVerificationException e){
+            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+            return null;
+        }
     }
     
    
@@ -617,17 +934,17 @@ public class InferController {
         	infer = createOneSideHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
         }else if(metodo.equals("Natural Deduction,one-sided")) {
         	infer = createDeductionOneSideHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+        }else if(metodo.equals("Natural Deduction,direct")) {
+        	infer = createDeductionDirectHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
         }
         
         // If something went wrong building the new hint
         if( infer == null) {
-        	System.out.println("Wrong hint");
         	response.generarHistorial(username,formula, nTeo,typedTerm,false,metodo,resuelveManager,disponeManager,simboloManager);
         	return response;
         }
 
         
-        System.out.println("Before new proof");
         // CREATE THE NEW PROOF TREE BY ADDING THE NEW HINT
         Term pasoPostTerm =null;
         try
@@ -687,13 +1004,10 @@ public class InferController {
         		return response;
         	}
         }
-        
-        System.out.println("After creating hint");
-        
+
         
         // IF HERE THEN THE HINT WAS VALID
         
-        System.out.println("So far so good");
         response.setResuelto("0");
              
         Term proof = pasoPostTerm;
@@ -712,13 +1026,10 @@ public class InferController {
     	}else if(metodo.equals("Starting from one side")) {
     		newProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
     	}else if(metodo.equals("Natural Deduction,one-sided")) {
-    		// In this case we can just replace the teorem being proved by its one sided version so we can reuse the one sided version
-    		Term leftSide = new App(new App(new Const("c_{5}"), ((App)((App)((App)teoremProved).p).q).q), ((App)teoremProved).q);
-        	Term rightSide = new App(new App(new Const("c_{5}"), ((App)((App)((App)((App)teoremProved).p).q).p).q), ((App)teoremProved).q);
-        	teoremProved = new App(new App(new Const("c_{1}"), rightSide), leftSide);
-        	System.out.println("Before finished");
         	newProof = finishedDeductionOneSideProve(initialExpr, finalExpr, teoremProved, proof);
-        	System.out.println("After finished");
+        }else if(metodo.equals("Natural Deduction,direct")) {
+        	newProof = finishedDeductionDirectProve(initialExpr, teoremProved, finalExpr, proof, username);
+        	
         }
     	
     	// newProve might or might not be different than pasoPostTerm
@@ -737,8 +1048,6 @@ public class InferController {
         }       
         
        
-        System.out.println("NEW PROOF: "+newProof.type().toString());
-        
         response.generarHistorial(username,formula, nTeo,newProof,true,metodo,
         		resuelveManager,disponeManager,simboloManager);
         return response;

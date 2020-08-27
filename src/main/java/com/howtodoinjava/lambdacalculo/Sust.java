@@ -178,7 +178,7 @@ public class Sust extends Term{
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
         
-        return "["+varss+" := "+termss+"]";
+        return varss+" := "+termss;
     }
     
     @Override
