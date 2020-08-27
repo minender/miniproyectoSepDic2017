@@ -202,12 +202,12 @@ public class Bracket extends Term{
         }*/
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
-            //return "(\\lambda "+x.toStringInf(s,"")+"."+t.toStringInfFinal(s)+")";
-            return t.toStringInf(s,numTeo);
+            return "(E^{"+x.toStringInf(s,"")+"}: "+t.toStringInf(s,"")+")";
+            //return t.toStringInf(s,numTeo);
         }
         else {
-            //return "(\\lambda "+x.toStringInf(s,"")+"."+t.alias +")";
-            return t.alias;
+            return "(E^{"+x.toStringInf(s,"")+"}: "+t.alias +")";
+            //return t.alias;
         }//.split("@")[0].replace("_", "\\_") +")";
     }
     

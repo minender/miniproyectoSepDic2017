@@ -19,5 +19,8 @@
         <property name="demostracion" type="string">
             <column name="demostracion" not-null="true" />
         </property>
+        <property name="metodo" type="string">
+            <column name="metodo" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>

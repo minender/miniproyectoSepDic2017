@@ -66,6 +66,7 @@ function teoremaClickeable(/*teoId*/){
 function teoremaInicialMD(teoid){
     var data = {};
     data["teoid"] = teoid;
+    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
     //var teoSol = $("#nSolucion").val();
     //data["teoSol"] = teoSol;
     var form = $('#inferForm');
@@ -102,6 +103,7 @@ function teoremaInicialMD(teoid){
 
 function metodoD(/*teoid*/){
     var data = {};
+    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
     //var teoSol = $("#nSolucion").val();
     //data["teoSol"] = teoSol;
     var form = $('#inferForm');
@@ -137,6 +139,7 @@ function metodoD(/*teoid*/){
 }
 function metodoF(/*teoid*/){
     var data = {};
+    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
     //var teoSol = $("#nSolucion").val();
     //data["teoSol"] = teoSol;
     var form = $('#inferForm');

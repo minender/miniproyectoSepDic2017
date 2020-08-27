@@ -1,4 +1,3 @@
-
 $(function() {
     var form = $('#inferForm');
     
@@ -117,9 +116,7 @@ function leibnizMouse(p1,p2){
     /*var resp;
     var nivel;
     var padres = [];
-
     if(p1[0] == p2[0]){
-
     	resp = p1[0];
         
     	// Modify notation properly and set it to the view
@@ -166,4 +163,3 @@ function leibnizMouse(p1,p2){
     
     return;*/
 }
-

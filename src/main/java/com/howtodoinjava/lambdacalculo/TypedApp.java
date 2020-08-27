@@ -75,8 +75,8 @@ public class TypedApp extends App implements TypedTerm{
             return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms);
         else if (pType instanceof Bracket)
         {
-            Term t1 = new App(pType,((App)qType).q).reducir();
-            Term t2 = new App(pType,((App)((App)qType).p).q).reducir();
+            Term t1 = new App(pType,((App)qType).q).evaluar();
+            Term t2 = new App(pType,((App)((App)qType).p).q).evaluar();
             Term op2 = ((App)((App)qType).p).p; // incluir paridad aqui
             return new App(new App(op2, t2),t1);
         }

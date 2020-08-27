@@ -52,6 +52,7 @@
                     
                 $("#metodosDemostracion").change(function(){
                     var metodosDemostracionValue = this.value
+                    $('#nuevoMetodo_id').val(this.options[this.selectedIndex].text);
                     if(this.value==="1"){
                         if(confirm("Are you sure you want to use the direct method?")){
                             $("#selectTeoInicial").val("1");
@@ -94,10 +95,10 @@
                 
                 $('#formula').on('click','.teoremaClick',function(event){
                     var data = {};
+                    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
                     var form = $('#inferForm');
                     //var teoSol = $("#nSolucion").val();
                     //var teoId = $("#nTeorema").val();
-
                     //data["teoSol"] = teoSol;
                     if(this.id==='d'){
                         data["lado"] = "d";
@@ -107,7 +108,6 @@
                             dataType: 'json',
                             data: data,
                             success: function(data) {
-
                                 $('#formula').html(data.historial);
                                 MathJax.Hub.Typeset();
                                 //$('#teoremaInicial').val("ST-"+teoId + "@d");
@@ -135,7 +135,6 @@
                         dataType: 'json',
                         data: data,
                         success: function(data) {
-
                             $('#formula').html(data.historial);
                             MathJax.Hub.Typeset();
                             //$('#teoremaInicial').val("ST-"+teoId + "@i");
@@ -308,8 +307,6 @@
                             if (!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element)){
                                 last_element = $("#0")[0]
                             }
-
-
                             //Obtenemos el id del primer elemento
                             idt2=last_element.id;
                             //Si ambos id son iguales, se puede obtener la subexpresion
@@ -319,7 +316,6 @@
                             //Si no, se usa leibnizMouse(para obtener el comun entre ellos)
                             else{   
                                     var nivel_last_element = $(last_element).attr('class');
-
                                     if (nivel_last_element && nivel_last_element.length >= 2){
                                         nivel_last_element = nivel_last_element.split(" ")[1];
                                         var id_last_element = $(last_element).attr("id");
@@ -327,7 +323,6 @@
                                         leibnizMouse(p1,p2)
                                                                     
                                 }
-
                                 
                             }
                         */
@@ -473,7 +468,6 @@
 
                                         <%--<span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
                                            <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-
                                            <c:choose>
                                                 <c:when test="${resu.isResuelto()}">
                                                     <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
@@ -482,9 +476,7 @@
                                                     <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
                                                 </c:otherwise>
                                             </c:choose>
-
                                             (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$  
-
                                            <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
                                        </span>--%>
                                         </c:otherwise>
@@ -547,7 +539,6 @@
                     elem.style.display = "none";
                 else
                     elem.style.display = "inline";
-
             };
             
             //function getMetateo(id) {
@@ -572,6 +563,8 @@
               -->
          
               <!--\cssId{eq}{\style{cursor:pointer;}{p\equiv q}}-->
+              
+              <input name="nuevoMetodo" id="nuevoMetodo_id" value='' style="display: none;"/>
               
                 Theorem to use:<br>
               <input name="nStatement" id="nStatement_id" value="${nStatement}"/>
@@ -674,7 +667,6 @@
                                         </c:when>
                                         <c:otherwise>
                                             if  (${!selecTeo} && teoremas[j].numeroteorema == ""){                     
-
                                         </c:otherwise>
                                     </c:choose>
                                         newRows = newRows + '<li id="currentTeo" style="list-style: none;">'
@@ -757,7 +749,6 @@
                                        
                                        
                                    }
-
                                 }
                                 newRows = newRows + "</ul></li>"
                             }
@@ -776,15 +767,12 @@
                         $("#currentTeo").hide();
                     }
                         document.body.appendChild(script);
-
                      }
-
                 
                  });
         }
         document.getElementById("saveConfig").onclick = function(){
             guardarMostrarCategorias();
-
         }
           </script>
                     <script>
@@ -797,12 +785,9 @@
                       $(this).next().removeClass("fa-chevron-up");
                       $(this).next().addClass("fa-chevron-down");
                   }
-
               })
         
           </script>
-
     <tiles:insertDefinition name="footer" /> 
     </body>
-
 </html>

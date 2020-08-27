@@ -1,5 +1,11 @@
 package com.howtodoinjava.parse;
+import java.util.List;
+
 import org.antlr.v4.runtime.*;
+
+import com.howtodoinjava.entity.Simbolo;
+import com.howtodoinjava.service.SimboloManager;
+import com.howtodoinjava.service.SimboloManagerImpl;
 
 
 /**
@@ -36,10 +42,11 @@ public class ClientComp {
 		
 		// Try to parse
 		try {		
-			parser.expr();
+			//System.out.println(parser.expr().value.toString()) ;
+			System.out.println(parser.expr().value.type().toString()) ;
 		// Catch the error and show it to the user
 		}catch(Exception e) {
-			System.out.print(e.getMessage());
+			e.printStackTrace();
 			System.exit(1);
 		}
 

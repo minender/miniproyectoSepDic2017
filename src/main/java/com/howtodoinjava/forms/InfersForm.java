@@ -26,6 +26,7 @@ public class InfersForm {
      private String instanciacion;
 //     @NotEmpty(message="no debe dejar este campo vacío")
      private String leibniz;
+     private String nuevoMetodo;
      private String historial;
      private String categorias;
      private int solucionId;
@@ -74,6 +75,10 @@ public class InfersForm {
     public void setLeibniz(String leibniz) {
         this.leibniz = leibniz;
     }
+    
+    public void setNuevoMetodo(String nuevoMetodo) {
+    	this.nuevoMetodo = nuevoMetodo;
+    }
 
     public String getPasoAnt() {
         return pasoAnt;
@@ -91,6 +96,10 @@ public class InfersForm {
         return leibniz;
     }
     
+    public String getNuevoMetodo() {
+		return nuevoMetodo;
+	}
+
     public String getCategorias() {
       return categorias;
     }
@@ -173,4 +182,5 @@ public class InfersForm {
         
         this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");
     }
+
 }

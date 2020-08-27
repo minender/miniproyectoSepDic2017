@@ -475,7 +475,7 @@ public class PerfilController {
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term typedTerm = solucion.getTypedTerm();
         
-        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager, simboloManager);
+        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true,solucion.getMetodo(), resuelveManager, disponeManager, simboloManager);
         return response;
     }
     
@@ -518,7 +518,7 @@ public class PerfilController {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true, resuelveManager, disponeManager, simboloManager);
+        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true,"", resuelveManager, disponeManager, simboloManager);
         return response;
     }
     

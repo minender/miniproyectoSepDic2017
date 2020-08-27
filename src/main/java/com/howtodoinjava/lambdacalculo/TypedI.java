@@ -23,4 +23,8 @@ public class TypedI extends Const implements TypedTerm{
    {
        return instantiation_;
    }
+   
+   public Sust getInstantiation() {
+	   return this.instantiation_;
+   }
 }
