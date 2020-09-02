@@ -316,7 +316,7 @@ $(document).ready(function(){
                         <td>${simbolo.getArgumentos()}</td>
                         <c:choose>
                             <c:when test="${simbolo.isEsInfijo() == true}">
-                                <td>Si</td>
+                                <td>Yes</td>
                             </c:when>   
                             <c:when test="${simbolo.isEsInfijo() == false}">
                                 <td>No</td>
@@ -530,17 +530,22 @@ $(document).ready(function(){
                         });
                 for (let i = 0; i < table.rows().count(); i ++){
                     var temp = table.row(i).data();
-                    if (temp[7].match(regex_left)){
-                        temp[5] = 'Left';
-                    }else if (temp[7].match(regex_right)){
-                        temp[5] = 'Right';
-                    }else if (temp[7].match(regex_left_right)){
-                        temp[5] = 'Left/Right';
-                    }else if (temp[7].match(regex_none)){
-                        temp[5] = 'None';
+                    if (temp[4] == 'Yes'){
+                        if (temp[7].match(regex_left)){
+                            temp[5] = 'Left';
+                        }else if (temp[7].match(regex_right)){
+                            temp[5] = 'Right';
+                        }else if (temp[7].match(regex_left_right)){
+                            temp[5] = 'Left/Right';
+                        }else if (temp[7].match(regex_none)){
+                            temp[5] = 'None';
+                        }else{
+                            temp[5] = 'None'
+                        }                        
                     }else{
                         temp[5] = 'None'
                     }
+
                     table.row(i).data(temp).invalidate().draw();
                 }
                 function editSimbol(row_number){
@@ -548,7 +553,8 @@ $(document).ready(function(){
                     $('#id-edit').val(fields[0]);
                     $('#notacion-latex-edit').val(fields[2]);
                     $('#argumentos-edit').val(fields[3]);
-                    if (fields[4] === 'Si'){
+                    console.log(fields[4]);
+                    if (fields[4] === 'Yes'){
                        $('#es-infijo-edit1').prop("checked", true);
                        $('#es-infijo-edit2').prop("checked", false);
                     }else{
@@ -567,19 +573,19 @@ $(document).ready(function(){
                     $('#precedencia-edit').val(fields[6]);
                     $('#notacion-edit').val(fields[7])
                     //Modificacion para infijos
-                    if(fields[4]== 'Si'){
+                    if(fields[4]== 'Yes'){
                         notacionInfijaEditFill();
                         
                     }else{
                         $("#asociatividad-box-edit").hide();
                         $('#notacion-edit').val(fields[7]);
-                        if (fields[5] === 'Izquierda'){
+                        if (fields[5] === 'Left'){
                             $('#asociatividad-edit').val(0)
-                        }else if (fields[5] === 'Derecha'){
+                        }else if (fields[5] === 'Right'){
                             $('#asociatividad-edit').val(1)
-                        }else if (fields[5] === 'Izquierda y Derecha'){
+                        }else if (fields[5] === 'Left/Right'){
                             $('#asociatividad-edit').val(2)
-                        }else if (fields[5] === 'Ninguno'){
+                        }else if (fields[5] === 'None'){
                             $('#asociatividad-edit').val(3)
                         }
                     }
@@ -647,6 +653,10 @@ $(document).ready(function(){
 
                     $('#asociatividad-edit').val(3)
                 }
+                asociatividad = $("#asociatividad-edit");
+                asociatividad.change(()=>{
+                    writeNotacionByAsoEdit(asociatividad)
+                })
 
             }
             function notacionInfijaEdit(){
@@ -664,7 +674,6 @@ $(document).ready(function(){
                 $("#notacion-box").show();
                 $("#asociatividad").val(3)
                 $("#asociatividad-box").hide()
-                console.log($("#asociatividad").val())
                 $("#argumentos").val("").prop("readonly", false);
                 $("")
             }
