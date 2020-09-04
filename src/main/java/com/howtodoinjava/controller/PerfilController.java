@@ -468,14 +468,14 @@ public class PerfilController {
         // validar que el usuario este en sesion
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
-        String teoremaStr = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
+        Term teorema = resuelve.getTeorema().getTeoTerm();
         String nTeo = resuelve.getNumeroteorema();
         Solucion solucion = solucionManager.getSolucion(idSol);
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term typedTerm = solucion.getTypedTerm();
         
-        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true,solucion.getMetodo(), resuelveManager, disponeManager, simboloManager);
+        response.generarHistorial(username, teorema, nTeo,typedTerm, true,solucion.getMetodo(), resuelveManager, disponeManager, simboloManager);
         return response;
     }
     
@@ -485,7 +485,7 @@ public class PerfilController {
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
-        String teoremaStr = new App(new App(new Const(1,"\\equiv",false,1,1),new Const("true")),resuelve.getTeorema().getTeoTerm()).toStringInf(simboloManager,"");
+        Term teorema = new App(new App(new Const(1,"\\equiv",false,1,1),new Const("true")),resuelve.getTeorema().getTeoTerm());
         String nTeo = resuelve.getNumeroteorema();
         Term A1 = new TypedA( new App(new App(new Const(1,"\\equiv",false,1,1), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"\\equiv",false,1,1),new Var(113)),new Var(112))) );
         Term A2 = new TypedA( new App(new App(new Const(1,"\\equiv",false,1,1),new Var(113)),
@@ -518,7 +518,7 @@ public class PerfilController {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        response.generarHistorial(username, teoremaStr, nTeo,typedTerm, true,"", resuelveManager, disponeManager, simboloManager);
+        response.generarHistorial(username, teorema, nTeo,typedTerm, true,"", resuelveManager, disponeManager, simboloManager);
         return response;
     }
     

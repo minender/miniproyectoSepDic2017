@@ -32,6 +32,11 @@ public class Bracket extends Term{
         t=t1;
     }
     
+    public int x()
+    {
+        return x.indice;
+    }
+    
     public boolean occur(Var y)
     {
          if(x.equals(y))

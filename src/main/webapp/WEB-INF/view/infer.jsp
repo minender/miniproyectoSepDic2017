@@ -373,7 +373,7 @@
                 <option value="0">Select a method</option>
                 <option value="1">Direct method</option>
                 <option value="2">Starting from one side</option>
-                <option value="3">DWeakening</option>
+                <option value="3">Weakening</option>
                 <option value="4">Strengthening</option>
                 <option value="5">Assume the antecedent</option>
                 <option value="6">Proof by cases</option>
