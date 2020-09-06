@@ -851,11 +851,14 @@ public class InferController {
     	String a = aTerm.toStringFinal();
     	
     	// Here is the left IA side of the modus ponens hint                                                      
-    	String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{1}  (c_{5} (x_{69} x_{67}) x_{65}) x_{65}) (c_{1}  (c_{5} (x_{69} x_{66}) x_{65}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
+    	//String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{1}  (c_{5} (x_{69} x_{67}) x_{65}) x_{65}) (c_{1}  (c_{5} (x_{69} x_{66}) x_{65}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
+    	String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
     	Term iaLefTerm = combUtilities.getTerm(iaLeftString);
     	
-    	//throw new TypeVerificationException();
-    	return new TypedApp(iaLefTerm, iaRighTerm);
+    	// need this L to make the hint fit for H == z
+    	TypedL L = new TypedL(new Bracket(new Var('z'), new App(new App(new Const("c_{1}"),new Var('z')) ,aTerm)));
+    	
+    	return  new TypedApp(L, new TypedApp(iaLefTerm, iaRighTerm));
     	
     	
     	}catch(Exception e) { // If something goes wrong return null
