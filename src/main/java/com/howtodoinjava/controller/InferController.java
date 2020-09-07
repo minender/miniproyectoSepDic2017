@@ -308,8 +308,10 @@ public class InferController {
      * @param username: name of the user doing the prove
      * @return new proof if finished, else return the same proof
      */
-    private Term finishedDirectMethodProve(Term initialExpr, Term teoremProved,Term finalExpr, Term proof, String username) {
-    	
+    private Term finishedDirectMethodProve(Term teoremProved, Term proof, String username) {
+        Term expr = proof.type();
+    	Term initialExpr = ((App)expr).q;
+    	Term finalExpr = ((App)((App)expr).p).q;
     	// Case when the direct method started from the teorem being proved
     	if(teoremProved.equals(initialExpr)) {
     		// List of teorems solved by the user
@@ -328,6 +330,7 @@ public class InferController {
 					}
     			}	
     		}
+                
     		
     		// If the prove hasnt finished
     		return proof;
@@ -338,7 +341,7 @@ public class InferController {
     	// Finished
     	if(finalExpr.equals(teoremProved)) {
     		try {
-				return new TypedApp(proof, new TypedA(((App)proof.type()).q));
+				return new TypedApp(proof, new TypedA(initialExpr));
 			}catch (TypeVerificationException e) {
 				 Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
 			}
@@ -609,10 +612,12 @@ public class InferController {
      * @param leibnizString: string that was used to parse leibniz
      * @return a hint for the direct method
      */
-    private Term createDirectMethodHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString ) {
+    private Term createDirectMethodInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString ) 
+                 throws TypeVerificationException
+    {
     	
     	Term hint = null;
-    	try {
+    	//try {
         	if (instantiationString.equals("") && leibnizString.equals(""))
         		hint = new TypedA(teorem);
         	else if (instantiationString.equals(""))
@@ -634,10 +639,10 @@ public class InferController {
         		TypedL L = new TypedL((Bracket)leibniz);
         		hint = new TypedApp(L,new TypedApp(I,A));
         	} 
-        }catch(TypeVerificationException e) { // If something went wrong return null
+        /*}catch(TypeVerificationException e) { // If something went wrong return null
         	e.printStackTrace();
         	return null;
-        } 
+        } */
     	
     	return hint;
     }
@@ -652,11 +657,13 @@ public class InferController {
      * @param leibnizString: string that was used to parse leibniz
      * @return a hint for the one side method
      */
-    private Term createOneSideHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString) {
-    	return createDirectMethodHint(teorem, instantiation, instantiationString, leibniz, leibnizString);
+    private Term createOneSideInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString) 
+                 throws TypeVerificationException
+    {
+    	return createDirectMethodInfer(teorem, instantiation, instantiationString, leibniz, leibnizString);
     }
     
-    private Term createWSHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString) {
+    private Term createWSInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString) {
         Term hint = null;
     	try {
         	if (instantiationString.equals("") && leibnizString.equals(""))
@@ -714,9 +721,11 @@ public class InferController {
      * @param teoremProved: teorem that we are proving using this hint
      * @return a hint for the natural deduction one side method
      */
-    private Term createDeductionOneSideHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) {
+    private Term createDeductionOneSideInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) 
+                 throws TypeVerificationException
+    {
 
-    	try {
+//    	try {
     	
     	// First must check if we are dealing with a special modus ponens hint 
     	
@@ -731,7 +740,7 @@ public class InferController {
     			leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), new Var('z')), ((App)teoremProved).q));
     			leibnizString = "69";
     		}
-    		return createDirectMethodHint(teorem, instantiation, instantiationString, leibniz, leibnizString);
+    		return createDirectMethodInfer(teorem, instantiation, instantiationString, leibniz, leibnizString);
     	}
     	
     	// IF REACHED HERE WE NEED A MODUS PONENS HINT
@@ -777,10 +786,10 @@ public class InferController {
     	return new TypedApp(iaLefTerm, iaRighTerm);
     	
     	
-    	}catch(Exception e) { // If something goes wrong return null
+    	/*}catch(Exception e) { // If something goes wrong return null
     		e.printStackTrace();
     		return null;
-    	}
+    	}*/
 
     }
     
@@ -795,9 +804,11 @@ public class InferController {
      * @param teoremProved: teorem that we are proving using this hint
      * @return a hint for the natural deduction with direct method
      */
-    private Term createDeductionDirectHint(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) {
+    private Term createDeductionDirectInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) 
+                 throws TypeVerificationException
+    {
 
-    	try {
+//    	try {
     	
     	// First must check if we are dealing with a special modus ponens hint 
     	
@@ -812,7 +823,7 @@ public class InferController {
     			leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), ((App)teoremProved).q)) ,((App)teoremProved).q));
     			leibnizString = "69";
     		}
-    		return createDirectMethodHint(teorem, instantiation, instantiationString, leibniz, leibnizString);
+    		return createDirectMethodInfer(teorem, instantiation, instantiationString, leibniz, leibnizString);
     	}
     	
     	// IF REACHED HERE WE NEED A MODUS PONENS HINT
@@ -858,10 +869,10 @@ public class InferController {
     	return new TypedApp(iaLefTerm, iaRighTerm);
     	
     	
-    	}catch(Exception e) { // If something goes wrong return null
+    	/*}catch(Exception e) { // If something goes wrong return null
     		e.printStackTrace();
     		return null;
-    	}
+    	}*/
 
     }
     
@@ -1078,23 +1089,23 @@ public class InferController {
         Term formula = resuel.getTeorema().getTeoTerm();
         String metodo = solucion.getMetodo();
         
-
-        // CREATE THE NEW HINT DEPENDING ON THE PROVE TYPE
+        // CREATE THE NEW INFERENCE DEPENDING ON THE PROVE TYPE
         Term infer = null;
-        if(metodo.equals("Direct method")) {
-        	infer = createDirectMethodHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-        }else if(metodo.equals("Starting from one side")) {
-        	infer = createOneSideHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-        }else if(metodo.equals("DWeakening")) {
-                infer = createWSHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-        }else if(metodo.equals("Natural Deduction,one-sided")) {
-        	infer = createDeductionOneSideHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
-        }else if(metodo.equals("Natural Deduction,direct")) {
-        	infer = createDeductionDirectHint(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
-        }
-
+        try 
+        {
+            if(metodo.equals("Direct method")) {
+        	infer = createDirectMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
+            }else if(metodo.equals("Starting from one side")) {
+        	infer = createOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
+            }else if(metodo.equals("DWeakening")) {
+                infer = createWSInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
+            }else if(metodo.equals("Natural Deduction,one-sided")) {
+        	infer = createDeductionOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+            }else if(metodo.equals("Natural Deduction,direct")) {
+        	infer = createDeductionDirectInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+            }
         // If something went wrong building the new hint
-        if( infer == null) {
+        }catch(TypeVerificationException e) {
             response.generarHistorial(username,formula, nTeo,typedTerm,false,metodo,resuelveManager,disponeManager,simboloManager);
             return response;
         }
@@ -1172,11 +1183,11 @@ public class InferController {
     	
     	// CHECK IF THE PROOF FINISHED
     	
-    	Term newProof = proof;
+    	Term newProof = pasoPostTerm;
     	
     	// Depending on the method we create a new proof if we finished
     	if(metodo.equals("Direct method")) {
-    		newProof = finishedDirectMethodProve(initialExpr, teoremProved, finalExpr, proof, username);
+    		newProof = finishedDirectMethodProve(teoremProved, proof, username);
     	}else if(metodo.equals("Starting from one side")) {
     		newProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
     	}else if(metodo.equals("Natural Deduction,one-sided")) {

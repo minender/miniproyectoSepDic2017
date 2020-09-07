@@ -96,6 +96,7 @@ public class TypedApp extends App implements TypedTerm{
            Const op1 = (Const)((App)((App)pType).p).p;
            Const op2 = (Const)((App)((App)qType).p).p;
            
+           // incesario luego que se elminaron reglas de inferencias
            if (op1.equals(op2))
                return new App(new App(op1, qDer), pIzq);
            else if (op1.getCon().trim().equals("c_{1}"))
