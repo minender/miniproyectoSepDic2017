@@ -328,9 +328,9 @@ public class InferResponse {
         //            primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
                     teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
                     inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s,"");
-                    inst = "~with~" + inst;
+                    inst = "~\\text{with}~" + inst;
                     leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                    leib = "~and~" + leib;
+                    leib = "~\\text{and}~" + leib;
                   }
                   else
                   {
@@ -341,19 +341,19 @@ public class InferResponse {
                       if (((App)((App)ultInf).q).p instanceof TypedI)
                       {
                         inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                        inst = "~with~" + inst;
+                        inst = "~\\text{with}~" + inst;
                       }
                       else
                       {
                         leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                        leib = "~and~" + leib;
+                        leib = "~\\text{and}~" + leib;
                       }
                     else
                     {
                         inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                        inst = "~with~" + inst;
+                        inst = "~\\text{with}~" + inst;
                         leib = ((App)ultInf).p.type().toStringInf(s,"");
-                        leib = "~and~" + leib;
+                        leib = "~\\text{and}~" + leib;
                     }
                   }
                 else
@@ -362,10 +362,10 @@ public class InferResponse {
                   if (((App)ultInf).p instanceof TypedI)
                   {
                     inst = pType.toStringInf(s,"");
-                    inst = "~with~" + inst;
+                    inst = "~\\text{with}~" + inst;
                   }
                   else if (((App)ultInf).p instanceof TypedL)
-                    leib = "~and~" + pType.toStringInf(s,"");
+                    leib = "~\\text{and}~" + pType.toStringInf(s,"");
                   // El caso SA no entra en ninguna de estas dos guardias y solo se asigna teo
                   teo = ((App)ultInf).q.type().toStringFinal();
                   
@@ -383,12 +383,12 @@ public class InferResponse {
             if (theo == null)
             {
                teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
-               hint = op+"~~~~~~\\langle mt~("+teo+")"+inst+leib+"\\rangle";
+               hint = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
             }
             else
             {
               teo = theo.getNumeroteorema();
-              hint = op+"~~~~~~\\langle st~("+teo+")"+inst+leib+"\\rangle";
+              hint = op+"~~~~~~\\langle \\text{st}~("+teo+")"+inst+leib+"\\rangle";
             }
             return hint;
     }
@@ -451,21 +451,42 @@ public class InferResponse {
             return hint.substring(0, hint.length()-7)+"~and~E^z:"+leibniz.toStringInf(s, "")+"\\rangle";
     }
     
-    private void setDirectProof(String user,String nTeo, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s, boolean oneSide) {
+    private void setDirectProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s, boolean oneSide) {
         String primExp = "";
     	String hint = "";
+    	boolean equanimity = false;
         String equanimityHint = "";
-        Term iter;
-        if (oneSide || !(typedTerm instanceof TypedApp) || ((TypedApp)typedTerm).inferType!='e') {
-            iter = typedTerm;
+        Term iter = null;
+        String lastline = "";
+        
+        if( !solved ) {
+        	iter = typedTerm;
+        // If finished doing one side demostration and started from the right side skip S
+        }else if(oneSide && ((TypedApp)typedTerm).p instanceof TypedS) {
+        	Term teoProved = typedTerm.type();
+    		Term initialExpr = ((App)((TypedApp)typedTerm).q.type()).q;
+    		Term finalExpr = ((App)((App)((TypedApp)typedTerm).q.type()).p).q;
+    		if(initialExpr.equals(((App)((App)teoProved).p).q) && finalExpr.equals(((App)teoProved).q) ) {
+    			iter = ((TypedApp)typedTerm).q;
+    		}
+    	// If finished doing one side demostration and started from the left side
+        }else if(oneSide) {
+        	iter = typedTerm;
+        // If finished direct method starting from the theorem being proved
+        }else if(((TypedApp)typedTerm).p instanceof TypedApp && ((TypedApp)((TypedApp)typedTerm).p).inferType=='s'){
+        	iter = ((TypedApp)((TypedApp)typedTerm).p).q;
+        	Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, ((TypedApp)typedTerm).q.type().toStringFinal());
+            equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")";
+        // If finished direct method starting from another theorem
+        }else {
+        	iter = ((TypedApp)typedTerm).p;
+        	Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, ((TypedApp)typedTerm).q.type().toStringFinal());
+            equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")";
+            equanimity = true;
         }
-        else if( typedTerm instanceof TypedApp && 
-                 ((TypedApp)typedTerm).inferType=='e' ) {
-            iter = ((TypedApp)typedTerm).p;
-            equanimityHint = "y";
-        }
-        else
-            iter = ((TypedApp)typedTerm).p;
+        
+
+        lastline = ((App)((App)iter.type()).p).q.toStringInf(s,"")+ (equanimity?"":equanimityHint) +"$";
         
         
         
@@ -482,12 +503,8 @@ public class InferResponse {
                 ultInf = iter;
                 Term ultInfType = ultInf.type();
                 primExp = ((App)ultInfType).q.toStringInf(s,"");
-                if ( equanimityHint.equals("y"))
-                {
-                    Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, ((App)ultInfType).q.toStringFinal());
-                    equanimityHint = "~~~-~st~("+eqHintResuel.getNumeroteorema()+")";
+                if ( equanimity)
                     primExp += equanimityHint;
-                }
             } 
             hint = hintOneSide(user, ultInf, resuelveManager, disponeManager, s);
             
@@ -495,6 +512,8 @@ public class InferResponse {
             primExp = "";
             hint = "";
         }
+        
+        this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
     /**
@@ -585,8 +604,28 @@ public class InferResponse {
     }
     
     
-    private void setNaturalSideProof(String user,String nTeo, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
+    private void setNaturalSideProof(String user,String nTeo, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) throws TypeVerificationException{
     	
+    	// Must check if finished
+    	boolean startedFromRight = false;
+    	// If finished depending on the case skip some hints
+    	if(solved) { 
+    		typedTerm = ((TypedApp)typedTerm).q;
+    		// If started from the right
+    		if(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedS) {
+    			// Be really sure the S is there coz we started from the right
+        		// So check if the initial expression is the right side and the final one the left side of the theorem
+    			Resuelve res = resuelveManager.getResuelveByUserAndTeoNum(user, nTeo);
+        		Term teoProved = res.getTeorema().getTeoTerm();
+        		Term initialExpr = ((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).q).p).q).p).q;
+        		Term finalExpr = ((App)((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).p).q).p).q).p).q;
+        		if(initialExpr.equals(((App)((App)((App)((App)teoProved).p).q).p).q) && finalExpr.equals(((App)((App)((App)teoProved).p).q).q) ) {
+        			startedFromRight = true;
+        			typedTerm = ((TypedApp)typedTerm).q;
+        		}
+    		}
+    	}
+
     	
     	// Create a stack of hints we'll use to construct the new proof
     	Term app = typedTerm; 
@@ -615,15 +654,15 @@ public class InferResponse {
     		newHint = naturalSideToOneSideHint(hint, s);
     		
     		// create the new proof
-    		try {
-				newProof = new TypedApp(newProof,newHint);
-			}catch (Exception e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
+    		newProof = new TypedApp(newProof,newHint);
+			
     	}
     	
-    	setDirectProof(user,nTeo, newProof,resuelveManager,disponeManager,s, true);
+    	if(startedFromRight) {
+    		newProof = new TypedApp(new TypedS(newProof.type()) ,newProof);
+    	}
+    	
+    	setDirectProof(user,newProof,solved,resuelveManager,disponeManager,s, true);
     	
     	
     	
@@ -720,7 +759,21 @@ public class InferResponse {
     }
     
     
-    private void setNaturalDirectProof(String user,String nTeo, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
+    private void setNaturalDirectProof(String user,String nTeo, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) throws TypeVerificationException {
+    	
+    	
+    	// First check if finished 
+    	
+    	// This will be true if the proof starts from an existent theorem
+    	boolean startingFromFact = !(((TypedApp)((TypedApp)typedTerm).p).p instanceof TypedS);
+    	
+    	
+    	// If finished depending on the case skip last hints
+    	if(solved && startingFromFact) {
+    		typedTerm = ((TypedApp)((TypedApp)typedTerm).p).p;
+    	}else if(solved) {
+    		typedTerm = ((TypedApp)((TypedApp)((TypedApp)((TypedApp)((TypedApp)typedTerm).p).q).p).p).p;
+    	}
     	
     	
     	// Create a stack of hints we'll use to construct the new proof
@@ -740,8 +793,6 @@ public class InferResponse {
             } 
     	}
     	
-    	// This will be true if the proof starts from an existent theorem
-    	boolean startingFromFact = ((App)typedTerm.type()).q.equals(new Const("c_{8}"));
     	
     	// Must skip some of the first hints depending on the case
     	if(startingFromFact) {
@@ -760,27 +811,24 @@ public class InferResponse {
     		newHint = naturalDirectToDirectHint(hint, s);
     		
     		// create the new proof
-    		try {
-				newProof = new TypedApp(newProof,newHint);
-			}catch (Exception e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
+			newProof = new TypedApp(newProof,newHint);
+			
     	}
     	
+    	
+    	// Add equanimity if finished
     	// If finished and started from a theorem thats is not being proved
     	if(solved && startingFromFact) {
     		//Add equanimity so setDirectProof knows it started from another theorem
-    		try {
-    			Term reachedTheorem = ((App)newProof.type()).q;
-    			newProof = new TypedApp(newProof, new TypedA(reachedTheorem));
-    		}catch (Exception e) {
-    			e.printStackTrace();
-				System.exit(1);
-			}
+			Term reachedTheorem = new Const("c_{8}");
+			newProof = new TypedApp(newProof, new TypedA(reachedTheorem));
+			// If finished and started from theorem being proved
+    	}else if(solved) {
+    		Term reachedTheorem = new Const("c_{8}");
+			newProof = new TypedApp(new TypedApp(new TypedS(newProof.type()),newProof), new TypedA(reachedTheorem));
     	}
     	
-    	setDirectProof(user,nTeo,newProof,resuelveManager,disponeManager,s, false);
+    	setDirectProof(user,newProof,solved,resuelveManager,disponeManager,s, false);
     	
     	
     	
@@ -879,9 +927,9 @@ public class InferResponse {
         }
         if (type == null && !valida)
         {
-            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$Regla~de~inferencia~no~valida$$");
+        	this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$No~valid~inference~rule$$"); 
             solved = false;
-            return;
+        	return;
         }
         if(type == null && valida)// Case where what we want to print is the first line
         {
@@ -909,129 +957,34 @@ public class InferResponse {
         	return;
         }
 
-        // CHECK IF EQUANIMITY HAPPENED
-    	boolean equanimity;
-    	try{
-    		if (!(((TypedApp)typedTerm).p instanceof TypedS) && ((App)((TypedApp)typedTerm).p.type()).q.equals(((TypedApp)typedTerm).q.type()) 
-    				&& ((App)((App)((TypedApp)typedTerm).p.type()).p).p.toString().equals("c_{1}"))
-    			equanimity = true;
-    		else
-    			equanimity = false;
-    	}
-    	catch (ClassCastException e){
-    		equanimity = false;
-    	}
-
-    	String equanimityHint = ""; // This will be printed if equanimity needs to be printed at the ending of the proof (or begging in certain cases)
-    	Term goal = null;
-    	
-    	// CREATE EQUANIMITY HINT STRING TO PRINT
-    	// Case1: when natural deduction direct finished 
-    	if(equanimity && naturalDirect) {
-    		if(((TypedApp)((TypedApp) typedTerm).p).p instanceof TypedS ) {// started with theorem being proved 
-    			goal = ((App)((App)((TypedApp)((TypedApp)((TypedApp)((TypedApp)typedTerm).p).q).p).p.type()).p).q;
-    			goal = ((App)((App)((App)((App)goal).p).q).p).q;
-    			typedTerm = ((TypedApp)((TypedApp)((TypedApp)((TypedApp)((TypedApp)typedTerm).p).q).p).p).p;
-    			
-    		}else {// started with another theorem
-    			// In this case let the job to the setProof function, but must skip equanimity
-    			typedTerm = ((TypedApp)((TypedApp)typedTerm).p).p;
-    			type = typedTerm.type();
-    			equanimity = false;
-    		}
-    	// Case2: when natural deduction one side finished
-    	}else if(equanimity && naturalSide) {
-    		typedTerm = ((TypedApp)typedTerm).q;
-    		type = typedTerm.type();
-    		// If doing one side demostration and started from the right side
-        	if(naturalSide && ((TypedApp)typedTerm).p instanceof TypedS) {
-        		// Be really sure the S is there coz we started from the right
-        		// So check if the initial expression is the right side and the final one the left side of the theorem
-        		Resuelve res = resuelveManager.getResuelveByUserAndTeoNum(user, nTeo);
-        		Term teoProved = res.getTeorema().getTeoTerm();
-        		Term initialExpr = ((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).q).p).q).p).q;
-        		Term finalExpr = ((App)((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).p).q).p).q).p).q;
-        		if(initialExpr.equals(((App)((App)((App)((App)teoProved).p).q).p).q) && finalExpr.equals(((App)((App)((App)teoProved).p).q).q) ) {
-        			typedTerm = ((TypedApp)typedTerm).q;
-        			type = typedTerm.type();	
-        		}
-        	}
-    		// ignore equanimity in this case since it wont be printed
-    		equanimity = false;
-    	// Case3: when direct method finished and started from the theorem being proved
-    	}else if (equanimity && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedS){
-    		goal = (((TypedApp)typedTerm).q).type();	
-    		typedTerm = ((TypedApp)typedTerm).p;
-    		typedTerm = ((TypedApp)typedTerm).q;
-    	// Case4: when direct method finished and started from another theorem
-    	}else if (equanimity){
-    		// In this case let the job to the setProof function
-    		type = ((TypedApp)typedTerm).p.type();
-    		equanimity = false;
-    	}
-    	
-    	// If finished doing one side demostration and started from the right side skip S
-    	if(solved && oneSide && ((TypedApp)typedTerm).p instanceof TypedS) {
-    		// Be really sure the S is there coz the proof is finished
-    		// So check if the initial expression is the right side and the final one the left side of the theorem
-    		Resuelve res = resuelveManager.getResuelveByUserAndTeoNum(user, nTeo);
-    		Term teoProved = res.getTeorema().getTeoTerm();
-    		Term initialExpr = ((App)((TypedApp)typedTerm).q.type()).q;
-    		Term finalExpr = ((App)((App)((TypedApp)typedTerm).q.type()).p).q;
-    		if(initialExpr.equals(((App)((App)teoProved).p).q) && finalExpr.equals(((App)teoProved).q) ) {
-    			typedTerm = ((TypedApp)typedTerm).q;
-    			type = typedTerm.type();
-    		}
-    	}
-    	
-    	if(equanimity) {
-    		type = typedTerm.type();
-    		Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, goal.toStringFinal());
-    		if (eqHintResuel == null) {
-    			equanimityHint = disponeManager.getDisponeByUserAndMetaeorema(user, goal.toStringFinal()).getNumerometateorema();
-    			equanimityHint = "~~~-~mt~("+equanimityHint+")";
-    		}
-    		else
-    		{    
-    			equanimityHint = eqHintResuel.getNumeroteorema();
-    			equanimityHint = "~~~-~st~("+equanimityHint+")";
-    		}
-    	}
-    
-    	// Save last expression to append it later
-    	String pasoPost="";
-    	if(naturalDirect) {
-    		Term aux= ((App)((App)((App)((App)((App)((App)type).p).q).p).q).p).q;
-    		pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+equanimityHint+(solved?"$":"");
-    	}else if(naturalSide){
-    		Term aux=((App)((App)((App)((App)type).p).q).p).q;
-    		pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+equanimityHint+(solved?"$":"");	
-    	}else {
-    		Term aux= ((App)((App)type).p).q;
-    		pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+equanimityHint+(solved?"$":"");	
-    	}
 
     	// Set the rest of the historial depending on the proof type
-        if (direct)
-            setDirectProof(user, nTeo, typedTerm, resuelveManager, disponeManager, s, false);
-        else if (oneSide)
-            setDirectProof(user, nTeo, typedTerm, resuelveManager, disponeManager, s, true);
-        else if (weakening || strengthening)
-            setWSProof(user, typedTerm, resuelveManager, disponeManager, s);
-        else if (naturalDirect)
-        	setNaturalDirectProof(user,nTeo, typedTerm,solved, resuelveManager, disponeManager, s);
-        else if (naturalSide)
-        	setNaturalSideProof(user,nTeo, typedTerm, resuelveManager, disponeManager, s);
+        try {
+	        if (direct)
+	            setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, false);
+	        else if (oneSide)
+	            setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);
+	        else if (weakening || strengthening)
+	            setWSProof(user, typedTerm, resuelveManager, disponeManager, s);
+	        else if (naturalDirect)
+	        	setNaturalDirectProof(user,nTeo, typedTerm,solved, resuelveManager, disponeManager, s);
+	        else if (naturalSide)
+	        	setNaturalSideProof(user,nTeo, typedTerm, solved, resuelveManager, disponeManager, s);
+        } catch (TypeVerificationException e) {
+	    	e.printStackTrace();
+	    	this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$No~valid~inference~rule$$");
+            solved = false;
+        	return;
+		}
     	
     	// Add the hypothesis if we are doing natural deduction
     	if(naturalDirect || naturalSide) { 
     		header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
     	}
 
-    	this.setHistorial(header+"<center>$"+this.getHistorial()+"~~~~~~"+pasoPost+"</center>");
+    	this.setHistorial(header+"<center>$"+this.getHistorial()+"</center>");
     	if (!valida)
-    		this.setHistorial("$"+this.getHistorial()+"$"+"$$Regla~de~inferencia~no~valida$$");
-
+    		this.setHistorial("$"+this.getHistorial()+"$$No~valid~inference~rule$$");
     	       
     }
     
