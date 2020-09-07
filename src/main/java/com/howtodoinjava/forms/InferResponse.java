@@ -295,9 +295,9 @@ public class InferResponse {
             String hint = "";
             // if the inference is a modus pones that simulates natural deduction is true this
             boolean naturalInfer=(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m') || 
-            		(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedL  && ((TypedApp)((TypedApp)typedTerm).q).inferType=='m') ||
-            		(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedS  && ((TypedApp)((TypedApp)typedTerm).q).inferType=='m') ||
-            		(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedS && ((TypedApp)typedTerm).q instanceof TypedApp  && ((TypedApp)((TypedApp)typedTerm).q).p instanceof TypedL && ((TypedApp)((TypedApp)typedTerm).q).inferType=='m') ;
+            		(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedL  && ((TypedApp)typedTerm).q instanceof TypedApp && ((TypedApp)((TypedApp)typedTerm).q).inferType=='m') ||
+            		(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedS  && ((TypedApp)typedTerm).q instanceof TypedApp && ((TypedApp)((TypedApp)typedTerm).q).inferType=='m') ||
+            		(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedS && ((TypedApp)typedTerm).q instanceof TypedApp  && ((TypedApp)((TypedApp)typedTerm).q).p instanceof TypedL && ((TypedApp)((TypedApp)typedTerm).q).q instanceof TypedApp && ((TypedApp)((TypedApp)((TypedApp)typedTerm).q).q).inferType=='m') ;
             
             Term ultInf;
             // Case1: Modus pones SL(IAIA)
@@ -374,7 +374,6 @@ public class InferResponse {
             {
               Term aux = ultInf.type();
               teo = aux.toStringFinal();
-              //  primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
             } 
           
             int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 
