@@ -41,6 +41,7 @@ function clickAlias(Math1,alias,valorAlias)
 function teoremaClickeable(/*teoId*/){
     
     var data = {};
+    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
     //data["teoid"] = teoId;
     var form = $('#inferForm');
     $.ajax({
@@ -76,23 +77,28 @@ function teoremaInicialMD(teoid){
         dataType: 'json',
         data: data,
         success: function(data) {
-
-            $('#formula').html(data.historial);
-            MathJax.Hub.Typeset();
-            $('#inferForm').show();
-            //$("#nuevoMetodo").val("1");
-            //$('#teoremaInicial').val(teoid);
-            $("#selectTeoInicial").val("0");
-            $(".teoIdName").css({"cursor":"","color":""});
-            $(".operator").css({"cursor":"pointer","color":"#08c"});
-            $("#currentTeo").hide();
-            var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
-            if(nSol==="new"){
-               //$('#nSolucion').val(data.nSol);
-               //nSol = $('#nSolucion').val();
-               var url = $(form).attr('action');
-               url = url.substring(0,url.length-3)+data.nSol;
-               $(form).attr('action',url);
+        	if(data.lado === "0"){
+                alert("El teorema seleccionado no aplica para el metodo Asumir antecendente con metodo directo.");
+                $("#metodosDiv").show();
+                window.location($(form).attr('action'));
+            }else{
+	            $('#formula').html(data.historial);
+	            MathJax.Hub.Typeset();
+	            $('#inferForm').show();
+	            //$("#nuevoMetodo").val("1");
+	            //$('#teoremaInicial').val(teoid);
+	            $("#selectTeoInicial").val("0");
+	            $(".teoIdName").css({"cursor":"","color":""});
+	            $(".operator").css({"cursor":"pointer","color":"#08c"});
+	            $("#currentTeo").hide();
+	            var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+	            if(nSol==="new"){
+	               //$('#nSolucion').val(data.nSol);
+	               //nSol = $('#nSolucion').val();
+	               var url = $(form).attr('action');
+	               url = url.substring(0,url.length-3)+data.nSol;
+	               $(form).attr('action',url);
+	            }
             }
         },
             error: function(XMLHttpRequest, textStatus, errorThrown) { 
@@ -193,6 +199,9 @@ function clickTeoremaInicial(teoid)
        if (selectTeoInicial==="1")
        {
            teoremaInicialMD(teoid);
+           $("#HQcategory").hide();
+
+       
        }
     };
 }

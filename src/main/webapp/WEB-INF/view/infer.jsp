@@ -89,6 +89,25 @@
                             $("#currentTeo").hide();
                             metodoF();
                         }
+                    }else if(this.value==="5"){
+                    	if(confirm("Are you sure you want to use the Natural Deduction with one-sided method?")){
+                            //$("#nTeorema").val();
+                            $("#selectTeoInicial").val("0");
+                            alert('Select the side where the demo will start.');
+                            $("#metodosDiv").hide();
+                            $("#currentTeo").hide();
+                            teoremaClickeable();
+                        }
+					}else if(this.value==="6"){
+						if(confirm("Are you sure you want to use the Natural Deduction with direct method?")){
+							$("#HQcategory").attr("hidden",false);
+							$("#currentTeo").hide();
+							$("#selectTeoInicial").val("1");
+                            alert('Select the theorem with which the proof will begin.');
+                            $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
+                            $(".operator").css({"cursor":"","color":""});
+                            $("#metodosDiv").hide();
+                        }
                     }
                 });
                 
@@ -97,11 +116,10 @@
                     var data = {};
                     data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
                     var form = $('#inferForm');
-                    //var teoSol = $("#nSolucion").val();
-                    //var teoId = $("#nTeorema").val();
-                    //data["teoSol"] = teoSol;
-                    if(this.id==='d'){
-                        data["lado"] = "d";
+                    
+                    data["lado"] = this.id;
+                    if(this.id==='d' || this.id==='i'){
+                        
                         $.ajax({
                             type: 'POST',
                             url: $(form).attr('action')+"/teoremaInicialPL",
@@ -127,33 +145,7 @@
                             }
                         }); 
                     }
-                    else if(this.id==='i'){
-                        data["lado"] = "i";
-                        $.ajax({
-                        type: 'POST',
-                        url: $(form).attr('action')+"/teoremaInicialPL",
-                        dataType: 'json',
-                        data: data,
-                        success: function(data) {
-                            $('#formula').html(data.historial);
-                            MathJax.Hub.Typeset();
-                            //$('#teoremaInicial').val("ST-"+teoId + "@i");
-                            $("#inferForm").show();
-                            //$("#nuevoMetodo").val("1");
-                            var nSol = $(form).attr('action').split('/').pop();//$('#nSolucion').val();
-                            if(nSol==="new"){
-                                //$('#nSolucion').val(data.nSol);
-                                //nSol = $('#nSolucion').val();
-                                var url = $(form).attr('action');
-                                url = url.substring(0,url.length-3)+data.nSol;
-                                $(form).attr('action',url);
-                            }
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                          alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-                        }
-                        });
-                    } 
+                    
                 });
                 
                 var p1=[];
@@ -375,9 +367,10 @@
                 <option value="2">Starting from one side</option>
                 <option value="3">Weakening</option>
                 <option value="4">Strengthening</option>
-                <option value="5">Assume the antecedent</option>
-                <option value="6">Proof by cases</option>
-                <option value="7">Proof by contradiction</option>
+                <option value="5">Natural Deduction,one-sided</option>
+                <option value="6">Natural Deduction,direct</option>
+                <option value="7">Proof by cases</option>
+                <option value="8">Proof by contradiction</option>
 
               </select>
           </div>
@@ -393,13 +386,45 @@
                                    
                 <div id="misteoremas"> 
                     <div id="showNoCategories">
-                <c:choose>
-                    <c:when test="${showCategorias.size() == 0}">
-                        You currently have no categories to display, adjust your settings
-                    </c:when>
-                </c:choose>
-                </div>
+		                <c:choose>
+		                    <c:when test="${showCategorias.size() == 0}">
+		                        You currently have no categories to display, adjust your settings
+		                    </c:when>
+		                </c:choose>
+               		</div>
+               		
+              <!-- This adds a special category for natural deduction with direct method -->
+              <li style="list-style: none; color: #03A9F4" id="HQcategory" hidden="true">
+              		<h4><a data-toggle="collapse" href='#collapse-H/Q' role="button" aria-expanded="false" aria-controls='collapse-H/Q' class="collapse-link">H/Q</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true" ></i></h4> 
+         			<c:choose>
+         			
+                        <c:when test="${implication}">
+                        	<ul>
+                        		<li id="currentTeoH" style="list-style: none;">
+                        			<h6 style="color: #000;">
+                        				<a><i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i></a>
+                        				<span id="teoIdNameH" class="teoIdName">H &nbsp;:</span> &nbsp;<span id="clickH">$${ Hstring } $</span>
+	                                    <script>clickTeoremaInicial('ST-H');</script>
+                        			</h6>
+                        		</li>
+                        		<li id="currentTeoQ" style="list-style: none;">
+                        			<h6 style="color: #000;">
+                        				<a><i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i></a>
+                        				<span id="teoIdNameQ" class="teoIdName">Q &nbsp;:</span> &nbsp;<span id="clickQ">$${ Qstring } $</span>
+	                                    <script>clickTeoremaInicial('ST-Q');</script>
+                        			</h6>
+                        		</li>
+                        	
+                        	</ul>
+                        </c:when>
+                    </c:choose>
+                        
+              </li>
+              <!-- End of special category -->
+              
+              
               <c:forEach items="${showCategorias}" var="cat"> 
+              	  
                   <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href='#collapse-${cat.getNombre().replaceAll(" ","-")}' role="button" aria-expanded="false" aria-controls='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
                       <ul id='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse">
                     <c:forEach items="${resuelves}" var="resu">
@@ -440,9 +465,9 @@
                                    <script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
                                            clickOperator('clickmeta${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().freeVars()}');
                                    </script>
-                               </span>
-                               </c:when>
-                              </c:choose>
+                                </span>
+                                </c:when>
+                               </c:choose>
                                    </c:when>
                                   </c:choose>
                                  </c:when>

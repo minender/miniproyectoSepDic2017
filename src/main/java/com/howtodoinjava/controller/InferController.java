@@ -163,16 +163,31 @@ public class InferController {
     }
 
     @RequestMapping(value="/{username}/{nTeo:.+}", method=RequestMethod.GET)
-    public String inferView(@PathVariable String username, @PathVariable String nTeo, ModelMap map) {
-        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+    public String inferView(@PathVariable String username, @PathVariable String nTeo, ModelMap map){
+        
+    	System.out.println("A");
+    	if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
         {
             return "redirect:/index";
         }
         Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formula = resuel.getTeorema().getTeoTerm();
         String solId = "new";
+        System.out.println("A");
+        System.out.println(resuel.getDemopendiente() );
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
+        
+        // Will be true if the theorem is an implication
+        boolean implication = formula instanceof App && ((App)formula).p instanceof App && ((App)((App)formula).p).p.toString().equals("c_{2}");
+        String Hstring = "";
+        String Qstring = "";
+        if(implication) {
+        	Term H = ((App)formula).q;
+        	Term Q = ((App)((App)formula).p).q;
+        	Hstring = H.toStringInf(simboloManager,"");
+        	Qstring = Q.toStringInf(simboloManager,"");
+        }
         
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
         for (Resuelve r: resuelves)
@@ -181,27 +196,11 @@ public class InferController {
             Term term = t.getTeoTerm();
             if(r.isResuelto()==true || r.getNumeroteorema().equals(nTeo)){
                 
-                /*try
-                {
-                  t.setTeoTerm(new App(new App(new Const(1,"\\cssId{click@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{"+((Const)((App)((App)term).p).p).getCon()+"}}}",((Const)((App)((App)term).p).p).getFunNotation(),((Const)((App)((App)term).p).p).getPreced(),((Const)((App)((App)term).p).p).getAsociat()),((App)((App)term).p).q),((App)term).q));
-                }
-                catch (java.lang.ClassCastException e)
-                {*/
-                    t.setTeoTerm(term);
-                //}
+                t.setTeoTerm(term);
                 t.setMetateoTerm(new App(new App(new Const(1,"\\cssId{clickmeta@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{\\equiv}}}",false,1,1),new Const("true ")), term));
             }
             else{
                 ;
-                /*try
-                {
-                  t.setTeoTerm(new App(new App(new Const(((Const)((App)((App)term).p).p).getCon(),false,1,1),((App)((App)term).p).q),((App)term).q));
-                }
-                catch (java.lang.ClassCastException e)
-                {
-                    t.setTeoTerm(term);
-                }
-                t.setMetateoTerm(new App(new App(new Const("{\\equiv}}",false,1,1),new Const("true ")), term));*/
             }
             
         }
@@ -215,24 +214,30 @@ public class InferController {
         map.addAttribute("nStatement","");
         map.addAttribute("instanciacion","");
         map.addAttribute("leibniz","");
+        System.out.println(solId);
         if (solId.equals("new")){
+        	System.out.println("C");
             map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");
             map.addAttribute("elegirMetodo","1");
             map.addAttribute("teoInicial", "");
         }
         else
         {
+        	System.out.println("D");
             Solucion solucion = solucionManager.getSolucion(resuel.getDemopendiente());
             infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");  
             InferResponse response = new InferResponse();
             Term typedTerm = solucion.getTypedTerm();
             response.generarHistorial(username,formula, nTeo, typedTerm, true,solucion.getMetodo(), resuelveManager, disponeManager,simboloManager);
-
+            System.out.println(response.getHistorial());
+            
             if (typedTerm == null){
                 map.addAttribute("elegirMetodo","1");
             }else{
                 map.addAttribute("elegirMetodo","0");
             }
+            
+            System.out.println("E");
             
             map.addAttribute("formula",response.getHistorial());
             Term type = null;//typedTerm.type();
@@ -253,22 +258,31 @@ public class InferController {
             else
                map.addAttribute("teoInicial", "");
         }
+        
+        
         List <Categoria> showCategorias = new LinkedList<Categoria>();
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
         
+        System.out.println("A");
+        
         List<Simbolo> simboloList = simboloManager.getAllSimbolo();
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = PerfilController.simboloDictionaryCode(simboloList, predicadoList);
         
+        
+        System.out.println("A");System.out.println("A");
         map.addAttribute("usuario",usr);
         map.addAttribute("guardarMenu","");
         map.addAttribute("selecTeo",false);
         map.addAttribute("nSol",solId);
         map.addAttribute("nTeo",nTeo);
+        map.addAttribute("implication", implication);
+        map.addAttribute("Hstring", Hstring);
+        map.addAttribute("Qstring", Qstring);
         map.addAttribute("admin","admin");
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("verTerminosPublicosMenu","");
@@ -289,7 +303,6 @@ public class InferController {
         map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
 
-        //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
     
@@ -503,7 +516,6 @@ public class InferController {
     			TypedI I = new TypedI(instantiation);
     			
     			// p => q == (p == p /\ q)
-    			
     			TypedA A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"),new Var('q')),new Var('p'))), new Var('p'))),
     					new App(new App(new Const("c_{2}"), new Var('q')), new Var('p'))));
     			
@@ -571,8 +583,6 @@ public class InferController {
     	    			hint2 = new TypedApp(L, hint2);
     	    			
     	    			// HINT 3
-    	    			
-    	    			// need  true == (q == q) gotta prove it with associativity and true == q == q
     	    			
     	    			// true == (q == q)
     	    			A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new Var('q')),new Var('q'))),new Const("c_{8}")));
@@ -1244,12 +1254,132 @@ public class InferController {
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse teoremaInicialMD( @RequestParam(value="nuevoMetodo") String nuevoMetodo, @RequestParam(value="teoid") String teoid, @PathVariable String nSol, @PathVariable String username, 
-            @PathVariable String nTeo)
+            @PathVariable String nTeo) throws TypeVerificationException
     {   
         InferResponse response = new InferResponse();
-
+        response.setLado("1");
         Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm();
+        
+        if(nuevoMetodo.equals("Natural Deduction,direct")) {
+        	
+        	// If not of the form H => Q its wrong
+        	if( !(formulaAnterior instanceof App && ((App)formulaAnterior).p instanceof App && ((App)((App)formulaAnterior).p).p.toString().equals("c_{2}"))){
+        		response.setLado("0");
+                return response;
+        	}
+        	
+        	String prefix = teoid.substring(0, 3);
+        	teoid = teoid.substring(3,teoid.length());
+        	Term theorem = null;
+        	
+        	if(teoid.equals("Q")) { // if started from consequent
+        		// HINT (H => Q) == (H == H /\ Q) 
+    			
+    			// p,q := H,Q
+    			ArrayList<Var> vars = new ArrayList<Var>();
+    			vars.add(new Var('p')); 
+    			vars.add(new Var('q'));   
+    			ArrayList<Term> terms = new ArrayList<Term>();
+    			terms.add(((App)formulaAnterior).q);
+    			terms.add(((App)((App)formulaAnterior).p).q);
+    			Sust instantiation = new Sust(vars, terms);
+    			TypedI I = new TypedI(instantiation);
+    			
+    			// p => q == (p == p /\ q)
+    			TypedA A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"),new Var('q')),new Var('p'))), new Var('p'))),
+    					new App(new App(new Const("c_{2}"), new Var('q')), new Var('p'))));
+    			
+    			TypedApp formulaTerm = new TypedApp(I, A);
+    			
+    			Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo);
+                solucionManager.addSolucion(solucion);
+                response.setnSol(solucion.getId()+"");
+        		
+                response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
+                        resuelveManager,disponeManager,simboloManager);
+                return response;
+        	}else if(teoid.equals("H")) {
+        		theorem = ((App)formulaAnterior).q;
+        	}else {
+        		
+        		if(prefix.equals("MT-")) {
+        			Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid);
+                    theorem = dispone.getMetateorema().getTeoTerm();
+        		}else {
+        			Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid);
+            		theorem = resuelve.getTeorema().getTeoTerm();
+        		}
+        
+        	}
+        	
+        	// if here then starting form another theorem or H
+        	
+        	Term H = ((App)formulaAnterior).q;
+        	
+        	
+        	// HINT 1
+			
+			// true == (q == q)
+			TypedA A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new Var('q')),new Var('q'))),new Const("c_{8}")));
+			
+			// q := H
+			ArrayList<Var> vars = new ArrayList<Var>();
+			vars.add(new Var('q'));   
+			ArrayList<Term> terms = new ArrayList<Term>();
+			terms.add(H);
+			Sust instantiation = new Sust(vars, terms);
+			TypedI I = new TypedI(instantiation);
+			
+			TypedApp hint1 = new TypedApp(I,A);
+			
+			
+			// HINT 2
+			
+			// H == z
+			Bracket leib = new Bracket(new Var('z'), new App(new App(new Const("c_{1}"), new Var('z')), H));
+			TypedL L = new TypedL(leib);
+			
+			// p := H
+			vars = new ArrayList<Var>();
+			vars.add(new Var('p'));  
+			instantiation = new Sust(vars, terms);
+			I = new TypedI(instantiation);
+			
+			// p /\ true == p
+			A = new TypedA(new App( new App( new Const("c_{1}") ,new Var('p')), new App(new App(new Const("c_{5}"), new Const("c_{8}")), new Var('p'))));
+			
+			TypedApp hint2 = new TypedApp(I, A);
+			hint2 = new TypedApp(L, hint2);
+			hint2 = new TypedApp(new TypedS(hint2.type()), hint2);
+        	
+        	// HINT 3
+			
+			// H = H ^ z
+			leib = new Bracket(new Var('z'), new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), H)), H));
+			L = new TypedL(leib);
+			// Create teorema == true
+			TypedApp metaTheorem= metaTheorem(theorem);
+			
+			TypedApp hint3 = new TypedApp(L, metaTheorem);
+			hint3 = new TypedApp(new TypedS(hint3.type()), hint3);
+		
+			// BUILD THE NEW PROOF
+			TypedApp formulaTerm = new TypedApp(hint1, hint2);
+			formulaTerm = new TypedApp(formulaTerm, hint3);
+			
+			Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo);
+            solucionManager.addSolucion(solucion);
+            response.setnSol(solucion.getId()+"");
+    		
+            response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
+                    resuelveManager,disponeManager,simboloManager);
+            return response;
+        	
+        	
+        	
+        }
+
         
         //String formula = "";
         Term formulaTerm = null;
@@ -1290,7 +1420,7 @@ public class InferController {
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeablePL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaClickeablePL( /*@RequestParam(value="teoid") String teoid,*/ @PathVariable String username, 
+    public @ResponseBody InferResponse teoremaClickeablePL( @RequestParam(value="nuevoMetodo") String nuevoMetodo, @PathVariable String username, 
             @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
@@ -1299,7 +1429,23 @@ public class InferController {
         
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();
-        String equiv = ((Const)((App)((App)term).p).p).getCon();
+        
+        String equiv;
+        try { // If something here goes wrong is because the theorem does not have one side form
+        	if(nuevoMetodo.equals("Natural Deduction,one-sided")) {
+        		String impl = ((Const)((App)((App)term).p).p).getCon();
+        		if(!impl.equals("c_{2}")) { // If is not an implication its wrong
+        			response.setLado("0");
+                    return response;
+        		}
+        		term = ((App)((App)term).p).q;
+        	}
+        	equiv = ((Const)((App)((App)term).p).p).getCon();
+        }catch (Exception e) {
+        	response.setLado("0");
+            return response;
+		}
+    
 
         if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{10}")){
             response.setLado("0");
@@ -1309,9 +1455,9 @@ public class InferController {
             response.setLado("1");
         }
 
-        String formulaDer = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInf(simboloManager,"");
-        String formulaIzq = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInf(simboloManager,"");
-        String operador = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).p.toStringInf(simboloManager,"");//resuelve.getTeorema().getOperador();
+        String formulaDer = ((App)((App)term).p).q.toStringInf(simboloManager,"");
+        String formulaIzq = ((App)term).q.toStringInf(simboloManager,"");
+        String operador = ((App)((App)term).p).p.toStringInf(simboloManager,"");//resuelve.getTeorema().getOperador();
         
         formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
         formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
@@ -1327,19 +1473,29 @@ public class InferController {
             @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
+        
+        boolean naturalSide = nuevoMetodo.equals("Natural Deduction,one-sided");
+        Term H = null;
                 
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        
         Term formulaTerm = null;
         
+        if(naturalSide) {
+        	H = ((App)formulaAnterior).q;
+        	formulaAnterior = ((App)((App)formulaAnterior).p).q;
+        }
+        
         if(lado.equals("d")){
-            //formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
-            formulaTerm = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q;
+            formulaTerm = ((App)((App)formulaAnterior).p).q;
         }
         else if(lado.equals("i")){
-            //formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
-            formulaTerm = ((App)resuelve.getTeorema().getTeoTerm()).q;
+            formulaTerm = ((App)formulaAnterior).q;
+        }
+        
+        // In natural dededuction case add H /\ to the start
+        if(naturalSide) {
+        	formulaTerm = new App(new App(new Const("c_{5}"), formulaTerm), H);
         }
         
         if (nSol.equals("new"))
@@ -1358,9 +1514,7 @@ public class InferController {
         
         response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial); */
-
+      
         return response;
     }
     
