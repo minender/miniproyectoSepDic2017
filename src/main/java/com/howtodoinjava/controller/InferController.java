@@ -165,7 +165,6 @@ public class InferController {
     @RequestMapping(value="/{username}/{nTeo:.+}", method=RequestMethod.GET)
     public String inferView(@PathVariable String username, @PathVariable String nTeo, ModelMap map){
         
-    	System.out.println("A");
     	if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
         {
             return "redirect:/index";
@@ -173,8 +172,6 @@ public class InferController {
         Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formula = resuel.getTeorema().getTeoTerm();
         String solId = "new";
-        System.out.println("A");
-        System.out.println(resuel.getDemopendiente() );
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
         
@@ -214,30 +211,24 @@ public class InferController {
         map.addAttribute("nStatement","");
         map.addAttribute("instanciacion","");
         map.addAttribute("leibniz","");
-        System.out.println(solId);
         if (solId.equals("new")){
-        	System.out.println("C");
             map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");
             map.addAttribute("elegirMetodo","1");
             map.addAttribute("teoInicial", "");
         }
         else
         {
-        	System.out.println("D");
             Solucion solucion = solucionManager.getSolucion(resuel.getDemopendiente());
             infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");  
             InferResponse response = new InferResponse();
             Term typedTerm = solucion.getTypedTerm();
             response.generarHistorial(username,formula, nTeo, typedTerm, true,solucion.getMetodo(), resuelveManager, disponeManager,simboloManager);
-            System.out.println(response.getHistorial());
             
             if (typedTerm == null){
                 map.addAttribute("elegirMetodo","1");
             }else{
                 map.addAttribute("elegirMetodo","0");
             }
-            
-            System.out.println("E");
             
             map.addAttribute("formula",response.getHistorial());
             Term type = null;//typedTerm.type();
@@ -266,15 +257,11 @@ public class InferController {
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
         
-        System.out.println("A");
-        
         List<Simbolo> simboloList = simboloManager.getAllSimbolo();
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = PerfilController.simboloDictionaryCode(simboloList, predicadoList);
         
-        
-        System.out.println("A");System.out.println("A");
         map.addAttribute("usuario",usr);
         map.addAttribute("guardarMenu","");
         map.addAttribute("selecTeo",false);

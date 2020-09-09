@@ -617,8 +617,8 @@ public class InferResponse {
         		// So check if the initial expression is the right side and the final one the left side of the theorem
     			Resuelve res = resuelveManager.getResuelveByUserAndTeoNum(user, nTeo);
         		Term teoProved = res.getTeorema().getTeoTerm();
-        		Term initialExpr = ((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).q).p).q).p).q;
-        		Term finalExpr = ((App)((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).p).q).p).q).p).q;
+        		Term initialExpr = ((App)((App)((App)((TypedApp)typedTerm).q.type()).q).p).q;
+        		Term finalExpr = ((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).p).q).p).q;
         		if(initialExpr.equals(((App)((App)((App)((App)teoProved).p).q).p).q) && finalExpr.equals(((App)((App)((App)teoProved).p).q).q) ) {
         			startedFromRight = true;
         			typedTerm = ((TypedApp)typedTerm).q;
@@ -765,7 +765,10 @@ public class InferResponse {
     	// First check if finished 
     	
     	// This will be true if the proof starts from an existent theorem
-    	boolean startingFromFact = !(((TypedApp)((TypedApp)typedTerm).p).p instanceof TypedS);
+    	boolean startingFromFact = ((App)typedTerm.type()).q.toString().equals("c_{8}");
+    	if(solved) {
+    		startingFromFact = !(((TypedApp)((TypedApp)typedTerm).p).p instanceof TypedS);
+    	}
     	
     	
     	// If finished depending on the case skip last hints

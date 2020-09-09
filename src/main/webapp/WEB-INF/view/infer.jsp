@@ -99,7 +99,12 @@
                             teoremaClickeable();
                         }
 					}else if(this.value==="6"){
-						if(confirm("Are you sure you want to use the Natural Deduction with direct method?")){
+						
+						var implication = $("#implicationVariable").text();
+                		if(implication != "true"){
+                			alert("El teorema seleccionado no aplica para el metodo Asumir antecedente con metodo directo.");
+                            $("#metodosDiv").show();
+                		}else if(confirm("Are you sure you want to use the Natural Deduction with direct method?")){
 							$("#HQcategory").attr("hidden",false);
 							$("#currentTeo").hide();
 							$("#selectTeoInicial").val("1");
@@ -394,12 +399,13 @@
                		</div>
                		
               <!-- This adds a special category for natural deduction with direct method -->
+              <p id="implicationVariable" hidden="true">${implication}</p>
               <li style="list-style: none; color: #03A9F4" id="HQcategory" hidden="true">
-              		<h4><a data-toggle="collapse" href='#collapse-H/Q' role="button" aria-expanded="false" aria-controls='collapse-H/Q' class="collapse-link">H/Q</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true" ></i></h4> 
-         			<c:choose>
+              		<h4><a data-toggle="collapse" href='#collapse-HQ' role="button" aria-expanded="false" aria-controls='collapse-HQ' class="collapse-link">H/Q</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true" ></i></h4> 
+         			<c:choose>	
          			
                         <c:when test="${implication}">
-                        	<ul>
+                        	<ul id='collapse-HQ' class="collapse">
                         		<li id="currentTeoH" style="list-style: none;">
                         			<h6 style="color: #000;">
                         				<a><i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i></a>
