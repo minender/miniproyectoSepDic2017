@@ -480,6 +480,7 @@ public class InferResponse {
     	Term ultInf = null;
         int i = 0;
         int firstOpInf = wsFirstOpInferIndex(typedTerm);
+        String lastline = ((App)((App)iter.type()).p).q.toStringInfLabeled(s)+"$";
         while (iter!=ultInf)
         {
             // iter is of the form TT with transitivity
@@ -539,6 +540,7 @@ public class InferResponse {
             primExp = "";
             hint = "";
         }
+        this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
     public void generarHistorial(String user, Term formula, String nTeo, Term typedTerm,  Boolean valida,String metodo, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {//List<PasoInferencia> inferencias){
@@ -566,7 +568,7 @@ public class InferResponse {
         }
         if (type == null && !valida)
         {
-            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$No~valid~inference~rule$$");
+            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$\\text{No valid inference rule}$$");
             solved = false;
             return;
         }
@@ -910,7 +912,7 @@ public class InferResponse {
 
     	this.setHistorial(header+"<center>$"+this.getHistorial()+"</center>");
     	if (!valida)
-    		this.setHistorial("$"+this.getHistorial()+"$$No~valid~inference~rule$$");
+    		this.setHistorial(this.getHistorial()+"$$\\text{No valid inference rule}$$");
 
     	//this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");        
     }

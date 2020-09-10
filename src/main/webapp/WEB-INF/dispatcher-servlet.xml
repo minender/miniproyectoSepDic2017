@@ -134,6 +134,8 @@
     </bean>
     <bean id="combUtilities" class="com.howtodoinjava.parse.CombUtilities">
     </bean>
+    <bean id="termUtilities" class="com.howtodoinjava.parse.TermUtilities">
+    </bean>
  
     <tx:annotation-driven />
     <bean id="transactionManager"

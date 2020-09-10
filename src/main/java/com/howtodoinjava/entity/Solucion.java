@@ -55,7 +55,7 @@ public class Solucion implements java.io.Serializable {
     public void setTypedTerm(Term typedTerm)
     {
         this.typedTerm = typedTerm;
-        this.demostracion = typedTerm.toString();
+        this.demostracion = (typedTerm!=null?typedTerm.toStringFinal():"");
     }
     
     public Term getTypedTerm()
@@ -83,7 +83,7 @@ public class Solucion implements java.io.Serializable {
         this.resuelve = resuelve;
         this.resuelto = resuelto;
         this.typedTerm = typeTerm;
-        this.demostracion = typeTerm.toString();
+        this.demostracion = (typeTerm != null?typeTerm.toStringFinal():"");
         this.metodo = metodo;
     }
 
@@ -186,11 +186,13 @@ public class Solucion implements java.io.Serializable {
      //       System.out.println(typedTerm.toStringInfFinal());
             if (typedTerm.type() == null){
                 typedTerm=null;
+                demostracion = "";
                 return 0;
             }
             if (typedTerm instanceof App && ((App)typedTerm).p.containTypedA())
             {
                 typedTerm = ((App)typedTerm).p;
+                demostracion = typedTerm.toStringFinal();
      //           System.out.println(typedTerm.toStringInfFinal());
      //           System.out.println("2");
                 return 2;
@@ -198,6 +200,7 @@ public class Solucion implements java.io.Serializable {
             else
             {
                 typedTerm = ((App)typedTerm.type()).q;
+                demostracion = typedTerm.toStringFinal();
      //           System.out.println(typedTerm.toStringInfFinal());
      //           System.out.println("1");
                 return 1;
