@@ -188,7 +188,7 @@
                      var p = document.getElementById("misteoremasSpace");
                      var newElement = document.createElement("div");
                      newElement.setAttribute('id', "misteoremas");
-                     newElement.setAttribute("class","col-lg-5");
+                     //newElement.setAttribute("class","col-lg-5");
                      categories = data.categories
                      teoremas = data.resuelves
                     
