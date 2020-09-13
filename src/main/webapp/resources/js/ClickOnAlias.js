@@ -133,7 +133,10 @@ function metodoD(/*teoid*/){
                     $(form).attr('action',url);
                 }
             }
-        }
+        },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            }
     });
     
 }

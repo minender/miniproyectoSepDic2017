@@ -32,6 +32,11 @@ public class Bracket extends Term{
         t=t1;
     }
     
+    public int x()
+    {
+        return x.indice;
+    }
+    
     public boolean occur(Var y)
     {
          if(x.equals(y))
@@ -202,11 +207,11 @@ public class Bracket extends Term{
         }*/
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
-            return "(E^{"+x.toStringInf(s,"")+"}: "+t.toStringInf(s,"")+")";
+            return "E: "+t.toStringInf(s,"");
             //return t.toStringInf(s,numTeo);
         }
         else {
-            return "(E^{"+x.toStringInf(s,"")+"}: "+t.alias +")";
+            return "E: "+t.alias ;
             //return t.alias;
         }//.split("@")[0].replace("_", "\\_") +")";
     }

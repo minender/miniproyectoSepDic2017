@@ -10,7 +10,8 @@ package com.howtodoinjava.lambdacalculo;
  * @author federico
  */
 public class TypedApp extends App implements TypedTerm{
-    
+
+    public char inferType;
     
     public TypedApp(Term t1, Term t2)  throws TypeVerificationException
     {
@@ -19,7 +20,7 @@ public class TypedApp extends App implements TypedTerm{
         Term t2Type = t2.type().reducir();
         
         if (t1Type instanceof Sust )
-            ;
+            inferType = 'i';
         else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
         {
             try
@@ -32,6 +33,7 @@ public class TypedApp extends App implements TypedTerm{
             {
                 throw new TypeVerificationException();
             }
+            inferType = 'l';
         }
         else if (t1Type instanceof App)
         {
@@ -48,15 +50,20 @@ public class TypedApp extends App implements TypedTerm{
                 String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
         
                 boolean eq = op1.equals("c_{10}") && op2.equals("c_{10}");
-                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
-                        || op2.equals("c_{3}") || op2.equals("c_{2}"));
-                boolean leftAndOp = op1.equals("c_{3}") && 
-                        (op2.equals("c_{3}") || op2.equals("c_{1}"));
-                boolean rightAndOp = op1.equals("c_{2}") && 
-                        (op2.equals("c_{2}") || op2.equals("c_{1}"));
-                if (!((eq || eqAndOp || leftAndOp || rightAndOp) && t1Der.equals(t2Izq)))
+                boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
+//                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
+//                        || op2.equals("c_{3}") || op2.equals("c_{2}"));
+//                boolean leftAndOp = op1.equals("c_{3}") && 
+//                        (op2.equals("c_{3}") || op2.equals("c_{1}"));
+//                boolean rightAndOp = op1.equals("c_{2}") && 
+//                        (op2.equals("c_{2}") || op2.equals("c_{1}"));
+                if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq)))
                   throw new TypeVerificationException();
+                else
+                  inferType = 't';
               }
+              else
+                  inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));
             }
             catch (ClassCastException e)
             {
@@ -89,6 +96,7 @@ public class TypedApp extends App implements TypedTerm{
            Const op1 = (Const)((App)((App)pType).p).p;
            Const op2 = (Const)((App)((App)qType).p).p;
            
+           // incesario luego que se elminaron reglas de inferencias
            if (op1.equals(op2))
                return new App(new App(op1, qDer), pIzq);
            else if (op1.getCon().trim().equals("c_{1}"))
