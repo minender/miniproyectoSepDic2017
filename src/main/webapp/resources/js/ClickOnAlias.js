@@ -140,6 +140,7 @@ function metodoD(/*teoid*/){
     });
     
 }
+
 function metodoF(/*teoid*/){
     var data = {};
     data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
@@ -172,7 +173,50 @@ function metodoF(/*teoid*/){
                     $(form).attr('action',url);
                 }
             }
-        }
+        },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            }
+    });
+    
+}
+
+function transMethod(/*teoid*/){
+    var data = {};
+    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
+    //var teoSol = $("#nSolucion").val();
+    //data["teoSol"] = teoSol;
+    var form = $('#inferForm');
+    
+    $.ajax({
+        type: 'POST',
+        url: $(form).attr('action')+"/iniStatementT",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+            if(data.lado === "0"){
+                alert("El teorema seleccionado no aplica para el metodo Transitivity.");
+                $("#metodosDiv").show();
+            }
+            else{
+                $('#formula').html(data.historial);
+                MathJax.Hub.Typeset();
+                //$('#teoremaInicial').val(teoid + "@" + data.lado);
+                $("#inferForm").show();
+                //$("#nuevoMetodo").val("1");
+                var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+                if(nSol==="new"){
+                    //$('#nSolucion').val(data.nSol);
+                    //nSol = $('#nSolucion').val();
+                    var url = $(form).attr('action');
+                    url = url.substring(0,url.length-3)+data.nSol;
+                    $(form).attr('action',url);
+                }
+            }
+        },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            }
     });
     
 }

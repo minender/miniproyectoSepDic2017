@@ -90,6 +90,10 @@ public class Bracket extends Term{
            return new Bracket(x,t.leibniz(z, subterm));
     }
     
+    public boolean isIdFunction() {
+       return t.equals(x);
+    }
+    
     public int setAlias(int currentAlia)
     {
         if(t.alias != null)

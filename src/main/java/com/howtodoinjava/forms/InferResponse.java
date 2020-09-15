@@ -5,6 +5,7 @@
  */
 package com.howtodoinjava.forms;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
+import com.howtodoinjava.controller.InferController;
 import com.howtodoinjava.entity.Resuelve;
 import com.howtodoinjava.lambdacalculo.App;
 import com.howtodoinjava.lambdacalculo.Bracket;
@@ -232,47 +233,6 @@ public class InferResponse {
     	return "NoModus";
     }
     
-    /**
-     * return the index (counting in reverse) of the first inference that is not a 
-     * equiv or = in a Transitivity method
-     * @param typedTerm derivation tree that code a Transitivity proof
-     * @return index of the first no =inference
-     */
-    private int wsFirstOpInferIndex(Term typedTerm) {
-        Term iter = typedTerm;
-    	Term ultInf = null;
-        int i = 0;
-        int firstOpInf = 0;
-        while (iter!=ultInf)
-        {
-            if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t') {// TT
-               ultInf = ((TypedApp)iter).q;
-               iter = ((TypedApp)iter).p;   
-            }
-            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='m' &&
-                     ((TypedApp)iter).p instanceof TypedApp && 
-                     ((TypedApp)((TypedApp)iter).p).inferType=='m' && 
-                     ((TypedApp)((TypedApp)iter).p).p instanceof TypedApp &&
-                     ((TypedApp)((TypedApp)((TypedApp)iter).p).p).inferType=='i'
-                    ) { // ((IA)T)T
-               ultInf = ((TypedApp)iter).q;
-               iter = ((TypedApp)((TypedApp)iter).p).q;
-            }
-            else { // first inference
-                ultInf = iter;
-            }
-            i++;
-            Term ultInfType = ultInf.type();
-            if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
-                   !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{10}")
-                    )
-               )
-                firstOpInf = i;
-        }
-        return firstOpInf;
-    }
-    
     private String hintOneSide(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
         
             String teo = "";
@@ -389,12 +349,13 @@ public class InferResponse {
                 
                 Term t;
                 if ( modusPones ) {
-                    App aux = (App)((App)((App)((App)((TypedApp)ultInf).q.type()).p).q).q;
-                    if ( ((Var)aux.q).indice == 112 ) {
-                        t = new App(((App)aux).p,new Var('z'));
+                    App aux1 = (App)((App)((App)((App)((App)ultInf).q.type()).p).q).q;
+                    App aux2 = (App)((App)((App)((App)ultInf.type()).p).q).q;
+                    if ( ((Var)aux1.q).indice == 112 ) {
+                        t = new App(((App)aux2).p,new Var('z'));
                     }
                     else {
-                        t = new App(new App(((App)((App)aux).p).p,new Var('z')),((App)aux).q);
+                        t = new App(new App(((App)((App)aux2).p).p,new Var('z')),((App)aux2).q);
                     }
                 }
                 else {
@@ -412,7 +373,7 @@ public class InferResponse {
         if (leibniz.toStringFinal().equals("x_{122}") )
             return hint;
         else
-            return hint.substring(0, hint.length()-7)+"~and~E^z:"+leibniz.toStringInf(s, "")+"\\rangle";
+            return hint.substring(0, hint.length()-7)+"~and~E:"+leibniz.toStringInf(s, "")+"\\rangle";
     }
     
     private void setDirectProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s, boolean oneSide) {
@@ -473,14 +434,20 @@ public class InferResponse {
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
-    private void setWSProof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
+    private void setWSProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {        
         String primExp = "";
     	String hint = "";
-    	Term iter = typedTerm;
+        Term t;
+        boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
+                      InferController.isInverseImpl(((TypedApp)typedTerm).q.type(),typedTerm.type());
+        Term iter = (reversed?((TypedApp)typedTerm).q:typedTerm);
+        boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
+                      ((TypedApp)iter).q.type().toStringFinal().equals("c_{8}");
+    	iter = (lastEquan?((TypedApp)iter).p:iter);
     	Term ultInf = null;
         int i = 0;
-        int firstOpInf = wsFirstOpInferIndex(typedTerm);
-        String lastline = ((App)((App)iter.type()).p).q.toStringInfLabeled(s)+"$";
+        int firstOpInf = InferController.wsFirstOpInferIndex(iter);
+        
         while (iter!=ultInf)
         {
             // iter is of the form TT with transitivity
@@ -498,7 +465,15 @@ public class InferResponse {
                iter = ((TypedApp)((TypedApp)iter).p).q;
             }
             else { // first inference
+                // ultInf is a no =inference folowing with a matatheorem of true
+                if ( iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
+                     ((TypedApp)iter).p instanceof TypedApp && 
+                     ((TypedApp)((TypedApp)iter).p).p instanceof TypedS
+                   )// query that verify if metatheorem was used i.e ultInf of the form 
+                    // (S(T)).T with . equanimity
+                    iter = ((TypedApp)iter).q;
                 ultInf = iter;
+                
             }
             i++;
             // if ultInf is a no =inference do this
@@ -512,20 +487,9 @@ public class InferResponse {
                 primExp = ((App)ultInfType).q.toStringInf(s,""); 
                 hint = hintWSOpInfer(user, ultInf, resuelveManager, disponeManager, s);
             }
-            else if (ultInf == iter){ // ultInf is a =inference and the first one
-                // ultInf is a no =inference folowing with a matatheorem of true
-                if ( ultInf instanceof TypedApp && ((TypedApp)ultInf).inferType=='e' &&
-                     ((TypedApp)ultInf).p instanceof TypedApp && 
-                     ((TypedApp)((TypedApp)ultInf).p).p instanceof TypedS
-                   )// query that verify if metatheorem was used i.e ultInf of the form 
-                    // (S(T)).T with . equanimity
-                {
-                   primExp = ((App)  ((App)((App)ultInfType).p).q  ).q.toStringInf(s,""); 
-                   hint = hintWSOpInfer(user, ((App)ultInf).q, resuelveManager, disponeManager, s);
-                } else { // ultInf is a =inference of one side method
+            else if (ultInf == iter){ // ultInf is a =inference or opinference and the first one
                     primExp = ((App)ultInfType).q.toStringInf(s,""); 
                     hint = hintOneSide(user, ultInf, resuelveManager, disponeManager, s);
-                }
             } else if (i<firstOpInf){ // ultInf is a =inference and not the first one and  
                                     // after at least one no =inference
                 primExp = ((App)((App)((App)ultInfType).q).p).q.toStringInf(s,""); 
@@ -535,16 +499,26 @@ public class InferResponse {
                 primExp = ((App)ultInfType).q.toStringInf(s,""); 
                 hint = hintOneSide(user, ultInf, resuelveManager, disponeManager, s);
             }
-            
             this.setHistorial("~~~~~~" + primExp +" \\\\"+ hint +"\\\\"+this.getHistorial());
             primExp = "";
             hint = "";
+        }
+        String lastline;
+        if ( firstOpInf == 0 || i == 1)
+        {
+            Term last = (reversed?((App)typedTerm.type()).q:((App)((App)typedTerm.type()).p).q);
+            lastline = (solved?last.toStringInf(s,"")+"$":last.toStringInfLabeled(s));
+        }
+        else {
+            Term last = (reversed?((TypedApp)typedTerm).q:typedTerm);
+            last = ((App)((App)((App)((App)(lastEquan?((TypedApp)last).p:last).type()).p).q).p).q;
+            lastline = (solved?last.toStringInf(s,"")+"$":last.toStringInfLabeled(s));
         }
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
     public void generarHistorial(String user, Term formula, String nTeo, Term typedTerm,  Boolean valida,String metodo, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {//List<PasoInferencia> inferencias){
-        
+
         this.setHistorial("");
         String header = "Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(s,"")+"$</center> Proof:<br>";  
                 
@@ -557,6 +531,7 @@ public class InferResponse {
         boolean direct = metodo.equals("Direct method");
         boolean weakening = metodo.equals("Weakening");
         boolean strengthening = metodo.equals("Strengthening");
+        boolean transitivity = metodo.equals("Transitivity");
         
         Term type = typedTerm==null?null:typedTerm.type();
         boolean solved;
@@ -568,7 +543,7 @@ public class InferResponse {
         }
         if (type == null && !valida)
         {
-            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$\\text{No valid inference rule}$$");
+            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$\\text{No valid inference}$$");
             solved = false;
             return;
         }
@@ -696,8 +671,8 @@ public class InferResponse {
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, false);
         else if (oneSide)
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);
-        else if (weakening || strengthening)
-            setWSProof(user, typedTerm, resuelveManager, disponeManager, s);
+        else if (weakening || strengthening || transitivity)
+            setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);
         else if (naturalDirect)
             ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
         else if (naturalSide)
@@ -912,7 +887,7 @@ public class InferResponse {
 
     	this.setHistorial(header+"<center>$"+this.getHistorial()+"</center>");
     	if (!valida)
-    		this.setHistorial(this.getHistorial()+"$$\\text{No valid inference rule}$$");
+    		this.setHistorial(this.getHistorial()+"$$\\text{No valid inference}$$");
 
     	//this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");        
     }

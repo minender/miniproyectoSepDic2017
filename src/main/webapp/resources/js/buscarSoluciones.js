@@ -16,9 +16,9 @@ function buscarSoluciones(idTeo){
             var len = Object.keys(data.soluciones).length;
             var i;
             for (i=1; i <= len; i++){
-                var key = "Proof "+i;
+                var key = "Proof "+(len-i+1);
                 var link = "<a href='javascript:buscarFormula("+ data.soluciones[key] +","+ data.idTeo +");'> ";
-                link = link + key + "</a>";
+                link = link + "Proof " + i + "</a>";
                 $('#listaSoluciones').append("<li>" + link +  " </li>");
 
             }

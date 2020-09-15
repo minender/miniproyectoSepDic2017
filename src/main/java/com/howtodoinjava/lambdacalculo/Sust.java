@@ -173,7 +173,7 @@ public class Sust extends Term{
             varss += v.toStringInf(s,"")+",";
         
         for (Term t : terms)
-            termss += t.reducir().toStringInfFinal(s)+",";
+            termss += t.reducir().toStringInf(s,"")+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);

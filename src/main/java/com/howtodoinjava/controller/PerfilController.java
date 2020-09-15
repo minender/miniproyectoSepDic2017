@@ -598,7 +598,6 @@ public class PerfilController {
             PredicadoId predicadoid2=new PredicadoId();
             predicadoid2.setLogin(username);
             
-            
             CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);

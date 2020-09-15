@@ -382,6 +382,115 @@ public class InferController {
     	// If the prove hasnt finished
     	return proof;
     }
+
+    private Term finishedTransProve(Term expr, Term teoremProved, Term proof) {
+     try {
+            // if at least one opInference was made an reach the goal
+            if(wsFirstOpInferIndex(proof) != 0 && ((App)((App)expr).p).q.equals(teoremProved) )
+              return new TypedApp(proof,new TypedA(new Const("c_{8}")));
+        }catch (TypeVerificationException e)  {
+            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
+        }
+     return proof;
+    }
+    
+    /**
+     * Check if the two arguments are of the form p op q and q op^{-1} p
+     * 
+     * @param t1: Term that represent a formula
+     * @param t2: Term that represent a formula
+     * @return true if and only if t1 and t2 are of the form p op q and q op^{-1} p respectively
+     */    
+    public static boolean isInverseImpl(Term t1, Term t2) {
+        if ( !(t1 instanceof App) || !(((App)t1).p instanceof App)) {
+            return false;
+        }
+        String op1 = ((App)((App)t1).p).p.toStringFinal();
+        return (op1.equals("c_{2}") || op1.equals("c_{3}")) && 
+                t2 instanceof App && ((App)t2).p instanceof App &&
+                ((App)t1).q.equals(((App)((App)t2).p).q) && 
+               ((App)((App)t1).p).q.equals(((App)t2).q) && 
+               ((App)((App)t2).p).p.toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
+    }
+    
+    /**
+     * This function will only be correct if called when using Weakening method
+     * This function will return a new prove tree in case it finds out that the last infer of prove
+     * caused the whole prove to be correct under the Weakenig method. In other case it will return 
+     * the proof given as argument.
+     * 
+     * Do the last equanimity and simetry of => steps to finish a Weakening proof
+     * @param expr: root of the proof tree
+     * @param teoremProved: The theorem the user is trying to prove 
+     * @param proof: The proof tree so far
+     * @return proof of theoremProved if finished, else return the same proof
+     */
+    private Term finishedWeakProve(Term expr, Term teoremProved, Term proof) {
+     try {
+    	// If the statement is A=>B
+        if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{2}") ) {
+            // if at least one opInference was made an reach the goal
+            if(wsFirstOpInferIndex(proof) != 0 && ((App)((App)expr).p).q.equals(teoremProved) )
+              return new TypedApp(proof,new TypedA(new Const("c_{8}")));
+        }
+        else if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{3}") ) {
+            if (wsFirstOpInferIndex(proof)!=0 && isInverseImpl(expr,teoremProved) ) {
+                TypedA ax = new TypedA(combUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+                TypedI inst = new TypedI((Sust)combUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]"));
+                return new TypedApp(new TypedApp(inst,ax),proof);
+            }
+            if(wsFirstOpInferIndex(proof)!=0 && isInverseImpl(((App)((App)expr).p).q,teoremProved) ) {
+                TypedA ax = new TypedA(combUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+                TypedI inst = new TypedI((Sust)combUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]"));
+                Term aux = new TypedApp(inst,ax);
+                return new TypedApp(new TypedApp(new TypedS(aux.type()),aux),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
+            }
+        }
+      }catch (TypeVerificationException e)  {
+            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
+      }	
+    	// If the prove hasnt finished
+    	return proof;
+    }
+    
+    /**
+     * This function will only be correct if called when using Strengthening method
+     * This function will return a new prove tree in case it finds out that the last infer of prove
+     * caused the whole prove to be correct under Strengthening method. In other case it will return 
+     * the proof given as argument.
+     * 
+     * Do the last equanimity and simetry of => steps to finish a Weakening proof
+     * @param expr: root of the proof tree
+     * @param teoremProved: The theorem the user is trying to prove 
+     * @param proof: The proof tree so far
+     * @return proof of theoremProved if finished, else return the same proof
+     */
+    private Term finishedStrengProve(Term expr, Term teoremProved, Term proof) {
+     try {
+    	// If the statement is A=>B
+        if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{3}") ) {
+            // if at least one opInference was made an reach the goal
+            if(wsFirstOpInferIndex(proof) != 0 && ((App)((App)expr).p).q.equals(teoremProved) )
+              return new TypedApp(proof,new TypedA(new Const("c_{8}")));
+        }
+        else if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{2}") ) {
+            if (wsFirstOpInferIndex(proof)!=0 && isInverseImpl(expr,teoremProved) ) {
+                TypedA ax = new TypedA(combUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+                TypedI inst = new TypedI((Sust)combUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]"));
+                return new TypedApp(new TypedApp(inst,ax),proof);
+            }
+            if(wsFirstOpInferIndex(proof)!=0 && isInverseImpl(((App)((App)expr).p).q,teoremProved) ) {
+                TypedA ax = new TypedA(combUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+                TypedI inst = new TypedI((Sust)combUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]"));
+                return new TypedApp(new TypedApp(inst,ax),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
+            }
+        }
+      }catch (TypeVerificationException e)  {
+            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
+      }	
+    	// If the prove hasnt finished
+    	return proof;
+    }    
     
     /**
      * This function will only be correct if called when using Starting from one side method with natural deduction
@@ -883,7 +992,6 @@ public class InferController {
      * @return new metaTheorem for the given theorem, null if the argument isnt valid
      */
     public static TypedApp metaTheorem(Term teo) {
-    
         Term A1 = new TypedA( new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"),new Var(112)),new Var(113)) ), new App(new App(new Const("c_{1}"),new Var(113)),new Var(112))) );
         Term A2 = new TypedA( new App(new App(new Const("c_{1}"),new Var(113)),
                                      new App(new App(new Const("c_{1}"),new Var(113)),
@@ -907,6 +1015,35 @@ public class InferController {
         try {
           typedTerm = new TypedApp(new TypedApp(I1,A1), new TypedApp(I2,A2));
           typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),A3);
+          return typedTerm;
+        }
+        catch (TypeVerificationException e){
+            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+            return null;
+        }
+    }
+    
+    /**
+     * This method will return the typedTerm that represents the metaTheorem teo == true
+     * @param teo: theorem to be turned into metaTheorem 
+     * @return new metaTheorem for the given theorem, null if the argument isnt valid
+     */
+    public static TypedApp metaTheoTrueLeft(Term proof) {
+    
+        Term A2 = new TypedA( new App(new App(new Const("c_{1}"),new Var(113)),
+                                     new App(new App(new Const("c_{1}"),new Var(113)),
+                                                               new Const("c_{8}"))));
+        
+        List<Var> lis1 = new ArrayList<Var>();
+        lis1.add(new Var(113));
+        List<Term> lis2 = new ArrayList<Term>();
+        lis2.add(proof.type());
+        Term I2 = new TypedI(new Sust(lis1,lis2));
+        
+        TypedApp typedTerm = null;
+        try {
+          typedTerm = new TypedApp(I2,A2);
+          typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),proof);
           return typedTerm;
         }
         catch (TypeVerificationException e){
@@ -1022,22 +1159,118 @@ public class InferController {
         return nabla;
     }
     
+        /**
+     * return the index (counting in reverse) of the first inference that is not a 
+     * equiv or = in a Transitivity method
+     * @param typedTerm derivation tree that code a Transitivity proof
+     * @return index of the first no =inference
+     */
+    public static int wsFirstOpInferIndex(Term typedTerm) {
+        Term iter;
+        iter = typedTerm;
+    	Term ultInf = null;
+        int i = 0;
+        int firstOpInf = 0;
+        while (iter!=ultInf)
+        {
+            if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t') {// TT
+               ultInf = ((TypedApp)iter).q;
+               iter = ((TypedApp)iter).p;   
+            }
+            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='m' &&
+                     ((TypedApp)iter).p instanceof TypedApp && 
+                     ((TypedApp)((TypedApp)iter).p).inferType=='m' && 
+                     ((TypedApp)((TypedApp)iter).p).p instanceof TypedApp &&
+                     ((TypedApp)((TypedApp)((TypedApp)iter).p).p).inferType=='i'
+                    ) { // ((IA)T)T
+               ultInf = ((TypedApp)iter).q;
+               iter = ((TypedApp)((TypedApp)iter).p).q;
+            }
+            else { // first inference
+                if ( iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
+                     ((TypedApp)iter).p instanceof TypedApp && 
+                     ((TypedApp)((TypedApp)iter).p).inferType=='s'
+                   ) 
+                    iter = ((TypedApp)iter).q;
+                ultInf = iter;
+            }
+            i++;
+            Term ultInfType = ultInf.type();
+            if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
+                   !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
+                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{10}")
+                    )
+               )
+                firstOpInf = i;
+        }
+        return firstOpInf;
+    }
+    
     private Term addInferToWSProof(Term proof, Term infer) throws TypeVerificationException {
         Term type = proof.type();
-        String eq = ((App)((App)type).p).p.toStringFinal();
-        String st = "c_{2} (c_{2} ("+eq+" (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
-        String deriv = "";
+        Term typeInf = infer.type();
+        String op;
+        String opInf;
         try {
-         String E = "\\Phi_{b} ("+ ((App)infer.type()).p+")";
-         deriv = 
-         "I^{[x_{101}, x_{102}, x_{69} := "+((App)type).q+", "+((App)((App)type).p).q+", "+E+"]} A^{"+st+"}";
-        }catch (ClassCastException e) {
+            op = ((App)((App)type).p).p.toStringFinal();
+            opInf = ((App)((App)typeInf).p).p.toStringFinal();
+        }
+        catch (ClassCastException e) {
             throw new TypeVerificationException();
         }
-        return new TypedApp(new TypedApp(combUtilities.getTerm(deriv), proof), infer);
+        if ( !op.equals("c_{1}") && !op.equals("c_{10}") ) {
+            proof = metaTheoTrueLeft(proof);
+            type = proof.type();
+        }
+        int index = wsFirstOpInferIndex(proof);
+        boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{10}");
+        if ( index == 0 && eqInf) {
+            return new TypedApp(proof, infer);
+        }
+        else if (index == 0 && !eqInf) {
+            String eq = op;
+            String st = "c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
+            String deriv = "";
+            try {
+            String E = "\\Phi_{b} ("+ ((App)infer.type()).p+")";
+            deriv = 
+            "I^{[x_{101}, x_{102}, x_{69} := "+((App)type).q+", "+((App)((App)type).p).q+", "+E+"]} A^{"+st+"}";
+            }catch (ClassCastException e) {
+                throw new TypeVerificationException();
+            }
+            return new TypedApp(new TypedApp(combUtilities.getTerm(deriv), proof), infer);
+        }
+        else if (index != 0 && !eqInf) {
+            String st = "c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8})";
+            String deriv = "";
+            try {
+            Term aux = (App)((App)((App)type).p).q;
+            deriv = 
+            "I^{[x_{112}, x_{113}, x_{114} := "+((App)aux).q+", "+((App)((App)aux).p).q+", "+((App)((App)typeInf).p).q+"]} A^{"+st+"}";
+            }catch (ClassCastException e) {
+                throw new TypeVerificationException();
+            }
+            return new TypedApp(new TypedApp(combUtilities.getTerm(deriv), proof), infer);
+        }
+        else {
+            if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l' ) {
+                Term aux = ((App)((App)type).p).q;
+                Term oldLeib = ((Bracket)((TypedApp)infer).p.type()).t;
+                Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,oldLeib),((App)aux).q));
+                infer = new TypedApp(new TypedL(leibniz),((TypedApp)infer).q);
+                return new TypedApp(proof, infer);
+            }
+            else {
+                Term aux = ((App)((App)type).p).q;
+                Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,new Var('z')),((App)aux).q));
+                infer = new TypedApp(new TypedL(leibniz),infer);
+                return new TypedApp(proof, infer);
+            }
+        }
     }
     
     private Term addInferToProof(Term proof, Term infer) throws TypeVerificationException {
+        System.out.println(infer);
         return new TypedApp(proof, infer);
     }
    
@@ -1107,7 +1340,11 @@ public class InferController {
             TermParser parser3 = new TermParser(tokens3);
             try{*/
                //leibnizTerm =parser3.lambda(predicadoid,predicadoManager,simboloManager).value;
-               leibnizTerm =termUtilities.lambda(leibniz, predicadoid, predicadoManager, simboloManager);
+            leibnizTerm =termUtilities.lambda(leibniz, predicadoid, predicadoManager, simboloManager);
+            if ( ((Bracket)leibnizTerm).isIdFunction()) {
+                leibnizTerm = null;
+                leibniz = "";
+            }
             /*}
             catch(RecognitionException e) { // Wrong leibniz sent by the user
                 String hdr = parser3.getErrorHeader(e);
@@ -1133,7 +1370,7 @@ public class InferController {
         	infer = createDirectMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
             }else if(metodo.equals("Starting from one side")) {
         	infer = createOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            }else if(metodo.equals("Weakening") || metodo.equals("Strengthening")) {
+            }else if(metodo.equals("Weakening") || metodo.equals("Strengthening") || metodo.equals("Transitivity")) {
                 infer = createWSInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
             }else if(metodo.equals("Natural Deduction,one-sided")) {
         	infer = createDeductionOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
@@ -1164,7 +1401,10 @@ public class InferController {
             try {
                 if (i == 1 && j == 0)
                     infer = new TypedApp(new TypedS(infer.type()), infer);
-                if (metodo.equals("Weakening") || metodo.equals("Strengthening")) {
+                if (metodo.equals("Weakening") || metodo.equals("Strengthening") ||
+                    metodo.equals("Transitivity")    
+                   ) 
+                {
                     newProof=addInferToWSProof(currentProof, infer); // si no da excepcion cuando 
                                  // typedTerm.type()==null entonces la inferencia 
         			//es valida con respecto a la primera exp
@@ -1219,15 +1459,19 @@ public class InferController {
     	}else if(metodo.equals("Natural Deduction,one-sided")) {
         	finalProof = finishedDeductionOneSideProve(initialExpr, finalExpr, teoremProved, proof);
         }else if(metodo.equals("Natural Deduction,direct")) {
-        	finalProof = finishedDeductionDirectProve(initialExpr, teoremProved, finalExpr, proof, username);
-        	
+        	finalProof = finishedDeductionDirectProve(initialExpr, teoremProved, finalExpr, proof, username);	
+        }else if(metodo.equals("Weakening")) {
+                finalProof = finishedWeakProve(expr, teoremProved, proof);
+        }else if(metodo.equals("Strengthening")) {
+                finalProof = finishedStrengProve(expr, teoremProved, proof);
+        }else if (metodo.equals("Transitivity")) {
+                finalProof = finishedTransProve(expr, teoremProved, proof);
         }
     	
     	// newProve might or might not be different than pasoPostTerm
     	
     	// UPDATE SOLUCION 
     	solucion.setTypedTerm(finalProof);
-    	solucionManager.updateSolucion(solucion);
 
     	// If finished mark solucion as solved
         if(teoremProved.equals(finalProof.type())){
@@ -1235,9 +1479,8 @@ public class InferController {
         	solucion.setResuelto(true);
         	resuel.setResuelto(true);
         	resuelveManager.updateResuelve(resuel);
-        	solucionManager.updateSolucion(solucion); // no creo que sea necesario hacer dos veces esto
         }       
-        
+        solucionManager.updateSolucion(solucion);
        
         response.generarHistorial(username,formula, nTeo,finalProof,true,metodo,
         		resuelveManager,disponeManager,simboloManager);
@@ -1448,8 +1691,8 @@ public class InferController {
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialF", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialF(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @RequestParam(value="teoSol") String teoSol, @PathVariable String username, @PathVariable String nTeo)
-    {   
+    public @ResponseBody InferResponse teoremaInicialF(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    {
         InferResponse response = new InferResponse();
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
@@ -1475,7 +1718,7 @@ public class InferController {
             response.setLado("0");
         }
         
-        if (teoSol.equals("new"))
+        if (nSol.equals("new"))
         {
             Solucion solucion = new Solucion(resuelve,false,formulaTerm,nuevoMetodo);
             solucionManager.addSolucion(solucion);
@@ -1483,7 +1726,7 @@ public class InferController {
         }
         else
         {
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(teoSol));        
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));        
             solucion.setTypedTerm(formulaTerm);
             solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
@@ -1496,8 +1739,53 @@ public class InferController {
 
         return response;
     }
-    
-    
+
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementT", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse iniStatementT(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    {
+        InferResponse response = new InferResponse();
+        
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        
+        Teorema t = resuelve.getTeorema();
+        Term term = t.getTeoTerm();
+        String operador = ((Const)((App)((App)term).p).p).getCon();
+        // you must check if operator is transitive before the following
+        
+        
+        Term formulaTerm = null;
+        if(!operador.equals("c_{2}") && !operador.equals("c_{3}")){
+            response.setLado("i");
+            formulaTerm = ((App)resuelve.getTeorema().getTeoTerm()).q;
+
+        }
+        else{
+            response.setLado("0");
+        }
+        
+        if (nSol.equals("new"))
+        {
+            Solucion solucion = new Solucion(resuelve,false,formulaTerm,nuevoMetodo);
+            solucionManager.addSolucion(solucion);
+            response.setnSol(solucion.getId()+"");
+        }
+        else
+        {
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));        
+            solucion.setTypedTerm(formulaTerm);
+            solucion.setMetodo(nuevoMetodo);
+            solucionManager.updateSolucion(solucion);
+        }
+        
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
+                                      resuelveManager,disponeManager,simboloManager);
+        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
+        response.setHistorial(historial);  */
+
+        return response;
+    }
+            
     public void setUsuarioManager(UsuarioManager usuarioManager) 
     {
         this.usuarioManager = usuarioManager;

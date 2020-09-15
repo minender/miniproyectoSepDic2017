@@ -90,6 +90,15 @@
                             metodoF();
                         }
                     }
+                    else if(this.value==="6"){
+                        if(confirm("Are you sure you want to use the Transitivity method?")){
+                            //var nTeo = $("#nTeorema").val();
+                            $("#selectTeoInicial").val("0");
+                            $("#metodosDiv").hide();
+                            $("#currentTeo").hide();
+                            transMethod();
+                        }
+                    }
                 });
                 
                 
@@ -376,8 +385,9 @@
                 <option value="3">Weakening</option>
                 <option value="4">Strengthening</option>
                 <option value="5">Assume the antecedent</option>
-                <option value="6">Proof by cases</option>
-                <option value="7">Proof by contradiction</option>
+                <option value="6">Transitivity</option>
+                <option value="7">Proof by cases</option>
+                <option value="8">Proof by contradiction</option>
 
               </select>
           </div>

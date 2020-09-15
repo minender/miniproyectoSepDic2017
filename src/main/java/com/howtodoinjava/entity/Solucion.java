@@ -6,6 +6,7 @@ import com.howtodoinjava.lambdacalculo.Const;
 import com.howtodoinjava.lambdacalculo.PasoInferencia;
 import com.howtodoinjava.lambdacalculo.Term;
 import com.howtodoinjava.lambdacalculo.TypedA;
+import com.howtodoinjava.lambdacalculo.TypedApp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -181,7 +182,6 @@ public class Solucion implements java.io.Serializable {
             if(tam>0){
                 this.arregloInferencias.remove(tam - 1);
             }
-            
             this.serialize();*/
      //       System.out.println(typedTerm.toStringInfFinal());
             if (typedTerm.type() == null){
@@ -189,9 +189,55 @@ public class Solucion implements java.io.Serializable {
                 demostracion = "";
                 return 0;
             }
-            if (typedTerm instanceof App && ((App)typedTerm).p.containTypedA())
+            if ( (
+                  !metodo.equals("Weakening") && !metodo.equals("Strengthening") &&
+                  !metodo.equals("Transitivity") &&
+                  typedTerm instanceof App && ((App)typedTerm).p.containTypedA()
+                 ) 
+                 ||
+                  // next line check if is a no one step proof 
+                 (
+                   (metodo.equals("Weakening") || 
+                    metodo.equals("Strengthening") || 
+                    metodo.equals("Transitivity")
+                   ) 
+                    &&
+                   (
+                    (typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='t') ||
+                    (typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m' &&
+                     ((TypedApp)typedTerm).p instanceof TypedApp && 
+                     ((TypedApp)((TypedApp)typedTerm).p).inferType=='m' && 
+                     ((TypedApp)((TypedApp)typedTerm).p).p instanceof TypedApp &&
+                     ((TypedApp)((TypedApp)((TypedApp)typedTerm).p).p).inferType=='i'
+                    )
+                   )
+                 )
+               )
             {
-                typedTerm = ((App)typedTerm).p;
+                if ((metodo.equals("Weakening") || 
+                     metodo.equals("Strengthening") ||
+                     metodo.equals("Transitivity")
+                    ) 
+                    && 
+                    !(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='t')    
+                   ) 
+                {
+                    typedTerm = ((App)((App)typedTerm).p).q;
+                    if (typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
+                        ((TypedApp)typedTerm).p instanceof TypedApp && 
+                        ((TypedApp)((TypedApp)typedTerm).p).inferType=='s'     
+                       )
+                        typedTerm = ((TypedApp)typedTerm).q;
+                }
+                else{
+                    typedTerm = ((App)typedTerm).p;
+                    if (typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
+                        ((TypedApp)typedTerm).p instanceof TypedApp && 
+                        ((TypedApp)((TypedApp)typedTerm).p).inferType=='s'     
+                       )
+                        typedTerm = ((TypedApp)typedTerm).q;
+                    
+                }
                 demostracion = typedTerm.toStringFinal();
      //           System.out.println(typedTerm.toStringInfFinal());
      //           System.out.println("2");
