@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+  <class name="com.calclogic.entity.Predicado" schema="userdb" table="predicado">
+    <composite-id class="com.calclogic.entity.PredicadoId" name="id">
+      <key-property name="alias" type="string">
+        <column name="alias"/>
+      </key-property>
+      <key-property name="login" type="string">
+        <column name="login"/>
+      </key-property>
+    </composite-id>
+    <many-to-one class="com.calclogic.entity.Usuario" fetch="select" insert="false" name="usuario" update="false">
+      <column name="login" not-null="true"/>
+    </many-to-one>
+    <property name="predicado" type="string">
+      <column name="predicado" not-null="true"/>
+    </property>
+    <property name="argumentos" type="string">
+      <column name="argumentos" not-null="true"/>
+    </property>
+    <property name="aliases" type="string">
+      <column name="aliases" not-null="true"/>
+    </property>
+    <property name="notacion" type="string">
+      <column name="notacion" not-null="true"/>
+    </property>
+  </class>
+</hibernate-mapping>

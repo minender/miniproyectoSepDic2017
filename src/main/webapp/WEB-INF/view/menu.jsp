@@ -11,7 +11,7 @@
             <li class="nav-item ${listarTerminosMenu}"><a href="listar?comb=n" class="nav-link">My Abbreviations</a></li>
             <li class="nav-item ${misTeoremasMenu}"><a href="misTeoremas" class="nav-link">My Theorems</a></li>
             <li class="nav-item ${agregarTeoremaMenu}"><a href="guardarteo" class="nav-link">Add Theorems</a></li>
-            <li class="nav-item ${computarMenu}"><a href="${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Prove</a></li>
+            <li class="nav-item ${proveMenu}"><a href="${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Prove</a></li>
             <c:choose>
                 <c:when test="${isAdmin.intValue()==1}">
                     <li class="nav-item ${students}" ><a href="students" class="nav-link">Students</a></li>

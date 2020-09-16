@@ -24,7 +24,4 @@
                 overflow: scroll;
             }
             
-            iframe{
-                overflow-y:scroll;
-            }
         </style>

@@ -5,8 +5,8 @@
 <c:set var="rootId" value="${rootId}." scope="request"/>
 
 
-<div id="${rootId}SubstitutionDiv" class="row form-group card text-center border-primary" >
-	<div class="card-header">
+<div id="${rootId}SubstitutionDiv" class="form-group card text-center border-primary" >
+    <div class="card-header" style="padding-bottom: 2px; padding-top: 2px;">
    		${labelName}
  	</div>
  	

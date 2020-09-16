@@ -14,7 +14,8 @@
     <!-- Desde aqui -->
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+        <title>CalcLogic</title>
+        <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
         <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.min.js"></script>
         <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
@@ -345,9 +346,9 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
         <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">-->
-        </style>
-        <tiles:insertDefinition name="style" />
-        <title>Logic | Prove</title>
+
+
+        <!--<title>Logic | Prove</title>-->
     </head>
     <body>
         <div id="modalLoading" class="modal" >
@@ -367,15 +368,22 @@
         <input id="selectTeoInicial" value="" type="hidden"/>
         <%--<input id="nTeorema" value="${nTeo}" type="hidden"/>
         <input id="nSolucion" value="${nSol}" type="hidden"/>--%>
-        <script>
+        <%--<script>
             function insertAtCursor(myField, myValue) 
             {            
                 myValue+="";
                 parent.window.document.getElementById(myField).value = myValue;
             }
-        </script>
-        
-        <div style="float: right; width: 40%;">
+        </script>--%>
+      <div class="row">
+                <!--<div style="width: 60%; height: 400px; overflow: scroll;">-->
+        <div class="col-lg-7" style="padding-right: 0px;">
+            <article class="proof">
+                <h5 id="formula" style="width:100%; height: 100%">${formula}</h5>
+            </article>
+        </div>    
+        <!--<div style="float: right; width: 40%;">-->
+        <div class="col-lg-5" style="padding-right: 0px; padding-left: 0px;">
           <div id="metodosDiv">
             <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Proof method</h3>
               <select class="form-control" id="metodosDemostracion">
@@ -398,7 +406,7 @@
                     <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
                 </a>
                </div>
-            <ul>
+            <ul style="padding-left: 20px;">
                 <div id="misteoremasSpace">
                                    
                 <div id="misteoremas"> 
@@ -555,10 +563,7 @@
             
             //}
         </script>
-
-        <div style="width: 60%; height: 400px; overflow: scroll;">
-            <h5 id="formula" style="width:100%; height: 100%">${formula}</h5>
-        </div>    
+     </div>
           <c:choose>
           <c:when test="${!selecTeo}">
           <form id="inferForm" action="${pageContext.request.contextPath}/infer/${usuario.getLogin()}/${nTeo}/${nSol}" method="POST" style="display:none">
@@ -575,21 +580,32 @@
               <!--\cssId{eq}{\style{cursor:pointer;}{p\equiv q}}-->
               
               <input name="nuevoMetodo" id="nuevoMetodo_id" value='' style="display: none;"/>
-              
-                Theorem to use:<br>
-              <input name="nStatement" id="nStatement_id" value="${nStatement}"/>
+              <div class="row justify-content-center">
+              <div class="col-10">
+               <div class="row justify-content-center">
+                  <c:set var="collapse" value="" scope="request"/>
+                  <tiles:insertDefinition name="jaxButtons" />
+               </div>
+              <div class="row justify-content-center">
+              <div class="col-l-2" style="padding-left: 5px; padding-right: 5px;">
+               <div class="form-group card text-center border-primary">
+	         <div class="card-header" style="padding-bottom: 2px; padding-top: 2px;">
+   		  Statement:
+                  <input name="nStatement" id="nStatement_id" value="${nStatement}" type="hidden"/>
+ 	         </div>
+ 	         <div id="stbox" class="card-body d-flex align-items-center justify-content-center">
+                     
+                 </div>
+               </div>
               <%--<select style="width: auto; height: auto; border: none;" class="form-control" id="mensaje" name="nStatement">
                   <c:forEach items="${teoremas}" var="cat">
                       <option value="${cat.getId()}" >${cat.getCategoria().getNombre()} - ${cat.getEnunciadoizq()} == ${cat.getEnunciadoder()}</option>
                   </c:forEach>  
               </select>--%>
+              </div>
               
-              
-              <br>
-              
-              
-              <tiles:insertDefinition name="jaxButtons" />
-              
+              <!--<br>-->
+              <div class="col-l-4" style="padding-left: 5px; padding-right: 5px;">
               <div style="display: none;">
               	Substitution:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
               </div>
@@ -598,12 +614,12 @@
           	  <c:set var="labelName" value="Substitution:" scope="request"/>
           	  <c:set var="inputForm" value="instanciacion_id" scope="request"/>
 		  	  <tiles:insertDefinition name="jaxSubstitutionDiv" />
-             
-          	
+              </div>
+
+                    <div class="col-l-4" style="padding-left: 5px; padding-right: 5px;">
           	  <div style="display: none;">
 	              Leibniz: <br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
           	  </div>
-              <br>
               
               <c:set var="rootId" value="leibnizSymbolsId" scope="request"/>
           	  <c:set var="labelName" value="Leibniz:" scope="request"/>
@@ -611,15 +627,20 @@
           	  <c:set var="prefixMathJax" value="E^{z}: " scope="request"/>
           	  <c:set var="prefixCnotation" value="lambda z." scope="request"/>
 		  	  <tiles:insertDefinition name="jaxDiv" />
-              
+                    </div>
+              </div>
+              </div>
+              <div class="col-l-1">
               <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Infer"
               onclick="setInputValueOnParser('leibnizSymbolsId'); setSubstitutionOnInput('substitutionButtonsId')"/> 
-              <input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Go back"> 
-              <input id="BtnLimpiar" class="btn" type="button" value="Clean"
+              <br><br><input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Go back"> 
+              <br><br><input id="BtnLimpiar" class="btn" type="button" value="Clean"
               onclick="cleanJax('leibnizSymbolsId'); cleanJaxSubstitution('substitutionButtonsId')">
               <input id="Btn" type="hidden" name="submitBtn" value=""/>
               <%--<input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>
               <input type="hidden" id="nuevoMetodo" name="nuevoMetodo" value="0"/>--%>
+              </div>
+              </div>
           </form>
           
           

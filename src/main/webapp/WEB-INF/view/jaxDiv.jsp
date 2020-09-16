@@ -5,8 +5,8 @@
 
 <c:set var="rootId" value="${rootId}_" scope="request"/>
 
-<div id="${rootId}MathJaxDiv" class="row form-group card text-center border-primary">
-	<div class="card-header">
+<div id="${rootId}MathJaxDiv" class="form-group card text-center border-primary">
+	<div class="card-header" style="padding-bottom: 2px; padding-top: 2px;">
    		${labelName}
  	</div>
  	<div class="card-body d-flex align-items-center justify-content-center">

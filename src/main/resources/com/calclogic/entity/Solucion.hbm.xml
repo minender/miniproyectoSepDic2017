@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+  <class name="com.calclogic.entity.Solucion" schema="userdb" table="solucion">
+    <id name="id" type="int">
+      <column name="id"/>
+      <generator class="sequence">
+        <param name="sequence">solucion_id_seq</param>
+      </generator>
+    </id>
+    <many-to-one class="com.calclogic.entity.Resuelve" fetch="select" lazy="false" name="resuelve">
+      <column name="resuelveid" not-null="true"/>
+    </many-to-one>
+    <property name="resuelto" type="boolean">
+      <column name="resuelto" not-null="true"/>
+    </property>
+    <property name="demostracion" type="string">
+      <column name="demostracion" not-null="true"/>
+    </property>
+    <property name="metodo" type="string">
+      <column name="metodo" not-null="true"/>
+    </property>
+  </class>
+</hibernate-mapping>

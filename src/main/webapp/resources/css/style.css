@@ -270,8 +270,8 @@ div#render {
 article{
     height: 40px;
     overflow:hidden;
-    transition: height 2s;
-    -webkit-transition: height 2s;
+    transition: height 1s;
+    -webkit-transition: height 1s;
 }
 article.misTerminos{
     /*height:250px;*/
@@ -287,6 +287,17 @@ article.publicos{
     /*height:210px;*/
     height:62.5%;
     outline: none;
+}
+article.teoremas{
+    height:350px;
+    outline: none;
+    overflow: scroll;
+}
+article.proof{
+    padding-left: 5px;
+    height:350px;
+    outline: none;
+    overflow: scroll;
 }
 iframe{
     -webkit-overflow-scrolling: touch !important; /*for safari in ipod and ipad*/

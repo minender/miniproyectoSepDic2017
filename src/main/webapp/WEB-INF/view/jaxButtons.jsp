@@ -2,13 +2,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 
-
-<div class="row justify-content-center form-group">
+<c:choose>
+    <c:when test='${collapse.equals("collapse")}'>
+      <div class="row justify-content-center form-group">
 	<a class="btn btn-primary" data-toggle="collapse" href="#symbolsTable" role="button" aria-expanded="false" aria-controls="symbolsTable">
 		Operators:
 	</a>
-</div>
-<div class="collapse form-group" id="symbolsTable">
+      </div>
+    </c:when>
+</c:choose>
+<div class="${collapse} form-group" id="symbolsTable">
        <div class="btn-toolbar justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
        <%-- THIS SECTION IF FOR SYMBOL BUTTONS--%>
 	   <div class="btn-group mr-2 flex-wrap" role="group" aria-label="First group">

@@ -270,12 +270,14 @@ function clickOperator(Math1,myField,teoid,vars)
             else{
                 var inputStatement = document.getElementById(myField);
                 inputStatement.value = teoid;
+                $('#stbox').text(teoid);
                 setJaxSubstitutionVariables(vars,'substitutionButtonsId');
             }
         }
         else{
             var inputStatement = document.getElementById(myField);
             inputStatement.value = teoid;
+            $('#stbox').text(teoid);
             setJaxSubstitutionVariables(vars,'substitutionButtonsId');
         }
       }

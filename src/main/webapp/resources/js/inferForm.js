@@ -22,7 +22,8 @@ $(function() {
                 else{
                     $('#formula').html(data.historial);
                     MathJax.Hub.Typeset();
-                    
+                    var proof = $('.proof');
+                    proof.scrollTop(proof[0].scrollHeight);
                     /*var nSol = $('#nSolucion').val();
                     if(nSol==="new"){
                         $('#nSolucion').val(data.nSol);
@@ -35,9 +36,14 @@ $(function() {
                         alert("Congratulations you have found a proof of the theorem!!");
                         window.location = $("#linkDemostrar").attr("href");
                     }
-                    $('#nStatement_id').val("");
-                    $('#instanciacion_id').val("");
-                    $('#leibniz_id').val("");
+                    if (data.valid) {
+                        $('#nStatement_id').val("");
+                        $('#instanciacion_id').val("");
+                        $('#leibniz_id').val("");
+                        $('#stbox').text("");
+                        cleanJax('leibnizSymbolsId');
+                        cleanJaxSubstitution('substitutionButtonsId');
+                    }
                     //$("#nuevoMetodo").val("0");
                 }
                 
@@ -63,13 +69,18 @@ $(function() {
                 $("#modalLoading").css('display','none');
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
+                var proof = $('.proof');
+                proof.scrollTop(proof[0].scrollHeight);
+                $('#nStatement_id').val("");
+                $('#instanciacion_id').val("");
+                $('#leibniz_id').val("");
+                $('#stbox').text("");
+                cleanJax('leibnizSymbolsId');
+                cleanJaxSubstitution('substitutionButtonsId');
                 if(data.cambiarMetodo === "1"){
                     $("#metodosDemostracion").val("0");
                     $("#metodosDiv").show();
                     $('#inferForm').hide();
-                    $('#nStatement_id').val("");
-                    $('#instanciacion_id').val("");
-                    $('#leibniz_id').val("");
                     $("#selectTeoInicial").val("1");
                     //$("#nuevoMetodo").val("1");
                     $("#currentTeo").show();
@@ -87,6 +98,7 @@ $(function() {
         $('#nStatement_id').val("");
         $('#instanciacion_id').val("");
         $('#leibniz_id').val("");
+        $('#stbox').text("");
     });
     
 });

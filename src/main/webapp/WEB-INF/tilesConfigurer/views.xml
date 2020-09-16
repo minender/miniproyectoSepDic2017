@@ -29,8 +29,8 @@
    </definition>
    <definition name="footer" template="/WEB-INF/view/footer.jsp">
    </definition>
-   <definition name="style" template="/WEB-INF/view/despliegueStyle.jsp">
-   </definition>
+   <!--<definition name="style" template="/WEB-INF/view/despliegueStyle.jsp">
+   </definition>-->
    
 </tiles-definitions>
 

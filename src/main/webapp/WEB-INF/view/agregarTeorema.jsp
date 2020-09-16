@@ -40,7 +40,7 @@
               </div>
             </c:when>
           </c:choose>
-          
+          <c:set var="collapse" value="collapse" scope="request"/>
           <tiles:insertDefinition name="jaxButtons" />
           <c:set var="rootId" value="teoremaSymbolsId" scope="request"/>  
           <c:set var="labelName" value="Theorem:" scope="request"/>
