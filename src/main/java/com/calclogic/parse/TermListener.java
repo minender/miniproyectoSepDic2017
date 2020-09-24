@@ -5,6 +5,7 @@ import com.calclogic.entity.Predicado;
 import com.calclogic.entity.Simbolo;
 import com.calclogic.entity.PredicadoId;
 import com.calclogic.entity.Simbolo;
+import com.calclogic.lambdacalculo.*;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.Iterator;

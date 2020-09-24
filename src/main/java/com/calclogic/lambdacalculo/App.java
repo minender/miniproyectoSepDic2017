@@ -9,6 +9,7 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Stack;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class App extends Term{
         }
         catch(CloneNotSupportedException e)
         {   
-            System.out.println(e);
+            e.printStackTrace();
             return null;
         }
         return new App(p.sust(x, t),q.sust(x,t2));
@@ -87,7 +88,28 @@ public class App extends Term{
 
     @Override
     public Term sustParall(List<Var> Vars, List<Term> varsTerm) {
-        return new App(p.sustParall(Vars, varsTerm), q.sustParall(Vars, varsTerm));
+        if (p instanceof Var) {
+            Var var = null;
+            int i= 0;
+            for (Iterator<Var> it = Vars.iterator(); it.hasNext();) {
+                var = it.next();
+                if (p.occur(var)) 
+                    break;
+                i++;
+            }
+            if (p.occur(var) && (varsTerm.size() ==  Vars.size()) && 
+                !varsTerm.get(i).occur(new Var('f')) && !varsTerm.get(i).occur(new Var('g')) &&
+                !(varsTerm.get(i).invBD() instanceof Bracket)
+               )
+            {
+                Term term = varsTerm.get(i);
+                return new App(new Bracket(new Var('x'),term), q.sustParall(Vars, varsTerm));
+            }
+            else
+                return new App(p.sustParall(Vars, varsTerm), q.sustParall(Vars, varsTerm));
+        }
+        else
+            return new App(p.sustParall(Vars, varsTerm), q.sustParall(Vars, varsTerm));
     }
 
     @Override
@@ -438,23 +460,33 @@ public class App extends Term{
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
         Term aux = p;
+        int j = 1;
         while ( aux instanceof App )
         {
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
+           j++;
         }
-        Simbolo sym;
+        Simbolo sym = null;
         int opId;
+        int nArgs;
         if (aux instanceof Var) {
-            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 6, "%(op)_{%(na1)}^{z}", null);
+            //sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
             opId = -1;
+            nArgs = 0;
         }
         else {
           Const c = (Const) aux;
           sym = s.getSimbolo(c.getId());
           opId = c.getId();
+          nArgs = sym.getArgumentos();
         }
         
+        if ( j > nArgs) {
+           sym = s.getSimbolo(29);
+           App newTerm = new App(new App(new Const(29,"c_{29}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           return newTerm.privateToStringInf(s, numTeo);
+        }
         Map<String,String> values = new HashMap<String, String>();
         if (numTeo.equals(""))
            values.put("op", sym.getNotacion_latex());
@@ -471,7 +503,10 @@ public class App extends Term{
            if (arg instanceof App)
            {
             IntXIntXString tuple = ((App) arg).privateToStringInf(s,"");
-            values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
+            if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
+                values.put("a"+i, "("+tuple.x3+")");
+            else
+                values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
            }
            else
             values.put("a"+i,arg.toStringInf(s,""));
@@ -481,7 +516,10 @@ public class App extends Term{
           if (arg instanceof App)
           {
            IntXIntXString tuple = ((App) arg).privateToStringInf(s,"");
-           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
+           if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
+                values.put("aa"+i, "("+tuple.x3+")");
+            else
+                values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
           }
           else
            values.put("aa"+i,arg.toStringInf(s,""));
@@ -490,7 +528,7 @@ public class App extends Term{
         }
         
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
-        return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace(sym.getNotacion()));
+        return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace(notation));
     }
 
     public String toStringInf(SimboloManager s, String numTeo)
@@ -600,23 +638,33 @@ public class App extends Term{
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
         Term aux = p;
+        int j =1;
         while ( aux instanceof App )
         {
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
+           j++;
         }
-        Simbolo sym;
+        Simbolo sym = null;
         int opId;
+        int nArgs;
         if (aux instanceof Var) {
-            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 6, "%(op)_{%(na1)}^{z}", null);
+            //sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
             opId = -1;
+            nArgs = 0;
         }
         else {
           Const c = (Const) aux;
           sym = s.getSimbolo(c.getId());
           opId = c.getId();
+          nArgs = sym.getArgumentos();
         }
         
+        if ( j > nArgs) {
+           sym = s.getSimbolo(29);
+           App newTerm = new App(new App(new Const(29,"c_{29}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           return newTerm.privateToStringWithInputs(s, position);
+        }
         Map<String,String> values = new HashMap<String, String>();
         values.put("op", sym.getNotacion_latex());
         String notation = sym.getNotacion();
@@ -630,7 +678,10 @@ public class App extends Term{
            if (arg instanceof App)
            {
             IntXIntXString tuple = ((App) arg).privateToStringWithInputs(s,position+i);
-            values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
+            if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
+                values.put("a"+i, "("+tuple.x3+")");
+            else
+                values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
            }
            else
             values.put("a"+i,arg.toStringWithInputs(s,position+i));
@@ -640,7 +691,10 @@ public class App extends Term{
           if (arg instanceof App)
           {
            IntXIntXString tuple = ((App) arg).privateToStringWithInputs(s,position+i);
-           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
+           if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
+                values.put("aa"+i, "("+tuple.x3+")");
+            else
+                values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
           }
           else
            values.put("aa"+i,arg.toStringWithInputs(s,position+i));
@@ -649,7 +703,7 @@ public class App extends Term{
         }
         
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
-        return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace("\\ {"+sym.getNotacion()+"}\\ "));
+        return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace("\\ {"+notation+"}\\ "));
     }
 
     public String toStringWithInputs(SimboloManager s, String position)
@@ -664,23 +718,35 @@ public class App extends Term{
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
         Term aux = p;
+        int j = 1;
         while ( aux instanceof App )
         {
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
+           j++;
         }
-        Simbolo sym;
+        Simbolo sym = null;
         int opId;
+        int nArgs;
         if (aux instanceof Var) {
-            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 6, "%(op)_{%(na1)}^{z}", null);
+            //sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
             opId = -1;
+            nArgs = 0;
         }
         else {
           Const c = (Const) aux;
           sym = s.getSimbolo(c.getId());
           opId = c.getId();
+          nArgs = sym.getArgumentos();
         }
         
+        if ( j > nArgs) {
+           sym = s.getSimbolo(29);
+           App newTerm = new App(new App(new Const(29,"c_{29}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           IntXIntXString result = newTerm.privateToStringInfLabeled(s,z, t, l, l2, id, nivel);
+           l.add(t.leibniz(z, this));
+           return result;
+        }
         Map<String,String> values = new HashMap<String, String>();
         values.put("op", "\\class{terminoClick}{"+sym.getNotacion_latex()+"}");
         String notation = sym.getNotacion();
@@ -696,7 +762,10 @@ public class App extends Term{
            if (arg instanceof App)
            {
             IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,l2,id,nivel+1);
-            values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:addParenthesis(tuple.x3));
+            if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
+                values.put("a"+i, addParenthesis(tuple.x3));
+            else
+                values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:addParenthesis(tuple.x3));
             setVar += l2.get(l2.size()-1);
            }
            else {
@@ -709,7 +778,10 @@ public class App extends Term{
           if (arg instanceof App)
           {
            IntXIntXString tuple = ((App) arg).privateToStringInfLabeled(s,z,t,l,l2,id,nivel+1);
-           values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:addParenthesis(tuple.x3));
+           if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
+                values.put("aa"+i, addParenthesis(tuple.x3));
+            else
+                values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:addParenthesis(tuple.x3));
            setVar += l2.get(l2.size()-1);
           }
           else {
@@ -721,12 +793,13 @@ public class App extends Term{
         }
         
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
-        String term = sub.replace("\\class{"+nivel+"}{"+sym.getNotacion()+"}");
+        String term = sub.replace("\\class{"+nivel+"}{"+notation+"}");
         term = "\\cssId{"+id.id+"}{"+term+"}";
         l2.add(l2.size(),setVar+id.id+",");
         //l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
         //l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
-        l.add(t.leibniz(z, this));
+        if (opId != 29)
+            l.add(t.leibniz(z, this));
         id.id++;
         return new IntXIntXString(sym.getId(),sym.getPr(),term);
     }
@@ -743,19 +816,40 @@ public class App extends Term{
         String term;
         stk.push(q);
         Term aux = p;
+        int j = 1;
         while ( aux instanceof App )
         {
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
+           j++;
         }
-        Const c = (Const) aux;
-        Simbolo sym = s.getSimbolo(c.getId());
-        id = sym.getId();
+        int nArgs;
+        if (aux instanceof Var) {
+            id = 29;
+            nArgs = 0;
+        }
+        else {
+            Const c = (Const) aux;
+            Simbolo sym = s.getSimbolo(c.getId());
+            id = sym.getId();
+            nArgs = sym.getArgumentos();
+        }
+        if ( j > nArgs) {
+           Simbolo sym = s.getSimbolo(29);
+           Term newTerm = new App(new App(new Const(29,"c_{29}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           return newTerm.toStringFormatC(s, pos, id);
+        }
+        /*if (id == 29)
+            term = "C"+id+"("+aux.toStringFormatC(s,pos+1,29);
+        else*/
         term = "C"+id;
         int i=1;
         while (!stk.empty()) {
          Term arg = stk.pop();
-         term += (i == 1?"(":",")+arg.toStringFormatC(s,pos+i,id);
+         /*if (i > nArgs)
+             term = "C29("+term+"),"+arg.toStringFormatC(s,pos+i,0);
+         else*/
+         term += (i == 1/* && id != 29*/?"(":",")+arg.toStringFormatC(s,pos+i,id);
          i++;
         }
         
@@ -804,21 +898,26 @@ public class App extends Term{
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
         Term aux = p;
+        int j = 1;
         while ( aux instanceof App )
         {
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
+           j++;
         }
         Simbolo sym;
         int opId;
+        int nArgs;
         if (aux instanceof Var) {
-            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 6, "%(op)_{%(na1)}^{z}", null);
+            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
             opId = -1;
+            nArgs = 1;
         }
         else {
           Const c = (Const) aux;
           sym = s.getSimbolo(c.getId());
           opId = c.getId();
+          nArgs = sym.getArgumentos();
         }
         
         Map<String,String> values = new HashMap<String, String>();
@@ -827,6 +926,8 @@ public class App extends Term{
         else
            values.put("op", "\\cssId{click@"+numTeo+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{"+sym.getNotacion_latex()+"}}}");
         String notation = sym.getNotacion();
+        if ( j > nArgs)
+           notation = "( "+notation+" )(%(na"+j+") )";
         int i = 1;
         while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
          Term arg = stk.pop();
@@ -846,7 +947,10 @@ public class App extends Term{
              if (arg instanceof App)
              {
               IntXIntXString tuple = ((App) arg).privateToStringInfAbr(tStr,s,pm,"");
-              values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
+              if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
+                values.put("a"+i, "("+tuple.x3+")");
+              else
+                values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
              }
              else 
               values.put("a"+i,arg.toStringInfAbrv(tStr,s,pm,"").term);
@@ -856,7 +960,10 @@ public class App extends Term{
             if (arg instanceof App)
             {
              IntXIntXString tuple = ((App) arg).privateToStringInfAbr(tStr,s,pm,"");
-             values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
+             if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
+                values.put("aa"+i, "("+tuple.x3+")");
+            else
+                values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
             }
             else 
              values.put("aa"+i,arg.toStringInfAbrv(tStr,s,pm,"").term);
@@ -866,7 +973,7 @@ public class App extends Term{
         }
         
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
-        tStr.term = sub.replace(sym.getNotacion());
+        tStr.term = sub.replace(notation);
         return new IntXIntXString(sym.getId(),sym.getPr(),tStr.term);
     }
     

@@ -1197,7 +1197,7 @@ public class InferController {
             Term ultInfType = ultInf.type();
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
                    !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{10}")
+                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{20}")
                     )
                )
                 firstOpInf = i;
@@ -1217,18 +1217,18 @@ public class InferController {
         catch (ClassCastException e) {
             throw new TypeVerificationException();
         }
-        if ( !op.equals("c_{1}") && !op.equals("c_{10}") ) {
+        if ( !op.equals("c_{1}") && !op.equals("c_{20}") ) {
             proof = metaTheoTrueLeft(proof);
             type = proof.type();
         }
         int index = wsFirstOpInferIndex(proof);
-        boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{10}");
+        boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{20}");
         if ( index == 0 && eqInf) {
             return new TypedApp(proof, infer);
         }
         else if (index == 0 && !eqInf) {
             String eq = op;
-            String st = "c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
+            String st = "c_{2} (c_{2} (c_{1} (x_{69} x_{201}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
             String deriv = "";
             try {
             String E = "\\Phi_{b} ("+ ((App)infer.type()).p+")";
@@ -1269,7 +1269,6 @@ public class InferController {
     }
     
     private Term addInferToProof(Term proof, Term infer) throws TypeVerificationException {
-        System.out.println(infer);
         return new TypedApp(proof, infer);
     }
    
@@ -1423,7 +1422,7 @@ public class InferController {
                     return response;
                 }
                 if (onlyOneLine && j == 0) {
-                    currentProof = new TypedA(new App(new App(new Const(1,"c_{10}",false,1,1),
+                    currentProof = new TypedA(new App(new App(new Const(1,"c_{20}",false,1,1),
                             typedTerm),typedTerm));
                     j=1;
                 }
@@ -1577,7 +1576,7 @@ public class InferController {
         Term term = t.getTeoTerm();
         String equiv = ((Const)((App)((App)term).p).p).getCon();
 
-        if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{10}")){
+        if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{20}")){
             response.setLado("0");
             return response;
         }

@@ -16,8 +16,8 @@ public class TypedApp extends App implements TypedTerm{
     public TypedApp(Term t1, Term t2)  throws TypeVerificationException
     {
         super(t1, t2);
-        Term t1Type = t1.type().reducir();
-        Term t2Type = t2.type().reducir();
+        Term t1Type = t1.type();
+        Term t2Type = t2.type();
         
         if (t1Type instanceof Sust )
             inferType = 'i';
@@ -26,7 +26,7 @@ public class TypedApp extends App implements TypedTerm{
             try
             {
               String op = ((Const)((App)((App)t2Type).p).p).getCon().trim();
-              if (!op.equals("c_{1}") && !op.equals("c_{10}"))
+              if (!op.equals("c_{1}") && !op.equals("c_{20}"))
                   throw new TypeVerificationException();
             }
             catch (ClassCastException e)
@@ -41,7 +41,7 @@ public class TypedApp extends App implements TypedTerm{
             try
             {
               String op1 = ((Const)((App)((App)t1Type).p).p).getCon().trim();
-              if (!op1.equals("c_{1}") && !op1.equals("c_{10}") && !op1.equals("c_{2}") && !op1.equals("c_{3}"))
+              if (!op1.equals("c_{1}") && !op1.equals("c_{20}") && !op1.equals("c_{2}") && !op1.equals("c_{3}"))
                   throw new TypeVerificationException();
               if ((!op1.equals("c_{1}") && !op1.equals("c_{2}")) || !t1Izq.equals(t2Type)) 
               {
@@ -49,7 +49,7 @@ public class TypedApp extends App implements TypedTerm{
                 Term t2Izq = ((App)t2Type).q;
                 String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
         
-                boolean eq = op1.equals("c_{10}") && op2.equals("c_{10}");
+                boolean eq = op1.equals("c_{20}") && op2.equals("c_{20}");
                 boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
 //                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
 //                        || op2.equals("c_{3}") || op2.equals("c_{2}"));
@@ -76,10 +76,10 @@ public class TypedApp extends App implements TypedTerm{
     
     public Term type()
     {
-        Term pType = p.type().reducir();
-        Term qType = q.type().reducir();
+        Term pType = p.type();
+        Term qType = q.type();
         if (pType instanceof Sust )
-            return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms);
+            return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms).evaluar();
         else if (pType instanceof Bracket)
         {
             Term t1 = new App(pType,((App)qType).q).evaluar();

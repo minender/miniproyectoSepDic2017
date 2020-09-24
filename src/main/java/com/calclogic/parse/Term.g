@@ -1,15 +1,15 @@
 grammar Term;
 
 
-@header{package com.howtodoinjava.parse; 
+@header{package com.calclogic.parse; 
 
-import com.howtodoinjava.entity.Predicado;
-import com.howtodoinjava.entity.Simbolo;
-import com.howtodoinjava.entity.PredicadoId;
-import com.howtodoinjava.entity.Simbolo;
-import com.howtodoinjava.lambdacalculo.*;
-import com.howtodoinjava.service.PredicadoManager;
-import com.howtodoinjava.service.SimboloManager;
+import com.calclogic.entity.Predicado;
+import com.calclogic.entity.Simbolo;
+import com.calclogic.entity.PredicadoId;
+import com.calclogic.entity.Simbolo;
+import com.calclogic.lambdacalculo.*;
+import com.calclogic.service.PredicadoManager;
+import com.calclogic.service.SimboloManager;
 import java.util.Iterator;}
 
 // Parser Rules
@@ -18,15 +18,24 @@ start_rule[PredicadoId id, PredicadoManager pm, SimboloManager sm]
 
 eq[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
 
-       'C' NUMBER '(' explist[id,pm,sm] ')'   {Simbolo s = sm.getSimbolo(Integer.parseInt($NUMBER.text)); 
-                                               if (s == null)throw new IsNotInDBException(this,"");
-                                               int nArg = s.getArgumentos();
-                                               if ($explist.value.size() != nArg)
-                                                 throw new NoViableAltException(this);
-                                               Term aux = new Const(Integer.parseInt($NUMBER.text),"c_{"+$NUMBER.text+"}",
-                                                                    !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
-                                               for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();)
-                                                  aux=new App(aux,i.next());
+       'C' NUMBER '(' explist[id,pm,sm] ')'   {Term aux;
+                                               if (Integer.parseInt($NUMBER.text) == 29 ) {
+                                                Iterator<Term> i = $explist.value.iterator();
+                                                aux = i.next();
+                                                for(i = i; i.hasNext();)
+                                                   aux=new App(aux,i.next());
+                                               }
+                                               else {
+                                                Simbolo s = sm.getSimbolo(Integer.parseInt($NUMBER.text)); 
+                                                if (s == null)throw new IsNotInDBException(this,"");
+                                                int nArg = s.getArgumentos();
+                                                if ($explist.value.size() != nArg)
+                                                  throw new NoViableAltException(this);
+                                                aux = new Const(Integer.parseInt($NUMBER.text),"c_{"+$NUMBER.text+"}",
+                                                                     !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+                                                for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();)
+                                                   aux=new App(aux,i.next());
+                                               }
                                                $value = aux;
                                               }
 

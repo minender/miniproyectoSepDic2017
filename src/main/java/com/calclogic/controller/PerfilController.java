@@ -442,6 +442,7 @@ public class PerfilController {
             resuelve.addProperty("stringNumero", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager, resuelves.get(i).getNumeroteorema()));
             resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringInfFinal(simboloManager));
             resuelve.addProperty("demopendiente",resuelves.get(i).getDemopendiente());
+            resuelve.addProperty("vars",resuelves.get(i).getTeorema().getTeoTerm().freeVars());
             resuelves1.add(resuelve);
         }
         response.add("categories", categories);
@@ -573,7 +574,11 @@ public class PerfilController {
             predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
             String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
             
-            if(bindingResult.hasErrors())
+            boolean nTheoExists = false;
+            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema()) != null)
+                nTheoExists = true;
+            
+            if(nTheoExists || bindingResult.hasErrors())
             {
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
@@ -587,6 +592,8 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 map.addAttribute("simboloList", simboloList);
+                if (nTheoExists)
+                  bindingResult.rejectValue("numeroTeorema","error.agregarTeorema","Theorem number already exists");
                 map.addAttribute("predicadoList", predicadoList); map.addAttribute("predicadoList", predicadoList);
                 map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
@@ -605,10 +612,12 @@ public class PerfilController {
             Term teoTerm;
             try //si la sintanxis no es correcta ocurre una Exception
             {
-
                 teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
 //                teoTerm.setAlias(0);
-                
+                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());
+                if (null != test) {
+                    throw new CategoriaException("ya existe uno igual en el "+test.getNumeroteorema());
+                }
                 // ESTO DEBE MOSTRAR LAS CATEGORIAS
                 Categoria categoria;
                 categoria = categoriaManager.getCategoria(new Integer(agregarTeorema.getCategoriaSeleccionada()));
@@ -618,16 +627,24 @@ public class PerfilController {
                 // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
                 
                 String aliases = teoTerm.aliases("");
-                Teorema teoremaAdd = new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false,aliases);
-                Teorema teorema = teoremaManager.addTeorema(teoremaAdd); 
+                Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toStringFinal());
+                Teorema teorema;
+                if (teoremaAdd == null) 
+                 teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false,aliases)); 
+                else
+                    teorema = teoremaAdd;
                 Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma(), categoria);
                 Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
                 
 
                 // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
+                Metateorema metateorema;
                 Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
-                Metateorema metateoremaAdd = new Metateorema(teorema.getId(),metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm));
-                Metateorema metateorema = metateoremaManager.addMetateorema(metateoremaAdd);
+                Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toStringFinal());
+                if (metateoremaAdd == null)
+                  metateorema = metateoremaManager.addMetateorema(new Metateorema(teorema.getId(),metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm)));
+                else
+                  metateorema = metateoremaAdd;
                 
                 Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
                 Dispone dispone = disponeManager.addDispone(disponeAdd);

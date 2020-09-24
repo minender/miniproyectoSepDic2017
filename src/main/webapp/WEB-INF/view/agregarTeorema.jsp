@@ -61,8 +61,7 @@
               <label for="tipo" class="col-lg-1 col-form-label">Type:</label>
               <div class="col-lg-3">
                 <select class="form-control" id="selecTipo" name="tipoSeleccionado">
-                  <option value="">Lógica Proposicional</option>
-                  <option value="">Lógica de Predicado</option>
+                  <option value="">Calculus</option>
                 </select>
               </div>
           </div>

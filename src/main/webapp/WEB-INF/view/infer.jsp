@@ -209,8 +209,13 @@
                     var lastChild = ancestor.lastChild;
                     while ( lastChild.hasChildNodes() ) {
                         lastChild = lastChild.lastChild;
+                    };
+                    try {
+                        range.setEnd(lastChild,1);
                     }
-                    range.setEnd(lastChild,1);
+                    catch (e) {
+                        range.setEnd(lastChild,0);
+                    }
                     return ancestor.id;
                 }
 
@@ -388,14 +393,14 @@
             <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Proof method</h3>
               <select class="form-control" id="metodosDemostracion">
                 <option value="0">Select a method</option>
-                <option value="1">Direct method</option>
+                <!--<option value="1">Direct method</option>-->
                 <option value="2">Starting from one side</option>
-                <option value="3">Weakening</option>
+                <!--<option value="3">Weakening</option>
                 <option value="4">Strengthening</option>
                 <option value="5">Assume the antecedent</option>
                 <option value="6">Transitivity</option>
                 <option value="7">Proof by cases</option>
-                <option value="8">Proof by contradiction</option>
+                <option value="8">Proof by contradiction</option>-->
 
               </select>
           </div>
@@ -737,7 +742,7 @@
                                             //newRows = newRows + 'clickOperator(' + "'" + 'click' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');<' + '/script>';                                            
                                             var script1= document.createElement('script');
                                             script.type= 'text/javascript';
-                                            script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'click' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');';
+                                            script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'click' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ',' + "'" +teoremas[j].vars+ "'" +');';
                                             <c:choose>
                                                 <c:when test='${!nTeo.equals("")}'>
                                                     if(teoremas[j].numeroteorema != ${nTeo}){
@@ -752,7 +757,7 @@
                                                 //newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ');'
                                                 //newRows = newRows + 'clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" +');';
                                                 //newRows = newRows + '</' + 'script>';
-                                                script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" +');'
+                                                script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ',' + "'" +teoremas[j].vars+ "'" +');'
                                                 newRows = newRows + '</span>';
                                             }
                                         }

@@ -267,6 +267,10 @@ div#render {
     margin-right:0px;
 }
 
+input.MathJax_Input {
+    width:0.8cm;
+}
+
 article{
     height: 40px;
     overflow:hidden;

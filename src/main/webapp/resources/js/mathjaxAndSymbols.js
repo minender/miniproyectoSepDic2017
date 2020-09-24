@@ -419,7 +419,7 @@ function deleteOperatorParserString(formId, rootId){
 	var n = parserString.length;
 	
 	// Must know if this was a right child or a left child
-	var leftChild = (lastChar == '2');
+	var leftChild = (lastChar == '1');
 	
 	// Get the index from which we'll start studying the string to replace the expression
 	var indexFormId = parserString.indexOf("Input{" + formId + '}');

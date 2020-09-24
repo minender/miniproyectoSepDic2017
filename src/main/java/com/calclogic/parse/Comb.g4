@@ -2,9 +2,9 @@ grammar Comb;
 
 @header{
 	
-package com.howtodoinjava.parse; 
+package com.calclogic.parse; 
 
-import com.howtodoinjava.lambdacalculo.*;	
+import com.calclogic.lambdacalculo.*;	
 import java.util.LinkedList;	
 	
 }	

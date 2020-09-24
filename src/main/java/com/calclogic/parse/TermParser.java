@@ -1,15 +1,11 @@
 // Generated from Term.g by ANTLR 4.8
 package com.calclogic.parse; 
 
-import com.calclogic.lambdacalculo.Const;
-import com.calclogic.lambdacalculo.Term;
-import com.calclogic.lambdacalculo.Bracket;
-import com.calclogic.lambdacalculo.App;
-import com.calclogic.lambdacalculo.Var;
 import com.calclogic.entity.Predicado;
 import com.calclogic.entity.Simbolo;
 import com.calclogic.entity.PredicadoId;
 import com.calclogic.entity.Simbolo;
+import com.calclogic.lambdacalculo.*;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.Iterator;
@@ -210,15 +206,24 @@ public class TermParser extends Parser {
 				((EqContext)_localctx).explist = explist(id,pm,sm);
 				setState(21);
 				match(T__2);
-				Simbolo s = sm.getSimbolo(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null))); 
-				                                               if (s == null)throw new IsNotInDBException(this,"");
-				                                               int nArg = s.getArgumentos();
-				                                               if (((EqContext)_localctx).explist.value.size() != nArg)
-				                                                 throw new NoViableAltException(this);
-				                                               Term aux = new Const(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)),"c_{"+(((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)+"}",
-				                                                                    !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
-				                                               for(Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator(); i.hasNext();)
-				                                                  aux=new App(aux,i.next());
+				Term aux;
+				                                               if (Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == 29 ) {
+				                                                Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator();
+				                                                aux = i.next();
+				                                                for(i = i; i.hasNext();)
+				                                                   aux=new App(aux,i.next());
+				                                               }
+				                                               else {
+				                                                Simbolo s = sm.getSimbolo(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null))); 
+				                                                if (s == null)throw new IsNotInDBException(this,"");
+				                                                int nArg = s.getArgumentos();
+				                                                if (((EqContext)_localctx).explist.value.size() != nArg)
+				                                                  throw new NoViableAltException(this);
+				                                                aux = new Const(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)),"c_{"+(((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)+"}",
+				                                                                     !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                                for(Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator(); i.hasNext();)
+				                                                   aux=new App(aux,i.next());
+				                                               }
 				                                               ((EqContext)_localctx).value =  aux;
 				                                              
 				}

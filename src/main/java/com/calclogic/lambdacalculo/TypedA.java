@@ -21,6 +21,6 @@ public class TypedA extends Const implements TypedTerm{
     
     public Term type()
     {
-        return type_;
+        return type_.evaluar();
     }
 }

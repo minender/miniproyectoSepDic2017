@@ -16,10 +16,14 @@
        <%-- THIS SECTION IF FOR SYMBOL BUTTONS--%>
 	   <div class="btn-group mr-2 flex-wrap" role="group" aria-label="First group">
 	  	<c:forEach items="${simboloList}" var="symbol"> 
+                    <c:choose>
+                      <c:when test='${symbol.getId()>=10}'>
 	  		<button style="font-size: 50%;" type="button" class="btn btn-secondary" 
 	  		onmousedown="insertAtMathjaxDiv('${symbol.fullLatexNotation('\\FormInput{0}', true)}', ${symbol.getId()}, false);return false;">
 	  		$$${symbol.fullLatexNotation("\\Box", false)}$$
 	  		</button>
+                      </c:when>
+                    </c:choose>
 	  	</c:forEach> 
 	   </div> 
 	   <%-- THIS SECTION IF FOR ALIAS BUTTONS --%>

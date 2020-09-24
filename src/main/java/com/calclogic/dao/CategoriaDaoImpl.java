@@ -40,7 +40,7 @@ public class CategoriaDaoImpl implements CategoriaDAO {
     
     @Override
     public List<Categoria> getAllCategorias(){
-        return this.sessionFactory.getCurrentSession().createQuery("FROM Categoria").list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Categoria order by id").list();
     }
     
 

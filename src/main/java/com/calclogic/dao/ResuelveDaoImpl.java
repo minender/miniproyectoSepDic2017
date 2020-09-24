@@ -63,7 +63,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUser(String userLogin){
-        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE usuario.login = :userLogin order by numeroteorema").setParameter("userLogin",userLogin).list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE usuario.login = :userLogin order by char_length(numeroteorema), numeroteorema").setParameter("userLogin",userLogin).list();
 
     }
     @Override
