@@ -1197,7 +1197,7 @@ public class InferController {
             Term ultInfType = ultInf.type();
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
                    !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{20}")
+                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{200}")
                     )
                )
                 firstOpInf = i;
@@ -1217,12 +1217,12 @@ public class InferController {
         catch (ClassCastException e) {
             throw new TypeVerificationException();
         }
-        if ( !op.equals("c_{1}") && !op.equals("c_{20}") ) {
+        if ( !op.equals("c_{1}") && !op.equals("c_{200}") ) {
             proof = metaTheoTrueLeft(proof);
             type = proof.type();
         }
         int index = wsFirstOpInferIndex(proof);
-        boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{20}");
+        boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{200}");
         if ( index == 0 && eqInf) {
             return new TypedApp(proof, infer);
         }
@@ -1422,7 +1422,7 @@ public class InferController {
                     return response;
                 }
                 if (onlyOneLine && j == 0) {
-                    currentProof = new TypedA(new App(new App(new Const(1,"c_{20}",false,1,1),
+                    currentProof = new TypedA(new App(new App(new Const(1,"c_{200}",false,1,1),
                             typedTerm),typedTerm));
                     j=1;
                 }
@@ -1576,7 +1576,7 @@ public class InferController {
         Term term = t.getTeoTerm();
         String equiv = ((Const)((App)((App)term).p).p).getCon();
 
-        if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{20}")){
+        if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{200}")){
             response.setLado("0");
             return response;
         }

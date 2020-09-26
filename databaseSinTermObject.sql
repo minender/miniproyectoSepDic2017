@@ -457,41 +457,34 @@ ALTER TABLE ONLY userdb.simbolo ALTER COLUMN id SET DEFAULT nextval('userdb.simb
 
 ALTER TABLE ONLY userdb.mostrarCategoria ALTER COLUMN id SET DEFAULT nextval('userdb.simbolo_id_seq'::regclass);
 
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (1,'\equiv', 2, TRUE, 0, 1,'%(aa2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (2,'\Rightarrow', 2, TRUE, 1, 2,'%(a2) %(op) %(aa1)', 1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (3,'\Leftarrow', 2,TRUE,0,2,'%(aa2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (4,'\vee', 2, TRUE, 0, 3,'%(aa2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (5,'\wedge', 2, TRUE, 0, 3,'%(aa2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (6,'\not\equiv', 2, TRUE, 0, 4,'%(a2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (7,'\neg', 1, TRUE, 1, 5,'%(op) %(aa1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (8,'true', 0, TRUE, 0, 0,'%(op)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (9,'false', 0, TRUE, 0, 0,'%(op)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (10,'=', 2, TRUE, 0, 5,'%(a2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (11,'+', 2, TRUE, 0, 6,'%(a2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (12,'-', 2, TRUE, 0, 6,'%(a2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (13,'.', 2, TRUE, 0, 7,'%(aa2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (14,' ', 2, TRUE, 0, 7,'\frac{%(na2)}{%(na1)}',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (15,'-', 1, TRUE, 0, 8,'%(op)%(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (16,'^', 1, TRUE, 0, 9,'%(a2)%(op){%(a1)}',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (17,'0', 0, TRUE, 0, 0,'%(op)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (18,'1', 0, TRUE, 0, 0,'%(op)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (1,'\equiv', 2, TRUE, 3, 1,'%(aa2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (2,'\Rightarrow', 2, TRUE, 3, 2,'%(a2) %(op) %(aa1)', 1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (3,'\Leftarrow', 2,TRUE,3,2,'%(aa2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (4,'\vee', 2, TRUE, 3, 3,'%(aa2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (5,'\wedge', 2, TRUE, 3, 3,'%(aa2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (6,'\not\equiv', 2, TRUE, 3, 4,'%(a2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (7,'\neg', 1, FALSE, 1, 5,'%(op) %(aa1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (8,'true', 0, FALSE, 0, 0,'%(op)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (9,'false', 0, FALSE, 0, 0,'%(op)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (10,' ', 2, FALSE, 3, 7,'%(a1)^z_{%(na2)}',1);
 
 --
 -- Name: simbolo_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-SELECT pg_catalog.setval('userdb.simbolo_id_seq', 18, true);
+SELECT pg_catalog.setval('userdb.simbolo_id_seq', 10, true);
 
 --
 -- Data for Name: categoria; Type: TABLE DATA; Schema: userdb; Owner: userdb
 --
 
 COPY userdb.categoria (id, nombre) FROM stdin;
-1	Equivalencia
-2	Negación
-3	Disyunción
-4	Conjunción
-5	Implicación
+1	Equivalence and true
+2	Negación Inequivalence and false
+3	Disjunction
+4	Conjunction
+5	Implication
+6	Leibniz as an Axiom
 \.
 
 
@@ -499,7 +492,7 @@ COPY userdb.categoria (id, nombre) FROM stdin;
 -- Name: categoria_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-SELECT pg_catalog.setval('userdb.categoria_id_seq', 5, true);
+SELECT pg_catalog.setval('userdb.categoria_id_seq', 6, true);
 
 
 --

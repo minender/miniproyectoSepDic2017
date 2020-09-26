@@ -19,7 +19,7 @@ start_rule[PredicadoId id, PredicadoManager pm, SimboloManager sm]
 eq[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]: 
 
        'C' NUMBER '(' explist[id,pm,sm] ')'   {Term aux;
-                                               if (Integer.parseInt($NUMBER.text) == 29 ) {
+                                               if (Integer.parseInt($NUMBER.text) == 10 ) {
                                                 Iterator<Term> i = $explist.value.iterator();
                                                 aux = i.next();
                                                 for(i = i; i.hasNext();)

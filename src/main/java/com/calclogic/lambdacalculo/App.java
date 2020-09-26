@@ -98,7 +98,7 @@ public class App extends Term{
                 i++;
             }
             if (p.occur(var) && (varsTerm.size() ==  Vars.size()) && 
-                !varsTerm.get(i).occur(new Var('f')) && !varsTerm.get(i).occur(new Var('g')) &&
+                !varsTerm.get(i).occur(new Var('E')) &&
                 !(varsTerm.get(i).invBD() instanceof Bracket)
                )
             {
@@ -483,8 +483,8 @@ public class App extends Term{
         }
         
         if ( j > nArgs) {
-           sym = s.getSimbolo(29);
-           App newTerm = new App(new App(new Const(29,"c_{29}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           sym = s.getSimbolo(10);
+           App newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            return newTerm.privateToStringInf(s, numTeo);
         }
         Map<String,String> values = new HashMap<String, String>();
@@ -661,8 +661,8 @@ public class App extends Term{
         }
         
         if ( j > nArgs) {
-           sym = s.getSimbolo(29);
-           App newTerm = new App(new App(new Const(29,"c_{29}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           sym = s.getSimbolo(10);
+           App newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            return newTerm.privateToStringWithInputs(s, position);
         }
         Map<String,String> values = new HashMap<String, String>();
@@ -741,8 +741,8 @@ public class App extends Term{
         }
         
         if ( j > nArgs) {
-           sym = s.getSimbolo(29);
-           App newTerm = new App(new App(new Const(29,"c_{29}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           sym = s.getSimbolo(10);
+           App newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            IntXIntXString result = newTerm.privateToStringInfLabeled(s,z, t, l, l2, id, nivel);
            l.add(t.leibniz(z, this));
            return result;
@@ -798,7 +798,7 @@ public class App extends Term{
         l2.add(l2.size(),setVar+id.id+",");
         //l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
         //l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
-        if (opId != 29)
+        if (opId != 10)
             l.add(t.leibniz(z, this));
         id.id++;
         return new IntXIntXString(sym.getId(),sym.getPr(),term);
@@ -825,7 +825,7 @@ public class App extends Term{
         }
         int nArgs;
         if (aux instanceof Var) {
-            id = 29;
+            id = 10;
             nArgs = 0;
         }
         else {
@@ -835,8 +835,8 @@ public class App extends Term{
             nArgs = sym.getArgumentos();
         }
         if ( j > nArgs) {
-           Simbolo sym = s.getSimbolo(29);
-           Term newTerm = new App(new App(new Const(29,"c_{29}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           Simbolo sym = s.getSimbolo(10);
+           Term newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            return newTerm.toStringFormatC(s, pos, id);
         }
         /*if (id == 29)
