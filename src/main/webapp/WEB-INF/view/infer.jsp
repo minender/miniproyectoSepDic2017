@@ -393,11 +393,11 @@
             <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Proof method</h3>
               <select class="form-control" id="metodosDemostracion">
                 <option value="0">Select a method</option>
-                <!--<option value="1">Direct method</option>-->
+                <option value="1">Direct method</option>
                 <option value="2">Starting from one side</option>
-                <!--<option value="3">Weakening</option>
+                <option value="3">Weakening</option>
                 <option value="4">Strengthening</option>
-                <option value="5">Assume the antecedent</option>
+                <!--<option value="5">Assume the antecedent</option>
                 <option value="6">Transitivity</option>
                 <option value="7">Proof by cases</option>
                 <option value="8">Proof by contradiction</option>-->
