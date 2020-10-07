@@ -98,12 +98,13 @@ public class App extends Term{
                 i++;
             }
             if (p.occur(var) && (varsTerm.size() ==  Vars.size()) && 
-                !varsTerm.get(i).occur(new Var('E')) &&
-                !(varsTerm.get(i).invBD() instanceof Bracket)
+                !varsTerm.get(i).occur(new Var('E')) && 
+                !(varsTerm.get(i).esRedexFinal().t) && 
+                !(varsTerm.get(i) instanceof Bracket)
                )
             {
                 Term term = varsTerm.get(i);
-                return new App(new Bracket(new Var('x'),term), q.sustParall(Vars, varsTerm));
+                return new App(new Bracket(new Var('z'),term), q.sustParall(Vars, varsTerm));
             }
             else
                 return new App(p.sustParall(Vars, varsTerm), q.sustParall(Vars, varsTerm));
@@ -905,19 +906,25 @@ public class App extends Term{
            aux = ((App)aux).p;
            j++;
         }
-        Simbolo sym;
+        Simbolo sym=null;
         int opId;
         int nArgs;
         if (aux instanceof Var) {
-            sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
+            // sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
             opId = -1;
-            nArgs = 1;
+            nArgs = 0;
         }
         else {
           Const c = (Const) aux;
           sym = s.getSimbolo(c.getId());
           opId = c.getId();
           nArgs = sym.getArgumentos();
+        }
+        
+        if ( j > nArgs) {
+           sym = s.getSimbolo(10);
+           App newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           return newTerm.privateToStringInf(s, numTeo);
         }
         
         Map<String,String> values = new HashMap<String, String>();

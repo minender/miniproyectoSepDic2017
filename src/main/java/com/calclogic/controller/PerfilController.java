@@ -486,19 +486,21 @@ public class PerfilController {
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
-        Term teorema = new App(new App(new Const(1,"\\equiv",false,1,1),new Const("true")),resuelve.getTeorema().getTeoTerm());
+        Simbolo s = simboloManager.getSimbolo(1);
+        Simbolo s2 = simboloManager.getSimbolo(8);
+        Term teorema = new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad())),resuelve.getTeorema().getTeoTerm());
         String nTeo = resuelve.getNumeroteorema();
-        Term A1 = new TypedA( new App(new App(new Const(1,"\\equiv",false,1,1), new App(new App(new Const(1,"\\equiv ",false,1,1),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"\\equiv",false,1,1),new Var(113)),new Var(112))) );
-        Term A2 = new TypedA( new App(new App(new Const(1,"\\equiv",false,1,1),new Var(113)),
-                                     new App(new App(new Const(1,"\\equiv",false,1,1),new Var(113)),
-                                                               new Const("true"))));
+        Term A1 = new TypedA( new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()), new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(113)),new Var(112))) );
+        Term A2 = new TypedA( new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(113)),
+                                     new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(113)),
+                                                               new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad()))));
         Term A3 = new TypedA(teo);
         List<Var> list1 = new ArrayList<Var>();
         list1.add(new Var(112));
         list1.add(new Var(113));
         List<Term> list2 = new ArrayList<Term>();
         list2.add(teo);
-        list2.add(new Const("true "));
+        list2.add(new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad()));
         Term I1 = new TypedI(new Sust(list1,list2));
         
         List<Var> lis1 = new ArrayList<Var>();
@@ -506,10 +508,9 @@ public class PerfilController {
         List<Term> lis2 = new ArrayList<Term>();
         lis2.add(teo);
         Term I2 = new TypedI(new Sust(lis1,lis2));
-        
         Term typedTerm = null;
         try {
-          if (teo.equals(new Const("true ")))
+          if (teo.equals(new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad())))
             typedTerm = new TypedApp(I2,A2);
           else
             typedTerm = new TypedApp(new TypedApp(I1,A1), new TypedApp(I2,A2));
@@ -519,7 +520,7 @@ public class PerfilController {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        response.generarHistorial(username, teorema, nTeo,typedTerm, true,"", resuelveManager, disponeManager, simboloManager);
+        response.generarHistorial(username, teorema, nTeo,typedTerm, true,"Direct method", resuelveManager, disponeManager, simboloManager);
         return response;
     }
     
@@ -638,7 +639,7 @@ public class PerfilController {
                 
 
                 // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
-                Metateorema metateorema;
+                /*Metateorema metateorema;
                 Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
                 Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toStringFinal());
                 if (metateoremaAdd == null)
@@ -647,7 +648,7 @@ public class PerfilController {
                   metateorema = metateoremaAdd;
                 
                 Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
-                Dispone dispone = disponeManager.addDispone(disponeAdd);
+                Dispone dispone = disponeManager.addDispone(disponeAdd);*/
                      
                 map.addAttribute("usuario", usr);
                 map.addAttribute("guardarMenu","");

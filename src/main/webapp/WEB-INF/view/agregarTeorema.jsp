@@ -61,7 +61,7 @@
               <label for="tipo" class="col-lg-1 col-form-label">Type:</label>
               <div class="col-lg-3">
                 <select class="form-control" id="selecTipo" name="tipoSeleccionado">
-                  <option value="">Calculus</option>
+                  <option value="">Propositional Logic</option>
                 </select>
               </div>
           </div>

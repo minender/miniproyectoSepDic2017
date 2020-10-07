@@ -458,7 +458,7 @@
                                 <span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
                                    <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>                
                                    
- <span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) Metatheorem:</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span>  
+ <span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span>  
                                        
                                    <script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
                                            clickOperator('clickmeta${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().freeVars()}');
@@ -753,7 +753,7 @@
                                             </c:choose>
                                                 newRows = newRows + '<span style="display: none;" id="metaTeo' + teoremas[j].numeroteorema + '">';
                                                 newRows = newRows + '<br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
-                                                newRows = newRows + ' <span id="metateoIdName' + teoremas[j].numeroteorema + '" class="teoIdName">(' + teoremas[j].numeroteorema + ') Metatheorem:</span> &nbsp; <span id="clickmeta' + teoremas[j].numeroteorema + '">$' + teoremas[j].metateoremastring + '$</span>  '
+                                                newRows = newRows + ' <span id="metateoIdName' + teoremas[j].numeroteorema + '" class="teoIdName">(' + teoremas[j].numeroteorema + ') with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta' + teoremas[j].numeroteorema + '">$' + teoremas[j].metateoremastring + '$</span>  '
                                                 //newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ');'
                                                 //newRows = newRows + 'clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" +');';
                                                 //newRows = newRows + '</' + 'script>';

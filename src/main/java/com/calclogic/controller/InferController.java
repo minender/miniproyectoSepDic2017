@@ -1228,7 +1228,7 @@ public class InferController {
         }
         else if (index == 0 && !eqInf) {
             String eq = op;
-            String st = "c_{2} (c_{2} (c_{1} (x_{69} x_{201}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
+            String st = "c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
             String deriv = "";
             try {
             String E = "\\Phi_{b} ("+ ((App)infer.type()).p+")";
