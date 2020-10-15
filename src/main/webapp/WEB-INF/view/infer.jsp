@@ -670,6 +670,7 @@
                 }
                 
             };
+                $("#modalLoading").css('display','inline-block');
                 $.ajax({
                 cache:false,
                 type: 'POST',
@@ -803,6 +804,7 @@
                         $("#currentTeo").hide();
                     }
                         document.body.appendChild(script);
+                        $("#modalLoading").css('display','none');
                      }
                 
                  });

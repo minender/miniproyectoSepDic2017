@@ -175,6 +175,7 @@
                 }
                 
             };
+                $("#modalLoading").css('display','inline-block');
                 $.ajax({
                 cache:false,
                 type: 'POST',
@@ -239,7 +240,7 @@
                             })
                        </c:when>
                     </c:choose>
-                    
+                    $("#modalLoading").css('display','none');
                 }
         });
         }
