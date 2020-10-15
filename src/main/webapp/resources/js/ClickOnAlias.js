@@ -86,7 +86,7 @@ function teoremaInicialMD(teoid){
             $(".teoIdName").css({"cursor":"","color":""});
             $(".operator").css({"cursor":"pointer","color":"#08c"});
             $("#currentTeo").hide();
-            var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+            var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
             if(nSol==="new"){
                //$('#nSolucion').val(data.nSol);
                //nSol = $('#nSolucion').val();
@@ -124,7 +124,7 @@ function metodoD(/*teoid*/){
                 //$('#teoremaInicial').val(teoid + "@" + data.lado);
                 $("#inferForm").show();
                 //$("#nuevoMetodo").val("1");
-                var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
                 if(nSol==="new"){
                     //$('#nSolucion').val(data.nSol);
                     //nSol = $('#nSolucion').val();
@@ -164,7 +164,7 @@ function metodoF(/*teoid*/){
                 //$('#teoremaInicial').val(teoid + "@" + data.lado);
                 $("#inferForm").show();
                 //$("#nuevoMetodo").val("1");
-                var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
                 if(nSol==="new"){
                     //$('#nSolucion').val(data.nSol);
                     //nSol = $('#nSolucion').val();
@@ -204,7 +204,7 @@ function transMethod(/*teoid*/){
                 //$('#teoremaInicial').val(teoid + "@" + data.lado);
                 $("#inferForm").show();
                 //$("#nuevoMetodo").val("1");
-                var nSol = $(form).attr('action').split('/')[5]; //$('#nSolucion').val();
+                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
                 if(nSol==="new"){
                     //$('#nSolucion').val(data.nSol);
                     //nSol = $('#nSolucion').val();

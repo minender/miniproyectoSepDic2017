@@ -612,11 +612,11 @@
               <!--<br>-->
               <div class="col-l-4" style="padding-left: 5px; padding-right: 5px;">
               <div style="display: none;">
-              	Substitution:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
+              	Instantiation:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
               </div>
               
               <c:set var="rootId" value="substitutionButtonsId" scope="request"/>
-          	  <c:set var="labelName" value="Substitution:" scope="request"/>
+          	  <c:set var="labelName" value="Instantiation:" scope="request"/>
           	  <c:set var="inputForm" value="instanciacion_id" scope="request"/>
 		  	  <tiles:insertDefinition name="jaxSubstitutionDiv" />
               </div>
