@@ -1,29 +1,28 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
-    <class name="com.howtodoinjava.entity.Teorema" table="teorema" schema="userdb">
-        <id name="id" type="int">
-            <column name="id" />
-            <generator class="sequence">
-                <param name="sequence">teorema_id_seq</param>
-            </generator> 
-        </id>
-        <property name="enunciado" type="string">
-            <column name="enunciado" not-null="true" />
-        </property>
-        <property name="esquema" type="boolean">
-            <column name="esquema" not-null="true" />
-        </property>
-        <property name="aliases" type="string">
-            <column name="aliases" not-null="true" />
-        </property>
-        <set name="resuelves" inverse="true">
-            <key>
-                <column name="teoremaid" not-null="true" />
-            </key>
-            <one-to-many class="com.howtodoinjava.entity.Resuelve" />
-        </set>
-    </class>
+  <class name="com.calclogic.entity.Teorema" schema="userdb" table="teorema">
+    <id name="id" type="int">
+      <column name="id"/>
+      <generator class="sequence">
+        <param name="sequence">teorema_id_seq</param>
+      </generator>
+    </id>
+    <property name="enunciado" type="string">
+      <column name="enunciado" not-null="true"/>
+    </property>
+    <property name="esquema" type="boolean">
+      <column name="esquema" not-null="true"/>
+    </property>
+    <property name="aliases" type="string">
+      <column name="aliases" not-null="true"/>
+    </property>
+    <set inverse="true" name="resuelves">
+      <key>
+        <column name="teoremaid" not-null="true"/>
+      </key>
+      <one-to-many class="com.calclogic.entity.Resuelve"/>
+    </set>
+  </class>
 </hibernate-mapping>

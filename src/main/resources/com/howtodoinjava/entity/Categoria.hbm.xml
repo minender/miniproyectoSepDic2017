@@ -1,31 +1,30 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
-    <class name="com.howtodoinjava.entity.Categoria" table="categoria" schema="userdb">
-        <id name="id" type="int">
-            <column name="id" />
-            <generator class="sequence">
-                <param name="sequence">categoria_id_seq</param>
-            </generator>
-        </id>
-        <property name="nombre" type="string">
-            <column name="nombre" not-null="true" unique="true" />
-        </property>
-        <!--<set name="teoremas" inverse="true" cascade="all">-->
-        <set name="teoremas" inverse="true">
-            <key>
-                <column name="categoriaid" not-null="true" />
-            </key>
-            <one-to-many class="com.howtodoinjava.entity.Teorema" />
-        </set>
-        <set name="metateoremas" inverse="true">
-        <!--<set name="metateoremas" inverse="true" cascade="all">-->
-            <key>
-                <column name="categoriaid" not-null="true" />
-            </key>
-            <one-to-many class="com.howtodoinjava.entity.Metateorema" />
-        </set>
-    </class>
+  <class name="com.calclogic.entity.Categoria" schema="userdb" table="categoria">
+    <id name="id" type="int">
+      <column name="id"/>
+      <generator class="sequence">
+        <param name="sequence">categoria_id_seq</param>
+      </generator>
+    </id>
+    <property name="nombre" type="string">
+      <column name="nombre" not-null="true" unique="true"/>
+    </property>
+    <!--<set name="teoremas" inverse="true" cascade="all">-->
+    <set inverse="true" name="teoremas">
+      <key>
+        <column name="categoriaid" not-null="true"/>
+      </key>
+      <one-to-many class="com.calclogic.entity.Teorema"/>
+    </set>
+    <set inverse="true" name="metateoremas">
+      <!--<set name="metateoremas" inverse="true" cascade="all">-->
+      <key>
+        <column name="categoriaid" not-null="true"/>
+      </key>
+      <one-to-many class="com.calclogic.entity.Metateorema"/>
+    </set>
+  </class>
 </hibernate-mapping>

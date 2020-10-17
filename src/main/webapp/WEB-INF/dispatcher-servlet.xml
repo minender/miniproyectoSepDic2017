@@ -20,7 +20,7 @@
         ">
  
     <context:annotation-config />
-    <context:component-scan base-package="com.howtodoinjava.controller" />
+    <context:component-scan base-package="com.calclogic.controller" />
     <mvc:resources mapping="/static/**" location="/resources/"/>
     <mvc:default-servlet-handler />
     <mvc:annotation-driven />
@@ -93,46 +93,46 @@
         </property> 
     </bean>
     
-    <bean id="usuarioDAO" class="com.howtodoinjava.dao.UsuarioDaoImpl"></bean>
-    <bean id="usuarioManager" class="com.howtodoinjava.service.UsuarioManagerImpl"></bean>
-    <bean id="terminoDAO" class="com.howtodoinjava.dao.TerminoDaoImpl"></bean>
-    <bean id="PublicacionDAO" class="com.howtodoinjava.dao.PublicacionDaoImpl"></bean>
-    <bean id="terminoManager" class="com.howtodoinjava.service.TerminoManagerImpl"></bean>
-    <bean id="predicadoDAO" class="com.howtodoinjava.dao.PredicadoDaoImpl"></bean>
-    <bean id="predicadoManager" class="com.howtodoinjava.service.PredicadoManagerImpl">
+    <bean id="usuarioDAO" class="com.calclogic.dao.UsuarioDaoImpl"></bean>
+    <bean id="usuarioManager" class="com.calclogic.service.UsuarioManagerImpl"></bean>
+    <bean id="terminoDAO" class="com.calclogic.dao.TerminoDaoImpl"></bean>
+    <bean id="PublicacionDAO" class="com.calclogic.dao.PublicacionDaoImpl"></bean>
+    <bean id="terminoManager" class="com.calclogic.service.TerminoManagerImpl"></bean>
+    <bean id="predicadoDAO" class="com.calclogic.dao.PredicadoDaoImpl"></bean>
+    <bean id="predicadoManager" class="com.calclogic.service.PredicadoManagerImpl">
     </bean>
-    <bean id="categoriaDAO" class="com.howtodoinjava.dao.CategoriaDaoImpl"></bean>
-    <bean id="categoriaManager" class="com.howtodoinjava.service.CategoriaManagerImpl">
+    <bean id="categoriaDAO" class="com.calclogic.dao.CategoriaDaoImpl"></bean>
+    <bean id="categoriaManager" class="com.calclogic.service.CategoriaManagerImpl">
     </bean>
-    <bean id="materiaDAO" class="com.howtodoinjava.dao.MateriaDaoImpl"></bean>
-    <bean id="materiaManager" class="com.howtodoinjava.service.MateriaManagerImpl">
+    <bean id="materiaDAO" class="com.calclogic.dao.MateriaDaoImpl"></bean>
+    <bean id="materiaManager" class="com.calclogic.service.MateriaManagerImpl">
     </bean>
-    <bean id="teoremaDAO" class="com.howtodoinjava.dao.TeoremaDaoImpl"></bean>
-    <bean id="teoremaManager" class="com.howtodoinjava.service.TeoremaManagerImpl">
+    <bean id="teoremaDAO" class="com.calclogic.dao.TeoremaDaoImpl"></bean>
+    <bean id="teoremaManager" class="com.calclogic.service.TeoremaManagerImpl">
     </bean>
-    <bean id="resuelveDAO" class="com.howtodoinjava.dao.ResuelveDaoImpl"></bean>
-    <bean id="resuelveManager" class="com.howtodoinjava.service.ResuelveManagerImpl">
+    <bean id="resuelveDAO" class="com.calclogic.dao.ResuelveDaoImpl"></bean>
+    <bean id="resuelveManager" class="com.calclogic.service.ResuelveManagerImpl">
     </bean>
-    <bean id="disponeDAO" class="com.howtodoinjava.dao.DisponeDaoImpl"></bean>
-    <bean id="disponeManager" class="com.howtodoinjava.service.DisponeManagerImpl">
+    <bean id="disponeDAO" class="com.calclogic.dao.DisponeDaoImpl"></bean>
+    <bean id="disponeManager" class="com.calclogic.service.DisponeManagerImpl">
     </bean>
-    <bean id="metateoremaDAO" class="com.howtodoinjava.dao.MetateoremaDaoImpl"></bean>
-    <bean id="metateoremaManager" class="com.howtodoinjava.service.MetateoremaManagerImpl">
+    <bean id="metateoremaDAO" class="com.calclogic.dao.MetateoremaDaoImpl"></bean>
+    <bean id="metateoremaManager" class="com.calclogic.service.MetateoremaManagerImpl">
     </bean>
-    <bean id="solucionDAO" class="com.howtodoinjava.dao.SolucionDaoImpl"></bean>
-    <bean id="solucionManager" class="com.howtodoinjava.service.SolucionManagerImpl">
+    <bean id="solucionDAO" class="com.calclogic.dao.SolucionDaoImpl"></bean>
+    <bean id="solucionManager" class="com.calclogic.service.SolucionManagerImpl">
     </bean>
-    <bean id="teoriaDAO" class="com.howtodoinjava.dao.TeoriaDaoImpl"></bean>
-    <bean id="teoriaManager" class="com.howtodoinjava.service.TeoriaManagerImpl">
+    <bean id="teoriaDAO" class="com.calclogic.dao.TeoriaDaoImpl"></bean>
+    <bean id="teoriaManager" class="com.calclogic.service.TeoriaManagerImpl">
     </bean>
-    <bean id="simboloDAO" class="com.howtodoinjava.dao.SimboloDaoImpl"></bean>
-    <bean id="simboloManager" class="com.howtodoinjava.service.SimboloManagerImpl">
+    <bean id="simboloDAO" class="com.calclogic.dao.SimboloDaoImpl"></bean>
+    <bean id="simboloManager" class="com.calclogic.service.SimboloManagerImpl">
     </bean>
-    <bean id="mostrarCategoriaDAO" class="com.howtodoinjava.dao.MostrarCategoriaDaoImpl">
+    <bean id="mostrarCategoriaDAO" class="com.calclogic.dao.MostrarCategoriaDaoImpl">
     </bean>
-    <bean id="mostrarCategoriaManager" class="com.howtodoinjava.service.MostrarCategoriaManagerImpl">
+    <bean id="mostrarCategoriaManager" class="com.calclogic.service.MostrarCategoriaManagerImpl">
     </bean>
-    <bean id="combUtilities" class="com.howtodoinjava.parse.CombUtilities">
+    <bean id="combUtilities" class="com.calclogic.parse.CombUtilities">
     </bean>
  
     <tx:annotation-driven />

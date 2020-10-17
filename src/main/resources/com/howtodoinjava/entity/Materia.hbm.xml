@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!--
 DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -38,28 +39,23 @@ made subject to such option by the copyright holder.
 
 Contributor(s):
 -->
-
-<!DOCTYPE hibernate-mapping PUBLIC
-  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-
 <hibernate-mapping>
-<class name="com.howtodoinjava.entity.Materia" table="materia" schema="userdb">
-        <id name="id" type="int">
-            <column name="id" />
-            <generator class="sequence">
-                <param name="sequence">materia_id_seq</param>
-            </generator>
-        </id>
-        <property name="nombre" type="string">
-            <column name="nombre" not-null="true" unique="true" />
-        </property>
-        <!--<set name="teoremas" inverse="true" cascade="all">-->
-        <set name="usuarios" inverse="true">
-            <key>
-                <column name="materiaid" not-null="true" />
-            </key>
-            <one-to-many class="com.howtodoinjava.entity.Usuario" />
-        </set>
-    </class>
+  <class name="com.calclogic.entity.Materia" schema="userdb" table="materia">
+    <id name="id" type="int">
+      <column name="id"/>
+      <generator class="sequence">
+        <param name="sequence">materia_id_seq</param>
+      </generator>
+    </id>
+    <property name="nombre" type="string">
+      <column name="nombre" not-null="true" unique="true"/>
+    </property>
+    <!--<set name="teoremas" inverse="true" cascade="all">-->
+    <set inverse="true" name="usuarios">
+      <key>
+        <column name="materiaid" not-null="true"/>
+      </key>
+      <one-to-many class="com.calclogic.entity.Usuario"/>
+    </set>
+  </class>
 </hibernate-mapping>

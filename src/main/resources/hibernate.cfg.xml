@@ -7,20 +7,19 @@
     <property name="hibernate.connection.url">jdbc:postgresql://127.0.0.1:5432/namedb</property>
     <property name="hibernate.connection.username">userdb</property>
     <property name="hibernate.connection.password">password</property>
-    <mapping resource="com/howtodoinjava/entity/Usuario.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Termino.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Publicacion.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Predicado.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Teorema.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Solucion.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Resuelve.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Categoria.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Metateorema.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Dispone.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Materia.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Teoria.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/Simbolo.hbm.xml"/>
-    <mapping resource="com/howtodoinjava/entity/MostrarCategoria.hbm.xml"/>
-
+    <mapping resource="com/calclogic/entity/Usuario.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Termino.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Publicacion.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Predicado.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Teorema.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Solucion.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Resuelve.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Categoria.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Metateorema.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Dispone.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Materia.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Teoria.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Simbolo.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/MostrarCategoria.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>
