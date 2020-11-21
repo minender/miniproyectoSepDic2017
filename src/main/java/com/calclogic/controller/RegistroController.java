@@ -54,7 +54,7 @@ public class RegistroController {
                 List<Materia> list = materiaManager.getAllMaterias();
 //                map.addAttribute("registro", registro);
                 map.addAttribute("materias", list);
-                map.addAttribute("valueSubmit", "Registrarse");
+                map.addAttribute("valueSubmit", "Register");
                 map.addAttribute("isRegistro", "1");
                 return "registro";
             }
@@ -69,7 +69,7 @@ public class RegistroController {
                   List<Materia> list = materiaManager.getAllMaterias();
 //                  map.addAttribute("registro", registro);
                   map.addAttribute("materias", list);
-                  map.addAttribute("valueSubmit", "Registrarse");
+                  map.addAttribute("valueSubmit", "Register");
                   map.addAttribute("isRegistro", "1");
                   return "registro";
                 }

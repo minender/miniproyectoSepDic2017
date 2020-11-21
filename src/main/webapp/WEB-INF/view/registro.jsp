@@ -76,7 +76,7 @@
                 <label for="registro_materiaid" class="col-lg-1 col-form-label">Subject:</label>
                 <div class="col-lg-3">
                     <sf:select path="materiaid" id="registro_materiaid" class="form-control">
-                        <sf:option value="0" label="Seleccione una materia"/>
+                        <sf:option value="0" label="Select one lecture"/>
                         <c:forEach items="${materias}" var="materia">
                             <sf:option value="${materia.id}" label="${materia.nombre}"/>
                         </c:forEach>

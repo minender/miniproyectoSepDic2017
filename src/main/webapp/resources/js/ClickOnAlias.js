@@ -304,6 +304,8 @@ function clickOperator(Math1,myField,teoid,vars)
                 var inputStatement = document.getElementById(myField);
                 inputStatement.value = teoid;
                 $('#stbox').text(teoid);
+                $('#instantiationModal').children().children().children().children()[0].innerText = "Instantiation of "+teoid.substring(3);
+                document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = "<center><table><tr><td>Substitution:</td> <td><div class=\"dropdown\"><button style=\"padding:.05rem .1rem;\" class=\"btn btn-secondary btn-sm dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"></button><div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\"><a class=\"dropdown-item\" href=\"#\" onclick=\"showInstantiation();\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a></div></div></td></tr></table></center>";
                 setJaxSubstitutionVariables(vars,'substitutionButtonsId');
             }
         }
