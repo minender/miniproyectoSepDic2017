@@ -552,9 +552,32 @@
                 </div>
             </div>
         </div>
-    
+
+        <div class="modal fade" id="instantiationModal" tabindex="-1" role="dialog" aria-labelledby="instantiationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="instantiationModalLabel">Instantiation of </h4>
+                        <button onclick="$('#showInstantiation').html('');" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="overflow-x: scroll;">
+                        <center><span id="showInstantiation"></span></center>
+                    </div>
+                </div>
+            </div>                 
+        </div>                 
         </div>
 
+        <!--<div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#" onclick="showInstantiation();" data-target="#instantiationModal" data-toggle="modal">show instantiation</a>
+          </div>
+        </div>-->
+        
         <script>
             function expandMeta(id) {
                 elem = document.getElementById(id);

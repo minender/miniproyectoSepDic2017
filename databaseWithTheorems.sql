@@ -574,7 +574,7 @@ SELECT pg_catalog.setval('userdb.hibernate_sequence', 1, false);
 --
 
 COPY userdb.materia (id, nombre) FROM stdin;
-1	Lógica Simbólica
+1	Symbolic Logic
 \.
 
 
@@ -945,7 +945,7 @@ COPY userdb.termino (combinador, serializado, alias, login) FROM stdin;
 --
 
 COPY userdb.usuario (login, nombre, apellido, correo, password, materiaid, admin) FROM stdin;
-admin	Admin	Admin	correodem@asiado.falso	1f0d65c78b2350520c7bb6409104226063e3d9b05cb0a31ba497f489f98ef6bb8c92cd81ba298543d4fb1b293e139d12f4a7110adb157c75075d8a582e1fe97d	1	t
+teacher1	Teacher	Teacher	thism@ilistomuch.fake	c475d3bde27fa92fbcca391cce7c95e7e33326fe35c41a695ab2e7703d664f4d85b74545d7a6be5c1a55bd8130237c4deb4c134ed165a8f90206cbdd46bfeeb5	1	t
 AdminTeoremas	Admin	Teoremas	admin@teoremas.gries	4b39bf2b2076bb3aec161cfd09ca0614a65f3c0adadb80ff443b8434237ad0a2745018653685a9811f2335dd0b314427ff7568592cd3856ef67ddb0315da4627	1	t
 \.
 

@@ -282,7 +282,7 @@ $(document).ready(function(){
             <div class="table-title">
                 <div class="row">
                     <div class="col-sm-6">
-			<h2>Simbols<b>Manage</b></h2>
+			<h2>Symbols<b>Manage</b></h2>
                     </div>
                     <div class="col-sm-6">
 			<a href="#addEmployeeModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add a new symbol</span></a>
@@ -294,7 +294,7 @@ $(document).ready(function(){
                     <tr>
 
                         <th>ID</th>
-                        <th>Simbol</th>
+                        <th>Symbol</th>
                         <th>Latex notation</th>
                         <th>Arguments</th>
                         <th>Is infix</th>

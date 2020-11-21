@@ -33,7 +33,7 @@
         </c:choose>
 <div class="container mt-5">
            <div class="row justify-content-center flex-column align-items-center" >
-    <h1 style="margin-bottom: 40px">Guía de uso de CalcLogic</h1>
+    <h1 style="margin-bottom: 40px">CalcLogic User's Manual</h1>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0ARIa2l0Kck" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
            </div>
            </div>
