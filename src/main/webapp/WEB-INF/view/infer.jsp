@@ -16,6 +16,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>CalcLogic</title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
+        <!--<script src="${pageContext.request.contextPath}/static/js/popper.min.js"></script> -->
         <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.min.js"></script>
         <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
