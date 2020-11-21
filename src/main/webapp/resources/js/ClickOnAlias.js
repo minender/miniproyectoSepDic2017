@@ -63,6 +63,39 @@ function teoremaClickeable(/*teoId*/){
     
 }
 
+function showInstantiation(){
+    var data = {};
+    data["nStatement"] = $('#nStatement_id').val();
+    data["instanciacion"] = setSubstitutionOnInput('substitutionButtonsId');
+    //var teoSol = $("#nSolucion").val();
+    //data["teoSol"] = teoSol;
+    var action = $('#inferForm').attr('action');
+    var arr = action.split('/');
+    var attr1 = arr.pop();
+    var attr2 = arr.pop();
+    $("#modalLoading").css('display','inline-block');
+    $.ajax({
+        type: 'POST',
+        url: action.substring(0,action.length-(attr1.length+attr2.length+1) )+"inst",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+                $("#modalLoading").css('display','none');
+                if(data.error !== null){
+                    alert(data.error);
+                }
+                else{
+                   $('#showInstantiation').html('$'+data.instantiation+'$');
+                   MathJax.Hub.Typeset();
+                }
+        },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              $("#modalLoading").css('display','none');
+              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            }
+    });
+}
+
 function teoremaInicialMD(teoid){
     var data = {};
     data["teoid"] = teoid;
@@ -278,6 +311,8 @@ function clickOperator(Math1,myField,teoid,vars)
             var inputStatement = document.getElementById(myField);
             inputStatement.value = teoid;
             $('#stbox').text(teoid);
+            $('#instantiationModal').children().children().children().children()[0].innerText = "Instantiation of "+teoid.substring(3);
+            document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = "<center><table><tr><td>Substitution:</td> <td><div class=\"dropdown\"><button style=\"padding:.05rem .1rem;\" class=\"btn btn-secondary btn-sm dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"></button><div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\"><a class=\"dropdown-item\" href=\"#\" onclick=\"showInstantiation();\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a></div></div></td></tr></table></center>";
             setJaxSubstitutionVariables(vars,'substitutionButtonsId');
         }
       }

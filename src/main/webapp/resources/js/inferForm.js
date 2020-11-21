@@ -99,6 +99,7 @@ $(function() {
         $('#instanciacion_id').val("");
         $('#leibniz_id').val("");
         $('#stbox').text("");
+        document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = "Substitution:";
     });
     
 });

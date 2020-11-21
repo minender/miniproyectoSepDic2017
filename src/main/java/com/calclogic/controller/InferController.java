@@ -14,6 +14,7 @@ import com.calclogic.entity.TerminoId;
 import com.calclogic.entity.Usuario;
 import com.calclogic.forms.InferResponse;
 import com.calclogic.forms.InfersForm;
+import com.calclogic.forms.InstResponse;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
@@ -294,7 +295,64 @@ public class InferController {
         //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
-    
+
+    /**
+     * Controller for show a instantiation of a statement to a user.
+     * 
+     * @param initialExpr: Term that represents A
+     * @param teoremProved: The teorem the user is trying to prove
+     * @param finalExpr: Term that represents F
+     * @param proof: The proof tree so far
+     * @param username: name of the user doing the prove
+     * @return new proof if finished, else return the same proof
+     */
+    @RequestMapping(value="/{username}/inst", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)    
+    public @ResponseBody InstResponse instantiate(@RequestParam(value="nStatement") String nStatement, @RequestParam(value="instanciacion") String instanciacion, @PathVariable String username) 
+    {
+        InstResponse response = new InstResponse();
+        PredicadoId predicadoid=new PredicadoId();
+        predicadoid.setLogin(username);
+        
+        Term statementTerm = null;
+        if (nStatement.length() >= 4) {
+            // FIND THE THEOREM BEING USED IN THE HINT
+            String tipoTeo = nStatement.substring(0, 2);
+            String numeroTeo = nStatement.substring(3, nStatement.length());
+        
+            if (tipoTeo.equals("ST")){
+                Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
+            }
+            else if(tipoTeo.equals("MT")){
+                Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
+            }
+            else {
+                response.setError("statement format error");
+                return response;
+            }
+            if (statementTerm == null) {
+                response.setError("The statement doesn't exists");
+                return response;
+            }
+        }
+        else {
+            response.setError("statement format error");
+            return response;
+        }
+    	
+        // CREATE THE INSTANTIATION
+    	ArrayList<Object> arr = null;
+        if (!instanciacion.equals("")){
+          arr=termUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
+        }
+        
+        if (arr == null)
+            response.setInstantiation(statementTerm.toStringInf(simboloManager, ""));
+        else
+            response.setInstantiation(statementTerm.sustParall((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)).toStringInf(simboloManager, ""));
+        return response;
+    }
     
     /**
      * This function will only be correct if called when using DirectMethod

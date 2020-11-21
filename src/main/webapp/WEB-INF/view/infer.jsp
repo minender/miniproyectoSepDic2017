@@ -17,6 +17,7 @@
         <title>CalcLogic</title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
         <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.min.js"></script>
+        <script src="${pageContext.request.contextPath}/static/js/popper.min.js"></script>
         <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
@@ -553,7 +554,30 @@
             </div>
         </div>
     
+        <div class="modal fade" id="instantiationModal" tabindex="-1" role="dialog" aria-labelledby="instantiationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="instantiationModalLabel">Instantiation of </h4>
+                        <button onclick="$('#showInstantiation').html('');" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="overflow-x: scroll;">
+                        <center><span id="showInstantiation"></span></center>
+                    </div>
+                </div>
+            </div>                 
         </div>
+        </div>
+                         
+        <!--<div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#" onclick="showInstantiation();" data-target="#instantiationModal" data-toggle="modal">show instantiation</a>
+          </div>
+        </div>-->
 
         <script>
             function expandMeta(id) {
@@ -616,7 +640,7 @@
               </div>
               
               <c:set var="rootId" value="substitutionButtonsId" scope="request"/>
-          	  <c:set var="labelName" value="Instantiation:" scope="request"/>
+              <c:set var="labelName" value="Substitution:" scope="request"/>
           	  <c:set var="inputForm" value="instanciacion_id" scope="request"/>
 		  	  <tiles:insertDefinition name="jaxSubstitutionDiv" />
               </div>
