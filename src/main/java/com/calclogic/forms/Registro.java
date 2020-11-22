@@ -8,6 +8,7 @@ package com.calclogic.forms;
 import javax.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 /**
@@ -23,7 +24,8 @@ public class Registro {
     @NotEmpty(message="You must not leave this field empty")
     @Email(message="You must put a valid email")
     private String correo;
-    @Pattern(regexp="[a-zA-Z0-9]+", message="You must use only alphanumeric character")
+    @Length(min=3, max=20, message="login must have between 3 and 20 characters")
+    @Pattern(regexp="[a-zA-Z0-9]+$",message="login must be alphanumeric without spaces")
     @NotEmpty(message="You must not leave this field empty")
     private String login;
     @Range(min=1, message="You must choose a subject")

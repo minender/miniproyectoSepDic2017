@@ -36,7 +36,7 @@ public class RegistroController {
             List<Materia> list = materiaManager.getAllMaterias();
             map.addAttribute("registro",new Registro());
             map.addAttribute("materias", list);
-            map.addAttribute("valueSubmit", "Register");
+            map.addAttribute("valueSubmit", "Check In");
             map.addAttribute("isRegistro", "1");
             return "registro";
         }
@@ -48,13 +48,13 @@ public class RegistroController {
             if( bindingResult.hasErrors() )
             {
                 if (!registro.getPassword().equals(registro.getPasswordConf()))
-                  bindingResult.rejectValue("passwordConf","error.registro","La contraseña no coinciden");
+                  bindingResult.rejectValue("passwordConf","error.registro","The password does not match");
                 if (user != null)
-                  bindingResult.rejectValue("login","error.registro","Nombre de usuario no disponible");
+                  bindingResult.rejectValue("login","error.registro","Username not available");
                 List<Materia> list = materiaManager.getAllMaterias();
 //                map.addAttribute("registro", registro);
                 map.addAttribute("materias", list);
-                map.addAttribute("valueSubmit", "Register");
+                map.addAttribute("valueSubmit", "Check In");
                 map.addAttribute("isRegistro", "1");
                 return "registro";
             }
@@ -63,13 +63,13 @@ public class RegistroController {
                 if (user != null || !registro.getPassword().equals(registro.getPasswordConf()))
                 {
                   if (!registro.getPassword().equals(registro.getPasswordConf()))
-                    bindingResult.rejectValue("passwordConf","error.registro","La contraseña no coinciden");
+                    bindingResult.rejectValue("passwordConf","error.registro","The password does not match");
                   if (user != null)
-                    bindingResult.rejectValue("login","error.registro","Nombre de usuario no disponible");
+                    bindingResult.rejectValue("login","error.registro","Username not available");
                   List<Materia> list = materiaManager.getAllMaterias();
 //                  map.addAttribute("registro", registro);
                   map.addAttribute("materias", list);
-                  map.addAttribute("valueSubmit", "Register");
+                  map.addAttribute("valueSubmit", "Check In");
                   map.addAttribute("isRegistro", "1");
                   return "registro";
                 }

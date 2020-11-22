@@ -32,7 +32,7 @@
           <h1>CalcLogic</h1>
         </div>
         <div class="row justify-content-center">
-          <h3>Interactive Theorem Asistant for Calculative Logic</h3>
+          <h3>Interactive Theorem Assistant for Calculational Logic</h3>
         </div>
         
         <sf:form method="POST" modelAttribute="usuariolog">
@@ -56,7 +56,7 @@
         </sf:form>
         <div class="row justify-content-center" >
          <div class="offset-lg-1 col-lg-3">
-          <a href="registro?new">Register</a>
+          <a href="registro?new">Check In</a>
          </div>
         </div>
         <div class="row justify-content-center" >
@@ -69,7 +69,7 @@
           <div class="col-lg-2">
           </div>
           <div class="col-lg-8">
-           <p class="text-justify">CalcLogic is a web application to assist in an interactive way, proofs written in Dijkstra-Scholten calculative logic.</p>
+           <p class="text-justify">CalcLogic is a web application to assist in an interactive way, proofs written in Dijkstra-Scholten calculational logic.</p>
           </div>
           <div class="col-lg-2">
           </div>
