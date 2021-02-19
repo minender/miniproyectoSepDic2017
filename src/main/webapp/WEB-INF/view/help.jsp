@@ -33,8 +33,20 @@
         </c:choose>
     <div class="container mt-5">
         <div class="row justify-content-center flex-column align-items-center" >
-        <h1 style="margin-bottom: 40px">Guía de uso de CalcLogic</h1>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/0ARIa2l0Kck" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <h1 style="margin-bottom: 40px">Select Theorem to Prove</h1>
+        <iframe width="900" height="400" src="https://www.youtube.com/embed/tXh3lYiUwMQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+    <div class="container mt-5">
+        <div class="row justify-content-center flex-column align-items-center" >
+        <h1 style="margin-bottom: 40px">Inference Fields</h1>
+        <iframe width="900" height="400" src="https://www.youtube.com/embed/r9rYegG6gIk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+    <div class="container mt-5">
+        <div class="row justify-content-center flex-column align-items-center" >
+        <h1 style="margin-bottom: 40px">Assisted Entry of Expressions or Formulas</h1>
+        <iframe width="900" height="400" src="https://www.youtube.com/embed/9_7y-1wW7Rw" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
    <c:choose>
