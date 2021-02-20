@@ -57,7 +57,7 @@
     </div>
     <div class="container mt-5">
         <div class="row justify-content-center flex-column align-items-center" >
-        <h1 style="margin-bottom: 40px">Show Infer Without Leibniz Rule</h1>
+        <h1 style="margin-bottom: 40px">Infer Without Leibniz Rule</h1>
         <iframe width="900" height="400" src="https://www.youtube.com/embed/AxVjc1Xe4oU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
