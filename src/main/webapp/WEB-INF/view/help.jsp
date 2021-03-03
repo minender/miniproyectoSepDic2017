@@ -36,8 +36,6 @@
         <h1 style="margin-bottom: 40px">Select Theorem to Prove</h1>
         <iframe width="900" height="400" src="https://www.youtube.com/embed/tXh3lYiUwMQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
-    </div>
-    <div class="container mt-5">
         <div class="row justify-content-center flex-column align-items-center" >
         <h1 style="margin-bottom: 40px">Inference Fields</h1>
         <iframe width="900" height="400" src="https://www.youtube.com/embed/r9rYegG6gIk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -57,6 +55,18 @@
         <div class="row justify-content-center flex-column align-items-center" >
         <h1 style="margin-bottom: 40px">Leibniz or Replacement Rule</h1>
         <iframe width="900" height="400" src="https://www.youtube.com/embed/Df6NlR2ZzUE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="row justify-content-center flex-column align-items-center" >
+        <h1 style="margin-bottom: 40px">Leibniz's Rule by Underlining</h1>
+        <iframe width="900" height="400" src="https://www.youtube.com/embed/3vX6fVBZX2U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="row justify-content-center flex-column align-items-center" >
+        <h1 style="margin-bottom: 40px">Function Application in Variables of Type Function</h1>
+        <iframe width="900" height="400" src="https://www.youtube.com/embed/ducWPQmiqPI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="row justify-content-center flex-column align-items-center" >
+        <h1 style="margin-bottom: 40px">Proof Method "Starting From One Side"</h1>
+        <iframe width="900" height="400" src="https://www.youtube.com/embed/E8igQxqeanM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
    <c:choose>
