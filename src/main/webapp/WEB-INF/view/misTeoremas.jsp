@@ -255,6 +255,6 @@
             <tiles:insertDefinition name="footer" />
         </c:when>
     </c:choose>
-
+   
   </body>
 </html>

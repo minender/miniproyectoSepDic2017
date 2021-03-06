@@ -68,10 +68,10 @@
          <div class="row">
           <div class="col-lg-2">
           </div>
-          <div class="col-lg-8">
+          <div class="col-lg-9">
            <p class="text-justify">CalcLogic is a web application to assist in an interactive way, proofs written in Dijkstra-Scholten calculational logic.</p>
           </div>
-          <div class="col-lg-2">
+          <div class="col-lg-1">
           </div>
          </div>
         </div>
