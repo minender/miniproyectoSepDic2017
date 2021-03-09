@@ -56,9 +56,9 @@
         </div>
         <div class="row justify-content-center flex-column align-items-center" >
         <h1 style="margin-bottom: 40px">Direct Method</h1>
-        <iframe width="900" height="400" src="https://www.youtube.com/embed/xGWYNCULFk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe width="900" height="400" src="https://www.youtube.com/embed/9xGWYNCULFk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
-    </div>9
+    </div>
    <c:choose>
     <c:when test='${!sesion.equals("logout")}'>
         <tiles:insertDefinition name="footer" />
