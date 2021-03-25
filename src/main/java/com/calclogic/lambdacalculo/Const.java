@@ -103,6 +103,12 @@ public class Const extends Term
        return this instanceof TypedA;
    }
    
+   public void getAxioms(List<String> l)
+   {
+       if (this instanceof TypedA)
+           l.add(this.type().toStringFinal() );
+   }
+   
    public Term leibniz(int z, Term subterm)
    {
        if (this == subterm)

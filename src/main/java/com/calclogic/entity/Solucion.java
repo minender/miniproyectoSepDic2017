@@ -7,6 +7,7 @@ import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
+import com.calclogic.parse.StaticCombUtilities;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -68,13 +69,13 @@ public class Solucion implements java.io.Serializable {
     	return demostracion;
     }
     
-	public String getMetodo() {
-		return metodo;
-	}
+    public String getMetodo() {
+	return metodo;
+    }
 
-	public void setMetodo(String metodo) {
-		this.metodo = metodo;
-	}
+    public void setMetodo(String metodo) {
+	this.metodo = metodo;
+    }
     
     public Solucion(Term typeTerm) {
         this.typedTerm = typeTerm;
@@ -147,6 +148,17 @@ public class Solucion implements java.io.Serializable {
 
     public Resuelve getResuelve() {
         return resuelve;
+    }
+    
+    public boolean getResuelto() {
+        return resuelto;
+    }
+    
+    public boolean thereIsAxiom(String axiom) {
+        List<String> l = new ArrayList<String>();
+        typedTerm.getAxioms(l);
+        
+        return false;
     }
 
     /*public void addArregloInferencias(PasoInferencia paso) {

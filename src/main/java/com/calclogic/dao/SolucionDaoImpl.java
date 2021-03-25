@@ -54,6 +54,13 @@ public class SolucionDaoImpl implements SolucionDAO{
     
     @Override
     @Transactional
+    public List<Solucion> solutionsWithAxiom(int idTeo){
+        return this.sessionFactory.getCurrentSession()
+                .createQuery("SELECT s FROM Solucion s, Teorema t WHERE t.id = :idTeo AND s.demostracion LIKE '%A^{' || t.enunciado || '}%'").setParameter("idTeo",idTeo).list();
+    }
+    
+    @Override
+    @Transactional
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId){
         return this.sessionFactory.getCurrentSession().createQuery("FROM Solucion WHERE resuelve.id = :resuelveId").setParameter("resuelveId",resuelveId).list();
     }

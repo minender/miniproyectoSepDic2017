@@ -236,7 +236,7 @@ public class InferController {
             }else{
                 map.addAttribute("elegirMetodo","0");
             }
-            
+
             map.addAttribute("formula",response.getHistorial());
             Term type = null;//typedTerm.type();
             String teoInicial;

@@ -19,11 +19,11 @@ public interface SolucionDAO {
     
     public void deleteSolucion(int id);
     
-
     public Solucion getSolucion(int id);
+    
+    public List<Solucion> solutionsWithAxiom(int idTeo);
     
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId);
     
     public List<Integer> getAllSolucionesIdByResuelve(int resuelveId);
-    
 }

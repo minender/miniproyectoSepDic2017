@@ -34,7 +34,15 @@ public class SolucionManagerImpl implements SolucionManager {
     @Override
     @Transactional
     public void addSolucion(Solucion sol){        
-        solucionDAO.addSolucion(sol);
+        List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(sol.getResuelve().getId());
+        boolean allResuelto = true;
+        for (Solucion otherSol: sols) {
+            allResuelto = allResuelto && otherSol.getResuelto();
+            if (!allResuelto)
+                break;
+        }
+        if (allResuelto)
+            solucionDAO.addSolucion(sol);
     }
     
     
@@ -96,7 +104,7 @@ public class SolucionManagerImpl implements SolucionManager {
     @Override
     @Transactional
     public HashMap<String,Integer> getAllSolucionesIdByResuelve(int resuelveId){
-           
+
         HashMap<String, Integer> listaSoluciones = new HashMap();
         
         List<Integer> idSoluciones = solucionDAO.getAllSolucionesIdByResuelve(resuelveId); 

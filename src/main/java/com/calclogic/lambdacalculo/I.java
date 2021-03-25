@@ -58,6 +58,11 @@ public class I extends Term {
        return false;
    }
    
+   public void getAxioms(List<String> l)
+   {
+       ;
+   }
+   
    public Term leibniz(int z, Term subterm)
    {
        if (this == subterm)

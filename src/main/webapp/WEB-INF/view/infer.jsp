@@ -849,6 +849,6 @@
               })
         
           </script>
-    <tiles:insertDefinition name="footer" /> 
+    <%--<tiles:insertDefinition name="footer" /> --%>
     </body>
 </html>

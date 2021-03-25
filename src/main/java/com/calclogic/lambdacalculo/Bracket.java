@@ -82,6 +82,11 @@ public class Bracket extends Term{
         return t.containTypedA();
     }
     
+    public void getAxioms(List<String> l)
+    {
+        t.getAxioms(l);
+    }
+    
     public Term leibniz(int z, Term subterm)
     {
        if (this == subterm)

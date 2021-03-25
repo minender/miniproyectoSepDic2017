@@ -413,6 +413,12 @@ public class App extends Term{
         return p.containTypedA() || q.containTypedA();
     }
     
+    public void getAxioms(List<String> l)
+    {
+        p.getAxioms(l);
+        q.getAxioms(l);
+    }
+    
     public Term leibniz(int z, Term subterm)
     {
        if (this == subterm)

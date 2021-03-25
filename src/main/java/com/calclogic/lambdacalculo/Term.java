@@ -142,6 +142,8 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract boolean containTypedA();
     
+    public abstract void getAxioms(List<String> l);
+    
     public abstract Term leibniz(int z, Term subterm);
     
     @Override
