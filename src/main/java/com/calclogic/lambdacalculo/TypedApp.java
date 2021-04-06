@@ -26,7 +26,7 @@ public class TypedApp extends App implements TypedTerm{
             try
             {
               String op = ((Const)((App)((App)t2Type).p).p).getCon().trim();
-              if (!op.equals("c_{1}") && !op.equals("c_{200}"))
+              if (!op.equals("c_{1}") && !op.equals("c_{20}"))
                   throw new TypeVerificationException();
             }
             catch (ClassCastException e)
@@ -41,7 +41,7 @@ public class TypedApp extends App implements TypedTerm{
             try
             {
               String op1 = ((Const)((App)((App)t1Type).p).p).getCon().trim();
-              if (!op1.equals("c_{1}") && !op1.equals("c_{200}") && !op1.equals("c_{2}") && !op1.equals("c_{3}"))
+              if (!op1.equals("c_{1}") && !op1.equals("c_{20}") && !op1.equals("c_{2}") && !op1.equals("c_{3}"))
                   throw new TypeVerificationException();
               if ((!op1.equals("c_{1}") && !op1.equals("c_{2}")) || !t1Izq.equals(t2Type)) 
               {
@@ -49,7 +49,7 @@ public class TypedApp extends App implements TypedTerm{
                 Term t2Izq = ((App)t2Type).q;
                 String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
         
-                boolean eq = op1.equals("c_{200}") && op2.equals("c_{200}");
+                boolean eq = op1.equals("c_{20}") && op2.equals("c_{20}");
                 boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
 //                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
 //                        || op2.equals("c_{3}") || op2.equals("c_{2}"));

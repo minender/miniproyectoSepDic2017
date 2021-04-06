@@ -250,11 +250,10 @@
 
         }
 </script> 
-    <%--<c:choose>
+    <c:choose>
         <c:when test="${isDifferentUser.intValue()!=1}">
             <tiles:insertDefinition name="footer" />
         </c:when>
     </c:choose>
-   --%>
   </body>
 </html>

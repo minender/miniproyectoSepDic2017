@@ -16,9 +16,11 @@ function buscarSoluciones(idTeo){
             var len = Object.keys(data.soluciones).length;
             var i;
             for (i=1; i <= len; i++){
-                var key = "Proof "+(len-i+1);
+                var key = "Proof "+i;//(len-i+1);
+                if (data.soluciones[key] == undefined)
+                    key = "(Incomplete) Proof "+i;
                 var link = "<a href='javascript:buscarFormula("+ data.soluciones[key] +","+ data.idTeo +");'> ";
-                link = link + "Proof " + i + "</a>";
+                link = link + key + "</a>";//"Proof " + i + "</a>";
                 $('#listaSoluciones').append("<li>" + link +  " </li>");
 
             }
@@ -27,7 +29,7 @@ function buscarSoluciones(idTeo){
                 $('#formula').html("");
             }
             else{
-                alert("EL teorema seleccionado no tiene soluciones guardadas.");
+                alert("The selected theorem has no saved proofs.");
                 $("#panelSoluciones").removeClass("d-none");
             }
         }

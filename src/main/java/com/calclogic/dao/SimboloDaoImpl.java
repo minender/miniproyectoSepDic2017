@@ -58,6 +58,6 @@ public class SimboloDaoImpl implements SimboloDAO {
     @Override
     @Transactional
     public List<Simbolo> getAllSimbolo(){
-        return this.sessionFactory.getCurrentSession().createQuery("FROM Simbolo order by id").list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Simbolo WHERE  id >= 1 ORDER BY id").list();
     }
 }

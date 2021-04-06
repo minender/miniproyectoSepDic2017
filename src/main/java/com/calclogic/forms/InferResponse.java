@@ -485,7 +485,7 @@ public class InferResponse {
             Term ultInfType = ultInf.type();
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
                    !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{200}")
+                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{20}")
                     )
                )
             {

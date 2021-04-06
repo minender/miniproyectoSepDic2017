@@ -116,6 +116,13 @@ public class SolucionManagerImpl implements SolucionManager {
             listaSoluciones.put(nombreSolucion,id);
             i++;
         }
+        List<Integer> idSoluciones2 = solucionDAO.getIncompleteSolucionIdByResuelve(resuelveId);
+        for (int id : idSoluciones2){
+            
+            nombreSolucion = "(Incomplete) Proof " + i;
+            listaSoluciones.put(nombreSolucion,id);
+            i++;
+        }
         
         return listaSoluciones;
     

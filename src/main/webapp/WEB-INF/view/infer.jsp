@@ -417,6 +417,37 @@
                                    
                 <div id="misteoremas"> 
                     <div id="showNoCategories">
+<!--
+El bloque siguiente es de la forma
+for categorias
+  for resuelves
+    if categoria=resuelve.categoria
+       if !selecTeo
+          if resu.isResuelto() || resu.getNumeroteorema().equals(nTeo)
+             if resu.getNumeroteorema().equals(nTeo)
+                  algo
+             else
+                  otra cosa
+             fi;
+             algo;
+             if !resu.getNumeroteorema().equals(nTeo)
+                  algo
+             fi
+          fi
+       else
+          if resu.isResuelto()
+             algo
+          else
+             otra cosa
+          fi;
+          if !resu.isEsAxioma()
+             algo
+          else
+             otra cosa
+          fi
+       fi
+    fi
+-->
                 <c:choose>
                     <c:when test="${showCategorias.size() == 0}">
                         You currently have no categories to display, adjust your settings
@@ -504,7 +535,7 @@
                                            <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
                                        </span>--%>
                                         </c:otherwise>
-                                        </c:choose>
+                                </c:choose>
                               </h6>
                             </li>
                         </c:when>
@@ -849,6 +880,6 @@
               })
         
           </script>
-    <%--<tiles:insertDefinition name="footer" /> --%>
+    <tiles:insertDefinition name="footer" /> 
     </body>
 </html>

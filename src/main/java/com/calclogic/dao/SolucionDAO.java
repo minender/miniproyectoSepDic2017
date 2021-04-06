@@ -26,4 +26,6 @@ public interface SolucionDAO {
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId);
     
     public List<Integer> getAllSolucionesIdByResuelve(int resuelveId);
+    
+    public List<Integer> getIncompleteSolucionIdByResuelve(int resuelveId);
 }

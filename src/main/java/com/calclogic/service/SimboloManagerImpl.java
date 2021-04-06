@@ -26,7 +26,24 @@ public class SimboloManagerImpl implements SimboloManager {
        
     @Autowired
     private SimboloDAO SimboloDAO;
+    private int propFunApp;
+    private int termFunApp;
     
+    public int getPropFunApp() {
+        return propFunApp;
+    }
+    
+    public int getTermFunApp() {
+        return termFunApp;
+    }
+    
+    public String propFunAppSym() {
+        return "c_{"+ propFunApp +"}";
+    }
+    
+    public String termFunAppSym() {
+        return "c_{"+ termFunApp +"}";
+    }
     
     @Override
     @Transactional
@@ -60,6 +77,12 @@ public class SimboloManagerImpl implements SimboloManager {
         return SimboloDAO.getAllSimbolo();
     }
 
- 
+    public void setPropFunApp(int propFunApp) {
+        this.propFunApp = propFunApp;
+    }
+    
+    public void setTermFunApp(int termFunApp) {
+        this.termFunApp = termFunApp;
+    }
     
 }

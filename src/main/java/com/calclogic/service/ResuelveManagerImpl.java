@@ -111,6 +111,42 @@ public class ResuelveManagerImpl implements ResuelveManager {
         }
         return resuelves;
     }
+    
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin,String teoNum){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserWithoutAxiom(userLogin,teoNum);//getAllResuelveByUser(userLogin);
+
+        try {
+            for (Resuelve resuelve : resuelves) {
+                List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelve.getId());
+                resuelve.setDemopendiente(-1);                
+                int numeroDeSols = 0;
+                for (Solucion sol: sols)
+                {
+                   if (!sol.isResuelto()){
+                      resuelve.setDemopendiente(sol.getId());
+                   }
+                   numeroDeSols ++;
+                }
+                
+                if(resuelve.isResuelto() && numeroDeSols == 0){
+                    resuelve.setEsAxioma(true);
+                }
+                else{
+                    resuelve.setEsAxioma(false);
+                    
+                }
+                
+                Teorema teo = resuelve.getTeorema();
+                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resuelves;
+    }
+    
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUserResuelto(String userLogin){

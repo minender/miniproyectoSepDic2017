@@ -29,6 +29,8 @@ public interface ResuelveManager {
     
     public List<Resuelve> getAllResuelveByUserWithSol(String userLogin);
     
+    public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin,String teoNum);
+    
     public List<Resuelve> getAllResuelveByUserResuelto(String userLogin);
 
     public List<Resuelve> getResuelveByTeorema(int teoremaID);

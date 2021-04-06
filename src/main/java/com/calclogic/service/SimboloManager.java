@@ -14,6 +14,13 @@ import java.util.List;
  */
 public interface SimboloManager {
     
+    public int getPropFunApp();
+    
+    public int getTermFunApp();
+    
+    public String propFunAppSym();
+    
+    public String termFunAppSym();
     
     public Simbolo addSimbolo(Simbolo Simbolo);
     

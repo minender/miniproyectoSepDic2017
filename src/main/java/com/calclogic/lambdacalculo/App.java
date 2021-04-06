@@ -99,12 +99,17 @@ public class App extends Term{
             }
             if (p.occur(var) && (varsTerm.size() ==  Vars.size()) && 
                 !varsTerm.get(i).occur(new Var('E')) && 
+                !varsTerm.get(i).occur(new Var('f')) && 
+                !varsTerm.get(i).occur(new Var('g')) &&
                 !(varsTerm.get(i).esRedexFinal().t) && 
                 !(varsTerm.get(i) instanceof Bracket)
                )
             {
                 Term term = varsTerm.get(i);
-                return new App(new Bracket(new Var('z'),term), q.sustParall(Vars, varsTerm));
+                if (p.occur(new Var('E')))
+                    return new App(new Bracket(new Var('z'),term), q.sustParall(Vars, varsTerm));
+                else
+                    return new App(new Bracket(new Var('x'),term), q.sustParall(Vars, varsTerm));
             }
             else
                 return new App(p.sustParall(Vars, varsTerm), q.sustParall(Vars, varsTerm));
@@ -491,7 +496,11 @@ public class App extends Term{
         
         if ( j > nArgs) {
            sym = s.getSimbolo(10);
-           App newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           App newTerm;
+           if (p instanceof Var && p.occur(new Var('E')))
+            newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           else
+            newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            return newTerm.privateToStringInf(s, numTeo);
         }
         Map<String,String> values = new HashMap<String, String>();
@@ -669,7 +678,11 @@ public class App extends Term{
         
         if ( j > nArgs) {
            sym = s.getSimbolo(10);
-           App newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           App newTerm;
+           if (p instanceof Var && p.occur(new Var('E')))
+            newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           else
+            newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            return newTerm.privateToStringWithInputs(s, position);
         }
         Map<String,String> values = new HashMap<String, String>();
@@ -749,7 +762,11 @@ public class App extends Term{
         
         if ( j > nArgs) {
            sym = s.getSimbolo(10);
-           App newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           App newTerm;
+           if (p instanceof Var && p.occur(new Var('E')))
+            newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           else
+            newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            IntXIntXString result = newTerm.privateToStringInfLabeled(s,z, t, l, l2, id, nivel);
            l.add(t.leibniz(z, this));
            return result;
@@ -805,7 +822,7 @@ public class App extends Term{
         l2.add(l2.size(),setVar+id.id+",");
         //l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
         //l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
-        if (opId != 10)
+        if (opId != s.getPropFunApp() || opId != s.getTermFunApp())
             l.add(t.leibniz(z, this));
         id.id++;
         return new IntXIntXString(sym.getId(),sym.getPr(),term);
@@ -832,7 +849,10 @@ public class App extends Term{
         }
         int nArgs;
         if (aux instanceof Var) {
-            id = 10;
+            if (aux.occur(new Var('E')))
+                id = s.getPropFunApp();
+            else
+                id = s.getTermFunApp();
             nArgs = 0;
         }
         else {
@@ -843,7 +863,11 @@ public class App extends Term{
         }
         if ( j > nArgs) {
            Simbolo sym = s.getSimbolo(10);
-           Term newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           App newTerm;
+           if (p instanceof Var && p.occur(new Var('E')))
+            newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           else
+            newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            return newTerm.toStringFormatC(s, pos, id);
         }
         /*if (id == 29)
@@ -929,7 +953,11 @@ public class App extends Term{
         
         if ( j > nArgs) {
            sym = s.getSimbolo(10);
-           App newTerm = new App(new App(new Const(10,"c_{10}",!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           App newTerm;
+           if (p instanceof Var && p.occur(new Var('E')))
+            newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           else
+            newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            return newTerm.privateToStringInf(s, numTeo);
         }
         
