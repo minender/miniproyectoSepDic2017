@@ -230,7 +230,7 @@ function saveMathJaxFormContent(divId){
 function loadMathJaxFormContent(divId, dictionarySave){
 	
 	// Get the new input boxes
-	var inputs = $('#' + divId + ' .MathJax_Input').toArray();
+	var inputs = $('#' + divId.replace(/(\.)/g, "\\.") + ' .MathJax_Input').toArray();
 	// Set the value of each new input box to its old value
 	inputs.forEach(function(element){
 		if(dictionarySave.hasOwnProperty(element.id)){
@@ -608,7 +608,7 @@ function stringToIntString(string){
  * @param latexNotation latex notation to display
  * @returns
  */
-function inferRecoverC(cNotation, latexNotation){
+function inferRecoverC(cNotation, latexNotation, rootId){
 	
 	var n = cNotation.length;
 	const error = "Wrong Input, missing closing } or a , ";
@@ -616,11 +616,11 @@ function inferRecoverC(cNotation, latexNotation){
 	var variablesSaved = {};
 	
 	//Add prefix to latexNotation
-	latexNotation = window['leibnizSymbolsId_prefixMathJax'] + latexNotation;
+	latexNotation = window[rootId + 'prefixMathJax'] + latexNotation;
 	
 	// Global Variables
-	var jaxInputDictionary = window["leibnizSymbolsId_jaxInputDictionary"];
-	var simboloDic = window['leibnizSymbolsId_simboloDic'];
+	var jaxInputDictionary = window[rootId + "jaxInputDictionary"];
+	var simboloDic = window[rootId + 'simboloDic'];
 	
 	// Iteration variables
 	var id;
@@ -687,17 +687,18 @@ function inferRecoverC(cNotation, latexNotation){
     }
     
     // Change all the aliases for their C representation
-    newParserString = setAliasesToC(newParserString, 'leibnizSymbolsId_');
+    newParserString = setAliasesToC(newParserString, rootId);
     
     // Update the global parser string 
-    window['leibnizSymbolsId_parserString'] = newParserString;
+    window[rootId + 'parserString'] = newParserString;
     
     // Update the jax expression
-    var math = MathJax.Hub.getAllJax('leibnizSymbolsId_MathJaxDiv')[0];
+    var math = MathJax.Hub.getAllJax(rootId + 'MathJaxDiv')[0];
     MathJax.Hub.Queue(["Text",  math, "{" +latexNotation + "}"]);
     
     // Load the variables on the input boxes
-    loadMathJaxFormContent('leibnizSymbolsId_MathJaxDiv',  variablesSaved);
+
+    loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);
     return newParserString;
 	
 }

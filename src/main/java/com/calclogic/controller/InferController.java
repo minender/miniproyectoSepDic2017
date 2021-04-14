@@ -15,9 +15,11 @@ import com.calclogic.entity.Usuario;
 import com.calclogic.forms.InferResponse;
 import com.calclogic.forms.InfersForm;
 import com.calclogic.forms.InstResponse;
+import com.calclogic.forms.SubstResponse;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
+import com.calclogic.lambdacalculo.Equation;
 import com.calclogic.lambdacalculo.Sust;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.lambdacalculo.Term;
@@ -354,7 +356,115 @@ public class InferController {
             response.setInstantiation(statementTerm.sustParall((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)).toStringInf(simboloManager, ""));
         return response;
     }
-                    
+            
+    /**
+     * Controller for automatic instantiation of a statement to a user.
+     * 
+     * @param initialExpr: Term that represents A
+     * @param teoremProved: The teorem the user is trying to prove
+     * @param finalExpr: Term that represents F
+     * @param proof: The proof tree so far
+     * @param username: name of the user doing the prove
+     * @return new proof if finished, else return the same proof
+     */
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/auto", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)    
+    public @ResponseBody SubstResponse autoSubst(@RequestParam(value="nStatement") String nStatement, 
+                           @RequestParam(value="leibniz") String leibniz, @RequestParam(value="freeV") String freeV, 
+                           @PathVariable String username, @PathVariable String nSol) 
+    {
+        SubstResponse response = new SubstResponse();
+        PredicadoId predicadoid=new PredicadoId();
+        predicadoid.setLogin(username);
+        
+        Term statementTerm = null;
+        if (nStatement.length() >= 4) {
+            // FIND THE THEOREM BEING USED IN THE HINT
+            String tipoTeo = nStatement.substring(0, 2);
+            String numeroTeo = nStatement.substring(3, nStatement.length());
+        
+            if (tipoTeo.equals("ST")){
+                Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
+            }
+            else if(tipoTeo.equals("MT")){
+                Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
+            }
+            else {    
+                response.setError("statement format error");
+                return response;
+            }
+            if (statementTerm == null) {
+                response.setError("The statement doesn't exists");
+                return response;
+            }
+        }
+        else {
+            response.setError("statement format error");
+            return response;
+        }
+       
+       // String freeV = statementTerm.freeVars();
+       if (!freeV.equals("")) {
+          String[] freeVars = freeV.split(",");
+         Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+         Term typedTerm = solucion.getTypedTerm();
+         Term lastLine = typedTerm.type();
+         if (lastLine == null)
+            lastLine = typedTerm;
+         else
+            lastLine = ((App)((App)lastLine).p).q;
+         Term leibnizTerm = null;
+         // CREATE THE INSTANTIATION
+         Sust sust = null;
+         Equation eq;
+         if (!leibniz.equals("")){
+           leibnizTerm =termUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
+           eq = new Equation(leibnizTerm,lastLine);
+           leibnizTerm = eq.mgu(simboloManager).getTerms().get(0);
+         }
+         else 
+           leibnizTerm = lastLine;
+         eq = new Equation(((App)statementTerm).q,leibnizTerm);
+         sust = eq.mgu(simboloManager);
+         if (sust == null) {
+             eq = new Equation(((App)((App)statementTerm).p).q,leibnizTerm);
+             sust = eq.mgu(simboloManager);
+         }
+
+         if (sust != null) {
+            String[] sustVars = sust.getVars().toString().replaceAll("[\\s\\[\\]]", "").split(",");
+            String[] sustFormatC = new String[freeVars.length];
+            String[] sustLatex = new String[freeVars.length];
+            for (int i=0; i<freeVars.length; i++) {
+                int j = sust.getVars().indexOf(new Var(freeVars[i].toCharArray()[0]));
+                if (j != -1) {
+                    sustFormatC[i] = sust.getTerms().get(j).toStringFormatC(simboloManager,"",0,"substitutionButtonsId."+freeVars[i]);
+                    sustLatex[i] = sust.getTerms().get(j).toStringWithInputs(simboloManager,"","substitutionButtonsId."+freeVars[i]);
+                }
+                else {
+                    sustFormatC[i] = "";
+                    sustLatex[i] = "";
+                }
+            }
+
+            response.setSustFormatC(sustFormatC);
+            response.setSustLatex(sustLatex);
+            return response;
+         }
+         else {
+           response.setSustFormatC(null);
+           response.setSustLatex(null);
+           return response;  
+         }
+       }
+       else {
+           response.setSustFormatC(null);
+           response.setSustLatex(null);
+           return response;
+       }
+    }
+    
     /**
      * This function will only be correct if called when using DirectMethod
      * This function will return a new prove tree in case it finds out that the last hint of prove

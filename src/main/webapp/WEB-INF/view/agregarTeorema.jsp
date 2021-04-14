@@ -116,6 +116,6 @@
         </c:choose>
       </c:otherwise>
     </c:choose>
-    <tiles:insertDefinition name="footer" />
+    <%--<tiles:insertDefinition name="footer" />--%>
   </body>
 </html>

@@ -153,9 +153,9 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract String toStringInfLabeled(SimboloManager s,int z, Term initTerm, List<Term> leibniz, List<String> leibnizL, Id id, int nivel);
     
-    public abstract String toStringFormatC(SimboloManager s, String pos, int id);
+    public abstract String toStringFormatC(SimboloManager s, String pos, int id, String rootId);
     
-    public abstract String toStringWithInputs(SimboloManager s, String position);
+    public abstract String toStringWithInputs(SimboloManager s, String position, String rootId);
     
     public abstract ToString toStringAbrvV1(ToString toString);
     
@@ -237,8 +237,8 @@ public abstract class Term implements Cloneable, Serializable{
         String st2 = "";
         st+="<script>\nvar leibniz=[";
         for(Term it: l1) {
-            st+="\n\""+it.toStringFormatC(s,"",0).replace("\\", "\\\\")+"\",";
-            st2+="\n\""+it.toStringWithInputs(s,"").replace("\\", "\\\\")+"\",";
+            st+="\n\""+it.toStringFormatC(s,"",0,"leibnizSymbolsId_").replace("\\", "\\\\")+"\",";
+            st2+="\n\""+it.toStringWithInputs(s,"","leibnizSymbolsId_").replace("\\", "\\\\")+"\",";
         }
         st = st.substring(0, st.length()-1)+"];\n";
         st += "leibnizLatex=[";
@@ -841,6 +841,34 @@ public abstract class Term implements Cloneable, Serializable{
             deep--;
         }
         return (new AppIzq(p1,appizq,aizqnivel2,i));
+    }
+    
+    public Stack<Term> unfold(SimboloManager s) {
+        Stack<Term> stk = new Stack<Term>();
+        if (this instanceof App) {
+            stk.push(((App)this).q);
+            Term aux = ((App)this).p;
+            int j = 1;
+            while ( aux instanceof App )
+            {
+               stk.push(((App)aux).q);
+               aux = ((App)aux).p;
+               j++;
+            }
+            if (aux instanceof Const && s.getSimbolo(((Const)aux).getId()).getArgumentos() == stk.size()) 
+            {
+                stk.push(aux);
+                return stk;
+            }
+            else
+                return null;
+        }
+        else if (this instanceof Const) {
+            stk.push(this);
+            return stk;
+        }
+        else
+            return null;
     }
     
     public Term kappa()

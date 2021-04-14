@@ -71,7 +71,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     @Transactional
     public List<Resuelve> getAllResuelveByUserWithoutAxiom(String userLogin, String teoNum){
         return this.sessionFactory.getCurrentSession()
-                .createQuery("FROM Resuelve r WHERE r.usuario.login = :userLogin AND NOT EXISTS (SELECT s FROM Solucion s, Resuelve e, Teorema t WHERE e.numeroteorema = :teoNum AND t.id = e.teorema.id AND r.id = s.resuelve.id AND s.demostracion LIKE '%A^{' || t.enunciado || '}%')").setParameter("userLogin",userLogin).setParameter("teoNum",teoNum).list();
+                .createQuery("FROM Resuelve r WHERE r.usuario.login = :userLogin AND ((NOT EXISTS (SELECT s FROM Solucion s WHERE r.id = s.resuelve.id)) OR EXISTS (SELECT s FROM Solucion s, Resuelve e, Teorema t WHERE e.numeroteorema = :teoNum AND t.id = e.teorema.id AND r.id = s.resuelve.id AND NOT (s.demostracion LIKE '%A^{' || t.enunciado || '}%'))) ORDER BY char_length(r.numeroteorema), r.numeroteorema").setParameter("userLogin",userLogin).setParameter("teoNum",teoNum).list();
     }
     
     @Override

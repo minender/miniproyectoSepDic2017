@@ -252,7 +252,7 @@ public class Const extends Term
     }
     
     @Override
-    public String toStringFormatC(SimboloManager s, String pos, int id){
+    public String toStringFormatC(SimboloManager s, String pos, int id, String rootId){
         Simbolo c1 = s.getSimbolo(this.id);
         String term;
         if (c1 != null) 
@@ -264,7 +264,7 @@ public class Const extends Term
     }
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position) {
+    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
         Simbolo c1 = s.getSimbolo(this.id);
         if (c1 == null)
            return con;

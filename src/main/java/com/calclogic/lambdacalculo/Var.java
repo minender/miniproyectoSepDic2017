@@ -203,16 +203,16 @@ public class Var extends Term{
     }
     
     @Override
-    public String toStringFormatC(SimboloManager s,String pos,int id) {
+    public String toStringFormatC(SimboloManager s,String pos,int id, String rootId) {
         char ascii = (char) indice; 
-            return "Input{"+ascii+",leibnizSymbolsId_"+pos+",phatherOpId"+(id!=0?id:"")+"}";
+            return "Input{"+ascii+"," + rootId + pos + ",phatherOpId"+(id!=0?id:"")+"}";
     }
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position) {
+    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
         if(alias == null ) {
             char ascii = (char) indice; 
-            return "\\FormInput{leibnizSymbolsId_"+position+"}";
+            return "\\FormInput{"+rootId + position+"}";
         }else {
             return alias;
         }

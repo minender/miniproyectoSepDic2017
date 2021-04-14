@@ -207,7 +207,9 @@ public class TermParser extends Parser {
 				setState(21);
 				match(T__2);
 				Term aux;
-				                                               if (Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == 10 ) {
+				                                               if (Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == sm.getPropFunApp() 
+                                                                                   || Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == sm.getTermFunApp()
+                                                                                  ) {
 				                                                Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator();
 				                                                aux = i.next();
 				                                                for(i = i; i.hasNext();)

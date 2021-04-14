@@ -94,7 +94,50 @@ function showInstantiation(){
               alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
             }
     });
-}                    
+}
+
+function automaticSubst(){
+    var data = {};
+    data["nStatement"] = $('#nStatement_id').val();
+    data["leibniz"] = setInputValueOnParser('leibnizSymbolsId');
+    data["freeV"] = window["substitutionButtonsId._variables"].toString();
+    //var teoSol = $("#nSolucion").val();
+    //data["teoSol"] = teoSol;
+    var action = $('#inferForm').attr('action');
+    action = action + "/auto"
+    /*var arr = action.split('/');
+    var attr1 = arr.pop();
+    var attr2 = arr.pop();*/
+    $("#modalLoading").css('display','inline-block');
+    $.ajax({
+        type: 'POST',
+        url: action, //.substring(0,action.length-(attr1.length+attr2.length+1) )+"auto",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+                $("#modalLoading").css('display','none');
+                if(data.error !== null){
+                    alert(data.error);
+                }
+                else{
+                   var freeVars = window["substitutionButtonsId._variables"];
+                   if (data.sustFormatC != null)
+                    for (k=0; k < freeVars.length; k++)
+                      if (data.sustFormatC[k] != "")
+                       inferRecoverC(data.sustFormatC[k], data.sustLatex[k], "substitutionButtonsId."+freeVars[k]);
+                      else
+                       cleanMathJax("substitutionButtonsId."+freeVars[k]);
+                   // $('#showInstantiation').html('$'+data.sustFormatC[0]+','+data.sustFormatC[1]+'$');
+                   //$('#showInstantiation').html('$'+data.sustLatex[0]+','+data.sustLatex[1]+'$');
+                   //MathJax.Hub.Typeset();
+                }
+        },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              $("#modalLoading").css('display','none');
+              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            }
+    });
+}
 
 function teoremaInicialMD(teoid){
     var data = {};
@@ -295,6 +338,7 @@ function clickOperator(Math1,myField,teoid,vars)
       if(target)
       {
         var metodo = document.getElementById('metodosDemostracion').value;
+        var div = "<center><table><tr><td>Substitution:</td> <td><div class=\"dropdown\"><button style=\"padding:.05rem .1rem;\" class=\"btn btn-secondary btn-sm dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"></button><div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\"><a class=\"dropdown-item\" href=\"#\" onclick=\"showInstantiation();\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a><a class=\"dropdown-item\" href=\"#\" onclick=\"automaticSubst();\" data-toggle=\"modal\">automatic substitution</a></div></div></td></tr></table></center>";
         if(metodo === "1"){
             var selectTeoInicial = $("#selectTeoInicial").val(); 
             if(selectTeoInicial==="1"){
@@ -305,8 +349,9 @@ function clickOperator(Math1,myField,teoid,vars)
                 inputStatement.value = teoid;
                 $('#stbox').text(teoid);
                 $('#instantiationModal').children().children().children().children()[0].innerText = "Instantiation of "+teoid.substring(3);
-                document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = "<center><table><tr><td>Substitution:</td> <td><div class=\"dropdown\"><button style=\"padding:.05rem .1rem;\" class=\"btn btn-secondary btn-sm dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"></button><div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\"><a class=\"dropdown-item\" href=\"#\" onclick=\"showInstantiation();\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a></div></div></td></tr></table></center>";
+                document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = div;
                 setJaxSubstitutionVariables(vars,'substitutionButtonsId');
+                automaticSubst();
             }
         }
         else{
@@ -314,8 +359,9 @@ function clickOperator(Math1,myField,teoid,vars)
             inputStatement.value = teoid;
             $('#stbox').text(teoid);
             $('#instantiationModal').children().children().children().children()[0].innerText = "Instantiation of "+teoid.substring(3);
-            document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = "<center><table><tr><td>Substitution:</td> <td><div class=\"dropdown\"><button style=\"padding:.05rem .1rem;\" class=\"btn btn-secondary btn-sm dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"></button><div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\"><a class=\"dropdown-item\" href=\"#\" onclick=\"showInstantiation();\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a></div></div></td></tr></table></center>";
+            document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = div;
             setJaxSubstitutionVariables(vars,'substitutionButtonsId');
+            automaticSubst();
         }
       }
     };    

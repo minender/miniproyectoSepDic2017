@@ -207,7 +207,7 @@ public class Sust extends Term{
     }
 
     @Override
-    public String toStringFormatC(SimboloManager s, String pos, int id)
+    public String toStringFormatC(SimboloManager s, String pos, int id, String rootId)
     {
         return toString();
     }
@@ -227,7 +227,7 @@ public class Sust extends Term{
     }*/
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position) {
+    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
         String varss = "";
         String termss = "";
         for (Var v : vars)

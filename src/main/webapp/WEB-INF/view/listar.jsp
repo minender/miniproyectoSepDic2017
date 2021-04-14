@@ -123,10 +123,10 @@
             </c:when>
         </c:choose>--%>
     ${mensaje}
-    <c:choose>
+    <%--<c:choose>
       <c:when test="${perfil.intValue()==1}">
         <tiles:insertDefinition name="footer" />
       </c:when>
-    </c:choose>
+    </c:choose>--%>
   </body>
 </html>

@@ -6,16 +6,11 @@
 package com.calclogic.service;
 
 import com.calclogic.dao.SimboloDAO;
-import com.calclogic.dao.SolucionDAO;
 import com.calclogic.entity.Simbolo;
-import com.calclogic.entity.Solucion;
-import com.calclogic.entity.Teorema;
-import com.calclogic.lambdacalculo.Term;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.SerializationUtils;
 
 /**
  *
@@ -24,10 +19,20 @@ import org.springframework.util.SerializationUtils;
 @Service
 public class SimboloManagerImpl implements SimboloManager {
        
-    @Autowired
-    private SimboloDAO SimboloDAO;
+    // @Autowired
+    private SimboloDAO simboloDAO;
     private int propFunApp;
     private int termFunApp;
+    Simbolo[] symbolsCache;
+    
+    @Autowired
+    public SimboloManagerImpl(SimboloDAO simboloDAO) {
+        this.simboloDAO = simboloDAO;
+        List<Simbolo> l = simboloDAO.getAllSimbolo();
+        symbolsCache = new Simbolo[l.size()];
+        for (int i=0; i < l.size(); i++)
+            symbolsCache[i] = l.get(i);
+    }
     
     public int getPropFunApp() {
         return propFunApp;
@@ -47,34 +52,45 @@ public class SimboloManagerImpl implements SimboloManager {
     
     @Override
     @Transactional
-    public Simbolo addSimbolo(Simbolo Simbolo){
-        SimboloDAO.addSimbolo(Simbolo);
-        return Simbolo;
+    public Simbolo addSimbolo(Simbolo simbolo){
+        simboloDAO.addSimbolo(simbolo);
+        List<Simbolo> l = simboloDAO.getAllSimbolo();
+        symbolsCache = new Simbolo[l.size()];
+        for (int i=0; i < l.size(); i++)
+            symbolsCache[i] = l.get(i);
+        return simbolo;
     }
     
     
     @Override   
     @Transactional
-    public void updateSimbolo(Simbolo Simbolo){
-        SimboloDAO.updateSimbolo(Simbolo);
+    public void updateSimbolo(Simbolo simbolo){
+        int id = simbolo.getId()-1;
+        if (0 < id && id <= symbolsCache.length) {
+            symbolsCache[id] = simbolo;
+        }
+        simboloDAO.updateSimbolo(simbolo);
     }
     
     @Override
     @Transactional
     public void deleteSimbolo(int id){
-        SimboloDAO.deleteSimbolo(id);
+        simboloDAO.deleteSimbolo(id);
     }
     
     @Override
     @Transactional
     public Simbolo getSimbolo(int id){
-        return SimboloDAO.getSimbolo(id);
+        if (0 < id && id <= symbolsCache.length)
+            return symbolsCache[id-1];
+        else
+            return null;
     }
     
     @Override
     @Transactional
     public List<Simbolo> getAllSimbolo(){
-        return SimboloDAO.getAllSimbolo();
+        return simboloDAO.getAllSimbolo();
     }
 
     public void setPropFunApp(int propFunApp) {

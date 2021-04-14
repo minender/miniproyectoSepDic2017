@@ -12,6 +12,6 @@
     <body>
         <tiles:insertAttribute name="nav"/>
         <tiles:insertAttribute name="body"/>
-        <tiles:insertAttribute name="footer" />
+        <%--<tiles:insertAttribute name="footer" />--%>
     </body>
 </html>

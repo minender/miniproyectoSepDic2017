@@ -495,12 +495,15 @@ public class App extends Term{
         }
         
         if ( j > nArgs) {
-           sym = s.getSimbolo(10);
            App newTerm;
-           if (p instanceof Var && p.occur(new Var('E')))
+           if (p instanceof Var && p.occur(new Var('E'))) {
+            sym = s.getSimbolo(s.getPropFunApp());
             newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
-           else
+           }
+           else {
+            sym = s.getSimbolo(s.getTermFunApp());
             newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           }
            return newTerm.privateToStringInf(s, numTeo);
         }
         Map<String,String> values = new HashMap<String, String>();
@@ -649,7 +652,7 @@ public class App extends Term{
         */
     }
     
-    private IntXIntXString privateToStringWithInputs(SimboloManager s, String position) {
+    private IntXIntXString privateToStringWithInputs(SimboloManager s, String position, String rootId) {
         
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
@@ -677,13 +680,16 @@ public class App extends Term{
         }
         
         if ( j > nArgs) {
-           sym = s.getSimbolo(10);
            App newTerm;
-           if (p instanceof Var && p.occur(new Var('E')))
+           if (false) { //p instanceof Var && p.occur(new Var('E'))) {
+            sym = s.getSimbolo(s.getPropFunApp());
             newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
-           else
+           }
+           else {
+            sym = s.getSimbolo(s.getTermFunApp());
             newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
-           return newTerm.privateToStringWithInputs(s, position);
+           }
+           return newTerm.privateToStringWithInputs(s, position, rootId);
         }
         Map<String,String> values = new HashMap<String, String>();
         values.put("op", sym.getNotacion_latex());
@@ -692,32 +698,32 @@ public class App extends Term{
         while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
          Term arg = stk.pop();
          if (notation.contains("%(na"+i+")"))
-               values.put("na"+i,arg.toStringWithInputs(s,position+i));
+               values.put("na"+i,arg.toStringWithInputs(s,position+i,rootId));
          else if (notation.contains("%(a"+i+")"))
          {
            if (arg instanceof App)
            {
-            IntXIntXString tuple = ((App) arg).privateToStringWithInputs(s,position+i);
+            IntXIntXString tuple = ((App) arg).privateToStringWithInputs(s,position+i,rootId);
             if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
                 values.put("a"+i, "("+tuple.x3+")");
             else
                 values.put("a"+i, (tuple.x2 > sym.getPr())?tuple.x3:"("+tuple.x3+")");
            }
            else
-            values.put("a"+i,arg.toStringWithInputs(s,position+i));
+            values.put("a"+i,arg.toStringWithInputs(s,position+i,rootId));
          }
          else if (notation.contains("%(aa"+i+")"))
          {
           if (arg instanceof App)
           {
-           IntXIntXString tuple = ((App) arg).privateToStringWithInputs(s,position+i);
+           IntXIntXString tuple = ((App) arg).privateToStringWithInputs(s,position+i,rootId);
            if (tuple.x1 == 25 && (opId == 21 || opId == 22 || opId == 23))
                 values.put("aa"+i, "("+tuple.x3+")");
             else
                 values.put("aa"+i,(tuple.x2 > sym.getPr() || tuple.x1 == opId)?tuple.x3:"("+tuple.x3+")");
           }
           else
-           values.put("aa"+i,arg.toStringWithInputs(s,position+i));
+           values.put("aa"+i,arg.toStringWithInputs(s,position+i,rootId));
          }
           i++;
         }
@@ -726,9 +732,9 @@ public class App extends Term{
         return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace("\\ {"+notation+"}\\ "));
     }
 
-    public String toStringWithInputs(SimboloManager s, String position)
+    public String toStringWithInputs(SimboloManager s, String position, String rootId)
     {
-        return privateToStringWithInputs(s,position).x3;
+        return privateToStringWithInputs(s,position,rootId).x3;
     }
     
     private IntXIntXString privateToStringInfLabeled(SimboloManager s,int z, Term t, 
@@ -761,12 +767,15 @@ public class App extends Term{
         }
         
         if ( j > nArgs) {
-           sym = s.getSimbolo(10);
            App newTerm;
-           if (p instanceof Var && p.occur(new Var('E')))
+           if (p instanceof Var && p.occur(new Var('E'))) {
+            sym = s.getSimbolo(s.getPropFunApp());   
             newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
-           else
+           }
+           else {
+            sym = s.getSimbolo(s.getTermFunApp());
             newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           }
            IntXIntXString result = newTerm.privateToStringInfLabeled(s,z, t, l, l2, id, nivel);
            l.add(t.leibniz(z, this));
            return result;
@@ -834,7 +843,7 @@ public class App extends Term{
     }   
     
     @Override
-    public String toStringFormatC(SimboloManager s, String pos, int id) {
+    public String toStringFormatC(SimboloManager s, String pos, int id, String rootId) {
         
         Stack<Term> stk = new Stack<Term>();
         String term;
@@ -862,13 +871,17 @@ public class App extends Term{
             nArgs = sym.getArgumentos();
         }
         if ( j > nArgs) {
-           Simbolo sym = s.getSimbolo(10);
+           Simbolo sym;
            App newTerm;
-           if (p instanceof Var && p.occur(new Var('E')))
+           if (false) { //p instanceof Var && p.occur(new Var('E'))) {
+            sym = s.getSimbolo(s.getPropFunApp());
             newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
-           else
+           }
+           else {
+            sym = s.getSimbolo(s.getTermFunApp());
             newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
-           return newTerm.toStringFormatC(s, pos, id);
+           }
+           return newTerm.toStringFormatC(s, pos, id, rootId);
         }
         /*if (id == 29)
             term = "C"+id+"("+aux.toStringFormatC(s,pos+1,29);
@@ -880,7 +893,7 @@ public class App extends Term{
          /*if (i > nArgs)
              term = "C29("+term+"),"+arg.toStringFormatC(s,pos+i,0);
          else*/
-         term += (i == 1/* && id != 29*/?"(":",")+arg.toStringFormatC(s,pos+i,id);
+         term += (i == 1/* && id != 29*/?"(":",")+arg.toStringFormatC(s,pos+i,id,rootId);
          i++;
         }
         
@@ -952,12 +965,15 @@ public class App extends Term{
         }
         
         if ( j > nArgs) {
-           sym = s.getSimbolo(10);
            App newTerm;
-           if (p instanceof Var && p.occur(new Var('E')))
+           if (p instanceof Var && p.occur(new Var('E'))) {
+            sym = s.getSimbolo(s.getPropFunApp());
             newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
-           else
+           }
+           else {
+            sym = s.getSimbolo(s.getTermFunApp());
             newTerm = new App(new App(new Const(s.getTermFunApp(),s.termFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
+           }
            return newTerm.privateToStringInf(s, numTeo);
         }
         

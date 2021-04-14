@@ -516,7 +516,7 @@ $(document).ready(function(){
 		</div>
 	</div>
                             		                            
-        <tiles:insertDefinition name="footer" />
+        <%--<tiles:insertDefinition name="footer" />--%>
         <script>
                 var regex_none = /%\(a2\)\s*%\(op\)\s*%\(a1\)/
                 var regex_left = /%\(aa2\)\s*%\(op\)\s*%\(a1\)/

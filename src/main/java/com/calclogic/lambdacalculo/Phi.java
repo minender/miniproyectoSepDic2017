@@ -169,13 +169,13 @@ public class Phi extends Term{
     }
     
     @Override
-    public String toStringFormatC(SimboloManager s, String pos, int id)
+    public String toStringFormatC(SimboloManager s, String pos, int id, String rootId)
     {
         return toString();
     }
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position) {
+    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
         return "\\Phi_{"+ind.toString()+"}";
     }
     

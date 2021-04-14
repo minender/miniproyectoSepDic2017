@@ -59,11 +59,11 @@
         <iframe width="900" height="400" src="https://www.youtube.com/embed/9xGWYNCULFk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
-   <c:choose>
+   <%--<c:choose>
     <c:when test='${!sesion.equals("logout")}'>
         <tiles:insertDefinition name="footer" />
     </c:when>
-   </c:choose>
+   </c:choose>--%>
 </div>
  </body>
 </html>
