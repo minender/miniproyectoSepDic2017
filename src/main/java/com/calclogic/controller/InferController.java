@@ -231,7 +231,7 @@ public class InferController {
             infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");  
             InferResponse response = new InferResponse();
             Term typedTerm = solucion.getTypedTerm();
-            response.generarHistorial(username,formula, nTeo, typedTerm, true,solucion.getMetodo(), resuelveManager, disponeManager,simboloManager);
+            response.generarHistorial(username,formula, nTeo, typedTerm, true,true,solucion.getMetodo(), resuelveManager, disponeManager,simboloManager);
 
             if (typedTerm == null){
                 map.addAttribute("elegirMetodo","1");
@@ -418,20 +418,27 @@ public class InferController {
          // CREATE THE INSTANTIATION
          Sust sust = null;
          Equation eq;
+         boolean zUnifiable = true;
          if (!leibniz.equals("")){
            leibnizTerm =termUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
            eq = new Equation(leibnizTerm,lastLine);
-           leibnizTerm = eq.mgu(simboloManager).getTerms().get(0);
+           sust = eq.mgu(simboloManager);
+           if (sust != null) // si z no es de tipo atomico, no se puede unificar en primer orden
+            leibnizTerm = eq.mgu(simboloManager).getTerms().get(0);
+           else
+            zUnifiable = false;
          }
          else 
            leibnizTerm = lastLine;
-         eq = new Equation(((App)statementTerm).q,leibnizTerm);
-         sust = eq.mgu(simboloManager);
-         if (sust == null) {
-             eq = new Equation(((App)((App)statementTerm).p).q,leibnizTerm);
-             sust = eq.mgu(simboloManager);
+         if (zUnifiable)  {
+            eq = new Equation(((App)statementTerm).q,leibnizTerm);
+            sust = eq.mgu(simboloManager);
+            if (sust == null) {
+                eq = new Equation(((App)((App)statementTerm).p).q,leibnizTerm);
+                sust = eq.mgu(simboloManager);
+            }
          }
-
+         
          if (sust != null) {
             String[] sustVars = sust.getVars().toString().replaceAll("[\\s\\[\\]]", "").split(",");
             String[] sustFormatC = new String[freeVars.length];
@@ -1546,7 +1553,7 @@ public class InferController {
             }
         // If something went wrong building the new hint
         }catch(TypeVerificationException e) {
-            response.generarHistorial(username,formula, nTeo,typedTerm,false,metodo,resuelveManager,disponeManager,simboloManager);
+            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, metodo,resuelveManager,disponeManager,simboloManager);
             return response;
         }
 
@@ -1587,7 +1594,7 @@ public class InferController {
             catch (TypeVerificationException e) {
                 if ((i == 1 && !onlyOneLine) || (i == 1 && j == 1))
                 {
-                    response.generarHistorial(username,formula, nTeo,typedTerm,false,metodo,resuelveManager,disponeManager,simboloManager);
+                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true,metodo,resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
                 if (onlyOneLine && j == 0) {
@@ -1649,7 +1656,7 @@ public class InferController {
         }       
         solucionManager.updateSolucion(solucion);
        
-        response.generarHistorial(username,formula, nTeo,finalProof,true,metodo,
+        response.generarHistorial(username,formula, nTeo,finalProof,true,true,metodo,
         		resuelveManager,disponeManager,simboloManager);
         return response;
     }
@@ -1675,7 +1682,7 @@ public class InferController {
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term formula = resuelve.getTeorema().getTeoTerm();
 
-        response.generarHistorial(username,formula, nTeo,respRetroceder==0?null:solucion.getTypedTerm(),true,solucion.getMetodo(),resuelveManager,disponeManager,simboloManager);
+        response.generarHistorial(username,formula, nTeo,respRetroceder==0?null:solucion.getTypedTerm(),true,true,solucion.getMetodo(),resuelveManager,disponeManager,simboloManager);
         if(/*respRetroceder==1 ||*/ respRetroceder==0){
             response.setCambiarMetodo("1");
         }
@@ -1725,7 +1732,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
         //String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         //response.setHistorial(historial);  
@@ -1800,7 +1807,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial); */
@@ -1849,7 +1856,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
@@ -1899,7 +1906,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
@@ -1945,7 +1952,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */

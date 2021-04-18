@@ -97,46 +97,51 @@ function showInstantiation(){
 }
 
 function automaticSubst(){
-    var data = {};
-    data["nStatement"] = $('#nStatement_id').val();
-    data["leibniz"] = setInputValueOnParser('leibnizSymbolsId');
-    data["freeV"] = window["substitutionButtonsId._variables"].toString();
-    //var teoSol = $("#nSolucion").val();
-    //data["teoSol"] = teoSol;
-    var action = $('#inferForm').attr('action');
-    action = action + "/auto"
-    /*var arr = action.split('/');
-    var attr1 = arr.pop();
-    var attr2 = arr.pop();*/
-    $("#modalLoading").css('display','inline-block');
-    $.ajax({
-        type: 'POST',
-        url: action, //.substring(0,action.length-(attr1.length+attr2.length+1) )+"auto",
-        dataType: 'json',
-        data: data,
-        success: function(data) {
-                $("#modalLoading").css('display','none');
-                if(data.error !== null){
-                    alert(data.error);
+    if ($('#nStatement_id').val() != "")
+    {
+        var data = {};
+        data["nStatement"] = $('#nStatement_id').val();
+        data["leibniz"] = setInputValueOnParser('leibnizSymbolsId');
+        data["freeV"] = window["substitutionButtonsId._variables"].toString();
+        //var teoSol = $("#nSolucion").val();
+        //data["teoSol"] = teoSol;
+        var action = $('#inferForm').attr('action');
+        action = action + "/auto"
+        /*var arr = action.split('/');
+        var attr1 = arr.pop();
+        var attr2 = arr.pop();*/
+        $("#modalLoading").css('display','inline-block');
+        $.ajax({
+            type: 'POST',
+            url: action, //.substring(0,action.length-(attr1.length+attr2.length+1) )+"auto",
+            dataType: 'json',
+            data: data,
+            success: function(data) {
+                    $("#modalLoading").css('display','none');
+                    if(data.error !== null){
+                        alert(data.error);
+                    }
+                    else{
+                       var freeVars = window["substitutionButtonsId._variables"];
+                       if (data.sustFormatC != null)
+                        for (k=0; k < freeVars.length; k++)
+                          if (data.sustFormatC[k] != "") {
+                           cleanMathJax("substitutionButtonsId."+freeVars[k]);
+                           inferRecoverC(data.sustFormatC[k], data.sustLatex[k], "substitutionButtonsId."+freeVars[k]);
+                          }
+                          else
+                           cleanMathJax("substitutionButtonsId."+freeVars[k]);
+                       // $('#showInstantiation').html('$'+data.sustFormatC[0]+','+data.sustFormatC[1]+'$');
+                       //$('#showInstantiation').html('$'+data.sustLatex[0]+','+data.sustLatex[1]+'$');
+                       //MathJax.Hub.Typeset();
+                    }
+            },
+                error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                  $("#modalLoading").css('display','none');
+                  alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
                 }
-                else{
-                   var freeVars = window["substitutionButtonsId._variables"];
-                   if (data.sustFormatC != null)
-                    for (k=0; k < freeVars.length; k++)
-                      if (data.sustFormatC[k] != "")
-                       inferRecoverC(data.sustFormatC[k], data.sustLatex[k], "substitutionButtonsId."+freeVars[k]);
-                      else
-                       cleanMathJax("substitutionButtonsId."+freeVars[k]);
-                   // $('#showInstantiation').html('$'+data.sustFormatC[0]+','+data.sustFormatC[1]+'$');
-                   //$('#showInstantiation').html('$'+data.sustLatex[0]+','+data.sustLatex[1]+'$');
-                   //MathJax.Hub.Typeset();
-                }
-        },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-              $("#modalLoading").css('display','none');
-              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-            }
-    });
+        });
+    }
 }
 
 function teoremaInicialMD(teoid){

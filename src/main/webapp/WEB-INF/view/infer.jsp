@@ -13,6 +13,14 @@
 
     <!-- Desde aqui -->
     <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-180084260-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-180084260-1');
+	</script>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>CalcLogic</title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
@@ -394,11 +402,11 @@
             <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Proof method</h3>
               <select class="form-control" id="metodosDemostracion">
                 <option value="0">Select a method</option>
-                <option value="1">Direct method</option>
+                <!--<option value="1">Direct method</option>-->
                 <option value="2">Starting from one side</option>
-                <option value="3">Weakening</option>
+                <!--<option value="3">Weakening</option>
                 <option value="4">Strengthening</option>
-                <!--<option value="5">Assume the antecedent</option>
+                <option value="5">Assume the antecedent</option>
                 <option value="6">Transitivity</option>
                 <option value="7">Proof by cases</option>
                 <option value="8">Proof by contradiction</option>-->

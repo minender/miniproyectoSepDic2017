@@ -768,7 +768,7 @@ public class App extends Term{
         
         if ( j > nArgs) {
            App newTerm;
-           if (p instanceof Var && p.occur(new Var('E'))) {
+           if (false) { //p instanceof Var && p.occur(new Var('E'))) {
             sym = s.getSimbolo(s.getPropFunApp());   
             newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
            }
@@ -831,7 +831,7 @@ public class App extends Term{
         l2.add(l2.size(),setVar+id.id+",");
         //l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
         //l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
-        if (opId != s.getPropFunApp() || opId != s.getTermFunApp())
+        if (opId != s.getPropFunApp() && opId != s.getTermFunApp())
             l.add(t.leibniz(z, this));
         id.id++;
         return new IntXIntXString(sym.getId(),sym.getPr(),term);

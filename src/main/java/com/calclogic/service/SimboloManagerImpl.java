@@ -7,6 +7,7 @@ package com.calclogic.service;
 
 import com.calclogic.dao.SimboloDAO;
 import com.calclogic.entity.Simbolo;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,7 +91,11 @@ public class SimboloManagerImpl implements SimboloManager {
     @Override
     @Transactional
     public List<Simbolo> getAllSimbolo(){
-        return simboloDAO.getAllSimbolo();
+        List<Simbolo> list = new ArrayList<Simbolo>();
+        for (int i= 0; i < symbolsCache.length; i++)
+            if (i >= 9)
+                list.add(symbolsCache[i]);
+        return list;
     }
 
     public void setPropFunApp(int propFunApp) {

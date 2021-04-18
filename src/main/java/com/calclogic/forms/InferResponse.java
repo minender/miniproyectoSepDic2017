@@ -522,7 +522,7 @@ public class InferResponse {
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
-    public void generarHistorial(String user, Term formula, String nTeo, Term typedTerm,  Boolean valida,String metodo, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {//List<PasoInferencia> inferencias){
+    public void generarHistorial(String user, Term formula, String nTeo, Term typedTerm,  Boolean valida, Boolean labeled, String metodo, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {//List<PasoInferencia> inferencias){
 
         this.setHistorial("");
         String header = "Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(s,"")+"$</center> Proof:<br>";  
@@ -672,8 +672,11 @@ public class InferResponse {
             Term aux= ((App)((App)type).p).q;
             pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+(equanimity2?"":equanimityHint)+(solved?"$":"");	
 	}*/
-    	solved = type.equals(formula);
-        if (direct)
+        if (labeled)
+            solved = type.equals(formula);
+        else
+            solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a
+        if (direct)        // si se pide labeled o no la ultima linea, aqui se cablea con solved = true
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, false);
         else if (oneSide)
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);

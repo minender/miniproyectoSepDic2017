@@ -64,7 +64,7 @@
               <c:choose>
                 <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
                   <c:choose>
-                    <c:when test="${!resu.isResuelto()}">
+                    <c:when test="${!resu.isResuelto() && resu.getDemopendiente() < 1}">
                       <li >
                         <p >
                              <i class="fa fa-lock" aria-hidden="true" ></i>
@@ -81,7 +81,14 @@
                                 <a class="expandmeta" onclick="expandMeta(${resu.getTeorema().getId()})">
                                 <i class="fa fa-plus-circle" aria-hidden="true" ></i>
                                 </a>
+                                <c:choose>
+                                    <c:when test="${resu.isResuelto()}">
                                 <i class="fa fa-unlock" aria-hidden="true"></i>
+                                    </c:when>
+                                    <c:otherwise>
+                                <i class="fa fa-lock" aria-hidden="true" ></i>        
+                                    </c:otherwise>
+                                </c:choose>
 
                                 <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
                                 <span class="d-none" id="${resu.getTeorema().getId()}">
@@ -204,12 +211,17 @@
                          newRows = newRows + "<ul>";
                          for (j=0;j < teoremas.length ;j++){
                             if (teoremas[j].categoryid == categories[i].categoryid){
-                                if (!teoremas[j].isResuelto){
+                                if (!teoremas[j].isResuelto && teoremas[j].demopendiente < 1){
                                     newRows = newRows + "<li><p><i class='fa fa-lock' aria-hidden='true'></i>(" + teoremas[j].numeroteorema + ")"+ teoremas[j].nombreteorema + ": &nbsp; $" + teoremas[j].string + "$</p></li>"
                                 }else{
                                     newRows = newRows + "<li><p>"
                                     if (!teoremas[j].isAxioma){
-                                        newRows = newRows + "<a class='expandmeta' onclick='expandMeta(" + teoremas[j].teoremaid + ")'><i class='fa fa-plus-circle' aria-hidden='true'></i></a><i class='fa fa-unlock' aria-hidden='true'></i><a href='javascript:buscarSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ")" +  teoremas[j].nombreteorema + ": </a> &nbsp; $" + teoremas[j].string + "$<span class='d-none' id='" + teoremas[j].teoremaid + "'><br><span class='metaitem'></span><a href='javascript:buscarMetaSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ") with Metatheorem (3.7): </a> &nbsp; $" + teoremas[j].metateoremastring + "$</span>"
+                                        if (teoremas[j].isResuelto){
+                                            newRows = newRows + "<a class='expandmeta' onclick='expandMeta(" + teoremas[j].teoremaid + ")'><i class='fa fa-plus-circle' aria-hidden='true'></i></a><i class='fa fa-unlock' aria-hidden='true'></i><a href='javascript:buscarSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ")" +  teoremas[j].nombreteorema + ": </a> &nbsp; $" + teoremas[j].string + "$<span class='d-none' id='" + teoremas[j].teoremaid + "'><br><span class='metaitem'></span><a href='javascript:buscarMetaSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ") with Metatheorem (3.7): </a> &nbsp; $" + teoremas[j].metateoremastring + "$</span>"
+                                        }
+                                        else{
+                                            newRows = newRows + "<a class='expandmeta' onclick='expandMeta(" + teoremas[j].teoremaid + ")'><i class='fa fa-plus-circle' aria-hidden='true'></i></a><i class='fa fa-lock' aria-hidden='true'></i><a href='javascript:buscarSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ")" +  teoremas[j].nombreteorema + ": </a> &nbsp; $" + teoremas[j].string + "$<span class='d-none' id='" + teoremas[j].teoremaid + "'><br><span class='metaitem'></span><a href='javascript:buscarMetaSoluciones(" + teoremas[j].teoremaid + ");' title='Haga click para ver las demostraciones del teorema'>(" + teoremas[j].numeroteorema + ") with Metatheorem (3.7): </a> &nbsp; $" + teoremas[j].metateoremastring + "$</span>"
+                                        }
                                     }else{
                                         newRows = newRows + "<i class='fa fa-unlock' aria-hidden='true' ></i> (" + teoremas[j].numeroteorema + ")" + teoremas[j].nombreteorema + ": &nbsp; $" + teoremas[j].string + "$"
                                     }
