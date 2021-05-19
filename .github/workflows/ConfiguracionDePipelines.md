@@ -32,7 +32,7 @@ del *pipeline* (`HEROKU_API_TOKEN_DEVELOPMENT` en el paso "Publish Project on He
 ## Pasos de Despliegue Continuo
 
 Para el despliegue de la aplicación con el uso de **GitHub Actions** se creó un
-*pipeline* the ejecución, especificado en el archivo `may-jul-2021.yml`. Dicho
+*pipeline*, especificado en el archivo `may-jul-2021.yml`. Dicho
 *pipeline* consta de las siguientes fases:
 
 #### 1. Checkout
@@ -48,7 +48,7 @@ máquina virtual de Java necesaria para la construcción del proyecto (OpenJDK 8
 #### 3. Clean for Maven
 
 Ejecuta la limpieza del entorno de Maven para dejar el ambiente listo para la 
-contrucción del proyecto.
+construcción del proyecto.
 
 #### 4. Build with Maven
 
@@ -58,13 +58,13 @@ Adicionalmente se ejecutan las pruebas del compilable.
 #### 5. Code Coverage on Codecov
 
 Se vuelven a ejecutar los tests para calcular que porcentaje del código se encuentra
-contemplado por las pruebas. Estos resultados son publicados en la [página de codecov](https://about.codecov.io/), a través del token del proyecto (explicado en las próximas secciones).
+contemplado por las pruebas. Estos resultados son publicados en la [página de codecov](https://about.codecov.io/), a través del token del proyecto (explicado en secciones anteriores).
 
 #### 6. Publish Project on Heroku
 
 Una vez aprobadas todas las pruebas y la compilación del archivo, este se envía
 a Heroku, donde posteriormente será desplegado. Para efectos de este ejemplo, 
-se usa el api key de la cuenta personal de los estudiantes que trabajaron en el
+se usa el API key de la cuenta personal de los estudiantes que trabajaron en el
 proyecto en el trimestre Mayo-Julio 2021. 
 
 #### 7. Deploy App on Heroku
@@ -85,7 +85,24 @@ se recomienda cambiar el nombre del *pipeline* (Línea 1).
 
 ## Medallas de Estado
 
+### *Pipeline* de GitHub
 
+Para configurar la medalla de estado de un pipeline en específico, es necesario
+agregar un link a un enlace con la siguiente notación en el `README.md` donde se 
+quiera exponer la medalla.
+
+```
+https://github.com/<OWNER>/<REPOSITORY>/actions/workflows/<WORKFLOW_FILE>/badge.svg
+```
+
+Existen configuraciones para ramas y eventos, que pueden ser consultados en 
+[la documentación](https://docs.github.com/en/actions/managing-workflow-runs/adding-a-workflow-status-badge).
+
+### Codecov
+
+La configuración para esta medalla es muy parecida a la que se debe realizar para
+el *pipeline*, pero esta vez podremos obtener el link en formato markdown 
+directamente desde la página de codecov (Proyecto > Settings > Badge > Markdown).
 
 ## Desarrolladores
 
