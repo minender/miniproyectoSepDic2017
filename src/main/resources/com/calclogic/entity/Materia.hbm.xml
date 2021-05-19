@@ -40,7 +40,7 @@ made subject to such option by the copyright holder.
 Contributor(s):
 -->
 <hibernate-mapping>
-  <class name="com.calclogic.entity.Materia" schema="userdb" table="materia">
+  <class name="com.calclogic.entity.Materia" table="materia">
     <id name="id" type="int">
       <column name="id"/>
       <generator class="sequence">
