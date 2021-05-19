@@ -1,0 +1,34 @@
+name: May-Jul 2021
+
+on:
+  push:
+    branches:
+      - may-jul-2021
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+      - name: Clean for Maven
+        run: mvn clean
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify --settings ./.mvn/custom-settings.xml
+      - name: Code Coverage on Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Publish Project on Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_TOKEN_DEVELOPMENT }}
+          heroku_app_name: "miniproyecto-abr-jul-2021"
+          heroku_email: "15-10463@usb.ve"
+      - name: Deploy App on Heroku
+        run: mvn heroku:deploy-war
