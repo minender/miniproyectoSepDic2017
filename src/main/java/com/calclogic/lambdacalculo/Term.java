@@ -146,15 +146,55 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract Term leibniz(int z, Term subterm);
     
+    /**
+     * Returns a string formatted with variables codification (x_{}) and
+     * constants codification (c_{}) with all possible parenthesis (that could be
+     * unnecesary, see toStringFinal method).
+     */
     @Override
     public abstract String toString();
     
+    /**
+     * Uses the symbols notation stored in the database to compute
+     * the LaTeX format string.
+     * @param s
+     * @param numTeo
+     * @return String representation in LaTeX Format.
+     */
     public abstract String toStringInf(SimboloManager s,String numTeo);
     
+    /**
+     * Creates a LaTeX string with the span HTML tags use to control the subexpresions
+     * used for leibniz rule in the client.
+     * @param s
+     * @param z
+     * @param initTerm
+     * @param leibniz
+     * @param leibnizL
+     * @param id
+     * @param nivel
+     * @return String representation in LaTeX format with span HTML tags for Mathjax.
+     */
     public abstract String toStringInfLabeled(SimboloManager s,int z, Term initTerm, List<Term> leibniz, List<String> leibnizL, Id id, int nivel);
     
+    /**
+     * Creates a non curryfied format that doesn't allow wrong syntax formulas.
+     * @param s
+     * @param pos
+     * @param id
+     * @param rootId
+     * @return String representation with non curryfied format.
+     */
     public abstract String toStringFormatC(SimboloManager s, String pos, int id, String rootId);
     
+    /**
+     * Similar toStringInf, but puts an HTML input in variables formulas
+     * to be used in the sustitution.
+     * @param s
+     * @param position
+     * @param rootId
+     * @return String representation with HTML inputs.
+     */
     public abstract String toStringWithInputs(SimboloManager s, String position, String rootId);
     
     public abstract ToString toStringAbrvV1(ToString toString);
@@ -203,6 +243,10 @@ public abstract class Term implements Cloneable, Serializable{
         return hset.toString().replaceAll("[\\s\\[\\]]", "");
     }
     
+    /**
+     * Executes toString method asuming that every node associates to left. 
+     * @return String without unnecesary parenthesis 
+     */
     public String toStringFinal()
     {
         String term;
