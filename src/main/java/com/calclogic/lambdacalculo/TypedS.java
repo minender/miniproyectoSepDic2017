@@ -32,6 +32,12 @@ public class TypedS extends Const implements TypedTerm{
         simetry_ = simetry;
     }
     
+    public TypedS() throws TypeVerificationException, ClassCastException
+    {
+        super("S");
+        simetry_ = null;
+    }
+    
     public Term type()
     {
         return simetry_;

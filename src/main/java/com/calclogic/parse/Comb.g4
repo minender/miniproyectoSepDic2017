@@ -123,13 +123,14 @@ cb_pair	returns [Indice value]
     : I expr C_BRACKET { $value = new TypedI((Sust) $expr.value); }
     | L expr C_BRACKET { $value = new TypedL((Bracket) $expr.value); }
     | S expr C_BRACKET { 
-    			 try {
-                           $value = new TypedS($expr.value,0); 
-			 } catch (TypeVerificationException e) {
-			   e.printStackTrace();
-			   System.exit(1);
-			 }
-    			}
+                            try {
+                                $value = new TypedS($expr.value,0); 
+                            } catch (TypeVerificationException e) {
+                                e.printStackTrace();
+                                System.exit(1);
+                            }
+                        }
+    | Si { $value = new TypedS(); }
     | A expr C_BRACKET { $value = new TypedA($expr.value); };
 
  
@@ -176,6 +177,7 @@ A : 'A^{';
 I : 'I^{';
 L : 'L^{';
 S : 'S^{';
+Si: 'S';
 
 
 // Allow whitespace but ignore it 
