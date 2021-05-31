@@ -1159,7 +1159,14 @@ public class CombParser extends Parser {
 				{
 				setState(157);
 				match(Si);
-				 ((Prove_baseContext)_localctx).value =  new TypedS(); 
+
+				            try {
+				                ((Prove_baseContext)_localctx).value =  new TypedS(); 
+				            } catch (TypeVerificationException e) {
+				                e.printStackTrace();
+				                System.exit(1);
+				            } 
+				        
 				}
 				break;
 			case A:

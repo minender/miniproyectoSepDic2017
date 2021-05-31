@@ -131,7 +131,14 @@ cb_pair	returns [Indice value]
                                 System.exit(1);
                             }
                         }
-    | Si { $value = new TypedS(); }
+    | Si {
+            try {
+                $value = new TypedS(); 
+            } catch (TypeVerificationException e) {
+                e.printStackTrace();
+                System.exit(1);
+            } 
+        }
     | A expr C_BRACKET { $value = new TypedA($expr.value); };
 
  
