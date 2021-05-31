@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - may-jul-2021
+      - s-superscript-removal
 
 jobs:
   build:
