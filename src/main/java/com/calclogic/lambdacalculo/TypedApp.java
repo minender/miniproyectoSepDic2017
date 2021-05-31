@@ -19,7 +19,7 @@ public class TypedApp extends App implements TypedTerm{
         Term t1Type = t1.type();
         Term t2Type = t2.type();
         
-        if (t1Type instanceof Sust )
+        if (t1Type instanceof Sust)
             inferType = 'i';
         else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
         {
@@ -45,29 +45,62 @@ public class TypedApp extends App implements TypedTerm{
                   throw new TypeVerificationException();
               if ((!op1.equals("c_{1}") && !op1.equals("c_{2}")) || !t1Izq.equals(t2Type)) 
               {
-                Term t1Der = ((App)((App)t1Type).p).q;
-                Term t2Izq = ((App)t2Type).q;
-                String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
+                // Term t1Der = ((App)((App)t1Type).p).q;
+                // Term t2Izq = ((App)t2Type).q;
+                // String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
         
-                boolean eq = op1.equals("c_{20}") && op2.equals("c_{20}");
-                boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
+                // boolean eq = op1.equals("c_{20}") && op2.equals("c_{20}");
+                // boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
 //                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
 //                        || op2.equals("c_{3}") || op2.equals("c_{2}"));
 //                boolean leftAndOp = op1.equals("c_{3}") && 
 //                        (op2.equals("c_{3}") || op2.equals("c_{1}"));
 //                boolean rightAndOp = op1.equals("c_{2}") && 
 //                        (op2.equals("c_{2}") || op2.equals("c_{1}"));
-                if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq)))
-                  throw new TypeVerificationException();
-                else
-                  inferType = 't';
+                // TODO: Check what does this if statement.
+                // if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq)))
+                //   throw new TypeVerificationException();
+                // else
+                inferType = 't';
               }
               else
-                  inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));
+                inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));
             }
             catch (ClassCastException e)
             {
-              throw new TypeVerificationException();
+                e.printStackTrace();
+                throw new TypeVerificationException();
+            }
+        }
+        else if (t1Type == null) // <== S operand created by the grammar
+        {   
+            try {
+                // type should be of the form r1==r2
+                // extract r1, r2 and the operand
+                App rootRight = (App)t2Type;
+                App leftChild = (App)rootRight.p;
+                Const op = (Const)leftChild.p;
+
+                // check if it's deducting an equivalence or not
+                if (!op.getCon().trim().equals("c_{1}"))
+                    throw new TypeVerificationException();
+
+                Term r1 = leftChild.q;
+                Term r2 = rootRight.q;  
+
+                // create new tree with r2==r1
+                App inverseApp = new App(new App(op, r2), r1);
+                // r1==r2==(r2==r1)
+                Term type = new App(new App(op, rootRight), inverseApp);
+
+                // select type for simetry
+                inferType = 's';
+
+                // set the deducted type
+                ((TypedS)t1).setSimetry(type);
+
+            } catch (ClassCastException e) {
+                throw new TypeVerificationException();
             }
         }
         else

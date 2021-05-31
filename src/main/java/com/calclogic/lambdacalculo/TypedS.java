@@ -11,7 +11,7 @@ package com.calclogic.lambdacalculo;
  */
 public class TypedS extends Const implements TypedTerm{
     
-    private final Term simetry_;
+    private Term simetry_;
     
     public TypedS(Term simetry) throws TypeVerificationException, ClassCastException
     {
@@ -36,6 +36,10 @@ public class TypedS extends Const implements TypedTerm{
     {
         super("S");
         simetry_ = null;
+    }
+
+    public void setSimetry(Term simetry) {
+        simetry_ = simetry;
     }
     
     public Term type()

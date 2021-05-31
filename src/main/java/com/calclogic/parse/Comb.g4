@@ -36,22 +36,23 @@ expr returns [Term value]
                                                 };
 
 term returns [Term value]
-    :  term_base term_tail { Term aux = $term_base.value; 
+    :  term_base term_tail { 
+                                Term aux = $term_base.value; 
                                 try {
-	                          for (Term it: $term_tail.value) {
-                                    if (aux instanceof TypedTerm && it instanceof TypedTerm) 
-                                          aux = new TypedApp(aux,it);
-				    else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
-					  aux = new App(aux,it);
-                                    else
-                                          throw new TypeVerificationException();
-                                  }
-				}
+	                                for (Term it: $term_tail.value) {
+                                        if (aux instanceof TypedTerm && it instanceof TypedTerm) 
+                                            aux = new TypedApp(aux,it);
+				                        else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
+					                        aux = new App(aux,it);
+                                        else
+                                            throw new TypeVerificationException();
+                                    }
+				                }
                                 catch (TypeVerificationException e){
                                     e.printStackTrace();
                                     System.exit(1);
                                 }
-				$value = aux;  
+				                $value = aux;  
                             };
 
 term_base returns [Term value]

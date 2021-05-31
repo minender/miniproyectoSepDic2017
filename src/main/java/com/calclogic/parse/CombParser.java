@@ -305,22 +305,23 @@ public class CombParser extends Parser {
 			((TermContext)_localctx).term_base = term_base();
 			setState(54);
 			((TermContext)_localctx).term_tail = term_tail();
-			 Term aux = ((TermContext)_localctx).term_base.value; 
+			 
+			                                Term aux = ((TermContext)_localctx).term_base.value; 
 			                                try {
-				                          for (Term it: ((TermContext)_localctx).term_tail.value) {
-			                                    if (aux instanceof TypedTerm && it instanceof TypedTerm) 
-			                                          aux = new TypedApp(aux,it);
-							    else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
-								  aux = new App(aux,it);
-			                                    else
-			                                          throw new TypeVerificationException();
-			                                  }
-							}
+				                                for (Term it: ((TermContext)_localctx).term_tail.value) {
+			                                        if (aux instanceof TypedTerm && it instanceof TypedTerm) 
+			                                            aux = new TypedApp(aux,it);
+							                        else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
+								                        aux = new App(aux,it);
+			                                        else
+			                                            throw new TypeVerificationException();
+			                                    }
+							                }
 			                                catch (TypeVerificationException e){
 			                                    e.printStackTrace();
 			                                    System.exit(1);
 			                                }
-							((TermContext)_localctx).value =  aux;  
+							                ((TermContext)_localctx).value =  aux;  
 			                            
 			}
 		}
