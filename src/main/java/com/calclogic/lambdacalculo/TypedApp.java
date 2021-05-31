@@ -45,22 +45,21 @@ public class TypedApp extends App implements TypedTerm{
                   throw new TypeVerificationException();
               if ((!op1.equals("c_{1}") && !op1.equals("c_{2}")) || !t1Izq.equals(t2Type)) 
               {
-                // Term t1Der = ((App)((App)t1Type).p).q;
-                // Term t2Izq = ((App)t2Type).q;
-                // String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
+                Term t1Der = ((App)((App)t1Type).p).q;
+                Term t2Izq = ((App)t2Type).q;
+                String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
         
-                // boolean eq = op1.equals("c_{20}") && op2.equals("c_{20}");
-                // boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
+                boolean eq = op1.equals("c_{20}") && op2.equals("c_{20}");
+                boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
 //                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
 //                        || op2.equals("c_{3}") || op2.equals("c_{2}"));
 //                boolean leftAndOp = op1.equals("c_{3}") && 
 //                        (op2.equals("c_{3}") || op2.equals("c_{1}"));
 //                boolean rightAndOp = op1.equals("c_{2}") && 
 //                        (op2.equals("c_{2}") || op2.equals("c_{1}"));
-                // TODO: Check what does this if statement.
-                // if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq)))
-                //   throw new TypeVerificationException();
-                // else
+                if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq)))
+                  throw new TypeVerificationException();
+                else
                 inferType = 't';
               }
               else
@@ -90,8 +89,8 @@ public class TypedApp extends App implements TypedTerm{
 
                 // create new tree with r2==r1
                 App inverseApp = new App(new App(op, r2), r1);
-                // r1==r2==(r2==r1)
-                Term type = new App(new App(op, rootRight), inverseApp);
+                // (r1==r2)==(r2==r1)
+                Term type = new App(new App(op, inverseApp), rootRight);
 
                 // select type for simetry
                 inferType = 's';
