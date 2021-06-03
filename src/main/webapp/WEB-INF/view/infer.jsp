@@ -61,6 +61,8 @@
                     
                     
                 $("#metodosDemostracion").change(function(){
+                    let commonPrefix = "Are you sure you want to use the";
+                    let commonSufix = "method?";
                     var metodosDemostracionValue = this.value
                     $('#nuevoMetodo_id').val(this.options[this.selectedIndex].text);
                     if(this.value==="1"){
@@ -108,6 +110,8 @@
                             $("#currentTeo").hide();
                             transMethod();
                         }
+                    } else if(this.value=="7"){
+                        openModal("Proof by Cases", commonPrefix, commonSufix);    
                     }
                 });
                 
@@ -365,6 +369,10 @@
         <!--<title>Logic | Prove</title>-->
     </head>
     <body>
+
+        <!-- Include custom modal -->
+        <jsp:include page="confirmationModal.jsp" />
+
         <div id="modalLoading" class="modal" >
             <center>
                 <div class="box-loading">
@@ -404,12 +412,12 @@
                 <option value="0">Select a method</option>
                 <option value="1">Direct method</option>
                 <option value="2">Starting from one side</option>
-                <!--<option value="3">Weakening</option>
+                <!-- <option value="3">Weakening</option>
                 <option value="4">Strengthening</option>
                 <option value="5">Assume the antecedent</option>
-                <option value="6">Transitivity</option>
+                <option value="6">Transitivity</option> -->
                 <option value="7">Proof by cases</option>
-                <option value="8">Proof by contradiction</option>-->
+                <!-- <option value="8">Proof by contradiction</option> -->
 
               </select>
           </div>
