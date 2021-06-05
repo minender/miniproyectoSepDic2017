@@ -16,7 +16,7 @@
        <%-- THIS SECTION IF FOR SYMBOL BUTTONS--%>
 	   <div class="btn-group mr-2 flex-wrap" role="group" aria-label="First group">
 	  	<c:forEach items="${simboloList}" var="symbol"> 
-	  		<button style="font-size: 50%;" type="button" class="btn btn-secondary" 
+	  		<button style="font-size: 50%;" type="button" class="btn btn-default" 
 	  		onmousedown="insertAtMathjaxDiv('${symbol.fullLatexNotation('\\FormInput{0}', true)}', ${symbol.getId()}, false);return false;">
 	  		$$${symbol.fullLatexNotation("\\Box", false)}$$
 	  		</button>
@@ -25,7 +25,7 @@
 	   <%-- THIS SECTION IF FOR ALIAS BUTTONS --%>
 	   <div class="btn-group mr-2 flex-wrap" role="group" aria-label="First group">
 	  	<c:forEach items="${predicadoList}" var="alias"> 
-	  		<button style="font-size: 50%;" type="button" class="btn btn-secondary" 
+	  		<button style="font-size: 50%;" type="button" class="btn btn-default" 
 	  		onmousedown="insertAtMathjaxDiv('${alias.fullLatexNotation('\\FormInput{0}', true)}', '${alias.getId().getAlias()}', true);return false;">
 	  		$$${alias.fullLatexNotation("\\Box", false)}$$
 	  		</button>

@@ -65,53 +65,10 @@
                     let commonSufix = "method?";
                     var metodosDemostracionValue = this.value
                     $('#nuevoMetodo_id').val(this.options[this.selectedIndex].text);
-                    if(this.value==="1"){
-                        if(confirm("Are you sure you want to use the direct method?")){
-                            $("#selectTeoInicial").val("1");
-                            alert('Select the theorem with which the proof will begin.');
-                            $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
-                            $(".operator").css({"cursor":"","color":""});
-                            $("#metodosDiv").hide();
-                        }
-                    }
-                    else if(this.value==="2"){
-                        if(confirm("Are you sure you want to use the one-sided method?")){
-                            //$("#nTeorema").val();
-                            $("#selectTeoInicial").val("0");
-                            alert('Select the side where the demo will start.');
-                            $("#metodosDiv").hide();
-                            $("#currentTeo").hide();
-                            teoremaClickeable();
-                        }
-                    }
-                    else if(this.value==="3"){
-                        if(confirm("Are you sure you want to use the Weakening method?")){
-                            //var nTeo = $("#nTeorema").val();
-                            $("#selectTeoInicial").val("0");
-                            $("#metodosDiv").hide();
-                            $("#currentTeo").hide();
-                            metodoD();
-                        }
-                    }
-                    else if(this.value==="4"){
-                        if(confirm("Are you sure you want to use the Strengthening method?")){
-                            //var nTeo = $("#nTeorema").val();
-                            $("#selectTeoInicial").val("0");
-                            $("#metodosDiv").hide();
-                            $("#currentTeo").hide();
-                            metodoF();
-                        }
-                    }
-                    else if(this.value==="6"){
-                        if(confirm("Are you sure you want to use the Transitivity method?")){
-                            //var nTeo = $("#nTeorema").val();
-                            $("#selectTeoInicial").val("0");
-                            $("#metodosDiv").hide();
-                            $("#currentTeo").hide();
-                            transMethod();
-                        }
-                    } else if(this.value=="7"){
-                        openModal("Proof by Cases", commonPrefix, commonSufix);    
+
+                    //shwo modal for confirmation
+                    if (this.value) {
+                        openModal(this.value);
                     }
                 });
                 
@@ -707,10 +664,10 @@ for categorias
               </div>
               </div>
               <div class="col-l-1">
-              <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Infer"
+              <input id ="BtnInferir" class="btn btn-default" type="submit" name="submitBtnI" value="Infer"
               onclick="setInputValueOnParser('leibnizSymbolsId'); setSubstitutionOnInput('substitutionButtonsId')"/> 
-              <br><br><input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Go back"> 
-              <br><br><input id="BtnLimpiar" class="btn" type="button" value="Clean"
+              <br><br><input id ="BtnRetroceder" class="btn btn-default" name="submitBtnR" type="submit" value="Go back"> 
+              <br><br><input id="BtnLimpiar" class="btn btn-default" type="button" value="Clean"
               onclick="cleanJax('leibnizSymbolsId'); cleanJaxSubstitution('substitutionButtonsId')">
               <input id="Btn" type="hidden" name="submitBtn" value=""/>
               <%--<input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>

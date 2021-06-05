@@ -39,6 +39,10 @@
   text-shadow: none !important;  
 }
 
+.btn-default {
+  background-color: #03A9F4 !important;
+}
+
 #agregarTeorema {
   width: 45%;
   display: inline;
