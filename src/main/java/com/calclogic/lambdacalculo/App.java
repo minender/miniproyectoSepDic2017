@@ -432,6 +432,11 @@ public class App extends Term{
            return new App(p.leibniz(z, subterm),q.leibniz(z, subterm));
     }
     
+    /**
+     * Returns a string formatted with variables codification (x_{}) and
+     * constants codification (c_{}) with all possible parenthesis (that could be
+     * unnecesary, see toStringFinal method).
+     */
     public String toString()
     {
         String izq;
@@ -550,6 +555,13 @@ public class App extends Term{
         return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace(notation));
     }
 
+    /**
+     * Uses the symbols notation stored in the database to compute
+     * the LaTeX format string.
+     * @param s
+     * @param numTeo
+     * @return String representation in LaTeX Format.
+     */
     public String toStringInf(SimboloManager s, String numTeo)
     {
         return privateToStringInf(s,numTeo).x3;
@@ -732,6 +744,14 @@ public class App extends Term{
         return new IntXIntXString(sym.getId(),sym.getPr(),sub.replace("\\ {"+notation+"}\\ "));
     }
 
+    /**
+     * Similar toStringInf, but puts an HTML input in variables formulas
+     * to be used in the sustitution.
+     * @param s
+     * @param position
+     * @param rootId
+     * @return String representation with HTML inputs.
+     */
     public String toStringWithInputs(SimboloManager s, String position, String rootId)
     {
         return privateToStringWithInputs(s,position,rootId).x3;
@@ -837,11 +857,31 @@ public class App extends Term{
         return new IntXIntXString(sym.getId(),sym.getPr(),term);
     }
     
+    /**
+     * Creates a LaTeX string with the span HTML tags use to control the subexpresions
+     * used for leibniz rule in the client.
+     * @param s
+     * @param z
+     * @param t
+     * @param l1
+     * @param l2
+     * @param id
+     * @param nivel
+     * @return String representation in LaTeX format with span HTML tags for Mathjax.
+     */
     public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> l1, List<String> l2, Id id, int nivel)
     {
         return privateToStringInfLabeled(s, z, t, l1, l2, id, nivel).x3;
     }   
     
+    /**
+     * Creates a non curryfied format that doesn't allow wrong syntax formulas.
+     * @param s
+     * @param pos
+     * @param id
+     * @param rootId
+     * @return String representation with non curryfied format.
+     */
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId) {
         

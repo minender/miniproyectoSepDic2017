@@ -19,7 +19,7 @@ public class TypedApp extends App implements TypedTerm{
         Term t1Type = t1.type();
         Term t2Type = t2.type();
         
-        if (t1Type instanceof Sust )
+        if (t1Type instanceof Sust)
             inferType = 'i';
         else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
         {
@@ -60,14 +60,46 @@ public class TypedApp extends App implements TypedTerm{
                 if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq)))
                   throw new TypeVerificationException();
                 else
-                  inferType = 't';
+                inferType = 't';
               }
               else
-                  inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));
+                inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));
             }
             catch (ClassCastException e)
             {
-              throw new TypeVerificationException();
+                e.printStackTrace();
+                throw new TypeVerificationException();
+            }
+        }
+        else if (t1Type == null) // <== S operand created by the grammar
+        {   
+            try {
+                // type should be of the form r1==r2
+                // extract r1, r2 and the operand
+                App rootRight = (App)t2Type;
+                App leftChild = (App)rootRight.p;
+                Const op = (Const)leftChild.p;
+
+                // check if it's deducting an equivalence or not
+                if (!op.getCon().trim().equals("c_{1}"))
+                    throw new TypeVerificationException();
+
+                Term r1 = leftChild.q;
+                Term r2 = rootRight.q;  
+
+                // create new tree with r2==r1
+                App inverseApp = new App(new App(op, r2), r1);
+                // (r1==r2)==(r2==r1)
+                Term type = new App(new App(op, inverseApp), rootRight);
+
+                // select type for simetry
+                inferType = 's';
+
+                // set the deducted type
+                ((TypedS)t1).setSimetry(type);
+
+            } catch (ClassCastException e) {
+                throw new TypeVerificationException();
             }
         }
         else

@@ -193,7 +193,7 @@ public class Const extends Term
     public String toString()
     {
         Term typ = this.type();
-        if (typ == null)
+        if (typ == null || con.equals("S"))
           return con;
         else
           return con+"^{"+typ.toStringFinal()+"}";

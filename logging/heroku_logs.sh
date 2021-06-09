@@ -1,0 +1,1 @@
+heroku logs -a miniproyecto-abr-jul-2021 -d router -t >> /root/logs.txt

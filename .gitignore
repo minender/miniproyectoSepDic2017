@@ -3,3 +3,9 @@
 target/*
 target/
 pom.xml
+
+# NetBeans configuration
+nb-configuration.xml
+
+# ANTLR Runs
+.antlr/

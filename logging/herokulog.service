@@ -1,0 +1,13 @@
+[Unit]
+Description=Heroku Log service
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart= bash /root/heroku.sh
+
+[Install]
+WantedBy=multi-user.target
