@@ -12,8 +12,14 @@ iniciar sesión a través de la aplicación.
 
 ## Extracción de *Logs*
 
-Para extraer los *logs*, se usa el comando `heroku logs --app <>`. Explicar
-que solo estamos usando los logs de un tipo y por qué.
+Para extraer los *logs* se usa el siguiente comando 
+
+```
+heroku logs --app <nombre_de_la_app_de_heroku> -d router -t
+```
+
+Donde el flag `-d` especifica el tipo de logs que queremos visualizar, en este 
+caso, todos los referentes al routing de la aplicación.
 
 ## Automatización de la Extracción de *Logs*
 
@@ -22,12 +28,22 @@ en el servidor encargado de la extracción de los logs, que se inicia
 automáticamente al encender el computador. Dicho servicio ejecuta la extración
 de los *logs* y redirecciona su salida hacia un archivo de texto.
 
-El script ejecutado por el servicio se encuentra en esta carpeta y es llamado 
-`nombre del archivo`.
+A modo de ejemplo, se ha creado un *script* que realiza este proceso y se 
+encuentra en esta carpeta, llamado `heroku_logs.sh`.
 
 ### Creación de un servicio en Linux
 
+Para que este proceso de extracción de *logs* se realice automáticamente cada vez
+que se inicia el servidor, es necesario que se cree un servicio de linux. Para 
+ello, fue creado un archivo de configuración en la carpeta `/etc/systemd/system/`
+llamado `herokulog.service`, el cuál también se encuentra a modo de ejemplo en 
+esta carpeta.
 
+Una vez creado este archivo, es necesario inciar el servicio con el comando 
+`systemctl start herokulog` con permisos de administrador.
+
+Adicionalmente, si se desea consultar el estado del servicio podemos ejecutar
+el siguiente comando `systemctl status herokulog`.
 
 ## Configuración de *Logs* de Hibernate
 
