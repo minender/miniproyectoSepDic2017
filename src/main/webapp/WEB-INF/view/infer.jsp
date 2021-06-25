@@ -358,6 +358,11 @@
                 <!--<div style="width: 60%; height: 400px; overflow: scroll;">-->
         <div class="col-lg-7" style="padding-right: 0px;">
             <article class="proof">
+                <div id="formulaInput" class="d-none">
+                    <tiles:insertDefinition name="jaxButtons" />
+                    <c:set var="rootId" value="caseExpression" scope="request"/>
+                    <tiles:insertDefinition name="jaxDiv"/>
+                </div>
                 <h5 id="formula" style="width:100%; height: 100%">${formula}</h5>
             </article>
         </div>    

@@ -24,13 +24,17 @@
 						</div>
 					</div>
 				</div>
+				<!-- INPUT BLOCK -->
+				<div class="container-fluid" id='input'>
+					<input name="nCases" id="nCases_id" value=""/>
+				</div>
 				<!-- OK BUTTONS BLOCK -->
 				<div class="container-fluid" id='ok-buttons'>
 					<div class="row d-none d-flex justify-content-center">
 						<div class="col-md-6 d-flex justify-content-center">
 							<!-- closes the modal -->
 							<button type="button" class="btn btn-default" 
-									style="width: 100px !important;" onclick="closeModal()">OK</button>
+									style="width: 100px !important;" onclick="okButton()">OK</button>
 						</div>
 					</div>
 				</div>
@@ -65,6 +69,7 @@
 		// pick method to take actions correspondingly
 		this.selectedMethod = methodId;
 		$('#ok-buttons').addClass('d-none');
+		$('#input').addClass('d-none');
 		$('#accept-cancel-buttons').removeClass('d-none');
 
 		// pick type
@@ -107,9 +112,6 @@
 		document.getElementById('modal-header').innerHTML = 'Information';
 		$('#ok-buttons').removeClass('d-none');
 		$('#accept-cancel-buttons').addClass('d-none');
-
-		// reset value to be able to close the modal
-		this.selectedMethod = null;
 	}
 
 	/*
@@ -177,10 +179,17 @@
 			closeModal();
 
 		} else if (this.selectedMethod === "7") { // proof by cases method
-			console.log('Proof By Cases Selected!');
 
-			this.selectedMethod = null;
-			closeModal();
+			let message = 'Enter the number of cases that will be proved.';
+			setModalBody(message);
+
+			$("#selectTeoInicial").val("0");
+			$("#metodosDiv").hide();
+			$("#currentTeo").hide();
+
+			switchToOkButtons();
+			$('#input').removeClass('d-none');
+
 		} else {
 			closeModal();
 		}
@@ -191,5 +200,16 @@
 	*/
 	function closeModal() {
 		$('#confirmationModal').modal('hide');
+	}
+
+	/*
+	 Closes modal and adds formula inputs for proof by cases
+	*/
+	function okButton() {
+		if( this.selectedMethod === "7"){
+			$("#formulaInput").removeClass('d-none');
+			$("#formula").addClass('d-none');
+		}
+		closeModal();
 	}
 </script>
