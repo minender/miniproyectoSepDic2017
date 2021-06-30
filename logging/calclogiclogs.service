@@ -1,5 +1,5 @@
 [Unit]
-Description=Heroku Log service
+Description=Calclogic Logging Service
 After=network.target
 StartLimitIntervalSec=0
 [Service]
@@ -7,7 +7,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User=root
-ExecStart= bash /root/heroku.sh
+ExecStart= bash /root/calclogic/logs/calclogiclogs.sh
 
 [Install]
 WantedBy=multi-user.target
