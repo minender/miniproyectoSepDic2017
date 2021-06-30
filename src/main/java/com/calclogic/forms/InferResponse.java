@@ -439,6 +439,33 @@ public class InferResponse {
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
+    private void setAIProof(String user, Term formula, String nTeo, Term typedTerm,  Boolean valida, Boolean labeled, String metodo, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s){
+
+        Term expression1 = ((App)formula).q;
+        String expression1Str = "$" + expression1.toStringInf(s,"") + "$";
+        Term expression2 = ((App)((App)formula).p).q;
+        String expression2Str = "$" + expression2.toStringInf(s,"") + "$";
+
+        Term proof1 = ((App)((App)typedTerm).p).q;
+        Term proof2 = ((App)typedTerm).q;
+
+        String[] subMethods = metodo.substring(17, metodo.length() - 1).split(";");
+        String method1 = subMethods[0];
+        String method2 = subMethods[1];
+
+        String auxHistorial = "";
+
+        this.generarHistorial(user, expression1, expression1Str, proof1, valida, labeled, method1, resuelveManager, disponeManager, s);
+
+        auxHistorial += this.getHistorial();
+
+        this.generarHistorial(user, expression2, expression2Str, proof2, valida, labeled, method2, resuelveManager, disponeManager, s);
+
+        auxHistorial += this.getHistorial();
+
+        this.setHistorial(auxHistorial);
+    };
+ 
     private void setWSProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {        
         String primExp = "";
     	String hint = "";
@@ -537,6 +564,7 @@ public class InferResponse {
         boolean weakening = metodo.equals("Weakening");
         boolean strengthening = metodo.equals("Strengthening");
         boolean transitivity = metodo.equals("Transitivity");
+        boolean andIntroduction = metodo.startsWith("And Introduction(");
         valid = valida;
         
         Term type = typedTerm==null?null:typedTerm.type();
@@ -682,6 +710,8 @@ public class InferResponse {
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);
         else if (weakening || strengthening || transitivity)
             setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);
+        else if (andIntroduction)
+            setAIProof(user, formula, nTeo, typedTerm, valida, labeled, metodo, resuelveManager, disponeManager, s);
         else if (naturalDirect)
             ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
         else if (naturalSide)
@@ -894,7 +924,10 @@ public class InferResponse {
     		header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
     	}
 
-    	this.setHistorial(header+"<center>$"+this.getHistorial()+"</center>");
+        if(!andIntroduction)
+    	    this.setHistorial(header+"<center>$" +this.getHistorial()+"</center>");
+        else 
+    	    this.setHistorial(header +this.getHistorial());
     	if (!valida)
     		this.setHistorial(this.getHistorial()+"$$\\text{No valid inference}$$");
 
