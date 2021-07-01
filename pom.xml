@@ -30,6 +30,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 </properties>
 <dependencies>
   <dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+  </dependency>
+
+  <dependency>
     <groupId>junit</groupId>     <!-- NOT org.junit here -->
     <artifactId>junit</artifactId>
     <version>4.12</version>
@@ -222,32 +228,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <scope>test</scope>
         <!--<systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/</systemPath>-->
 </dependency>
-
-<dependency>  
-     <groupId>log4j</groupId>  
-     <artifactId>log4j</artifactId>  
-     <version>1.2.15</version>  
-     <exclusions>  
-       <exclusion>  
-         <groupId>javax.mail</groupId>  
-         <artifactId>mail</artifactId>  
-       </exclusion>  
-       <exclusion>  
-         <groupId>javax.jms</groupId>  
-         <artifactId>jms</artifactId>  
-       </exclusion>  
-       <exclusion>  
-         <groupId>com.sun.jdmk</groupId>  
-         <artifactId>jmxtools</artifactId>  
-       </exclusion>  
-       <exclusion>  
-         <groupId>com.sun.jmx</groupId>  
-         <artifactId>jmxri</artifactId>  
-       </exclusion>  
-     </exclusions>  
-     <scope>runtime</scope>  
-     <!--<systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/log4j-1.2.15.jar</systemPath>-->
-   </dependency>  
    
 <dependency>
   <groupId>org.hibernate</groupId>
@@ -452,7 +432,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <groupId>javax.servlet</groupId>
     <artifactId>javax.servlet-api</artifactId>
     <version>3.0.1</version>
-  </dependency> 
+  </dependency>
 </dependencies>
 
 

@@ -1,4 +1,4 @@
-// Generated from com/calclogic/parse/Comb.g4 by ANTLR 4.8
+// Generated from src/main/java/com/calclogic/parse/Comb.g4 by ANTLR 4.8
 
 	
 package com.calclogic.parse; 
