@@ -439,27 +439,61 @@ public class InferResponse {
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
-    private void setAIProof(String user, Term formula, String nTeo, Term typedTerm,  Boolean valida, Boolean labeled, String metodo, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s){
+    private void setAIProof(
+        String user,
+        Term formula,
+        String nTeo, 
+        Term typedTerm,
+        Boolean valid,
+        Boolean labeled,
+        String method,
+        ResuelveManager resuelveManager,
+        DisponeManager disponeManager,
+        SimboloManager simboloManager
+    ){
 
         Term expression1 = ((App)formula).q;
-        String expression1Str = "$" + expression1.toStringInf(s,"") + "$";
+        String expression1Str = "$" + expression1.toStringInf(simboloManager,"") + "$";
         Term expression2 = ((App)((App)formula).p).q;
-        String expression2Str = "$" + expression2.toStringInf(s,"") + "$";
+        String expression2Str = "$" + expression2.toStringInf(simboloManager,"") + "$";
 
         Term proof1 = ((App)((App)typedTerm).p).q;
         Term proof2 = ((App)typedTerm).q;
 
-        String[] subMethods = metodo.substring(17, metodo.length() - 1).split(";");
+        String methods = method.split("-")[0];
+        String[] subMethods = methods.substring(17, methods.length() - 1).split(";");
         String method1 = subMethods[0];
         String method2 = subMethods[1];
 
         String auxHistorial = "";
 
-        this.generarHistorial(user, expression1, expression1Str, proof1, valida, labeled, method1, resuelveManager, disponeManager, s);
+        this.generarHistorial(
+            user,
+            expression1,
+            expression1Str,
+            proof1,
+            valid,
+            labeled,
+            method1,
+            resuelveManager,
+            disponeManager,
+            simboloManager
+        );
 
         auxHistorial += this.getHistorial();
 
-        this.generarHistorial(user, expression2, expression2Str, proof2, valida, labeled, method2, resuelveManager, disponeManager, s);
+        this.generarHistorial(
+            user,
+            expression2,
+            expression2Str,
+            proof2,
+            valid,
+            labeled,
+            method2,
+            resuelveManager,
+            disponeManager,
+            simboloManager
+        );
 
         auxHistorial += this.getHistorial();
 

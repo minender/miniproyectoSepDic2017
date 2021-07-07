@@ -1959,7 +1959,30 @@ public class InferController {
 
         return response;
     }
-            
+
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniAndI", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse iniAndI(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    {
+        InferResponse response = new InferResponse();
+
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+
+        String expression1 = ((App)formulaAnterior).q.toStringInf(simboloManager,"");
+        String expression2 = ((App)((App)formulaAnterior).p).q.toStringInf(simboloManager,"");
+        System.out.println(formulaAnterior.toStringInf(simboloManager,""));
+        System.out.println(expression1);
+        System.out.println(expression2);
+
+        String historial = "Theorem "+nTeo+":<br> <center>$"+ formulaAnterior.toStringInf(simboloManager,"") +"$</center> Proof:<br><br>";
+        historial += "Proof of: $" + expression1 + "$<br><br>Proof: ";
+        response.setHistorial(historial);  
+
+        return response;
+
+
+    }
+
     public void setUsuarioManager(UsuarioManager usuarioManager) 
     {
         this.usuarioManager = usuarioManager;
