@@ -85,6 +85,8 @@
 			type = "Transitivity";
 		} else if (methodId === "7") { // proof by cases method
 			type = "Proof by Cases";
+		} else if (methodId === "9") { // And introduction method
+			type = "And introduction"
 		}
 
 		// build the message for the confirmation
@@ -189,6 +191,15 @@
 
 			switchToOkButtons();
 			$('#input').removeClass('d-none');
+
+		} else if (this.selectedMethod === "9") { // proof by cases method
+
+			$("#metodosDiv").hide();
+			$("#currentTeo").hide();
+			iniAndI();
+
+			this.selectedMethod = null;
+			closeModal();
 
 		} else {
 			closeModal();

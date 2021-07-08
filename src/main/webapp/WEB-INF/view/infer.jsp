@@ -378,8 +378,9 @@
                 <option value="4">Strengthening</option>
                 <option value="5">Assume the antecedent</option>
                 <option value="6">Transitivity</option> -->
-                <option value="7">Proof by cases</option>
+                <!-- <option value="7">Proof by cases</option> -->
                 <!-- <option value="8">Proof by contradiction</option> -->
+                <option value="9">And introduction</option>
 
               </select>
           </div>

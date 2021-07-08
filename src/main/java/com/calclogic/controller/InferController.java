@@ -1968,11 +1968,18 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
 
-        String expression1 = ((App)formulaAnterior).q.toStringInf(simboloManager,"");
-        String expression2 = ((App)((App)formulaAnterior).p).q.toStringInf(simboloManager,"");
-        System.out.println(formulaAnterior.toStringInf(simboloManager,""));
-        System.out.println(expression1);
-        System.out.println(expression2);
+        if (nSol.equals("new"))
+        {
+            Solucion solucion = new Solucion(resuelve,false,null, "And Introduction(null;null)");
+            solucionManager.addSolucion(solucion);
+            response.setnSol(Integer.toString(solucion.getId()));
+        }
+        else
+        {
+            String expression2 = ((App)((App)formulaAnterior).p).q.toStringInf(simboloManager,"");
+
+        }
+            String expression1 = ((App)formulaAnterior).q.toStringInf(simboloManager,"");
 
         String historial = "Theorem "+nTeo+":<br> <center>$"+ formulaAnterior.toStringInf(simboloManager,"") +"$</center> Proof:<br><br>";
         historial += "Proof of: $" + expression1 + "$<br><br>Proof: ";
