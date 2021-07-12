@@ -40,7 +40,8 @@ term returns [Term value]
                                 Term aux = $term_base.value; 
                                 try {
 	                                for (Term it: $term_tail.value) {
-                                        if (aux instanceof TypedTerm && it instanceof TypedTerm)
+                                        if (aux instanceof TypedTerm && 
+                                            (it instanceof TypedTerm || it instanceof Const))
                                             aux = new TypedApp(aux,it);
 				                        else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
 					                        aux = new App(aux,it);

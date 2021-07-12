@@ -18,7 +18,7 @@ public class TypedApp extends App implements TypedTerm{
         super(t1, t2);
         Term t1Type = t1.type();
         Term t2Type = t2.type();
-        
+
         if (t1Type instanceof Sust)
             inferType = 'i';
         else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv

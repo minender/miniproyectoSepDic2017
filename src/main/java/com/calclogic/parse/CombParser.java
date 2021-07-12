@@ -1,4 +1,4 @@
-// Generated from ./com/calclogic/parse/Comb.g4 by ANTLR 4.8
+// Generated from src/main/java/com/calclogic/parse/Comb.g4 by ANTLR 4.8
 
 	
 package com.calclogic.parse; 
@@ -310,7 +310,8 @@ public class CombParser extends Parser {
 			                                Term aux = ((TermContext)_localctx).term_base.value; 
 			                                try {
 				                                for (Term it: ((TermContext)_localctx).term_tail.value) {
-			                                        if (aux instanceof TypedTerm && it instanceof TypedTerm)
+			                                        if (aux instanceof TypedTerm && 
+			                                            (it instanceof TypedTerm || it instanceof Const))
 			                                            aux = new TypedApp(aux,it);
 							                        else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
 								                        aux = new App(aux,it);

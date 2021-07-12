@@ -45,9 +45,9 @@
         
 <!-- Modal Trigger Function -->
 <script type="text/javascript">
-	function openModal(type, prefix, sufix) {
-		let message = prefix + " " + type + " " + sufix;
+	function openModalWithConfirmation(message) {
 		document.getElementById('modal-body').innerHTML = message;
+		switchToOkButtons();
 		$('#confirmationModal').modal('show');
 	}
 
@@ -192,14 +192,17 @@
 			switchToOkButtons();
 			$('#input').removeClass('d-none');
 
-		} else if (this.selectedMethod === "9") { // proof by cases method
+		} else if (this.selectedMethod === "9") { // and introduction method
 
 			$("#metodosDiv").hide();
 			$("#currentTeo").hide();
 			iniAndI();
 
 			this.selectedMethod = null;
-			closeModal();
+			$('#metodosDemostracion').val("0");
+			let message = "Please, select a proof method for the case.";
+			document.getElementById('modal-body').innerHTML = message;
+			switchToOkButtons();
 
 		} else {
 			closeModal();
