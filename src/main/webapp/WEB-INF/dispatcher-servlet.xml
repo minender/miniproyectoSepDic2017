@@ -134,6 +134,10 @@
     </bean>
     <bean id="mostrarCategoriaManager" class="com.calclogic.service.MostrarCategoriaManagerImpl">
     </bean>
+
+    <bean id="plantillaTeoremaDAO" class="com.calclogic.dao.PlantillaTeoremaDaoImpl"></bean>
+    <bean id="plantillaTeoremaManager" class="com.calclogic.service.PlantillaTeoremaManagerImpl"></bean>
+    
     <bean id="combUtilities" class="com.calclogic.parse.CombUtilities">
     </bean>
     <bean id="termUtilities" class="com.calclogic.parse.TermUtilities">

@@ -370,6 +370,36 @@ ALTER TABLE userdb.solucion_id_seq OWNER TO userdb;
 
 ALTER SEQUENCE userdb.solucion_id_seq OWNED BY userdb.solucion.id;
 
+--
+-- Name: plantilla_teorema; Type: TABLE; Schema: userdb; Owner: userdb
+--
+
+CREATE TABLE userdb.plantilla_teorema (
+    id integer NOT NULL,
+    template text NOT NULL
+);
+
+ALTER TABLE userdb.plantilla_teorema OWNER TO userdb;
+
+--
+-- Name: plantilla_teorema_id_seq; Type: SEQUENCE; Schema: userdb; Owner: userdb
+--
+
+CREATE SEQUENCE userdb.plantilla_teorema_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE userdb.plantilla_teorema_id_seq OWNER TO userdb;
+
+--
+-- Name: resuelve_id_seq; Type: SEQUENCE OWNED BY; Schema: userdb; Owner: userdb
+--
+
+ALTER SEQUENCE userdb.plantilla_teorema_id_seq OWNED BY userdb.plantilla_teorema.id;
 
 --
 -- Name: teorema; Type: TABLE; Schema: userdb; Owner: userdb
