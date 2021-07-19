@@ -19,12 +19,13 @@ public class PlantillaTeoremaDaoImpl implements PlantillaTeoremaDAO {
     
     @Autowired
     private SessionFactory sessionFactory;
-    
+
     @Override
     @Transactional
-    public List<PlantillaTeorema> getAllPlantillaTeorema(){
-        return this.sessionFactory.getCurrentSession()
-                   .createQuery("FROM PlantillaTeorema").list();
-    }
+    public PlantillaTeorema getPlantillaTeoremaById(int id) {
+        return (PlantillaTeorema)this.sessionFactory.getCurrentSession()
+                                     .get(PlantillaTeorema.class, id);           
+    };
+
 
 }

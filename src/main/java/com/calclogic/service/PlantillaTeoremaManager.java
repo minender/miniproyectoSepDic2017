@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface PlantillaTeoremaManager {
     
-    public List<PlantillaTeorema> getAllPlantillaTeorema();
-    
+    public PlantillaTeorema getPlantillaTeoremaById(int id);
+
 }

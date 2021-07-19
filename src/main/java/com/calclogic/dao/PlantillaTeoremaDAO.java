@@ -8,6 +8,6 @@ import java.util.List;
  */
 public interface PlantillaTeoremaDAO {
     
-    public List<PlantillaTeorema> getAllPlantillaTeorema();
+    public PlantillaTeorema getPlantillaTeoremaById(int id);
 
 }

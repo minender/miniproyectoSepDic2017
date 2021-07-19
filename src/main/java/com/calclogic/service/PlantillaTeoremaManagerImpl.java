@@ -19,10 +19,9 @@ public class PlantillaTeoremaManagerImpl implements PlantillaTeoremaManager {
 
     @Override
     @Transactional
-    public List<PlantillaTeorema> getAllPlantillaTeorema() {
-        List<PlantillaTeorema> teoList = plantillaTeoremaDAO
-                                            .getAllPlantillaTeorema();
-        return teoList;
-    }
+    public PlantillaTeorema getPlantillaTeoremaById(int id) {
+        return plantillaTeoremaDAO.getPlantillaTeoremaById(id);
+    };
+    
 
 }

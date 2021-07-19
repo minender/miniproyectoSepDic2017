@@ -5,6 +5,7 @@ import com.calclogic.entity.Categoria;
 import com.calclogic.entity.Dispone;
 import com.calclogic.entity.PredicadoId;
 import com.calclogic.entity.MostrarCategoria;
+import com.calclogic.entity.PlantillaTeorema;
 import com.calclogic.entity.Predicado;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Simbolo;
@@ -44,6 +45,7 @@ import com.calclogic.service.DisponeManager;
 import com.calclogic.service.MetateoremaManager;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
+import com.calclogic.service.PlantillaTeoremaManager;
 import com.calclogic.service.SimboloManager;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -91,6 +93,8 @@ public class InferController {
     private SimboloManager simboloManager;
     @Autowired
     private SolucionManager solucionManager;
+    @Autowired
+    private PlantillaTeoremaManager plantillaTeoremaManager;
     @Autowired
     private MetateoremaManager metateoremaManager;
     @Autowired
@@ -1783,11 +1787,18 @@ public class InferController {
                     solucion.setMetodo(outerMethod);
                     response.setEndCase(true);
                 // If not, we're proving the 2nd and last case.
-                } else {
-                    solucion.setMetodo(methodAndPath[0]);
-                    // TODO: conclusion of method needs to be done in this step
+                } else {                    
                 	Term originalTeo = resuel.getTeorema().getTeoTerm();
-                    isFinalSolution = originalTeo.equals(finalProof.type());
+                    
+                    Term pProof = ((App)(((App)originalTerm).p)).q;
+                    Term qProof = caseProof;
+                    Term pTeo = ((App)originalTeo).q;
+                    Term qTeo = ((App)(((App)originalTeo).p)).q;
+
+                    Term joinedProof = finishAItemplates(pProof, qProof, pTeo, qTeo);
+                    
+                    solucion.setMetodo(methodAndPath[0]);
+                    isFinalSolution = originalTeo.equals(joinedProof.type());
                 }
             }
         } 
@@ -1807,9 +1818,58 @@ public class InferController {
 
         solucionManager.updateSolucion(solucion);
         
-        response.generarHistorial(username,formula, nTeo,finalProof,true,true,
-                outerMethod,resuelveManager,disponeManager,simboloManager);
+        response.generarHistorial(
+            username,
+            formula, 
+            nTeo,
+            finalProof,
+            true,
+            true,
+            outerMethod,
+            resuelveManager,
+            disponeManager,
+            simboloManager
+        );
         return response;
+    }
+
+    /**
+     * Inserts formulas for each case on the templates to created a valid
+     * proof for And Introduction
+     * @param pProof Proof tree for left side case
+     * @param qProof Proof tree for right side case
+     * @param pTeo Theorem formula of left side case
+     * @param qTeo Theorem formula of right side case
+     * @return
+     */
+    private Term finishAItemplates(
+        Term pProof, 
+        Term qProof, 
+        Term pTeo, 
+        Term qTeo
+    ) {
+        // Extract templates for each of the cases from datavase
+        String template1 = plantillaTeoremaManager.getPlantillaTeoremaById(1)
+                            .getTemplate();
+        
+        String template2 = plantillaTeoremaManager.getPlantillaTeoremaById(2)
+                            .getTemplate();
+
+        // Apply basic template to both cases
+        String template1p = template1.replace("%T1", pTeo.toString())
+                              .replace("%T2", pProof.toString());
+        String template1q = template1.replace("%T1", qTeo.toString())
+                              .replace("%T2", qProof.toString());
+        
+        // Apply unification template
+        String template2pq = template2.replace("%M1P", template1p)
+                                      .replace("%P1", pTeo.toString())
+                                      .replace("%M1Q", template1q);
+
+        // Parse the new tree from its string.
+        Term proof = combUtilities.getTerm(template2pq);
+
+        return proof;
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Retroceder",produces= MediaType.APPLICATION_JSON_VALUE)
@@ -1884,7 +1944,7 @@ public class InferController {
             // If the method is And Introduction, we have to look for the 
             // correct sub tree to operate.
             if (method.startsWith("And Introduction(")) {
-
+                
                 // Obtains the path of the current sub-tree.
                 String[] methodAndPath = method.split("-");
                 String[] methods = methodAndPath[0].substring(
@@ -1906,6 +1966,7 @@ public class InferController {
                                       ";null)-p";
                         solucion.setTypedTerm(formulaTerm);
                     } else {
+                        formulaTerm = solucion.getTypedTerm();
                         nuevoMetodo = "And Introduction(" + methods[0] + ";" + 
                                       nuevoMetodo + ")-q";
                     }
@@ -1921,8 +1982,18 @@ public class InferController {
 
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
-                                      resuelveManager,disponeManager,simboloManager);
+        response.generarHistorial(
+            username,
+            formulaAnterior, 
+            nTeo,
+            formulaTerm,
+            true,
+            true,
+            nuevoMetodo,
+            resuelveManager,
+            disponeManager,
+            simboloManager 
+        );
         //String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         //response.setHistorial(historial);  
 
