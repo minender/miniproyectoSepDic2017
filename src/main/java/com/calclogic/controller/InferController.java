@@ -236,32 +236,74 @@ public class InferController {
             infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");  
             InferResponse response = new InferResponse();
             Term typedTerm = solucion.getTypedTerm();
-            response.generarHistorial(username,formula, nTeo, typedTerm, true,true,solucion.getMetodo(), resuelveManager, disponeManager,simboloManager);
 
-            if (typedTerm == null){
+            response.generarHistorial(
+                username,
+                formula, 
+                nTeo, 
+                typedTerm, 
+                true,
+                true,
+                solucion.getMetodo(), 
+                resuelveManager, 
+                disponeManager,
+                simboloManager
+            );
+
+            Boolean hasInnerMethodSelected = true;
+
+            // If it is an And Introduction proof
+            if (solucion.getMetodo().startsWith("And Introduction(")) {
+                String[] methodAndPath = solucion.getMetodo().split("-");
+                String[] methods = methodAndPath[0].substring(
+                                       17,
+                                       methodAndPath[0].length() - 1
+                                   ).split(";");
+                String currentMethod;
+                String path = methodAndPath[1];
+    
+                // TODO: we have to create a parser to identify the recursive
+                // case.
+                if (path.equals("p")) {
+                    currentMethod = methods[0];
+                } else {
+                    currentMethod = methods[1];
+                }
+
+                // If no method has been selected, we should show the method 
+                // selector 
+                if (currentMethod.equals("null")) {
+                    hasInnerMethodSelected = false;
+                }
+
+            }
+
+            if (typedTerm == null || !hasInnerMethodSelected){
                 map.addAttribute("elegirMetodo","1");
             }else{
                 map.addAttribute("elegirMetodo","0");
             }
 
             map.addAttribute("formula",response.getHistorial());
-            Term type = null;//typedTerm.type();
-            String teoInicial;
-            Resuelve res = null;
-            if (typedTerm!=null && (type = typedTerm.type()) == null)
-            {
-                teoInicial = solucion.getTypedTerm().toStringFinal();
-                res = resuelveManager.getResuelveByUserAndTeorema(username, teoInicial);
-            }
-            else if (typedTerm!=null)
-            {
-              teoInicial = ((App)type).q.toStringFinal();
-              res = resuelveManager.getResuelveByUserAndTeorema(username, teoInicial);
-            }
-            if (res != null)
-               map.addAttribute("teoInicial", res.getNumeroteorema());
-            else
-               map.addAttribute("teoInicial", "");
+
+            // TODO: preguntarle a Flaviani sobre este caso borde
+            // Term type = null;//typedTerm.type();
+            // String teoInicial;
+            // Resuelve res = null;
+            // if (typedTerm!=null && (type = typedTerm.type()) == null)
+            // {
+            //     teoInicial = solucion.getTypedTerm().toStringFinal();
+            //     res = resuelveManager.getResuelveByUserAndTeorema(username, teoInicial);
+            // }
+            // else if (typedTerm!=null)
+            // {
+            //   teoInicial = ((App)type).q.toStringFinal();
+            //   res = resuelveManager.getResuelveByUserAndTeorema(username, teoInicial);
+            // }
+            // if (res != null)
+            //    map.addAttribute("teoInicial", res.getNumeroteorema());
+            // else
+            //    map.addAttribute("teoInicial", "");
         }
         List <Categoria> showCategorias = new LinkedList<Categoria>();
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
@@ -2279,7 +2321,7 @@ public class InferController {
             String historial = "Theorem " + nTeo + ":<br> <center>$" + 
                                formulaAnterior.toStringInf(simboloManager,"") +
                                "$</center> Proof:<br><br>";
-            historial += "Proof of:  $" + expression1 + "$<br><br>Proof: ";
+            historial += "Proof of $" + expression1 + "$:<br><br>Proof: ";
             response.setHistorial(historial);  
         }
         // If we're taking over a new proof.

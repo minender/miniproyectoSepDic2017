@@ -491,16 +491,16 @@ public class InferResponse {
         String method1 = subMethods[0];
         String method2 = subMethods[1];        
         String auxHistorial = "<br>";
-
+        
         // If there's a proof, show first case proof.
         if (!method1.equals("null")) {
-
+            
             // Check if the method has been called from my teorems or from
             // infer view.
             // If we're proving we just want to see the case we're proving.
             if ((!labeled) || (labeled && path.equals("p"))) {
                 Term proof1 = ((App)((App)typedTerm).p).q;
-        
+                
                 this.generarHistorial(
                     user,
                     expression1,
@@ -518,10 +518,15 @@ public class InferResponse {
                 auxHistorial += this.getHistorial();
             }
         } 
-
+        // Shows the start of first case when no method has been selected
+        // Checks it to be labeled in case we are in the infer view.
+        else if (labeled && path.equals("p")) {
+            auxHistorial += "Proof of " + expression1Str + ":<br><br>Proof:<br>"; 
+        }
+        
         // If there's a proof, show a proof for the second case.
         if (!method2.equals("null")) {
-
+            
             // Check if the method has been called from my teorems or from
             // infer view.
             // If we're proving we just want to see the case we're proving.
@@ -543,12 +548,11 @@ public class InferResponse {
         
                 auxHistorial += this.getHistorial();
             }
-        } 
+        }
         // Shows the start of second case when the first one is finished
         // Checks it to be labeled in case we are in the infer view.
         else if (labeled && path.equals("q")) {
-            auxHistorial += "Proof of " + expression2Str + ":<br> <center>$" + 
-                            expression2Str + "$</center> Proof:<br>";
+            auxHistorial += "Proof of " + expression2Str + ":<br><br>Proof:<br>"; 
         }
 
         this.setHistorial(auxHistorial);
@@ -697,15 +701,15 @@ public class InferResponse {
 
         // If we're printing a root teorem, print it as a teorem. 
         if (isRootTeorem) {
-            header = "Theorem ";     
+            header = "Theorem " + nTeo + ":<br> <center>$" + 
+                     formula.toStringInf(s,"") + "$</center>";     
         } 
         // if not, just print the expression we're going to proof.
         else {
-            header = "Proof of ";
+            header = "Proof of " + nTeo + ":<br><br>";
         }
 
-        header += nTeo + ":<br> <center>$" + formula.toStringInf(s,"") + 
-                  "$</center> Proof:<br>";
+        header += "Proof:<br>";
                 
         String[] metodos = metodo.split(",");
         
