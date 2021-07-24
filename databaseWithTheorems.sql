@@ -376,7 +376,8 @@ ALTER SEQUENCE userdb.solucion_id_seq OWNED BY userdb.solucion.id;
 
 CREATE TABLE userdb.plantilla_teorema (
     id integer NOT NULL,
-    template text NOT NULL
+    template text NOT NULL,
+    path_to_placeholders text NOT NULL
 );
 
 ALTER TABLE userdb.plantilla_teorema OWNER TO userdb;
@@ -395,9 +396,9 @@ CREATE SEQUENCE userdb.plantilla_teorema_id_seq
 
 ALTER TABLE userdb.plantilla_teorema_id_seq OWNER TO userdb;
 
-COPY userdb.plantilla_teorema (id, template) FROM stdin;
-1	(I^{[x_{113} := (%T1)]} A^{c_{1} (c_{1} c_{8} x_{113}) x_{113}}) (%T2)
-2	(I^{[x_{112} := c_{8}]} A^{c_{1} (c_{5} x_{112} x_{112}) x_{112}}) (L^{\\lambda x_{122}.c_{5} c_{8} x_{122}} (S (%M1P))) (L^{\\lambda x_{122}.c_{5} x_{122} (%P1)} (S (%M1Q))) A^{c_{8}}
+COPY userdb.plantilla_teorema (id, template, path_to_placeholders) FROM stdin;
+1	(I^{[x_{113} := (%T1)]} A^{c_{1} (c_{1} c_{8} x_{113}) x_{113}}) (%T2)	T2:q
+2	(I^{[x_{112} := c_{8}]} A^{c_{1} (c_{5} x_{112} x_{112}) x_{112}}) (L^{\\lambda x_{122}.c_{5} c_{8} x_{122}} (S (%M1P))) (L^{\\lambda x_{122}.c_{5} x_{122} (%P1)} (S (%M1Q))) A^{c_{8}}	M1Q:pqqq;M1P:ppqq
 \.
 
 --

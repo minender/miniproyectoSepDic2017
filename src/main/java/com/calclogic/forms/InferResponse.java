@@ -7,6 +7,7 @@ package com.calclogic.forms;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
 import com.calclogic.controller.InferController;
 import com.calclogic.entity.Resuelve;
+import com.calclogic.entity.PlantillaTeorema;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
@@ -23,11 +24,14 @@ import com.calclogic.lambdacalculo.Var;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
+import com.calclogic.service.PlantillaTeoremaManager;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -46,6 +50,14 @@ public class InferResponse {
 
     // Represents if the solution is ending a case.
     private boolean endCase = false;
+
+    private PlantillaTeoremaManager plantillaTeoremaManager;
+
+    public InferResponse() {}
+
+    public InferResponse(PlantillaTeoremaManager plantillaTeoremaManager) {
+        this.plantillaTeoremaManager = plantillaTeoremaManager;
+    }
 
     public void setEndCase(boolean endCase) {
         this.endCase = endCase;
@@ -486,77 +498,126 @@ public class InferResponse {
         // Get the path to the current sub-tree to be proved.
         String[] mehtodAndPath = method.split("-");
         String methods = mehtodAndPath[0];
-        String path = mehtodAndPath[1];
         String[] subMethods = methods.substring(17, methods.length() - 1).split(";");
         String method1 = subMethods[0];
         String method2 = subMethods[1];        
         String auxHistorial = "<br>";
-        
-        // If there's a proof, show first case proof.
-        if (!method1.equals("null")) {
+
+        // Check if the proof is still incomplete
+        if (mehtodAndPath.length > 1) {
+            String path = mehtodAndPath[1];
             
-            // Check if the method has been called from my teorems or from
-            // infer view.
-            // If we're proving we just want to see the case we're proving.
-            if ((!labeled) || (labeled && path.equals("p"))) {
-                Term proof1 = ((App)((App)typedTerm).p).q;
+            // If there's a proof, show first case proof.
+            if (!method1.equals("null")) {
                 
-                this.generarHistorial(
-                    user,
-                    expression1,
-                    expression1Str,
-                    proof1,
-                    valid,
-                    labeled,
-                    method1,
-                    resuelveManager,
-                    disponeManager,
-                    simboloManager,
-                    false
-                );
+                // Check if the method has been called from my teorems or from
+                // infer view.
+                // If we're proving we just want to see the case we're proving.
+                if ((!labeled) || (labeled && path.equals("p"))) {
+                    Term proof1 = ((App)((App)typedTerm).p).q;
+                    
+                    this.generarHistorial(
+                        user,
+                        expression1,
+                        expression1Str,
+                        proof1,
+                        valid,
+                        labeled,
+                        method1,
+                        resuelveManager,
+                        disponeManager,
+                        simboloManager,
+                        false
+                    );
+                    
+                    auxHistorial += this.getHistorial();
+                }
+            } 
+            // Shows the start of first case when no method has been selected
+            // Checks it to be labeled in case we are in the infer view.
+            else if (labeled && path.equals("p")) {
+                auxHistorial += "Proof of " + expression1Str + ":<br><br>Proof:<br>"; 
+            }
+            
+            // If there's a proof, show a proof for the second case.
+            if (!method2.equals("null")) {
                 
-                auxHistorial += this.getHistorial();
+                // Check if the method has been called from my teorems or from
+                // infer view.
+                // If we're proving we just want to see the case we're proving.
+                if ((!labeled) || (labeled && path.equals("q"))) {
+                    Term proof2 = ((App)typedTerm).q;
+                    this.generarHistorial(
+                        user,
+                        expression2,
+                        expression2Str,
+                        proof2,
+                        valid,
+                        labeled,
+                        method2,
+                        resuelveManager,
+                        disponeManager,
+                        simboloManager, 
+                        false
+                    );
+            
+                    auxHistorial += this.getHistorial();
+                }
+            }
+            // Shows the start of second case when the first one is finished
+            // Checks it to be labeled in case we are in the infer view.
+            else if (labeled && path.equals("q")) {
+                auxHistorial += "Proof of " + expression2Str + ":<br><br>Proof:<br>"; 
             }
         } 
-        // Shows the start of first case when no method has been selected
-        // Checks it to be labeled in case we are in the infer view.
-        else if (labeled && path.equals("p")) {
-            auxHistorial += "Proof of " + expression1Str + ":<br><br>Proof:<br>"; 
-        }
-        
-        // If there's a proof, show a proof for the second case.
-        if (!method2.equals("null")) {
+        // If the proof doensn't hava a path, is because it is completed.
+        else {
+            System.out.println("Proof Completed.");
             
-            // Check if the method has been called from my teorems or from
-            // infer view.
-            // If we're proving we just want to see the case we're proving.
-            if ((!labeled) || (labeled && path.equals("q"))) {
-                Term proof2 = ((App)typedTerm).q;
-                this.generarHistorial(
-                    user,
-                    expression2,
-                    expression2Str,
-                    proof2,
-                    valid,
-                    labeled,
-                    method2,
-                    resuelveManager,
-                    disponeManager,
-                    simboloManager, 
-                    false
-                );
-        
-                auxHistorial += this.getHistorial();
-            }
-        }
-        // Shows the start of second case when the first one is finished
-        // Checks it to be labeled in case we are in the infer view.
-        else if (labeled && path.equals("q")) {
-            auxHistorial += "Proof of " + expression2Str + ":<br><br>Proof:<br>"; 
+            String template2 = plantillaTeoremaManager.getPlantillaTeoremaById(2)
+                                                      .getPath_to_placeholders();
+
+            
+            String[] placeholdersTemp2 = template2.split(";");
+            String pathM1P = placeholdersTemp2[1].split(":")[1];
+            String pathM1Q = placeholdersTemp2[0].split(":")[1]; 
+            Term M1P = navigateTroughTree(typedTerm, pathM1P);
+            Term M1Q = navigateTroughTree(typedTerm, pathM1Q);
+                        
+            System.out.println("M1P: " + M1P.toString());
+            System.out.println("M1Q: " + M1Q.toString());
+
+            String template1 = plantillaTeoremaManager.getPlantillaTeoremaById(1)
+                                                      .getPath_to_placeholders();
+
+            String[] placeholdersTemp1 = template1.split(";");
+            String pathT2 = placeholdersTemp1[0].split(":")[1];
+
+            Term proofCase1 = navigateTroughTree(M1P, pathT2);
+            Term proofCase2 = navigateTroughTree(M1Q, pathT2);
+
+            System.out.println("proofCase1: " + proofCase1);
+            System.out.println("proofCase2: " + proofCase2);
+
         }
 
         this.setHistorial(auxHistorial);
     };
+
+    private Term navigateTroughTree(Term tree, String path) {
+
+        Term M1P = tree;
+
+        for (char child : path.toCharArray()) {
+            if (child == 'p') {
+                M1P = ((App)M1P).p;
+            } else {
+                M1P = ((App)M1P).q;
+            }
+        }
+
+        return M1P;
+    }
  
     private void setWSProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {        
         String primExp = "";

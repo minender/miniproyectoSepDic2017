@@ -10,6 +10,11 @@ import javax.persistence.SequenceGenerator;
  */
 public class PlantillaTeorema implements java.io.Serializable {
    
+    // table fields
+    private int id;
+    private String template;
+    private String path_to_placeholders;
+
     @Id
     @Column(name="id")
     @GeneratedValue(
@@ -33,13 +38,14 @@ public class PlantillaTeorema implements java.io.Serializable {
         this.template = template;
     }
 
-    // table fields
-    private int id;
-    private String template;
-
-    public PlantillaTeorema
-() {
-
+    public String getPath_to_placeholders() {
+        return this.path_to_placeholders;
     }
+
+    public void setPath_to_placeholders(String path_to_placeholders) {
+        this.path_to_placeholders = path_to_placeholders;
+    }
+
+    public PlantillaTeorema() {}
 
 }
