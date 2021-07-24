@@ -572,51 +572,83 @@ public class InferResponse {
         } 
         // If the proof doensn't hava a path, is because it is completed.
         else {
-            System.out.println("Proof Completed.");
             
+            // Extracting template2 from database
             String template2 = plantillaTeoremaManager.getPlantillaTeoremaById(2)
                                                       .getPath_to_placeholders();
 
-            
+            // Getting path to placeholders of the template
             String[] placeholdersTemp2 = template2.split(";");
             String pathM1P = placeholdersTemp2[1].split(":")[1];
             String pathM1Q = placeholdersTemp2[0].split(":")[1]; 
+
+            // Obtaining Terms of placeholders following path
             Term M1P = navigateTroughTree(typedTerm, pathM1P);
             Term M1Q = navigateTroughTree(typedTerm, pathM1Q);
-                        
-            System.out.println("M1P: " + M1P.toString());
-            System.out.println("M1Q: " + M1Q.toString());
 
+            // Extracting template1 from database
             String template1 = plantillaTeoremaManager.getPlantillaTeoremaById(1)
                                                       .getPath_to_placeholders();
 
+            // Getting path to placeholders of the template
             String[] placeholdersTemp1 = template1.split(";");
             String pathT2 = placeholdersTemp1[0].split(":")[1];
 
+            // Obtaining Terms of placeholders following path
             Term proofCase1 = navigateTroughTree(M1P, pathT2);
             Term proofCase2 = navigateTroughTree(M1Q, pathT2);
 
-            System.out.println("proofCase1: " + proofCase1);
-            System.out.println("proofCase2: " + proofCase2);
+            this.generarHistorial(
+                        user,
+                        expression1,
+                        expression1Str,
+                        proofCase1,
+                        valid,
+                        labeled,
+                        method1,
+                        resuelveManager,
+                        disponeManager,
+                        simboloManager,
+                        false
+                    );
+                    
+            auxHistorial += this.getHistorial();
 
+            this.generarHistorial(
+                        user,
+                        expression2,
+                        expression2Str,
+                        proofCase2,
+                        valid,
+                        labeled,
+                        method2,
+                        resuelveManager,
+                        disponeManager,
+                        simboloManager,
+                        false
+                    );
+                    
+            auxHistorial += this.getHistorial();
         }
 
         this.setHistorial(auxHistorial);
     };
 
-    private Term navigateTroughTree(Term tree, String path) {
-
-        Term M1P = tree;
-
+    /**
+     * Using the corresponding path, obtains the terms in placeholder's position from a term
+     * @param rootTree
+     * @param path
+     */
+    private Term navigateTroughTree(Term rootTree, String path) {
+        Term tree = rootTree;
         for (char child : path.toCharArray()) {
             if (child == 'p') {
-                M1P = ((App)M1P).p;
+                tree = ((App)tree).p;
             } else {
-                M1P = ((App)M1P).q;
+                tree = ((App)tree).q;
             }
         }
-
-        return M1P;
+        return tree;
     }
  
     private void setWSProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {        

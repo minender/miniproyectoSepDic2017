@@ -1840,6 +1840,7 @@ public class InferController {
                     Term joinedProof = finishAItemplates(pProof, qProof, pTeo, qTeo);
                     
                     solucion.setMetodo(methodAndPath[0]);
+                    solucion.setTypedTerm(joinedProof);
                     isFinalSolution = originalTeo.equals(joinedProof.type());
                 }
             }

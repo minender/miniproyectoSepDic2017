@@ -12,5 +12,8 @@
     <property name="template" type="string">
       <column name="template" not-null="true"/>
     </property>
+    <property name="path_to_placeholders" type="string">
+      <column name="path_to_placeholders" not-null="true"/>
+    </property>
   </class>
 </hibernate-mapping>
