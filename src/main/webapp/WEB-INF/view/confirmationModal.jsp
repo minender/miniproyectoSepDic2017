@@ -25,7 +25,7 @@
 					</div>
 				</div>
 				<!-- INPUT BLOCK -->
-				<div class="container-fluid" id='input'>
+				<div class="container-fluid" id='input_cases'>
 					<input name="nCases" id="nCases_id" value=""/>
 				</div>
 				<!-- OK BUTTONS BLOCK -->
@@ -69,7 +69,7 @@
 		// pick method to take actions correspondingly
 		this.selectedMethod = methodId;
 		$('#ok-buttons').addClass('d-none');
-		$('#input').addClass('d-none');
+		$('#input_cases').addClass('d-none');
 		$('#accept-cancel-buttons').removeClass('d-none');
 
 		// pick type
@@ -190,7 +190,7 @@
 			$("#currentTeo").hide();
 
 			switchToOkButtons();
-			$('#input').removeClass('d-none');
+			$('#input_cases').removeClass('d-none');
 
 		} else if (this.selectedMethod === "9") { // and introduction method
 

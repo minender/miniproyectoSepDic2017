@@ -311,12 +311,10 @@ public class CombParser extends Parser {
 			                                try {
 				                                for (Term it: ((TermContext)_localctx).term_tail.value) {
 			                                        if (aux instanceof TypedTerm && 
-			                                            (it instanceof TypedTerm || it instanceof Const))
+			                                            (it instanceof TypedTerm || it instanceof Const || it instanceof App))
 			                                            aux = new TypedApp(aux,it);
 							                        else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
 								                        aux = new App(aux,it);
-			                                        else if ( (aux instanceof TypedApp) && (it instanceof App))
-			                                            aux = new TypedApp(aux,it);
 			                                        else
 			                                            throw new TypeVerificationException();
 			                                    }
