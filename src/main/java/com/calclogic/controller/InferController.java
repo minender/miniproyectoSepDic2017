@@ -1995,21 +1995,22 @@ public class InferController {
                     methodAndPath[0].length() - 1
                 ).split(";");
 
-                Term casepTerm = ((App)formulaAnterior).q;
                 Term caseqTerm = ((App)(((App)formulaAnterior).p)).q;
                 
                 try {
                     // If first case method is null, there's no path to follow
                     // We have to initialize the path.
                     if (methods[0].equals("null")) {
-                        formulaTerm = new TypedApp(new TypedApp(new TypedU(), casepTerm), caseqTerm); 
+                        formulaTerm = new TypedApp(new TypedApp(new TypedU(), formulaTerm), caseqTerm); 
                         // TODO: need to check this for recursive case
                         // We need to implement a parser for recursive case
                         nuevoMetodo = "And Introduction(" + nuevoMetodo + 
                                       ";null)-p";
                         solucion.setTypedTerm(formulaTerm);
                     } else {
-                        formulaTerm = solucion.getTypedTerm();
+                        Term casepTerm = ((App)(((App)(solucion.getTypedTerm())).p)).q;
+
+                        formulaTerm = new TypedApp(new TypedApp(new TypedU(), casepTerm), formulaTerm);
                         nuevoMetodo = "And Introduction(" + methods[0] + ";" + 
                                       nuevoMetodo + ")-q";
                     }
