@@ -1775,6 +1775,9 @@ public class InferController {
                 //
                 // Append the new proof to the tree where it has to be.
                 Term leftTreeTerm = ((App)originalTerm).p;
+
+                System.out.println("leftTreeTerm: " + leftTreeTerm);
+
                 Term uTerm = ((App)leftTreeTerm).p;
                 Term caseqTerm =((App)originalTerm).q;
                 
@@ -1803,6 +1806,8 @@ public class InferController {
                 return response;
             }
         } 
+
+        System.out.println("caseProof: " + caseProof);
 
     	// newProve might or might not be different than pasoPostTerm
     	
@@ -1836,6 +1841,8 @@ public class InferController {
                     Term qProof = caseProof;
                     Term pTeo = ((App)originalTeo).q;
                     Term qTeo = ((App)(((App)originalTeo).p)).q;
+
+                    System.out.println("qProof: " + qProof);
 
                     Term joinedProof = finishAItemplates(pProof, qProof, pTeo, qTeo);
                     
@@ -2006,7 +2013,7 @@ public class InferController {
                         // We need to implement a parser for recursive case
                         nuevoMetodo = "And Introduction(" + nuevoMetodo + 
                                       ";null)-p";
-                        solucion.setTypedTerm(formulaTerm);
+                        
                     } else {
                         Term casepTerm = ((App)(((App)(solucion.getTypedTerm())).p)).q;
 
@@ -2014,6 +2021,7 @@ public class InferController {
                         nuevoMetodo = "And Introduction(" + methods[0] + ";" + 
                                       nuevoMetodo + ")-q";
                     }
+                    solucion.setTypedTerm(formulaTerm);
                 } catch (TypeVerificationException e) {
                     response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
                                   resuelveManager,disponeManager,simboloManager);
