@@ -24,9 +24,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 </repositories>
 <properties>
   <full-artifact-name>target/${project.artifactId}.war</full-artifact-name>
-  <org.springframework.version>4.3.18.RELEASE</org.springframework.version>
+  <org.springframework.version>4.3.20.RELEASE</org.springframework.version>
   <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
-  <jackson.version>2.6.3</jackson.version>
+  <jackson.version>2.9.10</jackson.version>
 </properties>
 <dependencies>
   <dependency>
