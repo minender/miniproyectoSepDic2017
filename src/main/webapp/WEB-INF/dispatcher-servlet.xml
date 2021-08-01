@@ -88,6 +88,7 @@
                 <prop key="hibernate.enable_lazy_load_no_trans"> true </prop> 
                 <prop key="hibernate.dialect">${jdbc.dialect}</prop>
                 <prop key="hibernate.show_sql">$(jdbc.hibernateSqlLog)</prop>
+
                 <!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
             </props>
         </property> 
