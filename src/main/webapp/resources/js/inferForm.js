@@ -36,6 +36,17 @@ $(function() {
                         alert("Congratulations you have found a proof of the theorem!!");
                         window.location = $("#linkDemostrar").attr("href");
                     }
+
+                    // Verifies if it has ended a proof for a case.
+                    if (data.endCase) {
+                        alert("Congratulations you have found a proof of a case!");
+            
+                        $("#metodosDiv").show();
+            			$('#metodosDemostracion').val("0");
+            			let message = "Please, select a proof method for the case.";
+                        openModalWithConfirmation(message);
+                    }
+
                     if (data.valid) {
                         $('#nStatement_id').val("");
                         $('#instanciacion_id').val("");

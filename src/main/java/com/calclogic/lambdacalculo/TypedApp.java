@@ -18,7 +18,7 @@ public class TypedApp extends App implements TypedTerm{
         super(t1, t2);
         Term t1Type = t1.type();
         Term t2Type = t2.type();
-        
+
         if (t1Type instanceof Sust)
             inferType = 'i';
         else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
@@ -71,7 +71,7 @@ public class TypedApp extends App implements TypedTerm{
                 throw new TypeVerificationException();
             }
         }
-        else if (t1Type == null) // <== S operand created by the grammar
+        else if (t1 instanceof TypedS) // <== S operand created by the grammar
         {   
             try {
                 // type should be of the form r1==r2
@@ -102,8 +102,13 @@ public class TypedApp extends App implements TypedTerm{
                 throw new TypeVerificationException();
             }
         }
+        else if (t1 instanceof TypedU || (t1Type instanceof Const && t1Type.toString().equals("U"))){
+            ;
+        }
         else
+        {
             throw new TypeVerificationException();
+        }
     }
     
     public Term type()
@@ -118,6 +123,10 @@ public class TypedApp extends App implements TypedTerm{
             Term t2 = new App(pType,((App)((App)qType).p).q).evaluar();
             Term op2 = ((App)((App)qType).p).p; // incluir paridad aqui
             return new App(new App(op2, t2),t1);
+        }
+        else if (pType.toString().equals("U") || pType.toString().equals("U"))
+        {
+            return new Const("U");
         }
         else
         {

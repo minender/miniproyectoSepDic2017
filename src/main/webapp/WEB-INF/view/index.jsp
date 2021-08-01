@@ -50,7 +50,7 @@
          </div>
           <div class="row justify-content-center" >
            <div class="offset-lg-1 col-lg-3">
-               <button type="submit" class="btn btn-default">Log In</button>
+              <button type="submit" class="btn btn-default">Log In</button>
            </div>
           </div>
         </sf:form>

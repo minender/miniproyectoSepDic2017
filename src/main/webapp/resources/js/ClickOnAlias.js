@@ -302,6 +302,37 @@ function transMethod(/*teoid*/){
     
 }
 
+function iniAndI(){
+    var data = {};
+
+    var form = $('#inferForm');
+
+    $.ajax({
+        type: 'POST',
+        url: $(form).attr('action')+"/iniAndI",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+            $('#formula').html(data.historial);
+            MathJax.Hub.Typeset();
+            $("#metodosDiv").show();
+
+            // save new nSol created.
+            var nSol = $(form).attr('action').split('/').pop();
+
+            if(nSol==="new"){
+               var url = $(form).attr('action');
+               url = url.substring(0,url.length-3) + data.nSol;
+               $(form).attr('action',url);
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+        }
+    });
+
+}
+
 function clickTeoremaInicial(teoid)
 {
     var id = "";

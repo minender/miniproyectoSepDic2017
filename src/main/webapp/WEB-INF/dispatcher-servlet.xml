@@ -87,7 +87,8 @@
             <props>
                 <prop key="hibernate.enable_lazy_load_no_trans"> true </prop> 
                 <prop key="hibernate.dialect">${jdbc.dialect}</prop>
-                <prop key="hibernate.show_sql">${jdbc.hibernateSqlLog}</prop>
+                <prop key="hibernate.show_sql">$(jdbc.hibernateSqlLog)</prop>
+
                 <!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
             </props>
         </property> 
@@ -134,6 +135,10 @@
     </bean>
     <bean id="mostrarCategoriaManager" class="com.calclogic.service.MostrarCategoriaManagerImpl">
     </bean>
+
+    <bean id="plantillaTeoremaDAO" class="com.calclogic.dao.PlantillaTeoremaDaoImpl"></bean>
+    <bean id="plantillaTeoremaManager" class="com.calclogic.service.PlantillaTeoremaManagerImpl"></bean>
+    
     <bean id="combUtilities" class="com.calclogic.parse.CombUtilities">
     </bean>
     <bean id="termUtilities" class="com.calclogic.parse.TermUtilities">

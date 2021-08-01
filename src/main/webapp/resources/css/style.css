@@ -35,9 +35,12 @@
 
 .btn {
   background-image: none !important;
-  background-color: #03A9F4 !important;
   color: #fff !important;
   text-shadow: none !important;  
+}
+
+.btn-default {
+  background-color: #03A9F4 !important;
 }
 
 #agregarTeorema {

@@ -40,7 +40,8 @@ term returns [Term value]
                                 Term aux = $term_base.value; 
                                 try {
 	                                for (Term it: $term_tail.value) {
-                                        if (aux instanceof TypedTerm && it instanceof TypedTerm) 
+                                        if (aux instanceof TypedTerm && 
+                                            (it instanceof TypedTerm || it instanceof Const || it instanceof App))
                                             aux = new TypedApp(aux,it);
 				                        else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
 					                        aux = new App(aux,it);
@@ -139,6 +140,7 @@ cb_pair	returns [Indice value]
                 System.exit(1);
             } 
         }
+    | U { $value = new TypedU(); }
     | A expr C_BRACKET { $value = new TypedA($expr.value); };
 
  
@@ -185,6 +187,7 @@ A : 'A^{';
 I : 'I^{';
 L : 'L^{';
 S : 'S^{';
+U : 'U';
 Si: 'S';
 
 
