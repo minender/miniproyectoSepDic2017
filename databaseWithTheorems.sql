@@ -464,7 +464,8 @@ CREATE TABLE userdb.usuario (
     correo text NOT NULL,
     password text NOT NULL,
     materiaid integer NOT NULL,
-    admin boolean DEFAULT false NOT NULL
+    admin boolean DEFAULT false NOT NULL,
+    autosust boolean DEFAULT false NOT NULL
 );
 
 
@@ -495,6 +496,7 @@ ALTER TABLE ONLY userdb.metateorema ALTER COLUMN id SET DEFAULT nextval('userdb.
 -- Name: resuelve id; Type: DEFAULT; Schema: userdb; Owner: userdb
 --
 
+ALTER TABLE ONLY userdb.resuelve ALTER COLUMN id SET DEFAULT nextval('userdb.resuelve_id_seq'::regclass);
 ALTER TABLE ONLY userdb.resuelve ALTER COLUMN id SET DEFAULT nextval('userdb.resuelve_id_seq'::regclass);
 
 
@@ -1084,7 +1086,6 @@ ALTER TABLE ONLY userdb.teoria
 
 ALTER TABLE ONLY userdb.termino
     ADD CONSTRAINT "termino_PK" PRIMARY KEY (alias, login);
-
 
 --
 -- Name: termino termino_UNIQUE; Type: CONSTRAINT; Schema: userdb; Owner: userdb

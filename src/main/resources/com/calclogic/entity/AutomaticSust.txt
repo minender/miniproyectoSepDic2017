@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="com.calclogic.entity.AutomaticSust" table="automaticsust">
+    <composite-id class="com.calclogic.entity.Usuario" name="usuario">
+      <key-property name="login" type="string">
+        <column name="loginusuario"/>
+      </key-property>
+    </composite-id>
+    <!--<id name="loginusuario" >
+      <generator class="com.calclogic.entity.Usuario">
+        <param name="usuario">login</param>
+      </generator>
+       
+    </id>-->
+    <!--<one-to-one name="usuario" class="com.calclogic.entity.Usuario" constrained="true"/>-->
+    <!--<one-to-one name="usuario" fetch="select" lazy="false" class="com.calclogic.entity.Usuario" >
+                insert="false" update="false" fetch="select" lazy="false">
+      <column name="loginusuario" not-null="true"/>
+    </one-to-one>-->
+  </class>
+</hibernate-mapping>

@@ -20,6 +20,7 @@ public class Usuario  implements java.io.Serializable {
      private String password;
      private Materia materia;
      private boolean admin;
+     private boolean autosust;
      private Set predicados = new HashSet(0);
      private Set terminos = new HashSet(0);
      private Set dispones = new HashSet(0);
@@ -36,6 +37,7 @@ public class Usuario  implements java.io.Serializable {
         this.correo = correo;
         this.password = password;
         this.admin = admin;
+	this.autosust = false;
     }
     
     public Usuario(String login, String nombre, String apellido, String correo, String password, Materia materia, boolean admin) {
@@ -46,6 +48,7 @@ public class Usuario  implements java.io.Serializable {
         this.password = password;
         this.materia = materia;
         this.admin = admin;
+	this.autosust = false;
     }
     public Usuario(String login, String nombre, String apellido, String correo, String password, Materia materia, boolean admin, Set predicados, Set terminos, Set dispones, Set resuelves) {
        this.login = login;
@@ -59,6 +62,7 @@ public class Usuario  implements java.io.Serializable {
        this.terminos = terminos;
        this.dispones = dispones;
        this.resuelves = resuelves;
+       this.autosust = false;
     }
    
     public String getLogin() {
@@ -111,6 +115,15 @@ public class Usuario  implements java.io.Serializable {
     public void setAdmin(boolean admin) {
         this.admin = admin;
     }
+
+    public boolean isAutosust() {
+        return this.autosust;
+    }
+
+    public void setAutosust(boolean autosust) {
+        this.autosust = autosust;
+    }
+
     public Set getPredicados() {
         return this.predicados;
     }

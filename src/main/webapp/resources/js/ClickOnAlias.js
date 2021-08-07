@@ -96,6 +96,40 @@ function showInstantiation(){
     });
 }
 
+function setAutomaticSubst()
+{
+    var data = {};
+    var action = $('#inferForm').attr('action');
+    var arr = action.split('/');
+    var attr1 = arr.pop();
+    var attr2 = arr.pop();
+    $("#modalLoading").css('display','inline-block');
+    $.ajax({
+        type: 'POST',
+        url: action.substring(0,action.length-(attr1.length+attr2.length+1) )+"auto",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+                $("#modalLoading").css('display','none');
+                if(data.error !== null){
+                    alert(data.error);
+                }
+                else if (data. auto){
+                   $('#auto-sust-op').html("automatic substitution <i class=\"fa fa-check\"></i>");
+                   window['auto'] = true;
+                }
+                else {
+                   $('#auto-sust-op').html("automatic substitution");
+                   window['auto'] = false;
+                }
+        },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              $("#modalLoading").css('display','none');
+              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            }
+    });
+}
+
 function automaticSubst(){
     if ($('#nStatement_id').val() != "")
     {
@@ -343,7 +377,10 @@ function clickOperator(Math1,myField,teoid,vars)
       if(target)
       {
         var metodo = document.getElementById('metodosDemostracion').value;
-        var div = "<center><table><tr><td>Substitution:</td> <td><div class=\"dropdown\"><button style=\"padding:.05rem .1rem;\" class=\"btn btn-secondary btn-sm dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"></button><div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\"><a class=\"dropdown-item\" href=\"#\" onclick=\"showInstantiation();\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a><a class=\"dropdown-item\" href=\"#\" onclick=\"automaticSubst();\" data-toggle=\"modal\">automatic substitution</a></div></div></td></tr></table></center>";
+        var check =  "";
+        if (window['auto'])
+            check = "<i class=\"fa fa-check\"></i>";
+        var div = "<center><table><tr><td>Substitution:</td> <td><div class=\"dropdown\"><button style=\"padding:.05rem .1rem;\" class=\"btn btn-secondary btn-sm dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"></button><div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\"><a class=\"dropdown-item\" href=\"#\" onclick=\"showInstantiation();\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a><a id=\"auto-sust-op\" class=\"dropdown-item\" href=\"#\" onclick=\"setAutomaticSubst();\" data-toggle=\"modal\">automatic substitution"+check+"</a></div></div></td></tr></table></center>";
         if(metodo === "1"){
             var selectTeoInicial = $("#selectTeoInicial").val(); 
             if(selectTeoInicial==="1"){
@@ -356,7 +393,8 @@ function clickOperator(Math1,myField,teoid,vars)
                 $('#instantiationModal').children().children().children().children()[0].innerText = "Instantiation of "+teoid.substring(3);
                 document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = div;
                 setJaxSubstitutionVariables(vars,'substitutionButtonsId');
-                automaticSubst();
+                if (window['auto'])
+                    automaticSubst();
             }
         }
         else{
@@ -366,7 +404,8 @@ function clickOperator(Math1,myField,teoid,vars)
             $('#instantiationModal').children().children().children().children()[0].innerText = "Instantiation of "+teoid.substring(3);
             document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = div;
             setJaxSubstitutionVariables(vars,'substitutionButtonsId');
-            automaticSubst();
+            if (window['auto'])
+                automaticSubst();
         }
       }
     };    

@@ -673,6 +673,9 @@ for categorias
               </div>
               
               <!--<br>-->
+              <script>
+                  window['auto'] = ${autoSust};
+              </script>
               <div class="col-l-4" style="padding-left: 5px; padding-right: 5px;">
               <div style="display: none;">
               	Substitution:<br><input name="instanciacion" id="instanciacion_id" value="${instanciacion}"/></br>
