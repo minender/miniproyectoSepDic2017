@@ -16,6 +16,7 @@ import com.calclogic.entity.Simbolo;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Teoria;
+import com.calclogic.entity.PlantillaTeorema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -72,6 +73,7 @@ import com.calclogic.service.SimboloManager;
 import com.calclogic.service.SolucionManager;
 import com.calclogic.service.TeoremaManager;
 import com.calclogic.service.TeoriaManager;
+import com.calclogic.service.PlantillaTeoremaManager;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -113,6 +115,8 @@ public class PerfilController {
     private CategoriaManager categoriaManager;
     @Autowired
     private SolucionManager solucionManager;
+    @Autowired
+    private PlantillaTeoremaManager plantillaTeoremaManager;
     @Autowired
     private HttpSession session;
     @Autowired
@@ -467,7 +471,7 @@ public class PerfilController {
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
         // validar que el usuario este en sesion
-        InferResponse response = new InferResponse();
+        InferResponse response = new InferResponse(plantillaTeoremaManager);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teorema = resuelve.getTeorema().getTeoTerm();
         String nTeo = resuelve.getNumeroteorema();

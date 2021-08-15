@@ -93,8 +93,8 @@ public class SimboloManagerImpl implements SimboloManager {
     public List<Simbolo> getAllSimbolo(){
         List<Simbolo> list = new ArrayList<Simbolo>();
         for (int i= 0; i < symbolsCache.length; i++)
-            if (i >= 9)
-                list.add(symbolsCache[i]);
+//            if (i >= 9)
+            list.add(symbolsCache[i]);
         return list;
     }
 

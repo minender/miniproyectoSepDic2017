@@ -18,8 +18,8 @@ public class TypedApp extends App implements TypedTerm{
         super(t1, t2);
         Term t1Type = t1.type();
         Term t2Type = t2.type();
-        
-        if (t1Type instanceof Sust )
+
+        if (t1Type instanceof Sust)
             inferType = 'i';
         else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
         {
@@ -60,18 +60,55 @@ public class TypedApp extends App implements TypedTerm{
                 if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq)))
                   throw new TypeVerificationException();
                 else
-                  inferType = 't';
+                inferType = 't';
               }
               else
-                  inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));
+                inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));
             }
             catch (ClassCastException e)
             {
-              throw new TypeVerificationException();
+                e.printStackTrace();
+                throw new TypeVerificationException();
             }
         }
+        else if (t1 instanceof TypedS) // <== S operand created by the grammar
+        {   
+            try {
+                // type should be of the form r1==r2
+                // extract r1, r2 and the operand
+                App rootRight = (App)t2Type;
+                App leftChild = (App)rootRight.p;
+                Const op = (Const)leftChild.p;
+
+                // check if it's deducting an equivalence or not
+                if (!op.getCon().trim().equals("c_{1}"))
+                    throw new TypeVerificationException();
+
+                Term r1 = leftChild.q;
+                Term r2 = rootRight.q;  
+
+                // create new tree with r2==r1
+                App inverseApp = new App(new App(op, r2), r1);
+                // (r1==r2)==(r2==r1)
+                Term type = new App(new App(op, inverseApp), rootRight);
+
+                // select type for simetry
+                inferType = 's';
+
+                // set the deducted type
+                ((TypedS)t1).setSimetry(type);
+
+            } catch (ClassCastException e) {
+                throw new TypeVerificationException();
+            }
+        }
+        else if (t1 instanceof TypedU || (t1Type instanceof Const && t1Type.toString().equals("U"))){
+            ;
+        }
         else
+        {
             throw new TypeVerificationException();
+        }
     }
     
     public Term type()
@@ -86,6 +123,10 @@ public class TypedApp extends App implements TypedTerm{
             Term t2 = new App(pType,((App)((App)qType).p).q).evaluar();
             Term op2 = ((App)((App)qType).p).p; // incluir paridad aqui
             return new App(new App(op2, t2),t1);
+        }
+        else if (pType.toString().equals("U") || pType.toString().equals("U"))
+        {
+            return new Const("U");
         }
         else
         {

@@ -7,6 +7,7 @@ package com.calclogic.forms;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
 import com.calclogic.controller.InferController;
 import com.calclogic.entity.Resuelve;
+import com.calclogic.entity.PlantillaTeorema;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
@@ -23,11 +24,14 @@ import com.calclogic.lambdacalculo.Var;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
+import com.calclogic.service.PlantillaTeoremaManager;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -43,6 +47,25 @@ public class InferResponse {
     private String lado;
     private String resuelto;
     private boolean valid;
+
+    // Represents if the solution is ending a case.
+    private boolean endCase = false;
+
+    private PlantillaTeoremaManager plantillaTeoremaManager;
+
+    public InferResponse() {}
+
+    public InferResponse(PlantillaTeoremaManager plantillaTeoremaManager) {
+        this.plantillaTeoremaManager = plantillaTeoremaManager;
+    }
+
+    public void setEndCase(boolean endCase) {
+        this.endCase = endCase;
+    };
+
+    public boolean getEndCase() {
+        return endCase;
+    }
 
     public String getResuelto() {
         return resuelto;
@@ -439,6 +462,195 @@ public class InferResponse {
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
+    /**
+     * Adds to the history the whole proof for cases that have a proof method
+     * different than "null"
+     * @param user
+     * @param formula
+     * @param nTeo
+     * @param typedTerm
+     * @param valid
+     * @param labeled
+     * @param method
+     * @param resuelveManager
+     * @param disponeManager
+     * @param simboloManager
+     */
+    private void setAIProof(
+        String user,
+        Term formula,
+        String nTeo, 
+        Term typedTerm,
+        Boolean valid,
+        Boolean labeled,
+        String method,
+        ResuelveManager resuelveManager,
+        DisponeManager disponeManager,
+        SimboloManager simboloManager
+    ){
+
+        // Get the formulas for the cases
+        Term expression1 = ((App)formula).q;
+        String expression1Str = "$" + expression1.toStringInf(simboloManager,"") + "$";
+        Term expression2 = ((App)((App)formula).p).q;
+        String expression2Str = "$" + expression2.toStringInf(simboloManager,"") + "$";
+
+        // Get the path to the current sub-tree to be proved.
+        String[] mehtodAndPath = method.split("-");
+        String methods = mehtodAndPath[0];
+        String[] subMethods = methods.substring(17, methods.length() - 1).split(";");
+        String method1 = subMethods[0];
+        String method2 = subMethods[1];        
+        String auxHistorial = "<br>";
+
+        // Check if the proof is still incomplete
+        if (mehtodAndPath.length > 1) {
+            String path = mehtodAndPath[1];
+            
+            // If there's a proof, show first case proof.
+            if (!method1.equals("null")) {
+                
+                // Check if the method has been called from my teorems or from
+                // infer view.
+                // If we're proving we just want to see the case we're proving.
+                if ((!labeled) || (labeled && path.equals("p"))) {
+                    Term proof1 = ((App)((App)typedTerm).p).q;
+                    
+                    this.generarHistorial(
+                        user,
+                        expression1,
+                        expression1Str,
+                        proof1,
+                        valid,
+                        labeled,
+                        method1,
+                        resuelveManager,
+                        disponeManager,
+                        simboloManager,
+                        false
+                    );
+                    
+                    auxHistorial += this.getHistorial();
+                }
+            } 
+            // Shows the start of first case when no method has been selected
+            // Checks it to be labeled in case we are in the infer view.
+            else if (labeled && path.equals("p")) {
+                auxHistorial += "Proof of " + expression1Str + ":<br><br>Proof:<br>"; 
+            }
+            
+            // If there's a proof, show a proof for the second case.
+            if (!method2.equals("null")) {
+                
+                // Check if the method has been called from my teorems or from
+                // infer view.
+                // If we're proving we just want to see the case we're proving.
+                if ((!labeled) || (labeled && path.equals("q"))) {
+                    Term proof2 = ((App)typedTerm).q;
+                    this.generarHistorial(
+                        user,
+                        expression2,
+                        expression2Str,
+                        proof2,
+                        valid,
+                        labeled,
+                        method2,
+                        resuelveManager,
+                        disponeManager,
+                        simboloManager, 
+                        false
+                    );
+            
+                    auxHistorial += this.getHistorial();
+                }
+            }
+            // Shows the start of second case when the first one is finished
+            // Checks it to be labeled in case we are in the infer view.
+            else if (labeled && path.equals("q")) {
+                auxHistorial += "Proof of " + expression2Str + ":<br><br>Proof:<br>"; 
+            }
+        } 
+        // If the proof doensn't hava a path, is because it is completed.
+        else {
+            
+            // Extracting template2 from database
+            String template2 = plantillaTeoremaManager.getPlantillaTeoremaById(2)
+                                                      .getPath_to_placeholders();
+
+            // Getting path to placeholders of the template
+            String[] placeholdersTemp2 = template2.split(";");
+            String pathM1P = placeholdersTemp2[1].split(":")[1];
+            String pathM1Q = placeholdersTemp2[0].split(":")[1]; 
+
+            // Obtaining Terms of placeholders following path
+            Term M1P = navigateTroughTree(typedTerm, pathM1P);
+            Term M1Q = navigateTroughTree(typedTerm, pathM1Q);
+
+            // Extracting template1 from database
+            String template1 = plantillaTeoremaManager.getPlantillaTeoremaById(1)
+                                                      .getPath_to_placeholders();
+
+            // Getting path to placeholders of the template
+            String[] placeholdersTemp1 = template1.split(";");
+            String pathT2 = placeholdersTemp1[0].split(":")[1];
+
+            // Obtaining Terms of placeholders following path
+            Term proofCase1 = navigateTroughTree(M1P, pathT2);
+            Term proofCase2 = navigateTroughTree(M1Q, pathT2);
+
+            this.generarHistorial(
+                        user,
+                        expression1,
+                        expression1Str,
+                        proofCase1,
+                        valid,
+                        labeled,
+                        method1,
+                        resuelveManager,
+                        disponeManager,
+                        simboloManager,
+                        false
+                    );
+                    
+            auxHistorial += this.getHistorial();
+
+            this.generarHistorial(
+                        user,
+                        expression2,
+                        expression2Str,
+                        proofCase2,
+                        valid,
+                        labeled,
+                        method2,
+                        resuelveManager,
+                        disponeManager,
+                        simboloManager,
+                        false
+                    );
+                    
+            auxHistorial += this.getHistorial();
+        }
+
+        this.setHistorial(auxHistorial);
+    };
+
+    /**
+     * Using the corresponding path, obtains the terms in placeholder's position from a term
+     * @param rootTree
+     * @param path
+     */
+    private Term navigateTroughTree(Term rootTree, String path) {
+        Term tree = rootTree;
+        for (char child : path.toCharArray()) {
+            if (child == 'p') {
+                tree = ((App)tree).p;
+            } else {
+                tree = ((App)tree).q;
+            }
+        }
+        return tree;
+    }
+ 
     private void setWSProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {        
         String primExp = "";
     	String hint = "";
@@ -522,10 +734,75 @@ public class InferResponse {
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
-    public void generarHistorial(String user, Term formula, String nTeo, Term typedTerm,  Boolean valida, Boolean labeled, String metodo, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {//List<PasoInferencia> inferencias){
+    /**
+     * Calls function generarHistorial assuming that it is always a root teorem
+     * and thus is doesn't contain identation.
+     * @param user
+     * @param formula
+     * @param nTeo
+     * @param typedTerm
+     * @param valida
+     * @param labeled
+     * @param metodo
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     */
+    public void generarHistorial(
+        String user, 
+        Term formula, 
+        String nTeo, 
+        Term typedTerm,  
+        Boolean valida, 
+        Boolean labeled, 
+        String metodo, 
+        ResuelveManager resuelveManager, 
+        DisponeManager disponeManager, 
+        SimboloManager s
+    ) {
+        generarHistorial(
+            user, 
+            formula, 
+            nTeo, 
+            typedTerm, 
+            valida, 
+            labeled, 
+            metodo, 
+            resuelveManager, 
+            disponeManager, 
+            s, 
+            true
+        );
+    }
 
+    public void generarHistorial(
+        String user, 
+        Term formula, 
+        String nTeo, 
+        Term typedTerm,  
+        Boolean valida, 
+        Boolean labeled, 
+        String metodo, 
+        ResuelveManager resuelveManager, 
+        DisponeManager disponeManager, 
+        SimboloManager s,
+        Boolean isRootTeorem
+    ) {        
         this.setHistorial("");
-        String header = "Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(s,"")+"$</center> Proof:<br>";  
+
+        String header = "";
+
+        // If we're printing a root teorem, print it as a teorem. 
+        if (isRootTeorem) {
+            header = "Theorem " + nTeo + ":<br> <center>$" + 
+                     formula.toStringInf(s,"") + "$</center>";     
+        } 
+        // if not, just print the expression we're going to proof.
+        else {
+            header = "Proof of " + nTeo + ":<br><br>";
+        }
+
+        header += "Proof:<br>";
                 
         String[] metodos = metodo.split(",");
         
@@ -537,6 +814,7 @@ public class InferResponse {
         boolean weakening = metodo.equals("Weakening");
         boolean strengthening = metodo.equals("Strengthening");
         boolean transitivity = metodo.equals("Transitivity");
+        boolean andIntroduction = metodo.startsWith("And Introduction(");
         valid = valida;
         
         Term type = typedTerm==null?null:typedTerm.type();
@@ -682,6 +960,8 @@ public class InferResponse {
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);
         else if (weakening || strengthening || transitivity)
             setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);
+        else if (andIntroduction)
+            setAIProof(user, formula, nTeo, typedTerm, valida, labeled, metodo, resuelveManager, disponeManager, s);
         else if (naturalDirect)
             ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
         else if (naturalSide)
@@ -894,7 +1174,10 @@ public class InferResponse {
     		header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
     	}
 
-    	this.setHistorial(header+"<center>$"+this.getHistorial()+"</center>");
+        if(!andIntroduction)
+    	    this.setHistorial(header+"<center>$" +this.getHistorial()+"</center>");
+        else 
+    	    this.setHistorial(header +this.getHistorial());
     	if (!valida)
     		this.setHistorial(this.getHistorial()+"$$\\text{No valid inference}$$");
 

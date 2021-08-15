@@ -38,7 +38,32 @@ function clickAlias(Math1,alias,valorAlias)
     };   
 }
 
-function teoremaClickeable(/*teoId*/){
+function teoremaClickeableMD(/*teoId*/){
+    
+    var data = {};
+    //data["teoid"] = teoId;
+    var form = $('#inferForm');
+    $.ajax({
+        type: 'POST',
+        url: $(form).attr('action')+"/teoremaClickeableMD",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+            if(data.lado === "0"){
+                alert("The selected theorem does not apply to the direct method.");
+                $("#metodosDiv").show();
+            }
+            else{
+                $('#formula').html(data.historial);
+                MathJax.Hub.Typeset();
+            }
+        }
+    });
+    
+    
+}
+
+function teoremaClickeablePL(/*teoId*/){
     
     var data = {};
     //data["teoid"] = teoId;
@@ -50,7 +75,7 @@ function teoremaClickeable(/*teoId*/){
         data: data,
         success: function(data) {
             if(data.lado === "0"){
-                alert("El teorema seleccionado no aplica para el metodo Partir de un lado.");
+                alert("The selected theorem does not apply to the Start from one side method.");
                 $("#metodosDiv").show();
             }
             else{
@@ -334,6 +359,37 @@ function transMethod(/*teoid*/){
             }
     });
     
+}
+
+function iniAndI(){
+    var data = {};
+
+    var form = $('#inferForm');
+
+    $.ajax({
+        type: 'POST',
+        url: $(form).attr('action')+"/iniAndI",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+            $('#formula').html(data.historial);
+            MathJax.Hub.Typeset();
+            $("#metodosDiv").show();
+
+            // save new nSol created.
+            var nSol = $(form).attr('action').split('/').pop();
+
+            if(nSol==="new"){
+               var url = $(form).attr('action');
+               url = url.substring(0,url.length-3) + data.nSol;
+               $(form).attr('action',url);
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+        }
+    });
+
 }
 
 function clickTeoremaInicial(teoid)

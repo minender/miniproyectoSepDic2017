@@ -36,22 +36,24 @@ expr returns [Term value]
                                                 };
 
 term returns [Term value]
-    :  term_base term_tail { Term aux = $term_base.value; 
+    :  term_base term_tail { 
+                                Term aux = $term_base.value; 
                                 try {
-	                          for (Term it: $term_tail.value) {
-                                    if (aux instanceof TypedTerm && it instanceof TypedTerm) 
-                                          aux = new TypedApp(aux,it);
-				    else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
-					  aux = new App(aux,it);
-                                    else
-                                          throw new TypeVerificationException();
-                                  }
-				}
+	                                for (Term it: $term_tail.value) {
+                                        if (aux instanceof TypedTerm && 
+                                            (it instanceof TypedTerm || it instanceof Const || it instanceof App))
+                                            aux = new TypedApp(aux,it);
+				                        else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
+					                        aux = new App(aux,it);
+                                        else
+                                            throw new TypeVerificationException();
+                                    }
+				                }
                                 catch (TypeVerificationException e){
                                     e.printStackTrace();
                                     System.exit(1);
                                 }
-				$value = aux;  
+				                $value = aux;  
                             };
 
 term_base returns [Term value]
@@ -123,13 +125,22 @@ cb_pair	returns [Indice value]
     : I expr C_BRACKET { $value = new TypedI((Sust) $expr.value); }
     | L expr C_BRACKET { $value = new TypedL((Bracket) $expr.value); }
     | S expr C_BRACKET { 
-    			 try {
-                           $value = new TypedS($expr.value,0); 
-			 } catch (TypeVerificationException e) {
-			   e.printStackTrace();
-			   System.exit(1);
-			 }
-    			}
+                            try {
+                                $value = new TypedS($expr.value,0); 
+                            } catch (TypeVerificationException e) {
+                                e.printStackTrace();
+                                System.exit(1);
+                            }
+                        }
+    | Si {
+            try {
+                $value = new TypedS(); 
+            } catch (TypeVerificationException e) {
+                e.printStackTrace();
+                System.exit(1);
+            } 
+        }
+    | U { $value = new TypedU(); }
     | A expr C_BRACKET { $value = new TypedA($expr.value); };
 
  
@@ -176,6 +187,8 @@ A : 'A^{';
 I : 'I^{';
 L : 'L^{';
 S : 'S^{';
+U : 'U';
+Si: 'S';
 
 
 // Allow whitespace but ignore it 

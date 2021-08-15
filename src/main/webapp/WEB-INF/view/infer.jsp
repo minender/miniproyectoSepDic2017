@@ -61,56 +61,28 @@
                     
                     
                 $("#metodosDemostracion").change(function(){
+                    let commonPrefix = "Are you sure you want to use the";
+                    let commonSufix = "method?";
                     var metodosDemostracionValue = this.value
-                    $('#nuevoMetodo_id').val(this.options[this.selectedIndex].text);
-                    if(this.value==="1"){
-                        if(confirm("Are you sure you want to use the direct method?")){
-                            $("#selectTeoInicial").val("1");
-                            alert('Select the theorem with which the proof will begin.');
-                            $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
-                            $(".operator").css({"cursor":"","color":""});
-                            $("#metodosDiv").hide();
-                        }
-                    }
-                    else if(this.value==="2"){
-                        if(confirm("Are you sure you want to use the one-sided method?")){
-                            //$("#nTeorema").val();
-                            $("#selectTeoInicial").val("0");
-                            alert('Select the side where the demo will start.');
-                            $("#metodosDiv").hide();
-                            $("#currentTeo").hide();
-                            teoremaClickeable();
-                        }
-                    }
-                    else if(this.value==="3"){
-                        if(confirm("Are you sure you want to use the Weakening method?")){
-                            //var nTeo = $("#nTeorema").val();
-                            $("#selectTeoInicial").val("0");
-                            $("#metodosDiv").hide();
-                            $("#currentTeo").hide();
-                            metodoD();
-                        }
-                    }
-                    else if(this.value==="4"){
-                        if(confirm("Are you sure you want to use the Strengthening method?")){
-                            //var nTeo = $("#nTeorema").val();
-                            $("#selectTeoInicial").val("0");
-                            $("#metodosDiv").hide();
-                            $("#currentTeo").hide();
-                            metodoF();
-                        }
-                    }
-                    else if(this.value==="6"){
-                        if(confirm("Are you sure you want to use the Transitivity method?")){
-                            //var nTeo = $("#nTeorema").val();
-                            $("#selectTeoInicial").val("0");
-                            $("#metodosDiv").hide();
-                            $("#currentTeo").hide();
-                            transMethod();
-                        }
+                    //$('#nuevoMetodo_id').val(this.options[this.selectedIndex].text);
+                    $('#nuevoMetodo_id').val(metodosDemostracionValue);
+
+                    //shwo modal for confirmation
+                    if (this.value != 0) {
+                        openModal(this.value);
                     }
                 });
                 
+                $('#formula').on('click','#teoremaMD',function(event){
+                    /*var data = {};
+                    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
+                    var form = $('#inferForm');*/
+                    var selectTeoInicial = $("#selectTeoInicial").val();
+                    if (selectTeoInicial==="1")
+                    {
+                        teoremaInicialMD("ST-${nTeo}");
+                    }
+                });
                 
                 $('#formula').on('click','.teoremaClick',function(event){
                     var data = {};
@@ -365,6 +337,10 @@
         <!--<title>Logic | Prove</title>-->
     </head>
     <body>
+
+        <!-- Include custom modal -->
+        <jsp:include page="confirmationModal.jsp" />
+
         <div id="modalLoading" class="modal" >
             <center>
                 <div class="box-loading">
@@ -393,6 +369,11 @@
                 <!--<div style="width: 60%; height: 400px; overflow: scroll;">-->
         <div class="col-lg-7" style="padding-right: 0px;">
             <article class="proof">
+                <div id="formulaInput" class="d-none">
+                    <%--<tiles:insertDefinition name="jaxButtons" />
+                    <c:set var="rootId" value="caseExpression" scope="request"/>
+                    <tiles:insertDefinition name="jaxDiv"/>--%>
+                </div>
                 <h5 id="formula" style="width:100%; height: 100%">${formula}</h5>
             </article>
         </div>    
@@ -402,15 +383,17 @@
             <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Proof method</h3>
               <select class="form-control" id="metodosDemostracion">
                 <option value="0">Select a method</option>
-                <!--<option value="1">Direct method</option>-->
-                <option value="2">Starting from one side</option>
-                <!--<option value="3">Weakening</option>
-                <option value="4">Strengthening</option>
-                <option value="5">Assume the antecedent</option>
-                <option value="6">Transitivity</option>
-                <option value="7">Proof by cases</option>
-                <option value="8">Proof by contradiction</option>-->
-
+                <option value="DM">Direct method</option>
+                <option value="SS">Starting from one side</option>
+                <option value="TR">Transitivity</option>
+                <option value="WE">Weakening</option>
+                <option value="ST">Strengthening</option>
+                <option value="ND">Natural deduction</option>
+                <option value="CO">Proof by contradiction</option>
+                <option value="CR">Counter-reciprocal</option>
+                <option value="AI">And introduction</option>
+                <option value="CA">Case analysis</option>
+                <option value="WI">Witness</option>
               </select>
           </div>
             <article id="teoremas" class="teoremas">
@@ -473,18 +456,19 @@ for categorias
                                 <c:choose>
                                  <c:when test="${!selecTeo}">
                                   <c:choose>
-                                   <c:when test="${resu.isResuelto() || resu.getNumeroteorema().equals(nTeo)}">
+                                   <c:when test="${resu.isResuelto()}"> 
+                                   <%--|| resu.getNumeroteorema().equals(nTeo)}">--%>
                                        <c:choose>
-                                         <c:when test="${resu.getNumeroteorema().equals(nTeo)}">
-                                            <a >
-                                              <i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
-                                            </a>
-                                         </c:when>
-                                         <c:otherwise>
+                                         <c:when test="${!resu.getNumeroteorema().equals(nTeo)}">
                                             <a onclick="expandMeta('metaTeo${resu.getNumeroteorema()}')" >
                                               <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
                                             </a>
-                                         </c:otherwise>
+                                         </c:when>
+                                         <%--<c:otherwise>
+                                            <a >
+                                              <i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
+                                            </a>
+                                         </c:otherwise> --%>
                                        </c:choose>
 
                                     
@@ -702,10 +686,10 @@ for categorias
               </div>
               </div>
               <div class="col-l-1">
-              <input id ="BtnInferir" class="btn" type="submit" name="submitBtnI" value="Infer"
+              <input id ="BtnInferir" class="btn btn-default" type="submit" name="submitBtnI" value="Infer"
               onclick="setInputValueOnParser('leibnizSymbolsId'); setSubstitutionOnInput('substitutionButtonsId')"/> 
-              <br><br><input id ="BtnRetroceder" class="btn" name="submitBtnR" type="submit" value="Go back"> 
-              <br><br><input id="BtnLimpiar" class="btn" type="button" value="Clean"
+              <br><br><input id ="BtnRetroceder" class="btn btn-default" name="submitBtnR" type="submit" value="Go back"> 
+              <br><br><input id="BtnLimpiar" class="btn btn-default" type="button" value="Clean"
               onclick="cleanJax('leibnizSymbolsId'); cleanJaxSubstitution('substitutionButtonsId')">
               <input id="Btn" type="hidden" name="submitBtn" value=""/>
               <%--<input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>
@@ -788,21 +772,20 @@ for categorias
                                     </c:choose>
                                     <c:choose>
                                         <c:when test='${!nTeo.equals("")}'>
-                                           if(teoremas[j].numeroteorema == ${nTeo}){
+                                           if(teoremas[j].numeroteorema != ${nTeo}){
                                         </c:when>
                                         <c:otherwise>
-                                           if(teoremas[j].numeroteorema == ""){
+                                           if(teoremas[j].numeroteorema != ""){
                                         </c:otherwise>
                                     </c:choose>
+                                              newRows = newRows + '<a onclick="expandMeta(' + "'metaTeo" + teoremas[j].numeroteorema + "'" + ')" >'
+                                              newRows = newRows + '<i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>'
+                                              newRows = newRows + '</a>'
+                                           }/*else{
                                               newRows = newRows + '<a>'
                                               newRows = newRows + '<i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>'
                                               newRows = newRows + '<a>'
-                                           }else{
-                                              newRows = newRows + '<a onclick="expandMeta(' + "'metaTeo" + teoremas[j].numeroteorema + "'" + ')" >'
-                                              newRows = newRows + '<i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>'
-                                             newRows = newRows + '</a>'
-                                            }
-    
+                                            }*/
                                        
                                             newRows = newRows + '<span id="teoIdName' + teoremas[j].numeroteorema + '" class="teoIdName">(' + teoremas[j].numeroteorema + ')'+ teoremas[j].nombreteorema + ':</span> &nbsp;<span id="click' + teoremas[j].numeroteorema + '">$' + teoremas[j].stringNumero + '$</span>';
                                             //newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');';

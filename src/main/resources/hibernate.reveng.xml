@@ -14,5 +14,6 @@
   <table-filter match-name="teoria"/>
   <table-filter match-name="simbolo"/>
   <table-filter match-name="mostrarCategoria"/>
+  <table-filter match-name="plantilla_teorema"/>
 
 </hibernate-reverse-engineering>
