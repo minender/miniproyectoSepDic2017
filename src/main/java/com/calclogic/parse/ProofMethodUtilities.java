@@ -17,7 +17,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 public class ProofMethodUtilities {
     
     public static Term getTerm(String input) {
-		
 		// Feed the argument to the parser
 		CharStream in = CharStreams.fromString(input);
 		

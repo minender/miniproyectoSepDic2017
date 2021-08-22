@@ -483,7 +483,7 @@ public class InferResponse {
         Term typedTerm,
         Boolean valid,
         Boolean labeled,
-        String method,
+        Term method,
         ResuelveManager resuelveManager,
         DisponeManager disponeManager,
         SimboloManager simboloManager
@@ -496,11 +496,13 @@ public class InferResponse {
         String expression2Str = "$" + expression2.toStringInf(simboloManager,"") + "$";
 
         // Get the path to the current sub-tree to be proved.
-        String[] mehtodAndPath = method.split("-");
+        String[] mehtodAndPath = method.toStringFinal().split("-");
         String methods = mehtodAndPath[0];
         String[] subMethods = methods.substring(17, methods.length() - 1).split(";");
-        String method1 = subMethods[0];
-        String method2 = subMethods[1];        
+        Term method1 = 
+ (method instanceof App?(((App)method).p instanceof App?((App)((App)method).p).q:((App)method).q):null);
+        Term method2 = 
+ (method instanceof App?(((App)method).p instanceof App?((App)method).q: null):null);
         String auxHistorial = "<br>";
 
         // Check if the proof is still incomplete
@@ -755,7 +757,7 @@ public class InferResponse {
         Term typedTerm,  
         Boolean valida, 
         Boolean labeled, 
-        String metodo, 
+        Term metodo, 
         ResuelveManager resuelveManager, 
         DisponeManager disponeManager, 
         SimboloManager s
@@ -782,69 +784,95 @@ public class InferResponse {
         Term typedTerm,  
         Boolean valida, 
         Boolean labeled, 
-        String metodo, 
+        Term metodo, 
         ResuelveManager resuelveManager, 
         DisponeManager disponeManager, 
         SimboloManager s,
         Boolean isRootTeorem
     ) {        
-        this.setHistorial("");
 
         String header = "";
 
         // If we're printing a root teorem, print it as a teorem. 
         if (isRootTeorem) {
+            this.setHistorial("");
             header = "Theorem " + nTeo + ":<br> <center>$" + 
                      formula.toStringInf(s,"") + "$</center>";     
         } 
+        
+        boolean naturalDirect = false;
+        boolean naturalSide = false;
+        boolean counterRecip = false;
+        boolean oneSide = false;
+        boolean direct = false;
+        boolean weakening = false;
+        boolean strengthening = false;
+        boolean transitivity = false;
+        boolean andIntroduction = false;
+        
+        if(metodo != null) {
+           // Must check if we are doing Natural deduction
+           naturalDirect = metodo.toStringFinal().equals("ND DM");
+           naturalSide = metodo.toStringFinal().equals("ND SS");
+           counterRecip = metodo.toStringFinal().substring(0, 2).equals("CR");
+           oneSide = metodo.toStringFinal().equals("SS");
+           direct = metodo.toStringFinal().equals("DM");
+           weakening = metodo.toStringFinal().equals("WE");
+           strengthening = metodo.equals("ST");
+           transitivity = metodo.equals("TR");
+           andIntroduction = metodo.toStringFinal().substring(0, 2).equals("AI");
+           valid = valida;
+        //}
+        }
+        
         // if not, just print the expression we're going to proof.
-        else {
-            header = "Proof of " + nTeo + ":<br><br>";
+        //else {
+        boolean recursive = false;
+        if (counterRecip) {
+            header += "Proof: By counter-reciprocal method<br>";
+            recursive = true;
+        }
+        else if (direct) 
+            header += "Proof: By direct method<br>";
+        else if (oneSide) 
+            header += "Proof:<br>";
+        else if (weakening) 
+            header += "Proof: By weakening method<br>";
+        else if (andIntroduction) 
+            header += "Proof of " + nTeo + ":<br><br>";
+        else
+            header += "Proof:<br>";
+        // header += "Proof:<br>";
+
+        Term type = typedTerm==null?null:typedTerm.type();
+
+        boolean solved;
+        if (typedTerm==null && metodo == null && !recursive)
+        {
+            this.setHistorial(this.getHistorial()+header);
+            solved = false;
+            return;
+        }
+        if (typedTerm!=null && type == null && !valida && !recursive)
+        {
+            this.setHistorial(this.getHistorial()+header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$\\text{No valid inference}$$");
+            solved = false;
+            return;
+        }
+        if (typedTerm!=null && type == null && valida && !recursive)// Case where what we want to print is the first line
+        {
+            solved = false;
+       	    String firstLine = "";
+            if(naturalSide){
+    		firstLine = ((App)((App)typedTerm).p).q.toStringInfLabeled(s);	
+    		this.setHistorial(this.getHistorial()+header+"<br>Assuming H1: $"+ ((App)typedTerm).q.toStringInf(s, "") +"$<center>$"+firstLine+"</center>");
+    	    }else {
+    		firstLine = typedTerm.toStringInfLabeled(s);
+    		this.setHistorial(this.getHistorial()+header+"<center>$"+firstLine+"</center>");
+    	    }
+            return;
         }
 
-        header += "Proof:<br>";
-                
-        String[] metodos = metodo.split(",");
-        
-        // Must check if we are doing Natural deduction
-        boolean naturalDirect = metodos.length > 1 && metodos[0].equals("Natural Deduction") && metodos[1].equals("direct");
-        boolean naturalSide = metodos.length > 1 && metodos[0].equals("Natural Deduction") && metodos[1].equals("one-sided");
-        boolean oneSide = metodo.equals("Starting from one side");
-        boolean direct = metodo.equals("Direct method");
-        boolean weakening = metodo.equals("Weakening");
-        boolean strengthening = metodo.equals("Strengthening");
-        boolean transitivity = metodo.equals("Transitivity");
-        boolean andIntroduction = metodo.startsWith("And Introduction(");
-        valid = valida;
-        
-        Term type = typedTerm==null?null:typedTerm.type();
-        boolean solved;
-        if (typedTerm==null)
-        {
-            this.setHistorial(header);
-            solved = false;
-            return;
-        }
-        if (type == null && !valida)
-        {
-            this.setHistorial(header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$\\text{No valid inference}$$");
-            solved = false;
-            return;
-        }
-        if(type == null && valida)// Case where what we want to print is the first line
-        {
-                solved = false;
-        	String firstLine = "";
-        	if(naturalSide){
-    			firstLine = ((App)((App)typedTerm).p).q.toStringInfLabeled(s);	
-    			this.setHistorial(header+"<br>Assuming H1: $"+ ((App)typedTerm).q.toStringInf(s, "") +"$<center>$"+firstLine+"</center>");
-    		}else {
-    			firstLine = typedTerm.toStringInfLabeled(s);
-    			this.setHistorial(header+"<center>$"+firstLine+"</center>");
-    		}
-            return;
-        }
- 
         // In case natural deduction direct just started
         /*if( naturalDirect && (((TypedApp)typedTerm).p instanceof TypedI || ( ((App)type).q.toString().equals("c_{8}") && ((TypedApp)((TypedApp)((TypedApp)typedTerm).p).p).p instanceof TypedI) )) {
         	// Just print the first expression and ignore the rest of the hints
@@ -950,7 +978,7 @@ public class InferResponse {
             Term aux= ((App)((App)type).p).q;
             pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+(equanimity2?"":equanimityHint)+(solved?"$":"");	
 	}*/
-        if (labeled)
+        if (labeled && !recursive)
             solved = type.equals(formula);
         else
             solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a
@@ -960,6 +988,17 @@ public class InferResponse {
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);
         else if (weakening || strengthening || transitivity)
             setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);
+        else if (counterRecip) {
+            Term antec = ((App)formula).q;
+            Term consec = ((App)((App)formula).p).q;
+            Term newTerm = new App(new App(new Const(2, "c_{2}") , new App(new Const(7 ,"c_{7}"), antec)),
+                                                                new App(new Const(7,"c_{7}"),consec));
+            String statement = newTerm.toStringInf(s,"") + "$</center>";
+            this.setHistorial(this.getHistorial()+statement);
+            if (metodo instanceof App)
+                generarHistorial(user, formula, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+                                resuelveManager, disponeManager, s, false);
+        }
         else if (andIntroduction)
             setAIProof(user, formula, nTeo, typedTerm, valida, labeled, metodo, resuelveManager, disponeManager, s);
         else if (naturalDirect)

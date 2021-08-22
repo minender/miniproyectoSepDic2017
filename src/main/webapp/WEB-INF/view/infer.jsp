@@ -86,7 +86,7 @@
                 
                 $('#formula').on('click','.teoremaClick',function(event){
                     var data = {};
-                    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
+                    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
                     var form = $('#inferForm');
                     //var teoSol = $("#nSolucion").val();
                     //var teoId = $("#nTeorema").val();

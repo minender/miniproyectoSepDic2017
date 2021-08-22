@@ -192,7 +192,17 @@
 			this.selectedMethod = 1;
 			closeModal();
 
-		} else if (this.selectedMethod === "CA") { // proof by cases method
+		}  else if (this.selectedMethod === "CR") { // weakening method
+			
+			$("#selectTeoInicial").val("0");
+			$("#metodosDiv").hide();
+			$("#currentTeo").hide();
+			CRMethod();
+
+			this.selectedMethod = null;
+			closeModal();
+
+		}  else if (this.selectedMethod === "CA") { // proof by cases method
 
 			let message = 'Enter the number of cases that will be proved.';
 			setModalBody(message);

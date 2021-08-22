@@ -34,6 +34,8 @@ import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.lambdacalculo.TypedTerm;
 import com.calclogic.lambdacalculo.TypedU;
 import com.calclogic.parse.CombUtilities;
+import com.calclogic.parse.ProofMethodUtilities;
+import com.calclogic.parse.StaticCombUtilities;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
 import com.calclogic.parse.TermUtilities;
@@ -51,6 +53,7 @@ import com.calclogic.service.SimboloManager;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.Stack;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -245,7 +248,7 @@ public class InferController {
                 typedTerm, 
                 true,
                 true,
-                solucion.getMetodo(), 
+                (solucion.getMetodo().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMetodo())), 
                 resuelveManager, 
                 disponeManager,
                 simboloManager
@@ -1600,12 +1603,131 @@ public class InferController {
         return new TypedApp(proof, infer);
     }
     
-    private boolean methodType(Term method) {
+    private boolean isWaitingMethod(Term method) throws TypeVerificationException {
         
-        boolean waitingMethod;
-        waitingMethod = true;
-                
-        return waitingMethod;
+        Term m1, m2 = null;
+        if (method instanceof Const && 
+            (
+             ((Const)method).getCon().equals("DM") ||
+             ((Const)method).getCon().equals("SS") ||   
+             ((Const)method).getCon().equals("TR") ||
+             ((Const)method).getCon().equals("WE") ||
+             ((Const)method).getCon().equals("ST")    
+            )
+           ) 
+        {
+           return false;    
+        }
+        else if (method instanceof Const && 
+                 (
+                  ((Const)method).getCon().equals("ND") ||
+                  ((Const)method).getCon().equals("CO") ||   
+                  ((Const)method).getCon().equals("CR") ||
+                  ((Const)method).getCon().equals("AI") ||
+                  ((Const)method).getCon().equals("CA") ||
+                  ((Const)method).getCon().equals("WI")
+                 )
+                ) 
+        {
+            return true;
+        }
+        else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
+                 (
+                  ((Const)m1).getCon().equals("ND") || 
+                  ((Const)m1).getCon().equals("CO") || 
+                  ((Const)m1).getCon().equals("CR") 
+                 )
+                ) 
+        {
+            return isWaitingMethod(((App)method).q);
+        }
+        else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
+                 (
+                  ((Const)m1).getCon().equals("AI") || 
+                  ((Const)m1).getCon().equals("CA") 
+                 )
+                )
+        {
+            return true;
+        }
+        else if ( method instanceof App && (m1 = ((App)method).p) instanceof App &&
+                  (m2 = ((App)m1).p) instanceof Const &&
+                  (
+                   ((Const)m2).getCon().equals("AI") || 
+                   ((Const)m2).getCon().equals("CA") 
+                  )
+                )
+        {
+            return isWaitingMethod(((App)m1).q) || isWaitingMethod(((App)method).q);
+        }
+        else
+            throw new TypeVerificationException();
+    }
+    
+    private Term updateMethod(String currentMethod, String newMethod) {
+        
+        if (currentMethod.equals(""))
+            return new Const(newMethod);
+        else {
+            Term methodTerm = ProofMethodUtilities.getTerm(currentMethod);
+            Term t = methodTerm;
+            Term aux = null;
+            Term father = methodTerm;
+            try {
+                if (t instanceof App)
+                   aux = ((App)t).q;  
+                while (aux != null && !(aux instanceof Const) && isWaitingMethod(aux)) {
+                   father = t;
+                   t = aux;
+                   aux = ((App)aux).q;
+                }
+                if (aux == null)
+                   methodTerm = new App(methodTerm, new Const(newMethod));
+                else if (aux instanceof Const && isWaitingMethod(aux)) 
+                   ((App)t).q = new App(aux, new Const(newMethod));
+                else { 
+                    /*if (father == methodTerm && isWaitingMethod(t))
+                      methodTerm = new App(methodTerm, new Const("DM"));
+                    else */
+                    if (father == t)
+                        methodTerm = new App(methodTerm, new Const(newMethod));
+                    else
+                        ((App)father).q = new App(t, new Const(newMethod));
+                }
+                  
+                return methodTerm;
+            }
+            catch (TypeVerificationException e) {
+                e.printStackTrace();
+                return new Const("error");
+            }
+        }
+    }
+    
+    private Term eraseMethod(String currentMethod) {
+        
+        if (currentMethod.length() <= 3)
+            return null;
+        else {
+            Term currMethodTerm = ProofMethodUtilities.getTerm(currentMethod);
+            Term father = ProofMethodUtilities.getTerm(currentMethod);
+            Term q = ((App)father).q;
+            Term aux = null;
+            if ( q instanceof Const)
+               return ((App)father).p;
+            else {
+              aux = q;
+              q = ((App)q).q;
+            }
+            while ( q instanceof App) {
+                father = aux;
+                aux = ((App)father).q;
+                q = ((App)aux).q;
+            }
+            ((App)father).q = ((App)aux).p;
+            
+            return currMethodTerm;
+        }
     }
    
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir",headers="Accept=application/json", produces= MediaType.APPLICATION_JSON_VALUE)    
@@ -1773,7 +1895,7 @@ public class InferController {
             */
         // If something went wrong building the new hint
         }catch(TypeVerificationException e) {
-            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, metodo,resuelveManager,disponeManager,simboloManager);
+            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, new Const(metodo),resuelveManager,disponeManager,simboloManager);
             return response;
         }
 
@@ -1813,7 +1935,7 @@ public class InferController {
             catch (TypeVerificationException e) {
                 if ((i == 1 && !onlyOneLine) || (i == 1 && j == 1))
                 {
-                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true,metodo,resuelveManager,disponeManager,simboloManager);
+                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true,new Const(metodo),resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
                 if (onlyOneLine && j == 0) {
@@ -1915,7 +2037,7 @@ public class InferController {
                 }
 
             } catch (TypeVerificationException e) {
-                response.generarHistorial(username,formula, nTeo,finalProof,false,true, outerMethod,resuelveManager,disponeManager,simboloManager);
+                response.generarHistorial(username,formula, nTeo,finalProof,false,true, new Const(outerMethod),resuelveManager,disponeManager,simboloManager);
                 return response;
             }
         } 
@@ -1988,7 +2110,7 @@ public class InferController {
             finalProof,
             true,
             true,
-            outerMethod,
+            new Const(outerMethod),
             resuelveManager,
             disponeManager,
             simboloManager
@@ -2044,21 +2166,40 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Solucion solucion = solucionManager.getSolucion(resuelve.getDemopendiente());
         int respRetroceder;
+        Term method = null;
         
         if(nSol.equals("new")){
             respRetroceder = 0;
         }
         else{
-            respRetroceder = solucion.retrocederPaso();
-            if (respRetroceder == 0)
-                solucion.setMetodo("");
+            if (solucion.getDemostracion().equals("") && !solucion.getMetodo().equals("")) 
+                respRetroceder = 0;
+            else
+                respRetroceder = solucion.retrocederPaso();
+            if (respRetroceder == 0) {
+               method = eraseMethod(solucion.getMetodo());
+               solucion.setMetodo((method == null?"":method.toStringFinal()));
+            }
+            else
+               method = ProofMethodUtilities.getTerm(solucion.getMetodo());
             solucionManager.updateSolucion(solucion);
         }
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term formula = resuelve.getTeorema().getTeoTerm();
 
-        response.generarHistorial(username,formula, nTeo,respRetroceder==0?null:solucion.getTypedTerm(),true,true,solucion.getMetodo(),resuelveManager,disponeManager,simboloManager);
+        response.generarHistorial(
+               username,
+               formula, 
+               nTeo, 
+               respRetroceder==0?null:solucion.getTypedTerm(), 
+               true, 
+               true, 
+               method,
+               resuelveManager, 
+               disponeManager, 
+               simboloManager);
+        
         if(/*respRetroceder==1 ||*/ respRetroceder==0){
             response.setCambiarMetodo("1");
         }
@@ -2068,11 +2209,85 @@ public class InferController {
         
         return response;
     }
+        
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeableMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse teoremaClickeableMD( /*@RequestParam(value="teoid") String teoid,*/ 
+            @PathVariable String username, 
+            @PathVariable String nTeo)
+    {   
+        InferResponse response = new InferResponse();
+      
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        
+        Teorema t = resuelve.getTeorema();
+        Term term = t.getTeoTerm();
+
+        String formula = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
+        
+        formula = "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ formula + "}}";
+        
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formula+ "$</center> Proof: ";
+        response.setHistorial(historial);  
+
+        return response;
+    }
+    
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeablePL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse teoremaClickeablePL( /*@RequestParam(value="teoid") String teoid,*/ @PathVariable String username, 
+            @PathVariable String nTeo)
+    {   
+        InferResponse response = new InferResponse();
+      
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        
+        Teorema t = resuelve.getTeorema();
+        Term term = t.getTeoTerm();
+        String equiv = ((Const)((App)((App)term).p).p).getCon();
+        
+        /* Jean
+        String equiv;
+        try { // If something here goes wrong is because the theorem does not have one side form
+               if(nuevoMetodo.equals("Natural Deduction,one-sided")) {
+                       String impl = ((Const)((App)((App)term).p).p).getCon();
+                       if(!impl.equals("c_{2}")) { // If is not an implication its wrong
+                               response.setLado("0");
+                    return response;
+                       }
+                       term = ((App)((App)term).p).q;
+               }
+               equiv = ((Const)((App)((App)term).p).p).getCon();
+        }catch (Exception e) {
+               response.setLado("0");
+            return response;
+               }
+        */
+
+        if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{20}")){
+            response.setLado("0");
+            return response;
+        }
+        else{
+            response.setLado("1");
+        }
+
+        String formulaDer = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInf(simboloManager,"");
+        String formulaIzq = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInf(simboloManager,"");
+        String operador = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).p.toStringInf(simboloManager,"");//resuelve.getTeorema().getOperador();
+        
+        formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
+        formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
+        
+        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaIzq+"$ $"+ operador +"$ $" + formulaDer + "$</center> Proof: ";
+        response.setHistorial(historial);  
+
+        return response;
+    }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialMD( @RequestParam(value="nuevoMetodo") String nuevoMetodo, @RequestParam(value="teoid") String teoid, @PathVariable String nSol, @PathVariable String username, 
+    public @ResponseBody InferResponse teoremaInicialMD(@RequestParam(value="teoid") String teoid, @PathVariable String nSol, @PathVariable String username, 
             @PathVariable String nTeo) //Jean throws TypeVerificationException
     {   
+        String nuevoMetodo = "DM";
         InferResponse response = new InferResponse();
 
         // Jean response.setLado("1");
@@ -2215,6 +2430,7 @@ public class InferController {
           //formula = formulaTerm.toStringInfLabeled();
         }
         
+        Term metodoTerm = null;
         if (nSol.equals("new"))
         {
             Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo);
@@ -2259,7 +2475,7 @@ public class InferController {
                     }
                     solucion.setTypedTerm(formulaTerm);
                 } catch (TypeVerificationException e) {
-                    response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
+                    response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
                                   resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
@@ -2267,9 +2483,10 @@ public class InferController {
                 solucion.setTypedTerm(formulaTerm);
             }
 
+            metodoTerm = updateMethod(method, nuevoMetodo);
+            nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
-
         }
         
         response.generarHistorial(
@@ -2279,7 +2496,7 @@ public class InferController {
             formulaTerm,
             true,
             true,
-            nuevoMetodo,
+            (nSol.equals("new")?new Const(nuevoMetodo):metodoTerm),
             resuelveManager,
             disponeManager,
             simboloManager 
@@ -2289,84 +2506,13 @@ public class InferController {
 
         return response;
     }
-    
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeableMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaClickeableMD( /*@RequestParam(value="teoid") String teoid,*/ 
-            @PathVariable String username, 
-            @PathVariable String nTeo)
-    {   
-        InferResponse response = new InferResponse();
-      
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        
-        Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm();
 
-        String formula = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
-        
-        formula = "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ formula + "}}";
-        
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formula+ "$</center> Proof: ";
-        response.setHistorial(historial);  
-
-        return response;
-    }
-    
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeablePL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaClickeablePL( /*@RequestParam(value="teoid") String teoid,*/ @PathVariable String username, 
-            @PathVariable String nTeo)
-    {   
-        InferResponse response = new InferResponse();
-      
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        
-        Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm();
-        String equiv = ((Const)((App)((App)term).p).p).getCon();
-        
-        /* Jean
-        String equiv;
-        try { // If something here goes wrong is because the theorem does not have one side form
-               if(nuevoMetodo.equals("Natural Deduction,one-sided")) {
-                       String impl = ((Const)((App)((App)term).p).p).getCon();
-                       if(!impl.equals("c_{2}")) { // If is not an implication its wrong
-                               response.setLado("0");
-                    return response;
-                       }
-                       term = ((App)((App)term).p).q;
-               }
-               equiv = ((Const)((App)((App)term).p).p).getCon();
-        }catch (Exception e) {
-               response.setLado("0");
-            return response;
-               }
-        */
-
-        if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{20}")){
-            response.setLado("0");
-            return response;
-        }
-        else{
-            response.setLado("1");
-        }
-
-        String formulaDer = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInf(simboloManager,"");
-        String formulaIzq = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInf(simboloManager,"");
-        String operador = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).p.toStringInf(simboloManager,"");//resuelve.getTeorema().getOperador();
-        
-        formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
-        formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
-        
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaIzq+"$ $"+ operador +"$ $" + formulaDer + "$</center> Proof: ";
-        response.setHistorial(historial);  
-
-        return response;
-    }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialPL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialPL(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @PathVariable String nSol, @RequestParam(value="lado") String lado, @PathVariable String username, 
+    public @ResponseBody InferResponse teoremaInicialPL(@PathVariable String nSol, @RequestParam(value="lado") String lado, @PathVariable String username, 
             @PathVariable String nTeo)
-    {   
+    {
+        String nuevoMetodo = "SS";
         InferResponse response = new InferResponse();
         
         /* Jean
@@ -2416,7 +2562,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial); */
@@ -2425,8 +2571,9 @@ public class InferController {
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialD(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    public @ResponseBody InferResponse teoremaInicialD(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {   
+        String nuevoMetodo = "WE";
         InferResponse response = new InferResponse();
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
@@ -2465,7 +2612,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
@@ -2474,8 +2621,9 @@ public class InferController {
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialF", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialF(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    public @ResponseBody InferResponse teoremaInicialF(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {
+        String nuevoMetodo = "ST";
         InferResponse response = new InferResponse();
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
@@ -2515,7 +2663,7 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
@@ -2524,8 +2672,9 @@ public class InferController {
     }
 
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementT", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse iniStatementT(@RequestParam(value="nuevoMetodo") String nuevoMetodo, @PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    public @ResponseBody InferResponse iniStatementT(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {
+        String nuevoMetodo = "TR";
         InferResponse response = new InferResponse();
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
@@ -2561,14 +2710,56 @@ public class InferController {
             solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,nuevoMetodo,
+        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
 
         return response;
     }
+    
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementCR", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse iniStatementCR(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    {   
+        String nuevoMetodo = "CR";
+        InferResponse response = new InferResponse();
+        
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        
+        try {
+            //String formula = "";
+            if (((Const)((App)((App)formulaAnterior).p).p).getId() != 2) {
+               response.setLado("0");
+               return response;
+           }
+        }
+        catch (ClassCastException e) {
+            response.setLado("0");
+            return response;
+        }
+        
+        if (nSol.equals("new"))
+        {
+            Solucion solucion = new Solucion(resuelve,false,null, nuevoMetodo);
+            solucionManager.addSolucion(solucion);
+            response.setnSol(solucion.getId()+"");
+        }
+        else
+        {
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            solucion.setMetodo(nuevoMetodo);
+            solucionManager.updateSolucion(solucion);
+        }
+        
+        response.generarHistorial(username,formulaAnterior, nTeo,null,true,false,new Const(nuevoMetodo),
+                                      resuelveManager,disponeManager,simboloManager);
+        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
+        response.setHistorial(historial);  */
 
+        return response;
+    }
+    
     /**
      * Inits a proof for And Introduction method.
      * @param nSol Number of the solution.

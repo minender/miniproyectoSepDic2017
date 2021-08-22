@@ -60,6 +60,7 @@ import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.IsNotInDBException;
+import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
 import com.calclogic.service.CategoriaManager;
@@ -480,7 +481,7 @@ public class PerfilController {
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term typedTerm = solucion.getTypedTerm();
         
-        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,solucion.getMetodo(), resuelveManager, disponeManager, simboloManager);
+        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,ProofMethodUtilities.getTerm(solucion.getMetodo()), resuelveManager, disponeManager, simboloManager);
         return response;
     }
     
@@ -524,7 +525,7 @@ public class PerfilController {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,"Direct method", resuelveManager, disponeManager, simboloManager);
+        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"), resuelveManager, disponeManager, simboloManager);
         return response;
     }
     
