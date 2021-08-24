@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.calclogic.dao;
 
 import com.calclogic.entity.Teoria;
@@ -16,6 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.SerializationUtils;
 
 /**
+ * This class has the implementation of the database queries that 
+ * have to do with the table "Teoria".
+ *
+ * That entries of that table group Simbolo, Teorema and Metateorema
+ * objects.
  *
  * @author jt
  */
@@ -25,19 +26,36 @@ public class TeoriaDaoImpl implements TeoriaDAO {
     @Autowired
     private SessionFactory sessionFactory;
     
-    
+    /** 
+     * Adds a new theory to the table.
+     * This query is made using standard Hibernate library functions.
+     * @param teoria The new theory to be added.
+     * @return Nothing.
+     */
     @Override   
     @Transactional
     public void addTeoria(Teoria Teoria){
         this.sessionFactory.getCurrentSession().save(Teoria);
     }
     
+    /**
+     * Updates one of the theories of the table.
+     * This query is made using standard Hibernate library functions.
+     * @param Teoria Is the theory to be updated.
+     * @return Nothing.
+     */ 
     @Override   
     @Transactional
     public void updateTeoria(Teoria Teoria){
         this.sessionFactory.getCurrentSession().update(Teoria);
     }
     
+    /**
+     * Deletes one of the theories of the table.
+     * This query is made using standard Hibernate library functions.
+     * @param id Is the principal key of the theory to delete.
+     * @return Nothing.
+     */ 
     @Override
     @Transactional
     public void deleteTeoria(int id){
@@ -48,13 +66,21 @@ public class TeoriaDaoImpl implements TeoriaDAO {
         }
     }
     
+    /**
+     * Method to get a theory by its principal key.
+     * This query is made using standard Hibernate library functions.
+     * @param id Is the principal key of the theory.
+     */
     @Override
     @Transactional
     public Teoria getTeoria(int id){
         return (Teoria)this.sessionFactory.getCurrentSession().get(Teoria.class,id);
     }
     
-    
+    /**
+     * Method to get a list of all the entries of the table (all the theories).
+     * This query is made using classic SQL.
+     */  
     @Override
     @Transactional
     public List<Teoria> getAllTeoria(){
