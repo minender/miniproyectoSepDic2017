@@ -18,8 +18,6 @@ public interface MostrarCategoriaManager {
     
     public MostrarCategoria addMostrarCategoria(MostrarCategoria mostrarCategoria);
     
-    public void updateMostrarCategoria(MostrarCategoria mostrarCategoria);
-    
     public void deleteMostrarCategoria(int id);
     
     public MostrarCategoria getMostrarCategoria(int id);

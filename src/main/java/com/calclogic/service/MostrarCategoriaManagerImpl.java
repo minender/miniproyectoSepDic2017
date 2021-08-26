@@ -32,13 +32,6 @@ public class MostrarCategoriaManagerImpl implements MostrarCategoriaManager {
         return mostrarCategoria;
     }
     
-    
-    @Override   
-    @Transactional
-    public void updateMostrarCategoria(MostrarCategoria mostrarCategoria){
-        MostrarCategoriaDAO.updateMostrarCategoria(mostrarCategoria);
-    }
-    
     @Override
     @Transactional
     public void deleteMostrarCategoria(int id){
