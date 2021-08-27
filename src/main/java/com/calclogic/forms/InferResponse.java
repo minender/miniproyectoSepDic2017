@@ -529,6 +529,7 @@ public class InferResponse {
                         resuelveManager,
                         disponeManager,
                         simboloManager,
+                        "n",
                         false
                     );
                     
@@ -560,6 +561,7 @@ public class InferResponse {
                         resuelveManager,
                         disponeManager,
                         simboloManager, 
+                        "n",
                         false
                     );
             
@@ -611,6 +613,7 @@ public class InferResponse {
                         resuelveManager,
                         disponeManager,
                         simboloManager,
+                        "n",
                         false
                     );
                     
@@ -627,6 +630,7 @@ public class InferResponse {
                         resuelveManager,
                         disponeManager,
                         simboloManager,
+                        "n",
                         false
                     );
                     
@@ -736,6 +740,26 @@ public class InferResponse {
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
+    private String clickeableST(Term newTerm, String clickeable, Term method, boolean isRootTeorem, 
+                                SimboloManager s) {
+
+        if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ) // en plena recursion
+            return newTerm.toStringInf(s,"");
+        else if (clickeable.equals("DM"))  // final de la impresion
+            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringInf(s,"") + "}}";
+        else if (clickeable.equals("SS")) { // final de la impresion
+            String formulaDer = ((App)((App)newTerm).p).q.toStringInf(s,"");
+            String formulaIzq = ((App)newTerm).q.toStringInf(s,"");
+            String operador = ((App)((App)newTerm).p).p.toStringInf(s,"");//resuelve.getTeorema().getOperador();
+        
+            formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
+            formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
+            return formulaIzq+"$ $"+ operador +"$ $" + formulaDer;
+        }
+        else // clickeable.equals("n")
+            return newTerm.toStringInf(s,"");
+    }
+    
     /**
      * Calls function generarHistorial assuming that it is always a root teorem
      * and thus is doesn't contain identation.
@@ -773,6 +797,7 @@ public class InferResponse {
             resuelveManager, 
             disponeManager, 
             s, 
+            "n",
             true
         );
     }
@@ -788,16 +813,17 @@ public class InferResponse {
         ResuelveManager resuelveManager, 
         DisponeManager disponeManager, 
         SimboloManager s,
+        String clickeable,
         Boolean isRootTeorem
     ) {        
 
         String header = "";
-
         // If we're printing a root teorem, print it as a teorem. 
+
         if (isRootTeorem) {
             this.setHistorial("");
             header = "Theorem " + nTeo + ":<br> <center>$" + 
-                     formula.toStringInf(s,"") + "$</center>";     
+                     clickeableST(formula, clickeable, metodo, isRootTeorem, s) + "$</center>";     
         } 
         
         boolean naturalDirect = false;
@@ -829,7 +855,7 @@ public class InferResponse {
         //else {
         boolean recursive = false;
         if (counterRecip) {
-            header += "Proof: By counter-reciprocal method<br>";
+            header += "Proof:<br>";
             recursive = true;
         }
         else if (direct) 
@@ -843,7 +869,7 @@ public class InferResponse {
         else
             header += "Proof:<br>";
         // header += "Proof:<br>";
-
+        
         Term type = typedTerm==null?null:typedTerm.type();
 
         boolean solved;
@@ -993,11 +1019,16 @@ public class InferResponse {
             Term consec = ((App)((App)formula).p).q;
             Term newTerm = new App(new App(new Const(2, "c_{2}") , new App(new Const(7 ,"c_{7}"), antec)),
                                                                 new App(new Const(7,"c_{7}"),consec));
-            String statement = newTerm.toStringInf(s,"") + "$</center>";
-            this.setHistorial(this.getHistorial()+statement);
+
+            String statement = "<center>$" + clickeableST(newTerm, clickeable, metodo, false, s) 
+                                + "$</center>";
+            
+            this.setHistorial(header+this.getHistorial()+
+                             "By counter-reciprocal method, the following must proved:<br>"+
+                              statement+"Sub Proof:<br>");
             if (metodo instanceof App)
-                generarHistorial(user, formula, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
-                                resuelveManager, disponeManager, s, false);
+                generarHistorial(user, newTerm, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+                                resuelveManager, disponeManager, s, clickeable, false);
         }
         else if (andIntroduction)
             setAIProof(user, formula, nTeo, typedTerm, valida, labeled, metodo, resuelveManager, disponeManager, s);
@@ -1213,8 +1244,10 @@ public class InferResponse {
     		header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
     	}
 
-        if(!andIntroduction)
+        if (!andIntroduction && !recursive)
     	    this.setHistorial(header+"<center>$" +this.getHistorial()+"</center>");
+        else if (!andIntroduction && recursive)
+            ;
         else 
     	    this.setHistorial(header +this.getHistorial());
     	if (!valida)
