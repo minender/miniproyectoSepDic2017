@@ -1831,6 +1831,8 @@ public class InferController {
         Term typedTerm = solucion.getTypedTerm();
         Term formula = resuel.getTeorema().getTeoTerm();
         String metodo = solucion.getMetodo();
+        Term methodTerm = ProofMethodUtilities.getTerm(metodo);
+        Term methodTermIter = methodTerm;
     	Term teoremProved = resuel.getTeorema().getTeoTerm();
 
         // If the method is And Introduction, get the sub-tree that is being 
@@ -1870,16 +1872,23 @@ public class InferController {
         Term infer = null;
         try 
         {
-            if(metodo.equals("Direct method")) {
-        	    infer = createDirectMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            } else if (metodo.equals("Starting from one side")) {
-        	    infer = createOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            } else if (metodo.equals("Weakening") || metodo.equals("Strengthening") || metodo.equals("Transitivity")) {
+            while (!(methodTermIter instanceof Const)) {
+                if (methodTermIter.toStringFinal().startsWith("CR"))
+                    methodTermIter = ((App)methodTermIter).q;
+            }
+            if(methodTermIter.toStringFinal().equals("DM")) {
+        	infer = createDirectMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
+            } else if (methodTermIter.toStringFinal().equals("SS")) {
+        	infer = createOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
+            } else if (methodTermIter.toStringFinal().equals("WE") || 
+                          methodTermIter.toStringFinal().equals("ST") || 
+                          methodTermIter.toStringFinal().equals("TR")
+                      ) {
                 infer = createWSInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            } else if (metodo.equals("Natural Deduction,one-sided")) {
-        	    infer = createDeductionOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
-            } else if (metodo.equals("Natural Deduction,direct")) {
-        	    infer = createDeductionDirectInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+            } else if (methodTermIter.toStringFinal().equals("Natural Deduction,one-sided")) {
+        	infer = createDeductionOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+            } else if (methodTermIter.toStringFinal().equals("Natural Deduction,direct")) {
+                infer = createDeductionDirectInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
             }
             /*
             if(metodo.equals("Direct method")) {
@@ -1896,7 +1905,7 @@ public class InferController {
             */
         // If something went wrong building the new hint
         }catch(TypeVerificationException e) {
-            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, new Const(metodo),resuelveManager,disponeManager,simboloManager);
+            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
             return response;
         }
 
@@ -1917,8 +1926,9 @@ public class InferController {
             try {
                 if (i == 1 && j == 0)
                     infer = new TypedApp(new TypedS(infer.type()), infer);
-                if (metodo.equals("Weakening") || metodo.equals("Strengthening") ||
-                    metodo.equals("Transitivity")    
+                if (methodTermIter.toStringFinal().equals("WE") || 
+                    methodTermIter.toStringFinal().equals("ST") ||
+                    methodTermIter.toStringFinal().equals("TR")    
                    ) 
                 {
                     newProof=addInferToWSProof(currentProof, infer); // si no da excepcion cuando 
@@ -1967,19 +1977,19 @@ public class InferController {
     	Term finalProof = newProof;
     	
     	// Depending on the method we create a new proof if we finished
-    	if(metodo.equals("Direct method")) {
-    		finalProof = finishedDirectMethodProve(teoremProved, proof, username);
-    	}else if(metodo.equals("Starting from one side")) {
-    		finalProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
-    	}else if(metodo.equals("Natural Deduction,one-sided")) {
-        	finalProof = finishedDeductionOneSideProve(initialExpr, finalExpr, teoremProved, proof);
-        }else if(metodo.equals("Natural Deduction,direct")) {
-        	finalProof = finishedDeductionDirectProve(initialExpr, teoremProved, finalExpr, proof, username);	
-        }else if(metodo.equals("Weakening")) {
+    	if(methodTermIter.toStringFinal().equals("DM")) {
+    	    finalProof = finishedDirectMethodProve(teoremProved, proof, username);
+    	}else if(methodTermIter.toStringFinal().equals("SS")) {
+    	    finalProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
+    	}else if(methodTermIter.toStringFinal().equals("Natural Deduction,one-sided")) {
+            finalProof = finishedDeductionOneSideProve(initialExpr, finalExpr, teoremProved, proof);
+        }else if(methodTermIter.toStringFinal().equals("Natural Deduction,direct")) {
+            finalProof = finishedDeductionDirectProve(initialExpr, teoremProved, finalExpr, proof, username);	
+        }else if(methodTermIter.toStringFinal().equals("WE")) {
             finalProof = finishedWeakProve(expr, teoremProved, proof);
-        }else if(metodo.equals("Strengthening")) {
+        }else if(methodTermIter.toStringFinal().equals("ST")) {
             finalProof = finishedStrengProve(expr, teoremProved, proof);
-        }else if (metodo.equals("Transitivity")) {
+        }else if (methodTermIter.toStringFinal().equals("TR")) {
             finalProof = finishedTransProve(expr, teoremProved, proof);
         }
         /* Jean
@@ -2103,7 +2113,6 @@ public class InferController {
         }
 
         solucionManager.updateSolucion(solucion);
-        
         response.generarHistorial(
             username,
             formula, 
@@ -2111,7 +2120,7 @@ public class InferController {
             finalProof,
             true,
             true,
-            new Const(outerMethod),
+            methodTerm,
             resuelveManager,
             disponeManager,
             simboloManager
@@ -2239,7 +2248,8 @@ public class InferController {
 
         response.generarHistorial(
             username, 
-            term, 
+            term,
+            "",
             nTeo, 
             null, 
             true, 
@@ -2275,7 +2285,7 @@ public class InferController {
         
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();
-        String equiv = ((Const)((App)((App)term).p).p).getCon();
+       // String equiv = ((Const)((App)((App)term).p).p).getCon();
         
         /* Jean
         String equiv;
@@ -2295,13 +2305,12 @@ public class InferController {
                }
         */
 
-        if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{20}")){ // esto se debe hacer en
-            response.setLado("0");                                    // generarHistorial
+        /*if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{20}")){ 
+            response.setLado("0");                                    
             return response;
         }
-        else{
+        else*/
             response.setLado("1");
-        }
 
         Term metodoTerm = null;
         if (!nSol.equals("new"))
@@ -2315,7 +2324,8 @@ public class InferController {
 
         response.generarHistorial(
             username, 
-            term, 
+            term,
+            "",
             nTeo, 
             null, 
             true, 
@@ -2338,6 +2348,23 @@ public class InferController {
         response.setHistorial(historial);  
         */
         return response;
+    }
+    
+    private Term initStatement(Term beginFormula, Term method) {
+        
+        if (method instanceof Const)
+            return beginFormula;
+        else if ( ((App)method).p.toString().equals("CR") ) {
+            Term antec = ((App)beginFormula).q;
+            antec = new App(new Const(7 ,"c_{7}"), antec);
+            Term consec = ((App)((App)beginFormula).p).q;
+            consec = new App(new Const(7,"c_{7}"),consec);
+            beginFormula = new App(new App(new Const(2,"c_{2}"),antec), consec);
+            
+            return initStatement(beginFormula, ((App)method).q );
+        }
+        else
+            return null;
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
@@ -2493,6 +2520,7 @@ public class InferController {
             Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
+            metodoTerm = new Const(nuevoMetodo);
         }
         else
         {
@@ -2537,13 +2565,16 @@ public class InferController {
                     return response;
                 }
             } else {
-                solucion.setTypedTerm(formulaTerm);
+                metodoTerm = updateMethod(method, nuevoMetodo);
+                if (teoid.substring(3,teoid.length()).equals(nTeo)) {
+                   formulaTerm = initStatement(formulaTerm,metodoTerm);
+                   solucion.setTypedTerm(formulaTerm);
+                } else
+                   solucion.setTypedTerm(formulaTerm);
+                nuevoMetodo = metodoTerm.toStringFinal();
+                solucion.setMetodo(nuevoMetodo);
+                solucionManager.updateSolucion(solucion);
             }
-
-            metodoTerm = updateMethod(method, nuevoMetodo);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-            solucionManager.updateSolucion(solucion);
         }
         
         response.generarHistorial(
@@ -2553,21 +2584,24 @@ public class InferController {
             formulaTerm,
             true,
             true,
-            (nSol.equals("new")?new Const(nuevoMetodo):metodoTerm),
+            metodoTerm,
             resuelveManager,
             disponeManager,
             simboloManager 
         );
         //String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        //response.setHistorial(historial);  
+        //response.setHistorial(historial);
+        response.setCambiarMetodo("0");
 
         return response;
     }
 
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialPL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialPL(@PathVariable String nSol, @RequestParam(value="lado") String lado, @PathVariable String username, 
-            @PathVariable String nTeo)
+    public @ResponseBody InferResponse teoremaInicialPL(@PathVariable String nSol, 
+                                                        @RequestParam(value="lado") String lado, 
+                                                        @PathVariable String username, 
+                                                        @PathVariable String nTeo)
     {
         String nuevoMetodo = "SS";
         InferResponse response = new InferResponse();
@@ -2580,7 +2614,7 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
         
-        Term formulaTerm = null;
+        Term formulaTerm = resuelve.getTeorema().getTeoTerm();
         
         /* Jean
         if(naturalSide) {
@@ -2589,46 +2623,69 @@ public class InferController {
 +        }
         */
         
-        if(lado.equals("d")){
-            //formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
-            formulaTerm = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q;
-            //Jean formulaTerm = ((App)((App)formulaAnterior).p).q;
-        }
-        else if(lado.equals("i")){
-            //formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
-            formulaTerm = ((App)resuelve.getTeorema().getTeoTerm()).q;
-            // Jean formulaTerm = ((App)formulaAnterior).q;
-        }
-        
         /* Jean
         // In natural dededuction case add H /\ to the start
 +        if(naturalSide) {
 +               formulaTerm = new App(new App(new Const("c_{5}"), formulaTerm), H);
         */
+        Solucion solucion = null;
+        Term metodoTerm = null;
         if (nSol.equals("new"))
         {
-            Solucion solucion = new Solucion(resuelve,false,formulaTerm, nuevoMetodo);
-            solucionManager.addSolucion(solucion);
+            solucion = new Solucion(resuelve,false,null, nuevoMetodo);
             response.setnSol(solucion.getId()+"");
+            metodoTerm = new Const(nuevoMetodo);
         }
         else
         {
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));        
-            solucion.setTypedTerm(formulaTerm);
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            String method = solucion.getMetodo();
+            metodoTerm = updateMethod(method, nuevoMetodo);
+            formulaTerm = initStatement(formulaTerm,metodoTerm);
+            nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
-            solucionManager.updateSolucion(solucion);
         }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
-                                      resuelveManager,disponeManager,simboloManager);
+        if(lado.equals("d")){
+            //formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
+            formulaTerm = ((App)((App)formulaTerm).p).q;
+            //Jean formulaTerm = ((App)((App)formulaAnterior).p).q;
+        }
+        else if(lado.equals("i")){
+            //formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
+            formulaTerm = ((App)formulaTerm).q;
+            // Jean formulaTerm = ((App)formulaAnterior).q;
+        }
+        
+        solucion.setTypedTerm(formulaTerm);
+        if (nSol.equals("new"))
+            solucionManager.addSolucion(solucion);
+        else
+            solucionManager.updateSolucion(solucion);
+        
+        response.generarHistorial(
+            username,
+            formulaAnterior, 
+            nTeo,
+            formulaTerm,
+            true,
+            true,
+            metodoTerm,
+            resuelveManager,
+            disponeManager,
+            simboloManager 
+        );
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial); */
+        response.setCambiarMetodo("0");
 
         return response;
     }
     
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialD(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    public @ResponseBody InferResponse teoremaInicialD(@PathVariable String nSol, 
+                                                       @PathVariable String username, 
+                                                       @PathVariable String nTeo)
     {   
         String nuevoMetodo = "WE";
         InferResponse response = new InferResponse();
@@ -2636,43 +2693,65 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
         
-        Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm();
-        String operador = ((Const)((App)((App)term).p).p).getCon();
-        
+        //Teorema t = resuelve.getTeorema();
+        //Term term = t.getTeoTerm();
         
         //String formula = "";
-        Term formulaTerm = null;
+        Term formulaTerm = formulaAnterior;
+        
+        Term metodoTerm = null;
+        Solucion solucion = null;
+        if (nSol.equals("new"))
+        {
+            solucion = new Solucion(resuelve,false,null, nuevoMetodo);
+            response.setnSol(solucion.getId()+"");
+            metodoTerm = new Const(nuevoMetodo);
+        }
+        else
+        {
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            String method = solucion.getMetodo();
+            metodoTerm = updateMethod(method, nuevoMetodo);
+            formulaTerm = initStatement(formulaTerm,metodoTerm);
+            nuevoMetodo = metodoTerm.toStringFinal();
+            solucion.setMetodo(nuevoMetodo);
+        }
+        
+        String operador = ((Const)((App)((App)formulaTerm).p).p).getCon();
         if(operador.equals("c_{3}")){
             response.setLado("d");
-            formulaTerm = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q;
+            formulaTerm = ((App)((App)formulaTerm).p).q;
         }
         else if(operador.equals("c_{2}")){
             response.setLado("i");
-            formulaTerm = ((App)resuelve.getTeorema().getTeoTerm()).q;
+            formulaTerm = ((App)formulaTerm).q;
         }
         else{
             response.setLado("0");
         }
         
+        solucion.setTypedTerm(formulaTerm);
         if (nSol.equals("new"))
-        {
-            Solucion solucion = new Solucion(resuelve,false,formulaTerm, nuevoMetodo);
             solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        }
         else
-        {
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));        
-            solucion.setTypedTerm(formulaTerm);
-            solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
-        }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
-                                      resuelveManager,disponeManager,simboloManager);
+        solucionManager.addSolucion(solucion);
+        response.generarHistorial(
+            username,
+            formulaAnterior, 
+            nTeo,
+            formulaTerm,
+            true,
+            true,
+            metodoTerm,
+            resuelveManager,
+            disponeManager,
+            simboloManager 
+        );
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
+        response.setCambiarMetodo("0");
 
         return response;
     }
@@ -2686,42 +2765,60 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
         
-        Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm();
-        String operador = ((Const)((App)((App)term).p).p).getCon();
-        
-        
         //String formula = "";
-        Term formulaTerm = null;
+        Term formulaTerm = formulaAnterior;
+        
+        Term metodoTerm = null;
+        Solucion solucion = null;
+        if (nSol.equals("new"))
+        {
+            solucion = new Solucion(resuelve,false,null,nuevoMetodo);
+            response.setnSol(solucion.getId()+"");
+            metodoTerm = new Const(nuevoMetodo);
+        }
+        else
+        {
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            String method = solucion.getMetodo();
+            metodoTerm = updateMethod(method, nuevoMetodo);
+            formulaTerm = initStatement(formulaTerm,metodoTerm);
+            nuevoMetodo = metodoTerm.toStringFinal();
+            solucion.setMetodo(nuevoMetodo);
+        }
+        
+        String operador = ((Const)((App)((App)formulaTerm).p).p).getCon();
         if(operador.equals("c_{3}")){
             response.setLado("i");
-            formulaTerm = ((App)resuelve.getTeorema().getTeoTerm()).q;
-
+            formulaTerm = ((App)formulaTerm).q;
         }
         else if(operador.equals("c_{2}")){
             response.setLado("d");
-            formulaTerm = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q;
+            formulaTerm = ((App)((App)formulaTerm).p).q;
         }
         else{
             response.setLado("0");
         }
         
+        solucion.setTypedTerm(formulaTerm);
         if (nSol.equals("new"))
-        {
-            Solucion solucion = new Solucion(resuelve,false,formulaTerm,nuevoMetodo);
             solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        }
         else
-        {
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));        
-            solucion.setTypedTerm(formulaTerm);
-            solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
-        }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
-                                      resuelveManager,disponeManager,simboloManager);
+        solucionManager.addSolucion(solucion);
+        response.generarHistorial(
+            username,
+            formulaAnterior, 
+            nTeo,
+            formulaTerm,
+            true,
+            true,
+            metodoTerm,
+            resuelveManager,
+            disponeManager,
+            simboloManager 
+        );
+        response.setCambiarMetodo("0");
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
 
@@ -2737,38 +2834,55 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
         
-        Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm();
-        String operador = ((Const)((App)((App)term).p).p).getCon();
+        Term formulaTerm = formulaAnterior;
+        
+        Term metodoTerm = null;
+        Solucion solucion = null;
+        if (nSol.equals("new"))
+        {
+            solucion = new Solucion(resuelve,false,null,nuevoMetodo);
+            response.setnSol(solucion.getId()+"");
+            metodoTerm = new Const(nuevoMetodo);
+        }
+        else
+        {
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            String method = solucion.getMetodo();
+            metodoTerm = updateMethod(method, nuevoMetodo);
+            formulaTerm = initStatement(formulaTerm,metodoTerm);
+            nuevoMetodo = metodoTerm.toStringFinal();
+            solucion.setMetodo(nuevoMetodo);
+        }
+        
+        String operador = ((Const)((App)((App)formulaTerm).p).p).getCon();
         // you must check if operator is transitive before the following
-        
-        
-        Term formulaTerm = null;
         if(!operador.equals("c_{2}") && !operador.equals("c_{3}")){
             response.setLado("i");
-            formulaTerm = ((App)resuelve.getTeorema().getTeoTerm()).q;
-
+            formulaTerm = ((App)formulaTerm).q;
         }
         else{
             response.setLado("0");
         }
         
+        solucion.setTypedTerm(formulaTerm);
         if (nSol.equals("new"))
-        {
-            Solucion solucion = new Solucion(resuelve,false,formulaTerm,nuevoMetodo);
             solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        }
         else
-        {
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));        
-            solucion.setTypedTerm(formulaTerm);
-            solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
-        }
         
-        response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
-                                      resuelveManager,disponeManager,simboloManager);
+        response.generarHistorial(
+            username,
+            formulaAnterior, 
+            nTeo,
+            formulaTerm,
+            true,
+            true,
+            metodoTerm,
+            resuelveManager,
+            disponeManager,
+            simboloManager 
+        );
+        response.setCambiarMetodo("0");
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
 
