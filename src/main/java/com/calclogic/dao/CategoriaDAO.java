@@ -10,6 +10,7 @@ import java.util.List;
  * @author miguel
  */
 public interface CategoriaDAO {
+    
     /** 
      * Adds a new Categoria object to the system.
      * @param categoria The new category to add.
@@ -34,7 +35,6 @@ public interface CategoriaDAO {
      * Method to get a list of all categories available in the system.
      */
     public List<Categoria> getAllCategorias();
-    
 }
 
 
