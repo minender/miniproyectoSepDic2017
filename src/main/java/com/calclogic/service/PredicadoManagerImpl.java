@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.calclogic.service;
 
 import com.calclogic.dao.PredicadoDAO;
@@ -19,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.SerializationUtils;
 
 /**
+ * This class has the implementation of "PredicadoManager" queries.
  *
  * @author miguel
  */
@@ -31,20 +28,64 @@ public class PredicadoManagerImpl implements PredicadoManager {
     @Autowired
     private CombUtilities combUtilities;
     
-    
+    /** 
+     * Adds a new Predicado object to the table.
+     * @param predicado The new Predicado object to be added.
+     * @return Nothing.
+     */   
     @Override
     @Transactional
     public void addPredicado(Predicado predicado){
         predicadoDAO.addPredicado(predicado);
     }
     
+    /**
+     * Deletes one of the Predicado objects of the table.
+     * @param id Is the principal key of the Predicado object to delete.
+     * @return Nothing.
+     */ 
     @Override
     @Transactional
     public void deletePredicado(PredicadoId id){
         predicadoDAO.deletePredicado(id);
     }
+
+    /**
+     * Updates one of the Predicado objects of the table.
+     * @param pre Is the Predicado object to be updated.
+     * @return Nothing.
+     */ 
+    @Override
+    @Transactional
+    public void updatePredicado(Predicado pre) {
+        predicadoDAO.updatePredicado(pre);
+    }
+
+    /**
+     * Method to change the alias of one of the Predicado objects of the table.
+     * To do that, it removes the object that was on the table and adds a new one,
+     * with the new alias. 
+     * @param anterior Is the previous principal key of the Predicado object.
+     * @param nuevo Is the new principal key of the Predicado object.
+     * @return Nothing.
+     */   
+    @Override
+    @Transactional
+    public void modificarAlias(PredicadoId anterior, PredicadoId nuevo) {
+        Predicado pre=getPredicado(anterior);
+        predicadoDAO.deletePredicado(anterior);
+        pre.setId(nuevo);
+        Term aux=pre.getTerm();
+        aux.setAlias(nuevo.getAlias());
+        pre.setTerm(aux);
+        predicadoDAO.addPredicado(pre);
+    }
     
-    
+    /**
+     * Method to get a Predicado object by its principal key.
+     * If it exists, it parses the string associated with the object.
+     * @param id Is the principal key of the Predicado object.
+     */
     @Override
     @Transactional
     public Predicado getPredicado(PredicadoId id){
@@ -56,6 +97,13 @@ public class PredicadoManagerImpl implements PredicadoManager {
         return  p;
     }
     
+    /**
+     * Method to get a Predicado object that corresponds to a specific user and that have a specific string.
+     * If it exists, it parses the string associated with the object.
+     * If it does not exist, this tries to find the predicate among the admin's theorems.
+     * @param username Is the string with which the user logs in, and that we use to filter the search.
+     * @param comb Represents the predicate with which we filter the search.
+     */
     public Predicado getPredicado(String username, String comb) {
         Predicado t=predicadoDAO.getPredicado(username, comb);
         if(t != null)
@@ -71,24 +119,11 @@ public class PredicadoManagerImpl implements PredicadoManager {
         return t;
     }
     
-    @Override
-    @Transactional
-    public void updatePredicado(Predicado pre) {
-        predicadoDAO.updatePredicado(pre);
-    }
-    
-    @Override
-    @Transactional
-    public void modificarAlias(PredicadoId anterior, PredicadoId nuevo) {
-        Predicado pre=getPredicado(anterior);
-        predicadoDAO.deletePredicado(anterior);
-        pre.setId(nuevo);
-        Term aux=pre.getTerm();
-        aux.setAlias(nuevo.getAlias());
-        pre.setTerm(aux);
-        predicadoDAO.addPredicado(pre);
-    }
-    
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user.
+     * It also parses all of them.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     */
     @Override
     @Transactional
     public List<Predicado> getAllPredicadosByUser(String userLogin){
