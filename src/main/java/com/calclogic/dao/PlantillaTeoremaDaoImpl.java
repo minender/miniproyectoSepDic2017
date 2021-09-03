@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * This class has the implementation of the database queries that 
+ * have to do with the table "PlantillaTeorema".
  *
  * @author Manuel Faria and Juan Oropeza
  */
@@ -20,6 +22,10 @@ public class PlantillaTeoremaDaoImpl implements PlantillaTeoremaDAO {
     @Autowired
     private SessionFactory sessionFactory;
 
+    /**
+     * Method to get a PlantillaTeorema object by its principal key.
+     * @param id Is the principal key of the MostrarCategoria object.
+     */
     @Override
     @Transactional
     public PlantillaTeorema getPlantillaTeoremaById(int id) {

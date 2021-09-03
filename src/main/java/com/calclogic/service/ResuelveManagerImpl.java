@@ -1,8 +1,3 @@
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.calclogic.service;
 
 import com.calclogic.dao.ResuelveDAO;
@@ -17,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 /**
+ * This class has the implementation of "ResuelveManager" queries.
  *
  * @author miguel
  */
@@ -34,6 +29,12 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Autowired
     private CombUtilities combUtilities;
     
+    /** 
+     * Adds a new object entry to the table only if an equivalent one has not been added yet,
+     * and if so then returns again the object.
+     * Otherwise, it returns the equivalent object that was previously added.
+     * @param resuelve The new Resuelve object to be added.
+     */
     @Override
     @Transactional
     public Resuelve addResuelve(Resuelve resuelve){
@@ -45,31 +46,51 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelve;
     }
     
-    
+    /**
+     * Updates one of the Resuelve objects of the table.
+     * @param resuelve Is the Resuelve object to be updated.
+     * @return Nothing.
+     */   
     @Override   
     @Transactional
     public void updateResuelve(Resuelve resuelve){
         resuelveDAO.updateResuelve(resuelve);
     }
-    
+
+    /**
+     * Deletes one of the Resuelve objects of the table.
+     * @param id Is the principal key of the Resuelve object to delete.
+     * @return Nothing.
+     */   
     @Override
     @Transactional
     public void deleteResuelve(int id){
         resuelveDAO.deleteResuelve(id);
     }
     
+    /**
+     * Method to get a Resuelve object by its principal key.
+     * @param id Is the principal key of the Resuelve object.
+     */ 
     @Override
     @Transactional
     public Resuelve getResuelve(int id){
         return resuelveDAO.getResuelve(id);
     }
     
+    /**
+     * Method to get a list of all the entries of the table.
+     */
     @Override
     @Transactional
     public List<Resuelve> getAllResuelve(){
         return resuelveDAO.getAllResuelve();
     }
 
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     */
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUser(String userLogin){

@@ -65,7 +65,7 @@ public class DisponeDaoImpl implements DisponeDAO {
 
     /**
      * Method to get a list of all the entries of the table.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */
     @Override
     @Transactional
@@ -75,7 +75,7 @@ public class DisponeDaoImpl implements DisponeDAO {
 
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      */
     @Override
@@ -86,7 +86,7 @@ public class DisponeDaoImpl implements DisponeDAO {
 
     /**
      * Method to get a list of all the entries of the table that correspond to a specific metatheorem.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param meateoremaID Is the principal key of the Metateorema table, with which we filter the search.
      */
     @Override
@@ -98,7 +98,7 @@ public class DisponeDaoImpl implements DisponeDAO {
     /**
      * Method to get the entry of the table that relates a user with a metatheorem, using the principal 
      * key of the metatheorem.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param meateoremaID Is the principal key of the Metateorema table, with which we filter the search.
      */
@@ -119,7 +119,7 @@ public class DisponeDaoImpl implements DisponeDAO {
     /**
      * Method to get the entry of the table that relates a user with a metatheorem, using the string
      * that represents to the metatheorem.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param meateorema Is the string that represents the metatheorem, with which we filter the search.
      */
@@ -139,7 +139,7 @@ public class DisponeDaoImpl implements DisponeDAO {
     /**
      * Method to get the entry of the table that relates a user with a metatheorem, using the number
      * of the metatheorem.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param metateoNum Is the number of the metatheorem, with which we filter the search.
      */

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
  * This class has the implementation of the database queries that 
  * have to do with the table "Publicacion".
  *
+ * >>> This must be removed.
+ *
  * @author federico
  */
 @Repository

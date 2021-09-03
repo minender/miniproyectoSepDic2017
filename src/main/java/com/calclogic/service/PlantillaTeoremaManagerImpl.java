@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * This class has the implementation of "PlantillaTeoremaManager" queries.
  *
  * @author Manuel Faria and Juan Oropeza
  */
@@ -17,6 +18,10 @@ public class PlantillaTeoremaManagerImpl implements PlantillaTeoremaManager {
     @Autowired
     private PlantillaTeoremaDAO plantillaTeoremaDAO;
 
+    /**
+     * Method to get a PlantillaTeorema object by its principal key.
+     * @param id Is the principal key of the MostrarCategoria object.
+     */
     @Override
     @Transactional
     public PlantillaTeorema getPlantillaTeoremaById(int id) {

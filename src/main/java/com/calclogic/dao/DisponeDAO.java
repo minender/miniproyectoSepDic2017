@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * This interface is the api of the database queries that 
- * have to do with the table "Dispone". 
+ * have to do with the table "Dispone".
  *
  * That table implements the relation between the users and
  * the metatheorems that they have.
@@ -13,6 +13,7 @@ import java.util.List;
  * @author miguel
  */
 public interface DisponeDAO {
+
     /** 
      * Adds a new entry to the table.
      * @param dispone The new Dispone object to be added.

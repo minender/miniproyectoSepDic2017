@@ -14,6 +14,7 @@ import java.util.List;
  * @author federico
  */
 public interface MateriaDAO {
+    
     /** 
      * Adds a new subject to the table.
      * @param materia The new Materia object to be added.

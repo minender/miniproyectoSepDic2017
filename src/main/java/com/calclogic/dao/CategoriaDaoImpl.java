@@ -54,7 +54,7 @@ public class CategoriaDaoImpl implements CategoriaDAO {
     
 	/**
 	 * Method to get a list of all categories available in the system.
-	 * This query is made using classic SQL.
+	 * This query is made using HQL (Hibernate Query Language).
 	 */
     @Override
     public List<Categoria> getAllCategorias(){

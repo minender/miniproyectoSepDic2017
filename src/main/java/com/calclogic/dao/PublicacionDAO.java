@@ -9,6 +9,8 @@ import java.util.List;
  * This interface is the api of the database queries that 
  * have to do with the table "Publicacion". 
  *
+ * >>> This must be removed.
+ *
  * @author federico
  */
 public interface PublicacionDAO {
