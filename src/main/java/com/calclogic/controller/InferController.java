@@ -779,6 +779,32 @@ public class InferController {
     	return proof;
     }    
     
+    private Term finishedCounterRecProve(Term teoremProved, Term proof) {
+       if (!proof.type().equals(teoremProved)) 
+       {
+           try {
+             String str = "c_{1} (c_{2} (c_{7} x_{112}) (c_{7} x_{113})) (c_{2} x_{113} x_{112})";
+             Term st = combUtilities.getTerm(str);
+             List<Var> vars = new ArrayList<Var>();
+             List<Term> terms = new ArrayList<Term>();
+             vars.add(0, new Var(112));
+             vars.add(0, new Var(113));
+             terms.add(0, ((App)((App)((App)teoremProved).p).q).q);
+             terms.add(0, ((App)((App)teoremProved).q).q);
+             Sust sus = new Sust(vars, terms);
+             TypedA A = new TypedA(st);
+             TypedI I = new TypedI(sus);
+           
+             return new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),proof);
+             
+           }catch (TypeVerificationException e)  {
+            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
+           }
+       }
+       
+       return proof;
+    }
+    
     /**
      * This function will only be correct if called when using Starting from one side method with natural deduction
      * This function will return a new prove tree in case it finds out that the last hint of prove
@@ -1730,6 +1756,20 @@ public class InferController {
             return currMethodTerm;
         }
     }
+    
+    public static boolean isBaseMethod(Term method) {
+        if (method instanceof App)
+            return false;
+        else if (((Const)method).getCon().equals("DM") || 
+                 ((Const)method).getCon().equals("SS") ||
+                 ((Const)method).getCon().equals("TR") ||
+                 ((Const)method).getCon().equals("WE") ||
+                 ((Const)method).getCon().equals("ST")
+                )
+            return true;
+        else
+            return false;
+    }
    
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir",headers="Accept=application/json", produces= MediaType.APPLICATION_JSON_VALUE)    
     public @ResponseBody InferResponse infer(@RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion, @PathVariable String username, 
@@ -1833,7 +1873,7 @@ public class InferController {
         String metodo = solucion.getMetodo();
         Term methodTerm = ProofMethodUtilities.getTerm(metodo);
         Term methodTermIter = methodTerm;
-    	Term teoremProved = resuel.getTeorema().getTeoTerm();
+    	Term teoremProved = initStatement(resuel.getTeorema().getTeoTerm(), methodTerm);
 
         // If the method is And Introduction, get the sub-tree that is being 
         // proved
@@ -1868,14 +1908,16 @@ public class InferController {
             }
         }
         
+        Stack<Term> methodStack = new Stack<Term>();
+        while (!(methodTermIter instanceof Const)) {
+            methodStack.push(((App)methodTermIter).p);
+            if (methodTermIter.toStringFinal().startsWith("CR"))
+                methodTermIter = ((App)methodTermIter).q;
+        }
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROVE TYPE
         Term infer = null;
         try 
         {
-            while (!(methodTermIter instanceof Const)) {
-                if (methodTermIter.toStringFinal().startsWith("CR"))
-                    methodTermIter = ((App)methodTermIter).q;
-            }
             if(methodTermIter.toStringFinal().equals("DM")) {
         	infer = createDirectMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
             } else if (methodTermIter.toStringFinal().equals("SS")) {
@@ -1991,6 +2033,13 @@ public class InferController {
             finalProof = finishedStrengProve(expr, teoremProved, proof);
         }else if (methodTermIter.toStringFinal().equals("TR")) {
             finalProof = finishedTransProve(expr, teoremProved, proof);
+        }
+        
+        while (!methodStack.isEmpty()) {
+            Term met = methodStack.pop();
+            if (met.toStringFinal().equals("CR")) {
+                finalProof = finishedCounterRecProve(teoremProved, proof);
+            }
         }
         /* Jean
         newProof = finishedDeductionDirectProve(teoremProved, proof, username);

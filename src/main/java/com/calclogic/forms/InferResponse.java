@@ -1030,11 +1030,11 @@ public class InferResponse {
         else if (counterRecip) {
             Term antec = ((App)formula).q;
             Term consec = ((App)((App)formula).p).q;
-            formula = new App(new App(new Const(2, "c_{2}") , new App(new Const(7 ,"c_{7}"), antec)),
+            Term newFormula = new App(new App(new Const(2, "c_{2}") , new App(new Const(7 ,"c_{7}"), antec)),
                                                                 new App(new Const(7,"c_{7}"),consec));
             String statement = "";
             try {
-               statement = "<center>$" + clickeableST(formula, clickeable, metodo, false, s) 
+               statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
                                   + "$</center>";
             }
             catch (Exception e) {
@@ -1042,9 +1042,14 @@ public class InferResponse {
                 return;
             }
             header+="By counter-reciprocal method, the following must proved:<br>"+statement+"Sub Proof:<br>";
-            if (metodo instanceof App)
-                generarHistorial(user, formula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+            if (metodo instanceof App) {
+                if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) && 
+                     InferController.isBaseMethod(((App)metodo).q)
+                   )
+                    typedTerm = ((App)typedTerm).q;
+                generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
                                  resuelveManager, disponeManager, s, clickeable, false);
+            }
             else
                 this.setHistorial(header);
         }
