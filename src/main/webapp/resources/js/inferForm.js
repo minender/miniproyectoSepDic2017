@@ -88,14 +88,15 @@ $(function() {
                 $('#stbox').text("");
                 cleanJax('leibnizSymbolsId');
                 cleanJaxSubstitution('substitutionButtonsId');
-                if(data.cambiarMetodo === "1"){
+                setForms(data.cambiarMetodo);
+                /*if(data.cambiarMetodo === "1"){
                     $("#metodosDemostracion").val("0");
                     $("#metodosDiv").show();
                     $('#inferForm').hide();
                     $("#selectTeoInicial").val("1");
                     //$("#nuevoMetodo").val("1");
                     $("#currentTeo").show();
-                }
+                }*/
                 
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) { 

@@ -45,19 +45,35 @@
             
             $(function(){
                 
-                    
-                <c:choose>
+                setForms(${elegirMetodo});
+                <%--<c:choose>
                     <c:when test="${elegirMetodo=='1'}">
                         $("#metodosDiv").show();
+                        $('#stSustLeibDiv').show();
+                        $('#jaxButtonsDiv').show();
+                        $('#BtnLimpiar').show();
+                        $('#BtnInferir').show();
                         $("#inferForm").hide();
+                    </c:when>
+                    <c:when test="${elegirMetodo=='2'}">
+                        $("#metodosDiv").show();
+                        $("#inferForm").show();
+                        $('#BtnInferir').hide();
+                        $('#BtnLimpiar').hide();
+                        $('#jaxButtonsDiv').hide();
+                        $('#stSustLeibDiv').hide();
                     </c:when>
                     <c:otherwise>
                         $("#selectTeoInicial").val("0");
+                        $('#stSustLeibDiv').show();
+                        $('#jaxButtonsDiv').show();
+                        $('#BtnLimpiar').show();
+                        $('#BtnInferir').show();
                         $("#inferForm").show();
                         $("#metodosDiv").hide();
                         $("#currentTeo").hide();
                     </c:otherwise>
-                </c:choose>
+                </c:choose>--%>
                     
                     
                 $("#metodosDemostracion").change(function(){
@@ -634,11 +650,11 @@ for categorias
               <input name="nuevoMetodo" id="nuevoMetodo_id" value='' style="display: none;"/>
               <div class="row justify-content-center">
               <div class="col-10">
-               <div class="row justify-content-center">
+               <div id="jaxButtonsDiv" class="row justify-content-center">
                   <c:set var="collapse" value="" scope="request"/>
                   <tiles:insertDefinition name="jaxButtons" />
                </div>
-              <div class="row justify-content-center">
+              <div id="stSustLeibDiv" class="row justify-content-center">
               <div class="col-l-2" style="padding-left: 5px; padding-right: 5px;">
                <div class="form-group card text-center border-primary">
 	         <div class="card-header" style="padding-bottom: 2px; padding-top: 2px;">
