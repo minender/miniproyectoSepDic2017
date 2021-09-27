@@ -67,7 +67,6 @@ public class TypedApp extends App implements TypedTerm{
             }
             catch (ClassCastException e)
             {
-                e.printStackTrace();
                 throw new TypeVerificationException();
             }
         }
@@ -102,13 +101,11 @@ public class TypedApp extends App implements TypedTerm{
                 throw new TypeVerificationException();
             }
         }
-        else if (t1 instanceof TypedU || (t1Type instanceof Const && t1Type.toString().equals("U"))){
+        /*else if (t1 instanceof TypedU || (t1Type instanceof Const && t1Type.toString().equals("U"))){
             ;
-        }
+        }*/
         else
-        {
             throw new TypeVerificationException();
-        }
     }
     
     public Term type()
@@ -124,10 +121,10 @@ public class TypedApp extends App implements TypedTerm{
             Term op2 = ((App)((App)qType).p).p; // incluir paridad aqui
             return new App(new App(op2, t2),t1);
         }
-        else if (pType.toString().equals("U") || pType.toString().equals("U"))
+        /*else if (pType.toString().equals("U") || pType.toString().equals("U"))
         {
             return new Const("U");
-        }
+        }*/
         else
         {
            Term pIzq = ((App)pType).q; //((App)((App)pType).p).q;

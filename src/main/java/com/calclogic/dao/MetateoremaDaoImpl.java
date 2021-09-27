@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
  *
  * @author miguel
  */
-
 @Repository
 public class MetateoremaDaoImpl implements MetateoremaDAO {
         

@@ -825,9 +825,18 @@ public class InferResponse {
         String clickeable,
         Boolean isRootTeorem
     ) {        
-
-        // If we're printing a root teorem, print it as a teorem. 
-
+ 
+        // siempre que el metodo sea vacio o se este esperando un metodo, hay 
+        // que pedirlo, salvo cuando no se haya terminado la primera prueba de
+        // un metodo binario
+        if (isRootTeorem && metodo == null)
+          cambiarMetodo = "1";
+        else if (isRootTeorem && InferController.isWaitingMethod(metodo)) 
+          cambiarMetodo = "2";
+        else if(isRootTeorem)
+          cambiarMetodo ="0";
+        
+        // If we're printing a root teorem, print it as a teorem.
         if (isRootTeorem) {
             this.setHistorial("");
             try {
@@ -869,7 +878,7 @@ public class InferResponse {
         // if not, just print the expression we're going to proof.
         //else {
         boolean recursive = false;
-        if (counterRecip) 
+        if (counterRecip || andIntroduction) 
             recursive = true;
         else if (direct) 
             header += "By direct method<br>";
@@ -1043,8 +1052,8 @@ public class InferResponse {
             }
             header+="By counter-reciprocal method, the following must proved:<br>"+statement+"Sub Proof:<br>";
             if (metodo instanceof App) {
-                if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) && 
-                     InferController.isBaseMethod(((App)metodo).q)
+                if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
+                     // InferController.isBaseMethod(((App)metodo).q)
                    )
                     typedTerm = ((App)typedTerm).q;
                 generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
@@ -1053,9 +1062,63 @@ public class InferResponse {
             else
                 this.setHistorial(header);
         }
-        else if (andIntroduction)
-            setAIProof(user, formula, nTeo, typedTerm, valida, labeled, metodo, resuelveManager, disponeManager, s);
-        else if (naturalDirect)
+        else if (andIntroduction) {
+            //setAIProof(user, formula, nTeo, typedTerm, valida, labeled, metodo, resuelveManager, disponeManager, s);
+            String statement = "";
+            Term newFormula = ((App)formula).q;
+            try {
+               statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                                       + "$</center>";
+            }
+            catch (Exception e) {
+                lado = "0";
+                return;
+            }
+            header+="By And Introduction method:<br>Statement 1:<br>"+statement+"Sub Proof:<br>";
+            if (metodo instanceof Const) 
+            {
+               historial = header;
+            }
+            else if ( ((App)metodo).p instanceof Const  ) {
+               generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+                                 resuelveManager, disponeManager, s, clickeable, false);
+               if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))) 
+                   cambiarMetodo = "0";
+               else {
+                   if (!clickeable.equals("n"))
+                       cambiarMetodo = "0"; 
+                   newFormula = ((App)((App)formula).p).q;
+                   try {
+                     statement = "<center>$" + clickeableST(newFormula, clickeable, new Const("AI"), false, s) 
+                                       + "$</center>";
+                   }catch (Exception e) {
+                      lado = "0";
+                      return;
+                   }
+                   historial += "Statement 2:<br>"+statement+"Sub Proof:<br>";
+               }
+            }
+            else{
+               generarHistorial(user, newFormula, header, nTeo,
+                                (InferController.isAIProof2Started(metodo)?((App)typedTerm).q:typedTerm), 
+                                 valida, labeled, ((App)((App)metodo).p).q, resuelveManager, disponeManager, 
+                                 s, clickeable, false);
+               newFormula = ((App)((App)formula).p).q;
+               try {
+                     statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                                       + "$</center>";
+                   }catch (Exception e) {
+                      lado = "0";
+                      return;
+                   }
+               header = historial + "Statement 2:<br>"+statement+"Sub Proof:<br>";
+               historial = "";
+               Term newTypedTerm = null;
+               newTypedTerm = InferController.getSubProof(typedTerm, metodo);
+               generarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)metodo).q, 
+                                 resuelveManager, disponeManager, s, clickeable, false);
+            }
+        } else if (naturalDirect)
             ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
         else if (naturalSide)
             ; //setDirectProof(user, translateToOneSide(typedTerm), resuelveManager, disponeManager, s, true);
@@ -1267,14 +1330,14 @@ public class InferResponse {
     		header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
     	}
 
-        if (!andIntroduction && !recursive)
-    	    this.setHistorial(header+"<center>$" +this.getHistorial()+"</center>");
-        else if (!andIntroduction && recursive)
+        if (/*!andIntroduction &&*/ !recursive)
+    	    historial = header+"<center>$" +historial+"</center>";
+        else if (/*!andIntroduction &&*/ recursive)
             ;
-        else 
-    	    this.setHistorial(header +this.getHistorial());
+        //else 
+    	//    this.setHistorial(header +this.getHistorial());
     	if (!valida)
-    		this.setHistorial(this.getHistorial()+"$$\\text{No valid inference}$$");
+    		historial = historial+"$$\\text{No valid inference}$$";
 
     	//this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");        
     }

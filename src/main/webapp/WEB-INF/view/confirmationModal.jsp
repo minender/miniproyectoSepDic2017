@@ -153,7 +153,7 @@
 			$("#selectTeoInicial").val("0");
 
 			// sets the body of the modal
-			let message = 'Select the side where the demo will start.';
+			let message = 'Select the side where the proof will start.';
 			setModalBody(message);
 
 			$("#metodosDiv").hide();
@@ -215,7 +215,7 @@
 			$('#input_cases').removeClass('d-none');
 
 		} else if (this.selectedMethod === "AI") { // and introduction method
-
+                    
 			$("#metodosDiv").hide();
 			$("#currentTeo").hide();
 			iniAndI();

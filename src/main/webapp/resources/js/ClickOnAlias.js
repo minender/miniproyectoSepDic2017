@@ -216,8 +216,10 @@ function automaticSubst(){
                            cleanMathJax("substitutionButtonsId."+freeVars[k]);
                            inferRecoverC(data.sustFormatC[k], data.sustLatex[k], "substitutionButtonsId."+freeVars[k]);
                           }
-                          else
+                          else {
                            cleanMathJax("substitutionButtonsId."+freeVars[k]);
+                           cleanParserString("substitutionButtonsId."+freeVars[k]);
+                          }
                        // $('#showInstantiation').html('$'+data.sustFormatC[0]+','+data.sustFormatC[1]+'$');
                        //$('#showInstantiation').html('$'+data.sustLatex[0]+','+data.sustLatex[1]+'$');
                        //MathJax.Hub.Typeset();
@@ -244,7 +246,6 @@ function teoremaInicialMD(teoid){
         dataType: 'json',
         data: data,
         success: function(data) {
-
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
             setForms("0");
@@ -406,7 +407,7 @@ function transMethod(/*teoid*/){
         data: data,
         success: function(data) {
             if(data.lado === "0"){
-                alert("El teorema seleccionado no aplica para el metodo Transitivity.");
+                alert("The Transitivity method cannot be used in the selected theorem.");
                 $("#metodosDiv").show();
             }
             else{
@@ -435,7 +436,6 @@ function transMethod(/*teoid*/){
 
 function iniAndI(){
     var data = {};
-
     var form = $('#inferForm');
 
     $.ajax({
@@ -447,7 +447,6 @@ function iniAndI(){
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
             $("#metodosDiv").show();
-
             // save new nSol created.
             var nSol = $(form).attr('action').split('/').pop();
 
