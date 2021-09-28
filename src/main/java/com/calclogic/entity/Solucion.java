@@ -202,16 +202,16 @@ public class Solucion implements java.io.Serializable {
                 return 0;
             }
             if ( (
-                  !metodo.equals("Weakening") && !metodo.equals("Strengthening") &&
-                  !metodo.equals("Transitivity") &&
+                  !metodo.equals("WE") && !metodo.equals("ST") &&
+                  !metodo.equals("TR") &&
                   typedTerm instanceof App && ((App)typedTerm).p.containTypedA()
                  ) 
                  ||
                   // next line check if is a no one step proof 
                  (
-                   (metodo.equals("Weakening") || 
-                    metodo.equals("Strengthening") || 
-                    metodo.equals("Transitivity")
+                   (metodo.equals("WE") || 
+                    metodo.equals("ST") || 
+                    metodo.equals("TR")
                    ) 
                     &&
                    (
@@ -226,9 +226,9 @@ public class Solucion implements java.io.Serializable {
                  )
                )
             {
-                if ((metodo.equals("Weakening") || 
-                     metodo.equals("Strengthening") ||
-                     metodo.equals("Transitivity")
+                if ((metodo.equals("WE") || 
+                     metodo.equals("ST") ||
+                     metodo.equals("TR")
                     ) 
                     && 
                     !(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='t')    

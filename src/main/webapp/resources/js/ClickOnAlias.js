@@ -38,6 +38,38 @@ function clickAlias(Math1,alias,valorAlias)
     };   
 }
 
+function setForms(elegirMetodo) {
+
+    if (elegirMetodo=='1') {
+        $("#metodosDemostracion").val("0");
+        $("#metodosDiv").show();
+        $('#stSustLeibDiv').show();
+        $('#jaxButtonsDiv').show();
+        $('#BtnLimpiar').show();
+        $('#BtnInferir').show();
+        $("#inferForm").hide();
+        $("#selectTeoInicial").val("1"); // yo no se si todavia esto hace falta
+    } else if (elegirMetodo=='2') {
+        $("#metodosDemostracion").val("0");
+        $("#metodosDiv").show();
+        $("#inferForm").show();
+        $('#BtnInferir').hide();
+        $('#BtnLimpiar').hide();
+        $('#jaxButtonsDiv').hide();
+        $('#stSustLeibDiv').hide();
+        $("#selectTeoInicial").val("1");
+    } else {
+        $("#selectTeoInicial").val("0");
+        $('#stSustLeibDiv').show();
+        $('#jaxButtonsDiv').show();
+        $('#BtnLimpiar').show();
+        $('#BtnInferir').show();
+        $("#inferForm").show();
+        $("#metodosDiv").hide();
+        $("#currentTeo").hide();
+    }
+}
+
 function teoremaClickeableMD(/*teoId*/){
     
     var data = {};
@@ -59,8 +91,6 @@ function teoremaClickeableMD(/*teoId*/){
             }
         }
     });
-    
-    
 }
 
 function teoremaClickeablePL(/*teoId*/){
@@ -84,8 +114,6 @@ function teoremaClickeablePL(/*teoId*/){
             }
         }
     });
-    
-    
 }
 
 function showInstantiation(){
@@ -188,8 +216,10 @@ function automaticSubst(){
                            cleanMathJax("substitutionButtonsId."+freeVars[k]);
                            inferRecoverC(data.sustFormatC[k], data.sustLatex[k], "substitutionButtonsId."+freeVars[k]);
                           }
-                          else
+                          else {
                            cleanMathJax("substitutionButtonsId."+freeVars[k]);
+                           cleanParserString("substitutionButtonsId."+freeVars[k]);
+                          }
                        // $('#showInstantiation').html('$'+data.sustFormatC[0]+','+data.sustFormatC[1]+'$');
                        //$('#showInstantiation').html('$'+data.sustLatex[0]+','+data.sustLatex[1]+'$');
                        //MathJax.Hub.Typeset();
@@ -216,13 +246,13 @@ function teoremaInicialMD(teoid){
         dataType: 'json',
         data: data,
         success: function(data) {
-
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
-            $('#inferForm').show();
+            setForms("0");
+            //$('#inferForm').show();
             //$("#nuevoMetodo").val("1");
             //$('#teoremaInicial').val(teoid);
-            $("#selectTeoInicial").val("0");
+            $("#selectTeoInicial").val("0"); // esto no creo que siga haciendo falta
             $(".teoIdName").css({"cursor":"","color":""});
             $(".operator").css({"cursor":"pointer","color":"#08c"});
             $("#currentTeo").hide();
@@ -262,7 +292,8 @@ function CRMethod(/*teoid*/){
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
                 //$('#teoremaInicial').val(teoid + "@" + data.lado);
-                $("#inferForm").show();
+                setForms(data.cambiarMetodo);
+                //$("#inferForm").show();
                 //$("#nuevoMetodo").val("1");
                 var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
                 if(nSol==="new"){
@@ -301,7 +332,8 @@ function metodoD(/*teoid*/){
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
                 //$('#teoremaInicial').val(teoid + "@" + data.lado);
-                $("#inferForm").show();
+                //$("#inferForm").show();
+                setForms("0");
                 //$("#nuevoMetodo").val("1");
                 var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
                 if(nSol==="new"){
@@ -341,7 +373,8 @@ function metodoF(/*teoid*/){
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
                 //$('#teoremaInicial').val(teoid + "@" + data.lado);
-                $("#inferForm").show();
+                //$("#inferForm").show();
+                setForms("0");
                 //$("#nuevoMetodo").val("1");
                 var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
                 if(nSol==="new"){
@@ -374,14 +407,15 @@ function transMethod(/*teoid*/){
         data: data,
         success: function(data) {
             if(data.lado === "0"){
-                alert("El teorema seleccionado no aplica para el metodo Transitivity.");
+                alert("The Transitivity method cannot be used in the selected theorem.");
                 $("#metodosDiv").show();
             }
             else{
                 $('#formula').html(data.historial);
                 MathJax.Hub.Typeset();
                 //$('#teoremaInicial').val(teoid + "@" + data.lado);
-                $("#inferForm").show();
+                //$("#inferForm").show();
+                setForms("0");
                 //$("#nuevoMetodo").val("1");
                 var nSol =  $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
                 if(nSol==="new"){
@@ -402,7 +436,6 @@ function transMethod(/*teoid*/){
 
 function iniAndI(){
     var data = {};
-
     var form = $('#inferForm');
 
     $.ajax({
@@ -414,7 +447,6 @@ function iniAndI(){
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
             $("#metodosDiv").show();
-
             // save new nSol created.
             var nSol = $(form).attr('action').split('/').pop();
 
@@ -424,11 +456,10 @@ function iniAndI(){
                $(form).attr('action',url);
             }
         },
-        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
             alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
         }
     });
-
 }
 
 function clickTeoremaInicial(teoid)
