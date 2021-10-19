@@ -5,7 +5,7 @@ import com.calclogic.entity.Teorema;
 import java.util.List;
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Teorema". 
  *
  * That table has all the theorems that have been added to the

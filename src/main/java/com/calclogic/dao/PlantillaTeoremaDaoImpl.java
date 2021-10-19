@@ -24,7 +24,7 @@ public class PlantillaTeoremaDaoImpl implements PlantillaTeoremaDAO {
 
     /**
      * Method to get a PlantillaTeorema object by its principal key.
-     * @param id Is the principal key of the MostrarCategoria object.
+     * @param id Is the principal key of the PlantillaTeorema object.
      */
     @Override
     @Transactional

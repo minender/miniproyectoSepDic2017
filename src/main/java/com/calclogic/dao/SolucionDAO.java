@@ -4,7 +4,7 @@ import com.calclogic.entity.Solucion;
 import java.util.List;
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Solucion". 
  *
  * The entries of that table has the solutions (or attempted solutions)

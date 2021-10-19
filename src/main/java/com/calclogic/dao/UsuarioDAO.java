@@ -4,7 +4,7 @@ import java.util.List;
 import com.calclogic.entity.Usuario;
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Usuario". 
  *
  * That table has all the users who have registered in the system,

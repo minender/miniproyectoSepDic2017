@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * This interface is the use of the "PredicadoDAO" 
- * api in this application.
+ * API in this application.
  * 
  * @author miguel
  */

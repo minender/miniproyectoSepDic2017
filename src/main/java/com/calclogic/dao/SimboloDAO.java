@@ -3,7 +3,7 @@ import com.calclogic.entity.Simbolo;
 import java.util.List;
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Simbolo". 
  *
  * That table has all the operators and constants along with 

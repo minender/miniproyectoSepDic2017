@@ -13,6 +13,7 @@
    </definition>
    <definition name="jaxDiv" template="/WEB-INF/view/jaxDiv.jsp">
    </definition>
+   <!--  Validar comentario: Campo de sustitución y de Leibniz-->
    <definition name="jaxSubstitutionDiv" template="/WEB-INF/view/jaxSubstitutionDiv.jsp">
    </definition>
    <definition name="perfil" extends="template">

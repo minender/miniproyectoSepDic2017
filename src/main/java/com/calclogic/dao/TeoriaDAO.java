@@ -4,7 +4,7 @@ import com.calclogic.entity.Teoria;
 import java.util.List;
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Teoria". 
  *
  * That entries of that table group Simbolo, Teorema and Metateorema
