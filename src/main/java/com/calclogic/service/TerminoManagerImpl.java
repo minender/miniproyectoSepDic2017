@@ -26,8 +26,8 @@ public class TerminoManagerImpl implements TerminoManager{
 
     @Autowired
     private TerminoDAO terminoDAO;
-    @Autowired
-    private PublicacionDAO publicacionDAO;
+    //@Autowired
+    //private PublicacionDAO publicacionDAO;
     
     @Override
     @Transactional
@@ -36,14 +36,14 @@ public class TerminoManagerImpl implements TerminoManager{
         terminoDAO.addTermino(termino);
     }
     
-    @Override
+    /*@Override
     @Transactional
     public void addPublicacion(Termino termino,Publicacion publicacion)
     {
         //publicacionDAO.addPublicacion(publicacion);
         terminoDAO.addTermino(termino);
         publicacionDAO.addPublicacion(publicacion);
-    }
+    }*/
 
     @Override
     @Transactional
@@ -51,7 +51,7 @@ public class TerminoManagerImpl implements TerminoManager{
         terminoDAO.deleteTermino(id);
     }
     
-    @Override
+/*    @Override
     @Transactional
     public void deletePublicacion(TerminoId id){
         PublicacionId publicacionid = new PublicacionId(id.getAlias(),id.getLogin());
@@ -59,6 +59,7 @@ public class TerminoManagerImpl implements TerminoManager{
         id.setLogin("publico");
         terminoDAO.deleteTermino(id);
     }
+  */
     
     @Override
     @Transactional
@@ -80,7 +81,7 @@ public class TerminoManagerImpl implements TerminoManager{
         terminoDAO.addTermino(termino);
     }
     
-    public Publicacion getPublicacion(PublicacionId id)
+/*    public Publicacion getPublicacion(PublicacionId id)
     {
         Publicacion publicacion = publicacionDAO.getPublicacion(id);
         TerminoId terminoid = new TerminoId(id.getAlias(),"publico");
@@ -88,6 +89,7 @@ public class TerminoManagerImpl implements TerminoManager{
         
         return publicacion;
     }
+  */
     
     @Override
     @Transactional    
@@ -152,7 +154,7 @@ public class TerminoManagerImpl implements TerminoManager{
         return terms;
     }
     
-    @Override
+/*    @Override
     @Transactional
     public List<Termino> getAllPublicaciones(String username)
     {
@@ -169,6 +171,7 @@ public class TerminoManagerImpl implements TerminoManager{
         
         return terms;
     }
+  */
     
     @Override
     @Transactional

@@ -848,7 +848,7 @@ public class InferResponse {
                 lado = "0";
                 return ;
             }
-        } 
+        }
         
         boolean naturalDirect = false;
         boolean naturalSide = false;

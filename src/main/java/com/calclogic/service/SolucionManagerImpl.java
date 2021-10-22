@@ -27,8 +27,8 @@ public class SolucionManagerImpl implements SolucionManager {
     @Autowired
     private SolucionDAO solucionDAO;
     
-    @Autowired
-    private CombUtilities combUtilities;
+    //@Autowired
+    //private CombUtilities combUtilities;
     
     
     @Override
@@ -81,7 +81,7 @@ public class SolucionManagerImpl implements SolucionManager {
     public Solucion getSolucion(int id){
         Solucion solucion = solucionDAO.getSolucion(id);
         if (!solucion.getDemostracion().equals(""))
-            solucion.setTypedTerm(combUtilities.getTerm(solucion.getDemostracion()));
+            solucion.setTypedTerm(CombUtilities.getTerm(solucion.getDemostracion()));
         else // case when all the proof was erased by the go back button
             solucion.setTypedTerm(null);
         return solucion;
@@ -94,7 +94,7 @@ public class SolucionManagerImpl implements SolucionManager {
         List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelveId);
         for (Solucion sol: sols)
             if (!sol.getDemostracion().equals(""))
-                sol.setTypedTerm(combUtilities.getTerm(sol.getDemostracion()));
+                sol.setTypedTerm(CombUtilities.getTerm(sol.getDemostracion()));
             else
                 sol.setTypedTerm(null);
         return sols;

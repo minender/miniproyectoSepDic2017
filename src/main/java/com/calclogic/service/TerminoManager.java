@@ -17,14 +17,14 @@ import java.util.List;
 public interface TerminoManager {
     
     public void addTermino(Termino termino);
-    public void addPublicacion(Termino termino,Publicacion publicacion);
+//    public void addPublicacion(Termino termino,Publicacion publicacion);
     public void deleteTermino(TerminoId id);
-    public void deletePublicacion(TerminoId id);
+//    public void deletePublicacion(TerminoId id);
     public void modificarTermino(Termino termino);
     public void modificarAlias(TerminoId anterior, TerminoId nuevo);
     public Termino getTermino(TerminoId id);
     public Termino getCombinador(String username, String comb);
     public List<Termino> getAllTerminos();
     public List<Termino> getAllTerminos(String username);
-    public List<Termino> getAllPublicaciones(String username);
+//    public List<Termino> getAllPublicaciones(String username);
 }

@@ -28,8 +28,8 @@ public class PredicadoManagerImpl implements PredicadoManager {
     @Autowired
     private PredicadoDAO predicadoDAO;
     
-    @Autowired
-    private CombUtilities combUtilities;
+    //@Autowired
+    //private CombUtilities combUtilities;
     
     
     @Override
@@ -51,7 +51,7 @@ public class PredicadoManagerImpl implements PredicadoManager {
         Predicado p=predicadoDAO.getPredicado(id);
         if(p!=null)
         {
-            p.setTerm(combUtilities.getTerm(p.getPredicado()));    
+            p.setTerm(CombUtilities.getTerm(p.getPredicado()));    
         }
         return  p;
     }
@@ -60,7 +60,7 @@ public class PredicadoManagerImpl implements PredicadoManager {
         Predicado t=predicadoDAO.getPredicado(username, comb);
         if(t != null)
         {
-            t.setTerm(combUtilities.getTerm(t.getPredicado()));    
+            t.setTerm(CombUtilities.getTerm(t.getPredicado()));    
             return t;
         }
         
@@ -97,7 +97,7 @@ public class PredicadoManagerImpl implements PredicadoManager {
         {
             for(Predicado pre: pres) {
                 String[] args = pre.getArgumentos().split(",");
-                Term aux = combUtilities.getTerm(pre.getPredicado());
+                Term aux = CombUtilities.getTerm(pre.getPredicado());
                 for (int i=0; i < args.length; i++) 
                     aux=new App(aux,new Var(args[i].split("@")[0].trim().charAt(0)));
                 aux = aux.evaluar();
