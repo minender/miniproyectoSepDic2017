@@ -192,7 +192,17 @@
 			this.selectedMethod = 1;
 			closeModal();
 
-		}  else if (this.selectedMethod === "CR") { // weakening method
+		}
+                else if (this.selectedMethod === "CO") { // weakening method
+			
+			$("#selectTeoInicial").val("0");
+			COMethod();
+
+			this.selectedMethod = null;
+			closeModal();
+
+		}
+                else if (this.selectedMethod === "CR") { // weakening method
 			
 			$("#selectTeoInicial").val("0");
 			$("#metodosDiv").hide();

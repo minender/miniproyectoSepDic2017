@@ -853,6 +853,7 @@ public class InferResponse {
         boolean naturalDirect = false;
         boolean naturalSide = false;
         boolean counterRecip = false;
+        boolean contradiction = false;
         boolean oneSide = false;
         boolean direct = false;
         boolean weakening = false;
@@ -865,6 +866,7 @@ public class InferResponse {
            naturalDirect = metodo.toStringFinal().equals("ND DM");
            naturalSide = metodo.toStringFinal().equals("ND SS");
            counterRecip = metodo.toStringFinal().substring(0, 2).equals("CR");
+           contradiction = metodo.toStringFinal().substring(0, 2).equals("CO");
            oneSide = metodo.toStringFinal().equals("SS");
            direct = metodo.toStringFinal().equals("DM");
            weakening = metodo.toStringFinal().equals("WE");
@@ -878,7 +880,7 @@ public class InferResponse {
         // if not, just print the expression we're going to proof.
         //else {
         boolean recursive = false;
-        if (counterRecip || andIntroduction) 
+        if (counterRecip || contradiction || andIntroduction) 
             recursive = true;
         else if (direct) 
             header += "By direct method<br>";
@@ -1051,6 +1053,31 @@ public class InferResponse {
                 return;
             }
             header+="By counter-reciprocal method, the following must proved:<br>"+statement+"Sub Proof:<br>";
+            if (metodo instanceof App) {
+                if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
+                     // InferController.isBaseMethod(((App)metodo).q)
+                   )
+                    typedTerm = ((App)typedTerm).q;
+                generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+                                 resuelveManager, disponeManager, s, clickeable, false);
+            }
+            else
+                this.setHistorial(header);
+        }
+        else if (contradiction) {
+            Term newFormula = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),formula)); 
+            String statement = "";
+            try {
+               statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                                  + "$</center>";
+            }
+            catch (Exception e) {
+                Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
+                lado = "0";
+                return;
+            }
+            
+            header+="By contradiction method, the following must proved:<br>"+statement+"Sub Proof:<br>";
             if (metodo instanceof App) {
                 if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
                      // InferController.isBaseMethod(((App)metodo).q)

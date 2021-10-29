@@ -821,6 +821,40 @@ public class InferController {
     }
     
     /**
+     * This function will only be correct if called when using Counter-Reciprocal method
+     * This function will return a new prove tree in case it finds out that the last infer of prove
+     * caused the whole prove to be correct under the sub proof method. In other case it will return 
+     * the proof given as argument.
+     * 
+     * Do the last step using axiom p => q == !q => !p to finish the Counter-Reciprocal proof
+     * @param teoremProved: The theorem that user is trying to prove 
+     * @param proof: The proof tree so far
+     * @return proof of theoremProved if finished, else return the same proof
+     */
+    private Term finishedContradictionProve(Term teoremProved, Term proof) {
+       try {
+         String str1 = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
+         Term st1 = CombUtilities.getTerm(str1);
+         String str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
+         Term st2 = CombUtilities.getTerm(str2);
+         List<Var> vars = new ArrayList<Var>();
+         List<Term> terms = new ArrayList<Term>();
+         vars.add(0, new Var(112));
+         terms.add(0, teoremProved);
+         Sust sus = new Sust(vars, terms);
+         TypedA A1 = new TypedA(st1);
+         TypedA A2 = new TypedA(st2);
+         TypedI I = new TypedI(sus);
+         return new TypedApp(new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2)),proof);
+             
+       }catch (TypeVerificationException e)  {
+          Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
+       }
+       
+       return proof;
+    }
+    
+    /**
      * This function will only be correct if called when using And Introduction method
      * This function will return a new prove tree that connect in one proof of P/\Q, 
      * two independent sub proofs of P and Q.
@@ -1993,6 +2027,10 @@ public class InferController {
             
             return initStatement(beginFormula, ((App)method).q);
         }
+        else if ( ((App)method).p.toStringFinal().equals("CO") ) {
+            beginFormula = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),beginFormula));
+            return initStatement(beginFormula, ((App)method).q);
+        }
         // hay que poner else if para los otros metodos recursivos unarios
         else if ( ((App)method).p.toStringFinal().substring(0, 2).equals("AI") ) {
             if ( ((App)method).p instanceof Const ) {
@@ -2450,6 +2488,9 @@ public class InferController {
             if (isFinalSolution) {
                 if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("CR")) {
                    finalProof = finishedCounterRecProve(formulasToProof.pop(), finalProof);
+                }
+                else if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("CO")) {
+                   finalProof = finishedContradictionProve(formulasToProof.pop(), finalProof); 
                 }
                 else if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("AI")) {
                    isFinalSolution = false;
@@ -3329,6 +3370,42 @@ public class InferController {
         response.setCambiarMetodo("0");
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
+
+        return response;
+    }
+    
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementCO", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse iniStatementCO(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    {   
+        String nuevoMetodo = "CO";
+        InferResponse response = new InferResponse();
+        
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        
+        Term metodoTerm = null;
+        Solucion solucion = null;
+        if (nSol.equals("new"))
+        {
+          metodoTerm = new Const(nuevoMetodo);
+          solucion = new Solucion(resuelve,false,null, nuevoMetodo);
+          solucionManager.addSolucion(solucion);
+          response.setnSol(solucion.getId()+"");
+        }
+        else
+        {   
+          solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+          metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
+          nuevoMetodo = metodoTerm.toStringFinal();
+          solucion.setMetodo(nuevoMetodo);
+          solucionManager.updateSolucion(solucion);
+        }
+        
+        response.generarHistorial(username,formulaAnterior, nTeo,solucion.getTypedTerm(),true,false,metodoTerm,
+                                      resuelveManager,disponeManager,simboloManager);
+        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
+        response.setHistorial(historial);  */
+        response.setCambiarMetodo("2");
 
         return response;
     }
