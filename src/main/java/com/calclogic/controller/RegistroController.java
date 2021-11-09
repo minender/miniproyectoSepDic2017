@@ -80,9 +80,9 @@ public class RegistroController {
                 user = new Usuario(registro.getLogin(), registro.getNombre(), 
                                            registro.getApellido(), registro.getCorreo(), 
                                            pass, materia, false);
+                usuarioManager.addUsuario(user);
                 /**
                 List<Resuelve> resuelves = resuelveManager.getAllResuelveByUser("AdminTeoremas");
-                usuarioManager.addUsuario(user);
                 for(Resuelve resuelve : resuelves){
                     resuelve.setUsuario(user);
                     resuelveManager.addResuelve(resuelve);
