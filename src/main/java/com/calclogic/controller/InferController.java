@@ -183,6 +183,13 @@ public class InferController {
             return "redirect:/index";
         }
         Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        if (resuel == null) {
+            resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo);
+            Usuario user = usuarioManager.getUsuario(username);
+            resuel.setUsuario(user);
+            //resuel.setResuelto(false);
+            resuel = resuelveManager.addResuelve(resuel);
+        }
         Term formula = resuel.getTeorema().getTeoTerm();
         String solId = "new";
         if (resuel.getDemopendiente() != -1)
