@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.calclogic.service;
 
 import com.calclogic.dao.PublicacionDAO;
@@ -18,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.SerializationUtils;
 
 /**
+ * This class has the implementation of "TerminoManager" queries.
  *
  * @author federico
  */
@@ -29,6 +26,11 @@ public class TerminoManagerImpl implements TerminoManager{
     @Autowired
     private PublicacionDAO publicacionDAO;
     
+    /** 
+     * Adds a new term to the table.
+     * @param termino The new term to be added.
+     * @return Nothing.
+     */
     @Override
     @Transactional
     public void addTermino(Termino termino)
@@ -36,6 +38,9 @@ public class TerminoManagerImpl implements TerminoManager{
         terminoDAO.addTermino(termino);
     }
     
+    /** 
+	 * >>> Deprecated, since the Publicacion table must be removed.
+     */
     @Override
     @Transactional
     public void addPublicacion(Termino termino,Publicacion publicacion)
@@ -45,12 +50,20 @@ public class TerminoManagerImpl implements TerminoManager{
         publicacionDAO.addPublicacion(publicacion);
     }
 
+    /**
+     * Deletes one of the terms of the table.
+     * @param id Is the principal key of the term to delete.
+     * @return Nothing.
+     */ 
     @Override
     @Transactional
     public void deleteTermino(TerminoId id){
         terminoDAO.deleteTermino(id);
     }
     
+    /** 
+	 * >>> Deprecated, since the Publicacion table must be removed.
+     */
     @Override
     @Transactional
     public void deletePublicacion(TerminoId id){
@@ -60,6 +73,12 @@ public class TerminoManagerImpl implements TerminoManager{
         terminoDAO.deleteTermino(id);
     }
     
+    /**
+     * Updates one of the terms of the table.
+	 * It deletes the previous entry and adds a new one.
+     * @param termino Is the new term to be added.
+     * @return Nothing.
+     */ 
     @Override
     @Transactional
     public void modificarTermino(Termino termino){
@@ -67,6 +86,13 @@ public class TerminoManagerImpl implements TerminoManager{
         terminoDAO.addTermino(termino);
     }
     
+    /**
+     * Modifies the alias of a term.
+	 * It deletes the previous entry and adds a new one.
+     * @param anterior Is principal key of the term that will be deleted.
+	 * @param nuevo Is the principal key of the term that will be added.
+     * @return Nothing.
+     */ 
     @Override
     @Transactional
     public void modificarAlias(TerminoId anterior, TerminoId nuevo)
@@ -79,7 +105,10 @@ public class TerminoManagerImpl implements TerminoManager{
         termino.setTermObject(aux);
         terminoDAO.addTermino(termino);
     }
-    
+
+    /** 
+	 * >>> Deprecated, since the Publicacion table must be removed.
+     */
     public Publicacion getPublicacion(PublicacionId id)
     {
         Publicacion publicacion = publicacionDAO.getPublicacion(id);
@@ -89,6 +118,12 @@ public class TerminoManagerImpl implements TerminoManager{
         return publicacion;
     }
     
+    /**
+     * Method that parses returns a term given its principal key
+	 * If it does not find it in the table, it tries setting the current login first
+	 * as "publico" and then as "admin, just in case it is private.
+     * @param id Is the principal key of the term.
+     */
     @Override
     @Transactional    
     public Termino getTermino(TerminoId id){
@@ -118,6 +153,9 @@ public class TerminoManagerImpl implements TerminoManager{
         return t;
     }
     
+    /**
+     * Method to get a list of all the entries of the table (all the terms).
+     */
     @Override
     @Transactional
     public List<Termino> getAllTerminos(){
@@ -134,6 +172,10 @@ public class TerminoManagerImpl implements TerminoManager{
         return terms;
     }
     
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user.
+     * @param username Is the string with which the user logs in, and that we use to filter the search.
+     */
     @Override
     @Transactional
     public List<Termino> getAllTerminos(String username)
@@ -152,6 +194,9 @@ public class TerminoManagerImpl implements TerminoManager{
         return terms;
     }
     
+    /** 
+	 * >>> Deprecated, since the Publicacion table must be removed.
+     */
     @Override
     @Transactional
     public List<Termino> getAllPublicaciones(String username)
@@ -170,6 +215,14 @@ public class TerminoManagerImpl implements TerminoManager{
         return terms;
     }
     
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user,
+     * and that have a specific "combinador" attribute.
+	 * If it does not find it in the table, it tries setting the current login first
+	 * as "publico" and then as "admin, just in case it is private.
+     * @param username Is the string with which the user logs in, and that we use to filter the search.
+     * @param comb Is the "combinador" attribute used to filter the search.
+     */
     @Override
     @Transactional
     public Termino getCombinador(String username, String comb){

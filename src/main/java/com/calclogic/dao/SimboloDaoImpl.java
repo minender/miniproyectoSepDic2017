@@ -39,10 +39,10 @@ public class SimboloDaoImpl implements SimboloDAO {
     }
     
     /**
-     * This method let us Update the entry that corresponds to a symbol
-     * already stored. For example, to update the code that creates it.
+     * This method let us update the entry that corresponds to an already 
+     * stored symbol. For example, to update the code that creates it.
      * This query is made using standard Hibernate library functions.
-     * @param Simbolo Is the Predicado object to be updated.
+     * @param Simbolo Is the Simbolo object to be updated.
      * @return Nothing.
      */ 
     @Override   
@@ -68,9 +68,9 @@ public class SimboloDaoImpl implements SimboloDAO {
     }
     
     /**
-     * Method to get a Symbol object by its principal key.
+     * Method to get a Simbolo object by its principal key.
      * This query is made using standard Hibernate library functions.
-     * @param id Is the principal key of the Symbol object.
+     * @param id Is the principal key of the Simbolo object.
      */ 
     @Override
     @Transactional
@@ -80,7 +80,7 @@ public class SimboloDaoImpl implements SimboloDAO {
     
     /**
      * Method to get a list of all the entries of the table.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */  
     @Override
     @Transactional

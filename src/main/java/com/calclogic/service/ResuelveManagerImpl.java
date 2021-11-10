@@ -98,6 +98,11 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelves;
     }
     
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user, and also
+	 * establishes for each one if it is an axiom or not.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     */
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUserWithSol(String userLogin){
@@ -133,6 +138,13 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelves;
     }
     
+    /**
+     * Method to get a list of all the theorems of a specific user that are axioms
+     * or that were demonstrated without the use of the theorem that is passed as
+     * an argument.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teoNum Is the number of the theorem, used to filter the search.
+     */
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin,String teoNum){
@@ -168,6 +180,11 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelves;
     }
     
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user
+     * having solved the demonstration of a theorem.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     */
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUserResuelto(String userLogin){
@@ -183,12 +200,35 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelves;
     }
     
+    /**
+     * Method to get a list of all the entries of the table that correspond 
+     * to a specific theorem (Teorema object).
+     * @param teoremaID Is the principal key of the theorem used to filter the search.
+     */
     @Override
     @Transactional
     public List<Resuelve> getResuelveByTeorema(int teoremaID){
         return resuelveDAO.getResuelveByTeorema(teoremaID);
     }
-
+    
+    /**
+     * Method to get an entry that relates a user with a theorem, 
+     * using the statement of the theorem.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teo Is the statement of the theorem used to filter the search.
+     */
+    @Override
+    @Transactional
+    public Resuelve getResuelveByUserAndTeorema(String userLogin,String teo){
+		return resuelveDAO.getResuelveByUserAndTeorema(userLogin, teo);
+    }
+	
+    /**
+     * Method to get an entry that relates a user with a theorem, 
+     * using the identifier of the theorem.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teoremaID Is the principal key of the theorem used to filter the search.
+     */
     @Override
     @Transactional
     public Resuelve getResuelveByUserAndTeorema(String userLogin,int teoremaID){
@@ -200,12 +240,14 @@ public class ResuelveManagerImpl implements ResuelveManager {
         }
         return resuel;
     }
-    
-    @Override
-    @Transactional
-    public Resuelve getResuelveByUserAndTeorema(String userLogin,String teo){
-            return resuelveDAO.getResuelveByUserAndTeorema(userLogin, teo);
-    }
+	
+    /**
+     * Method to get an entry that relates a user with a theorem, 
+     * using the number of the theorem.
+	 * If it exists, it parses the string associated with the object.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teoNum Is the number of the theorem used to filter the search.
+     */
     @Override
     @Transactional
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum){

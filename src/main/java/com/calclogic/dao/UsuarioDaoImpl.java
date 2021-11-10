@@ -25,7 +25,7 @@ public class UsuarioDaoImpl implements UsuarioDAO  {
     /** 
      * Adds a new user to the table.
      * This query is made using standard Hibernate library functions.
-     * @param usuario The new usuario to be added.
+     * @param usuario The new user to be added.
      * @return Nothing.
      */
     @Override
@@ -61,7 +61,7 @@ public class UsuarioDaoImpl implements UsuarioDAO  {
 
     /**
      * Method to get a list of all the entries of the table (all the users).
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -83,7 +83,7 @@ public class UsuarioDaoImpl implements UsuarioDAO  {
     /**
      * Method to get a list of all entries of the table that represent students, that is,
      * users that are not administrators.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */        
     @Override
     public List<Usuario> getStudents(){

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.calclogic.service;
 import com.calclogic.dao.TeoremaDAO;
 import com.calclogic.dao.ResuelveDAO;
@@ -20,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.SerializationUtils;
 
 /**
+ * This class has the implementation of "TeoremaManager" queries.
  *
  * @author miguel
  */
@@ -33,6 +30,11 @@ public class TeoremaManagerImpl implements TeoremaManager {
     @Autowired
     private CombUtilities combUtilities;
 
+    /** 
+     * Adds a new theorem to the table.
+     * @param teorema The new theorem to be added.
+     * @return Nothing.
+     */
     @Override
     @Transactional
     public Teorema addTeorema(Teorema teorema) {
@@ -51,6 +53,11 @@ public class TeoremaManagerImpl implements TeoremaManager {
         return teorema;
     }
 
+	/**
+     * Deletes one of the theorems of the table.
+     * @param id Is the principal key of the theorem to delete.
+     * @return Nothing.
+     */ 
     @Override
     @Transactional
     public void deleteTeorema(int id) {
@@ -59,6 +66,11 @@ public class TeoremaManagerImpl implements TeoremaManager {
         teoremaDAO.deleteTeorema(id);
     }
 
+	/**
+     * Method to get a theorem by its principal key.
+	 * If it exists, it parses the string associated with the object.
+     * @param id Is the principal key of the theorem.
+     */
     @Override
     @Transactional
     public Teorema getTeorema(int id) {
@@ -69,6 +81,10 @@ public class TeoremaManagerImpl implements TeoremaManager {
         return teo;
     }
 
+    /**
+     * Method to get a list of all the entries of the table (all the theorems),
+	 * and parsing them in order to be used.
+     */
     @Override
     @Transactional
     public List<Teorema> getAllTeoremas() {
@@ -84,6 +100,10 @@ public class TeoremaManagerImpl implements TeoremaManager {
         return teoList;
     }
 
+    /**
+     * Method to get a theorem that corresponds to a statement, and then parsing it.
+     * @param enunciado Is the statement used to filter the search.
+     */
     @Override
     @Transactional
     public Teorema getTeoremaByEnunciados(String enunciado) {
@@ -94,6 +114,11 @@ public class TeoremaManagerImpl implements TeoremaManager {
         return teo;
     }
 
+    /**
+     * Method to get a list of theorems that correspond 
+	 * to a list of Resuelve objects, and then parsing them.
+     * @param resList Is the list of Resuelve objects used to filter the search.
+     */
     @Override
     @Transactional
     public List<Teorema> getTeoremaByResuelveList(List<Resuelve> resList) {
@@ -111,13 +136,26 @@ public class TeoremaManagerImpl implements TeoremaManager {
         return teoList;
     }
 
+    /**
+     * Auxiliar class to implement a method that compares two Resuelve objects.
+     */
     class ResuelveComparator implements Comparator<Resuelve> {
 
+		/**
+		 * Method that takes two Resuelve objects and returns the arithmetic difference
+		 * of the id's of their categories.
+		 * @param res1 Minuend of the difference.
+		 * @param res2 Subtrahend of the difference.
+		 */
         public int compare(Resuelve res1, Resuelve res2) {
             return res1.getCategoria().getId() - res2.getCategoria().getId();
         }
     }
 
+    /**
+     * Method to get a list of theorems that corresponds to a specific category.
+     * @param categoriaId Is the principal key of the category (Categoria object).
+     */
     @Override
     @Transactional
     public List<Teorema> getTeoremasByCategoria(int categoriaId) {

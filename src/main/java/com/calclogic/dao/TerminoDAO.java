@@ -11,7 +11,7 @@ import java.util.List;
  * have to do with the table "Termino". 
  *
  * That table has all the terms that have been added to the
- * application.
+ * application, indicating their respective owner users.
  *
  * @author federico
  */

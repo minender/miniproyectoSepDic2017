@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.calclogic.service;
 
 import com.calclogic.dao.SolucionDAO;
@@ -18,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.SerializationUtils;
 
 /**
+ * This class has the implementation of "SolucionManager" queries.
  *
  * @author miguel
  */
@@ -30,7 +27,13 @@ public class SolucionManagerImpl implements SolucionManager {
     @Autowired
     private CombUtilities combUtilities;
     
-    
+    /** 
+     * Adds a new Solucion object to the table, but it is only if all previous ones
+	 * for the same theorem where already completed. It is not possible to work in new solutions
+     * if there is an incomplete one.
+     * @param sol The new Solucion object to be added.
+     * @return Nothing.
+     */
     @Override
     @Transactional
     public void addSolucion(Solucion sol){        
@@ -45,8 +48,6 @@ public class SolucionManagerImpl implements SolucionManager {
             solucionDAO.addSolucion(sol);
     }
     
-    
-    
     /*@Override
     @Transactional
     public void addPaso(int solucionId, PasoInferencia paso){
@@ -55,6 +56,13 @@ public class SolucionManagerImpl implements SolucionManager {
         solucionDAO.updateSolucion(sol);
     }*/
     
+    /**
+     * Updates one of the Solucion objects of the table, and makes that the new part
+	 * has the structure established in this application.
+     * @param solucionId Is the principal key of the Solucion object to be updated
+	 * @param typedTerm Is the Term object that will be added to the demonstration.
+     * @return Nothing.
+     */   
     @Override
     @Transactional
     public void updateSolucion(int solucionId, Term typedTerm){
@@ -63,19 +71,32 @@ public class SolucionManagerImpl implements SolucionManager {
         solucionDAO.updateSolucion(sol);
     }
     
+    /**
+     * Updates one of the Solucion objects of the table.
+     * @param sol Is the Solucion object to be updated.
+     * @return Nothing.
+     */   
     @Override
     @Transactional
     public void updateSolucion(Solucion sol){
         solucionDAO.updateSolucion(sol);
     }
     
+    /**
+     * Deletes one of the Solucion objects of the table.
+     * @param id Is the principal key of the Solucion object to delete.
+     * @return Nothing.
+     */ 
     @Override
     @Transactional
     public void deleteSolucion(int id){
         solucionDAO.deleteSolucion(id);
     }
     
-    
+    /**
+     * Method to get a Solucion object by its principal key.
+     * @param id Is the principal key of the Solucion object.
+     */ 
     @Override
     @Transactional
     public Solucion getSolucion(int id){
@@ -87,7 +108,11 @@ public class SolucionManagerImpl implements SolucionManager {
         return solucion;
     }
     
-    
+    /**
+     * Method to get a list of all the entries of the table that correspond 
+     * to a specific Resuelve object.
+     * @param resuelveId Is the identifier of the Resuelve object used to filter the search.
+     */
     @Override
     @Transactional
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId){
@@ -100,7 +125,12 @@ public class SolucionManagerImpl implements SolucionManager {
         return sols;
     }
     
-    
+    /**
+     * Method to get a list of the identifiers of all the entries of the table 
+     * that correspond to a specific Resuelve object, including the incomplete solutions.
+     * @param resuelveId Is the identifier of the Resuelve object used to filter the search.
+	 * @return listaSoluciones A HashMap that relates the solutions names with their id's.
+     */
     @Override
     @Transactional
     public HashMap<String,Integer> getAllSolucionesIdByResuelve(int resuelveId){

@@ -1,8 +1,3 @@
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.calclogic.service;
 
 import com.calclogic.dao.SimboloDAO;
@@ -14,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * This class has the implementation of "SimboloManager" queries.
  *
  * @author jt
  */
@@ -24,7 +20,7 @@ public class SimboloManagerImpl implements SimboloManager {
     private SimboloDAO simboloDAO;
     private int propFunApp;
     private int termFunApp;
-    Simbolo[] symbolsCache;
+    Simbolo[] symbolsCache; 
     
     @Autowired
     public SimboloManagerImpl(SimboloDAO simboloDAO) {
@@ -50,7 +46,20 @@ public class SimboloManagerImpl implements SimboloManager {
     public String termFunAppSym() {
         return "c_{"+ termFunApp +"}";
     }
+	
+    public void setPropFunApp(int propFunApp) {
+        this.propFunApp = propFunApp;
+    }
     
+    public void setTermFunApp(int termFunApp) {
+        this.termFunApp = termFunApp;
+    }
+    
+    /** 
+     * Adds a new symbol (Simbolo object) to the table.
+     * @param simbolo The new symbol to be added.
+     * @return Nothing.
+     */
     @Override
     @Transactional
     public Simbolo addSimbolo(Simbolo simbolo){
@@ -62,7 +71,12 @@ public class SimboloManagerImpl implements SimboloManager {
         return simbolo;
     }
     
-    
+    /**
+     * This method let us update the entry that corresponds to an already 
+     * stored symbol. For example, to update the code that creates it.
+     * @param simbolo Is the Simbolo object to be updated.
+     * @return Nothing.
+     */ 
     @Override   
     @Transactional
     public void updateSimbolo(Simbolo simbolo){
@@ -73,12 +87,21 @@ public class SimboloManagerImpl implements SimboloManager {
         simboloDAO.updateSimbolo(simbolo);
     }
     
+    /**
+     * Deletes one of the symbols of the table.
+     * @param id Is the principal key of the symbol to delete.
+     * @return Nothing.
+     */ 
     @Override
     @Transactional
     public void deleteSimbolo(int id){
         simboloDAO.deleteSimbolo(id);
     }
     
+    /**
+     * Method to get a Simbolo object by its principal key.
+     * @param id Is the principal key of the Simbolo object.
+     */ 
     @Override
     @Transactional
     public Simbolo getSimbolo(int id){
@@ -88,6 +111,9 @@ public class SimboloManagerImpl implements SimboloManager {
             return null;
     }
     
+    /**
+     * Method to get a list of all the entries of the table.
+     */
     @Override
     @Transactional
     public List<Simbolo> getAllSimbolo(){
@@ -96,14 +122,6 @@ public class SimboloManagerImpl implements SimboloManager {
 //            if (i >= 9)
             list.add(symbolsCache[i]);
         return list;
-    }
-
-    public void setPropFunApp(int propFunApp) {
-        this.propFunApp = propFunApp;
-    }
-    
-    public void setTermFunApp(int termFunApp) {
-        this.termFunApp = termFunApp;
     }
     
 }

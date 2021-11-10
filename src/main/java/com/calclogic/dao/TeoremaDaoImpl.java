@@ -64,7 +64,7 @@ public class TeoremaDaoImpl implements TeoremaDAO {
 
     /**
      * Method to get a list of all the entries of the table (all the theorems).
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */
     @Override
     public List<Teorema> getAllTeoremas() {
@@ -74,7 +74,7 @@ public class TeoremaDaoImpl implements TeoremaDAO {
 
     /**
      * Method to get a theorem that corresponds to a statement.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param enunciado Is the statement used to filter the search.
      */
     @Override

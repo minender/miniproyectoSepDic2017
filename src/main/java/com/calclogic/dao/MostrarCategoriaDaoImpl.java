@@ -66,7 +66,7 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
     
     /**
      * Method to get a list of all the entries of the table.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */
     @Override
     @Transactional
@@ -76,7 +76,7 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
     
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param usuario Is the Usuario object used to filter the search.
      */
     @Override
@@ -87,7 +87,7 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
     
     /**
      * Method to get an entry of the table that relates a category to a user.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param categoria Is the Categoria object used to filter the search.
      * @param usuario Is the Usuario object used to filter the search.
      */

@@ -60,7 +60,7 @@ public class PublicacionDaoImpl implements PublicacionDAO{
 
     /**
      * Method to get a list of all the entries of the table.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -70,7 +70,7 @@ public class PublicacionDaoImpl implements PublicacionDAO{
 
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param username Is the string with which the user logs in, and that we use to filter the search.
      */
     @SuppressWarnings("unchecked")

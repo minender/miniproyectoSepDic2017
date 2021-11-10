@@ -15,7 +15,7 @@ public interface UsuarioDAO {
 
     /** 
      * Adds a new user to the table.
-     * @param usuario The new usuario to be added.
+     * @param usuario The new user to be added.
      * @return Nothing.
      */
     public void addUsuario(Usuario usuario);
