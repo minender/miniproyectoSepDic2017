@@ -20,11 +20,11 @@ public interface TerminoManager {
      * @return Nothing.
      */
     public void addTermino(Termino termino);
-	
+
     /** 
 	 * >>> Deprecated, since the Publicacion table must be removed.
      */
-    public void addPublicacion(Termino termino,Publicacion publicacion);
+    //public void addPublicacion(Termino termino,Publicacion publicacion);
 	
     /**
      * Deletes one of the terms of the table.
@@ -36,7 +36,7 @@ public interface TerminoManager {
     /** 
 	 * >>> Deprecated, since the Publicacion table must be removed.
      */
-    public void deletePublicacion(TerminoId id);
+    //public void deletePublicacion(TerminoId id);
 	
     /**
      * Updates one of the terms of the table.
@@ -73,11 +73,11 @@ public interface TerminoManager {
      * @param username Is the string with which the user logs in, and that we use to filter the search.
      */
     public List<Termino> getAllTerminos(String username);
-	
+
     /** 
 	 * >>> Deprecated, since the Publicacion table must be removed.
      */
-    public List<Termino> getAllPublicaciones(String username);
+    //public List<Termino> getAllPublicaciones(String username);
 	
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user,

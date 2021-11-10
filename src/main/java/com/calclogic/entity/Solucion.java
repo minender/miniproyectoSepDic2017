@@ -7,7 +7,6 @@ import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
-import com.calclogic.parse.StaticCombUtilities;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

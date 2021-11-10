@@ -3,7 +3,7 @@ package com.calclogic.parse;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.springframework.stereotype.Component;
+//import org.springframework.stereotype.Component;
 
 import com.calclogic.lambdacalculo.Term;
 
@@ -11,13 +11,9 @@ import com.calclogic.lambdacalculo.Term;
 * @author jean 11-05-2020
 */
 
-@Component
 public class CombUtilities {
 	
-	public CombUtilities() {
-	}
-	
-	public Term getTerm(String input) {
+	public static Term getTerm(String input) {
 		
 		// Feed the argument to the parser
 		CharStream in = CharStreams.fromString(input);

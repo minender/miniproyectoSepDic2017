@@ -312,6 +312,41 @@ function CRMethod(/*teoid*/){
     
 }
 
+function COMethod(/*teoid*/){
+    var data = {};
+    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
+    //var teoSol = $("#nSolucion").val();
+    //data["teoSol"] = teoSol;
+    var form = $('#inferForm');
+
+    $.ajax({
+        type: 'POST',
+        url: $(form).attr('action')+"/iniStatementCO",
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+            $('#formula').html(data.historial);
+            MathJax.Hub.Typeset();
+            //$('#teoremaInicial').val(teoid + "@" + data.lado);
+            setForms(data.cambiarMetodo);
+            //$("#inferForm").show();
+            //$("#nuevoMetodo").val("1");
+            var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
+            if(nSol==="new"){
+                //$('#nSolucion').val(data.nSol);
+                //nSol = $('#nSolucion').val();
+                var url = $(form).attr('action');
+                url = url.substring(0,url.length-3)+data.nSol;
+                $(form).attr('action',url);
+            }
+        },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            }
+    });
+    
+}
+
 function metodoD(/*teoid*/){
     var data = {};
     //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();

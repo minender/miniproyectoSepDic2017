@@ -20,10 +20,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
  */
 public class TermUtilities {
     
-    public TermUtilities(){
-    }
-    
-    public Term getTerm(String input, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+    public static Term getTerm(String input, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 		
 		// Feed the argument to the parser
 		CharStream in = CharStreams.fromString(input);
@@ -47,7 +44,7 @@ public class TermUtilities {
 		return t;
 	}
     
-    public ArrayList<Object> instanciate(String input, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+    public static ArrayList<Object> instanciate(String input, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 		
 		// Feed the argument to the parser
 		CharStream in = CharStreams.fromString(input);
@@ -71,7 +68,7 @@ public class TermUtilities {
 		return arr;
 	}
     
-    public Term lambda(String input, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+    public static Term lambda(String input, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 		
 		// Feed the argument to the parser
 		CharStream in = CharStreams.fromString(input);

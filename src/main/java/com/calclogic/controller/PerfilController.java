@@ -126,8 +126,8 @@ public class PerfilController {
     private TeoriaManager teoriaManager;
     @Autowired
     private MostrarCategoriaManager mostrarCategoriaManager;
-    @Autowired
-    private CombUtilities combUtilities;
+    //@Autowired
+    //private CombUtilities combUtilities;
     
     
     @RequestMapping(value="/{username}/close", method=RequestMethod.GET)
@@ -1111,7 +1111,7 @@ public class PerfilController {
         Predicado p=predicadoManager.getPredicado(id);
         Tokenizar tk = new Tokenizar();
         tk.tokenArgs(p.getArgumentos());
-        Term aux = combUtilities.getTerm(p.getPredicado());
+        Term aux = CombUtilities.getTerm(p.getPredicado());
         for (String var : tk.getVars()) 
             aux=new App(aux,new Var(var.charAt(0)));
         aux = aux.evaluar();
@@ -1383,7 +1383,7 @@ public class PerfilController {
         
         return "listar";
     }
-    
+/*    
     @RequestMapping(value="/{username}/mispublic", method=RequestMethod.GET)
     public String misPublicacionesView(@PathVariable String username, ModelMap map, @RequestParam("comb") String comb) 
     {
@@ -1419,7 +1419,8 @@ public class PerfilController {
         
         return "listar";
     }
-    
+*/
+
     @RequestMapping(value="/{username}/listarocult", method=RequestMethod.GET)
     public String listarOcultEdicionView(@PathVariable String username, ModelMap map, @RequestParam("comb") String comb) 
     {
@@ -1555,7 +1556,7 @@ public class PerfilController {
         predicadoManager.deletePredicado(id);
         return "redirect:../../perfil/"+username+"/listar?comb=n";
     }
-    
+/*    
     @RequestMapping(value="/{username}/eliminarpubl", 
             method=RequestMethod.GET)
     public String eliminarPublicacion(@PathVariable String username, ModelMap map, @RequestParam("alias") String alias)
@@ -1568,7 +1569,8 @@ public class PerfilController {
         terminoManager.deletePublicacion(id);
         return "redirect:../../perfil/"+username+"/mispublic?comb=n";
     }
-    
+*/
+/*  
     @RequestMapping(value="/{username}/publicar", method=RequestMethod.GET)
     public String publicarTermino(@PathVariable String username, ModelMap map, @RequestParam("alias") String alias)
     {
@@ -1661,7 +1663,8 @@ public class PerfilController {
         
         return "perfil";
     }
-    
+*/
+
     @RequestMapping(value="/{username}/ingresar", method=RequestMethod.GET)
     public String insertarEvaluarView(@PathVariable String username, ModelMap map)
     {

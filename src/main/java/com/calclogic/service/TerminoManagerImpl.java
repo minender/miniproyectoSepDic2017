@@ -23,8 +23,8 @@ public class TerminoManagerImpl implements TerminoManager{
 
     @Autowired
     private TerminoDAO terminoDAO;
-    @Autowired
-    private PublicacionDAO publicacionDAO;
+    //@Autowired
+    //private PublicacionDAO publicacionDAO;
     
     /** 
      * Adds a new term to the table.
@@ -41,14 +41,14 @@ public class TerminoManagerImpl implements TerminoManager{
     /** 
 	 * >>> Deprecated, since the Publicacion table must be removed.
      */
-    @Override
+    /*@Override
     @Transactional
     public void addPublicacion(Termino termino,Publicacion publicacion)
     {
         //publicacionDAO.addPublicacion(publicacion);
         terminoDAO.addTermino(termino);
         publicacionDAO.addPublicacion(publicacion);
-    }
+    }*/
 
     /**
      * Deletes one of the terms of the table.
@@ -64,7 +64,7 @@ public class TerminoManagerImpl implements TerminoManager{
     /** 
 	 * >>> Deprecated, since the Publicacion table must be removed.
      */
-    @Override
+/*    @Override
     @Transactional
     public void deletePublicacion(TerminoId id){
         PublicacionId publicacionid = new PublicacionId(id.getAlias(),id.getLogin());
@@ -72,6 +72,7 @@ public class TerminoManagerImpl implements TerminoManager{
         id.setLogin("publico");
         terminoDAO.deleteTermino(id);
     }
+  */
     
     /**
      * Updates one of the terms of the table.
@@ -105,11 +106,11 @@ public class TerminoManagerImpl implements TerminoManager{
         termino.setTermObject(aux);
         terminoDAO.addTermino(termino);
     }
-
+	
     /** 
 	 * >>> Deprecated, since the Publicacion table must be removed.
      */
-    public Publicacion getPublicacion(PublicacionId id)
+/*    public Publicacion getPublicacion(PublicacionId id)
     {
         Publicacion publicacion = publicacionDAO.getPublicacion(id);
         TerminoId terminoid = new TerminoId(id.getAlias(),"publico");
@@ -117,6 +118,7 @@ public class TerminoManagerImpl implements TerminoManager{
         
         return publicacion;
     }
+  */
     
     /**
      * Method that parses returns a term given its principal key
@@ -197,7 +199,7 @@ public class TerminoManagerImpl implements TerminoManager{
     /** 
 	 * >>> Deprecated, since the Publicacion table must be removed.
      */
-    @Override
+/*    @Override
     @Transactional
     public List<Termino> getAllPublicaciones(String username)
     {
@@ -214,6 +216,7 @@ public class TerminoManagerImpl implements TerminoManager{
         
         return terms;
     }
+  */
     
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user,

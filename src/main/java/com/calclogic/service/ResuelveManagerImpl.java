@@ -26,8 +26,8 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Autowired
     private SolucionDAO solucionDAO;
     
-    @Autowired
-    private CombUtilities combUtilities;
+    //@Autowired
+    //private CombUtilities combUtilities;
     
     /** 
      * Adds a new object entry to the table only if an equivalent one has not been added yet,
@@ -130,7 +130,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                 }
                 
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,7 +172,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                 }
                 
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -192,7 +192,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
         try {
             for (Resuelve resuelve : resuelves) {
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -235,7 +235,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
         Resuelve resuel = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID);
         if (resuel != null) {
             Teorema teo = resuel.getTeorema();
-            teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+            teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             resuel.setTeorema(teo);
         }
         return resuel;
@@ -261,7 +261,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                     resuel.setDemopendiente(sol.getId());
             }
             Teorema teo = resuel.getTeorema();
-            teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+            teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             resuel.setTeorema(teo);
         }
         return resuel;

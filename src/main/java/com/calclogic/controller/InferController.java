@@ -1,17 +1,14 @@
 package com.calclogic.controller;
 
-import com.google.gson.TypeAdapter;
 import com.calclogic.entity.Categoria;
 import com.calclogic.entity.Dispone;
 import com.calclogic.entity.PredicadoId;
 import com.calclogic.entity.MostrarCategoria;
-import com.calclogic.entity.PlantillaTeorema;
 import com.calclogic.entity.Predicado;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Simbolo;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
-import com.calclogic.entity.TerminoId;
 import com.calclogic.entity.Usuario;
 import com.calclogic.forms.AutoSustResponse;
 import com.calclogic.forms.InferResponse;
@@ -31,13 +28,9 @@ import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.lambdacalculo.TypedS;
-import com.calclogic.lambdacalculo.TypedTerm;
 import com.calclogic.lambdacalculo.TypedU;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
-import com.calclogic.parse.StaticCombUtilities;
-import com.calclogic.parse.TermLexer;
-import com.calclogic.parse.TermParser;
 import com.calclogic.parse.TermUtilities;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SolucionManager;
@@ -50,9 +43,6 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.PlantillaTeoremaManager;
 import com.calclogic.service.SimboloManager;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -62,16 +52,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
-
-import org.antlr.v4.parse.ANTLRParser.throwsSpec_return;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.lang3.text.StrSubstitutor;
-//import org.apache.jasper.tagplugins.jstl.core.If;
-import org.hibernate.classic.Validatable;
-//import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -93,8 +74,6 @@ public class InferController {
     @Autowired
     private UsuarioManager usuarioManager;
     @Autowired
-    private TerminoManager terminoManager;
-    @Autowired
     private PredicadoManager predicadoManager;
     @Autowired
     private SimboloManager simboloManager;
@@ -114,31 +93,41 @@ public class InferController {
     private DisponeManager disponeManager;
     @Autowired
     private MostrarCategoriaManager mostrarCategoriaManager;
-    @Autowired
-    private CombUtilities combUtilities;
-    @Autowired
-    private TermUtilities termUtilities;
+    //@Autowired
+    //private CombUtilities combUtilities;
+    //@Autowired
+    //private TermUtilities termUtilities;
     
+    /**
+     * Controller that respond to HTTP GET request and return the selection statement
+     * page if there is a user session active. 
+     * 
+     * @param username: login of the user that make the request. It's is in the URL also
+     * @param map: Mapping with values of each variables that will send to infer.jsp 
+     * @return the String "infer" that refer to infer.jsp template if the user have an active session.
+     *         With the right values in map, the infer.jsp template is filled to obtain the 
+     *         selection statement view
+     */
     @RequestMapping(value="/{username}", method=RequestMethod.GET)
     public String selectTeoView(@PathVariable String username, ModelMap map) {
-        System.out.println("Entre en selectTeoView");
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
         {
             return "redirect:/index";
         }
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
-        for (Resuelve r: resuelves)
-        {
+        for (Resuelve r: resuelves) // Este for debes mandarlo para el manager y quitar
+        {                           // la construccion del metateorema del true
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
         }
         Usuario usr = usuarioManager.getUsuario(username);
-        map.addAttribute("usuario",usr);
         InfersForm infersForm = new InfersForm();
         List <Categoria> showCategorias = new LinkedList<Categoria>();
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
-        for (int i = 0; i < mostrarCategoria.size(); i++ ){
+        for (int i = 0; i < mostrarCategoria.size(); i++ ){// se puede evitar este for si se mandan
+                                                           // los MostrarCategorias al jsp en lugar 
+                                                           // de las categorias
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
         
@@ -180,6 +169,17 @@ public class InferController {
         return "infer";
     }
 
+    /**
+     * Controller that respond to HTTP GET request. Return the proof environment 
+     * page of the statement (if there is a user session active). 
+     * 
+     * @param username: login of the user that make the request. It is in the URL also
+     * @param nTeo: code of statement that the user request to prove. It is in the URL also
+     * @param map: Mapping with values of each variables that will send to infer.jsp 
+     * @return the String "infer" that refer to infer.jsp template if the user have an active session
+     *         With the right values in map, the infer.jsp template is filled to obtain the 
+     *         proof environment page
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}", method=RequestMethod.GET)
     public String inferView(@PathVariable String username, @PathVariable String nTeo, ModelMap map) {
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
@@ -362,14 +362,16 @@ public class InferController {
     }
     
     /**
-     * Controller for show a instantiation of a statement to a user.
+     * Controller that respond for HTTP POST request with JSON encoded parameters. The request is
+     * response by showing a instantiation of a statement of the user in the application. The 
+     * response is encode with JSON.
      * 
-     * @param initialExpr: Term that represents A
-     * @param teoremProved: The teorem the user is trying to prove
-     * @param finalExpr: Term that represents F
-     * @param proof: The proof tree so far
-     * @param username: name of the user doing the prove
-     * @return new proof if finished, else return the same proof
+     * @param nStatement: code that identifies, with username, the statement. It is a 
+     *                    HTTP POST parameter
+     * @param instanciacion: String that encode the substitution operator. It is a 
+     *                       HTTP POST parameter
+     * @param username: login of the user. It is in the url also
+     * @return JSON encoded InstResponse object with the instantiation info 
      */
     @RequestMapping(value="/{username}/inst", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)    
     public @ResponseBody InstResponse instantiate(@RequestParam(value="nStatement") String nStatement, 
@@ -410,7 +412,7 @@ public class InferController {
         // CREATE THE INSTANTIATION
        ArrayList<Object> arr = null;
         if (!instanciacion.equals("")){
-          arr=termUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
+          arr=TermUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
         }
         
         if (arr == null)
@@ -420,6 +422,13 @@ public class InferController {
         return response;
     }
 
+    /**
+     * Controller that respond for HTTP POST request to set on/off the auto substitution 
+     * functionality. The response is encode with JSON.
+     * 
+     * @param username: login of the user. It is in the URL also
+     * @return JSON encoded AutoSustResponse object with the on/off info 
+     */
     @RequestMapping(value="/{username}/auto", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)    
     public @ResponseBody AutoSustResponse setAutoSust(@PathVariable String username) 
     {
@@ -445,14 +454,17 @@ public class InferController {
     }
     
     /**
-     * Controller for automatic instantiation of a statement to a user.
+     * Controller for automatic filling of the substitution form in the user session.
      * 
-     * @param initialExpr: Term that represents A
-     * @param teoremProved: The teorem the user is trying to prove
-     * @param finalExpr: Term that represents F
-     * @param proof: The proof tree so far
-     * @param username: name of the user doing the prove
-     * @return new proof if finished, else return the same proof
+     * @param nStatement: code that identifies the statement. It is a JSON encode HTTP POST parameter
+     * @param leibniz: String with the E of Leibniz rule in format C. It is JSON encode 
+     *                 HTTP POST parameter
+     * @param freeV: String with the list of free variables in format C. It is JSON encode
+     *               HTTP POST parameter
+     * @param username: name of the user doing the prove. It is in the URL also
+     * @param nSol: Id of user solution in which the autosust match the last line.  It is in 
+     *              the URL also
+     * @return JSON encode SubstResponse Object with the result substitution info
      */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/auto", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)    
     public @ResponseBody SubstResponse autoSubst(@RequestParam(value="nStatement") String nStatement, 
@@ -497,7 +509,7 @@ public class InferController {
          Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
 
          String metodo = solucion.getMetodo();
-         Term typedTerm = getSubProof(solucion.getTypedTerm(),ProofMethodUtilities.getTerm(metodo));
+         Term typedTerm = getSubProof(solucion.getTypedTerm(),ProofMethodUtilities.getTerm(metodo),true);
 
          Term lastLine = typedTerm.type();
          if (lastLine == null)
@@ -510,7 +522,7 @@ public class InferController {
          Equation eq;
          boolean zUnifiable = true;
          if (!leibniz.equals("")){
-           leibnizTerm =termUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
+           leibnizTerm =TermUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
            eq = new Equation(leibnizTerm,lastLine);
            sust = eq.mgu(simboloManager);
            if (sust != null) // si z no es de tipo atomico, no se puede unificar en primer orden
@@ -569,11 +581,10 @@ public class InferController {
      * the proof given as argument.
      * 
      * To understand the arguments assume we have a prove that so far has proved A == ... == F
-     * @param initialExpr: Term that represents A
-     * @param teoremProved: The teorem the user is trying to prove
-     * @param finalExpr: Term that represents F
+     * @param teoremProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @param username: name of the user doing the prove
+     * @param teoNum: id that identify the theorem that the user is trying to prove
      * @return new proof if finished, else return the same proof
      */
     private Term finishedDirectMethodProve(Term teoremProved, Term proof, String username, String teoNum) {
@@ -586,7 +597,11 @@ public class InferController {
             List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSolWithoutAxiom(username,teoNum);
             Term teorem;
             Term mt;
-            for(Resuelve resu: resuelves){
+            for(Resuelve resu: resuelves){ // todo este for deberia ser un simple Query
+                                               // todo este for deberia ser un simple Query
+                                               // todo este for deberia ser un simple Query
+                                               // todo este for deberia ser un simple Query
+                                               // Quedo claro? deberia ser un simple Query
                 teorem = resu.getTeorema().getTeoTerm();
                 mt = new App(new App(new Const("c_{1}"),new Const("true")),teorem);
                 // If the current teorem or teorem==true matches the final expression (and this teorem is not the one being proved) 
@@ -628,8 +643,9 @@ public class InferController {
      * To understand the arguments assume we have a prove that so far has proved A == ... == F
      * @param initialExpr: Term that represents A
      * @param finalExpr: Term that represents F
-     * @param teoremProved: The teorem the user is trying to prove (even if the original is of the form H => A == B 
-     * in this case H /\ A ==  H /\ B must be given instead)
+     * @param teoremProved: The theorem the user is trying to prove (even if the original is of 
+     *                      the form H => A == B in this case H /\ A ==  H /\ B must be given 
+     *                      instead)
      * @param proof: The proof tree so far
      * @return new proof if finished, else return the same proof
      */
@@ -648,6 +664,18 @@ public class InferController {
         return proof;
     }
 
+    /**
+     * This function will only be correct if called when using Transitivity method
+     * This function will return a new prove tree in case it finds out that the last hint of prove
+     * caused the whole prove to be correct under the Transitivity method. In other case it will return 
+     * the proof given as argument.
+     * 
+     * To understand the arguments assume we have a prove that so far has proved A == ... == F
+     * @param expr: Term that represents F
+     * @param teoremProved: The theorem that user is trying to prove
+     * @param proof: The proof tree so far
+     * @return new proof if finished, else return the same proof
+     */
     private Term finishedTransProve(Term expr, Term teoremProved, Term proof) {
      try {
             // if at least one opInference was made an reach the goal
@@ -681,10 +709,10 @@ public class InferController {
     /**
      * This function will only be correct if called when using Weakening method
      * This function will return a new prove tree in case it finds out that the last infer of prove
-     * caused the whole prove to be correct under the Weakenig method. In other case it will return 
+     * caused the whole prove to be correct under the Weakening method. In other case it will return 
      * the proof given as argument.
      * 
-     * Do the last equanimity and simetry of => steps to finish a Weakening proof
+     * Do the last equanimity and symmetry of => steps to finish a Weakening proof
      * @param expr: root of the proof tree
      * @param teoremProved: The theorem the user is trying to prove 
      * @param proof: The proof tree so far
@@ -698,20 +726,21 @@ public class InferController {
             if(wsFirstOpInferIndex(proof) != 0 && ((App)((App)expr).p).q.equals(teoremProved) )
               return new TypedApp(proof,new TypedA(new Const("c_{8}")));
         }
+        // me parece que si la app obliga a empezar de la izquierda, este else es imposible
         else if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{3}") ) {
             if (wsFirstOpInferIndex(proof)!=0 && isInverseImpl(expr,teoremProved) ) {
-                TypedA ax = new TypedA(combUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
-                TypedI inst = new TypedI((Sust)combUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]"));
+                TypedA ax = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+                TypedI inst = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]"));
                 return new TypedApp(new TypedApp(inst,ax),proof);
             }
             if(wsFirstOpInferIndex(proof)!=0 && isInverseImpl(((App)((App)expr).p).q,teoremProved) ) {
-                TypedA ax = new TypedA(combUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
-                TypedI inst = new TypedI((Sust)combUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]"));
+                TypedA ax = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+                TypedI inst = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]"));
                 Term aux = new TypedApp(inst,ax);
                 return new TypedApp(new TypedApp(new TypedS(aux.type()),aux),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
             }
         }
-      }catch (TypeVerificationException e)  {
+     }catch (TypeVerificationException e)  {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
       } 
         // If the prove hasnt finished
@@ -724,7 +753,7 @@ public class InferController {
      * caused the whole prove to be correct under Strengthening method. In other case it will return 
      * the proof given as argument.
      * 
-     * Do the last equanimity and simetry of => steps to finish a Weakening proof
+     * Do the last equanimity and symmetry of => steps to finish a Strengthening proof
      * @param expr: root of the proof tree
      * @param teoremProved: The theorem the user is trying to prove 
      * @param proof: The proof tree so far
@@ -738,15 +767,16 @@ public class InferController {
             if(wsFirstOpInferIndex(proof) != 0 && ((App)((App)expr).p).q.equals(teoremProved) )
               return new TypedApp(proof,new TypedA(new Const("c_{8}")));
         }
+        // me parece que si la app obliga a empezar de la izquierda, este else es imposible
         else if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{2}") ) {
             if (wsFirstOpInferIndex(proof)!=0 && isInverseImpl(expr,teoremProved) ) {
-                TypedA ax = new TypedA(combUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
-                TypedI inst = new TypedI((Sust)combUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]"));
+                TypedA ax = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+                TypedI inst = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]"));
                 return new TypedApp(new TypedApp(inst,ax),proof);
             }
             if(wsFirstOpInferIndex(proof)!=0 && isInverseImpl(((App)((App)expr).p).q,teoremProved) ) {
-                TypedA ax = new TypedA(combUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
-                TypedI inst = new TypedI((Sust)combUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]"));
+                TypedA ax = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+                TypedI inst = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]"));
                 return new TypedApp(new TypedApp(inst,ax),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
             }
         }
@@ -757,31 +787,82 @@ public class InferController {
         return proof;
     }    
     
+    /**
+     * This function will only be correct if called when using Counter-Reciprocal method
+     * This function will return a new prove tree in case it finds out that the last infer of prove
+     * caused the whole prove to be correct under the sub proof method. In other case it will return 
+     * the proof given as argument.
+     * 
+     * Do the last step using axiom p => q == !q => !p to finish the Counter-Reciprocal proof
+     * @param teoremProved: The theorem that user is trying to prove 
+     * @param proof: The proof tree so far
+     * @return proof of theoremProved if finished, else return the same proof
+     */
     private Term finishedCounterRecProve(Term teoremProved, Term proof) {
-       if (!proof.type().equals(teoremProved)) 
-       {
-           try {
-             String str = "c_{1} (c_{2} (c_{7} x_{112}) (c_{7} x_{113})) (c_{2} x_{113} x_{112})";
-             Term st = combUtilities.getTerm(str);
-             List<Var> vars = new ArrayList<Var>();
-             List<Term> terms = new ArrayList<Term>();
-             vars.add(0, new Var(112));
-             vars.add(0, new Var(113));
-             terms.add(0, ((App)teoremProved).q);
-             terms.add(0, ((App)((App)teoremProved).p).q);
-             Sust sus = new Sust(vars, terms);
-             TypedA A = new TypedA(st);
-             TypedI I = new TypedI(sus);
-             return new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),proof);
+       try {
+         String str = "c_{1} (c_{2} (c_{7} x_{112}) (c_{7} x_{113})) (c_{2} x_{113} x_{112})";
+         Term st = CombUtilities.getTerm(str);
+         List<Var> vars = new ArrayList<Var>();
+         List<Term> terms = new ArrayList<Term>();
+         vars.add(0, new Var(112));
+         vars.add(0, new Var(113));
+         terms.add(0, ((App)teoremProved).q);
+         terms.add(0, ((App)((App)teoremProved).p).q);
+         Sust sus = new Sust(vars, terms);
+         TypedA A = new TypedA(st);
+         TypedI I = new TypedI(sus);
+         return new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),proof);
              
-           }catch (TypeVerificationException e)  {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
-           }
+       }catch (TypeVerificationException e)  {
+          Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
        }
        
        return proof;
     }
     
+    /**
+     * This function will only be correct if called when using Counter-Reciprocal method
+     * This function will return a new prove tree in case it finds out that the last infer of prove
+     * caused the whole prove to be correct under the sub proof method. In other case it will return 
+     * the proof given as argument.
+     * 
+     * Do the last step using axiom p => q == !q => !p to finish the Counter-Reciprocal proof
+     * @param teoremProved: The theorem that user is trying to prove 
+     * @param proof: The proof tree so far
+     * @return proof of theoremProved if finished, else return the same proof
+     */
+    private Term finishedContradictionProve(Term teoremProved, Term proof) {
+       try {
+         String str1 = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
+         Term st1 = CombUtilities.getTerm(str1);
+         String str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
+         Term st2 = CombUtilities.getTerm(str2);
+         List<Var> vars = new ArrayList<Var>();
+         List<Term> terms = new ArrayList<Term>();
+         vars.add(0, new Var(112));
+         terms.add(0, teoremProved);
+         Sust sus = new Sust(vars, terms);
+         TypedA A1 = new TypedA(st1);
+         TypedA A2 = new TypedA(st2);
+         TypedI I = new TypedI(sus);
+         return new TypedApp(new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2)),proof);
+             
+       }catch (TypeVerificationException e)  {
+          Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
+       }
+       
+       return proof;
+    }
+    
+    /**
+     * This function will only be correct if called when using And Introduction method
+     * This function will return a new prove tree that connect in one proof of P/\Q, 
+     * two independent sub proofs of P and Q.
+     * 
+     * @param originalTerm: The current proof  
+     * @param finalProof: The proof of second sub proof
+     * @return proof of conjunction of two sub proofs
+     */
     private Term finishedAI2Proof(Term originalTerm, Term finalProof) {
         Map<String,String> values = new HashMap<String, String>();
         values.put("T1",finalProof.toStringFinal());
@@ -790,7 +871,7 @@ public class InferController {
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
         String metaTheo = "S (I^{[x_{113} := %(T1Type)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (%(T1))";
         String theo = sub.replace(metaTheo);
-        Term theoTerm = combUtilities.getTerm(theo);
+        Term theoTerm = CombUtilities.getTerm(theo);
         Term firstProof = ((App)originalTerm).q;
         Term firstStAndTrue = ((App)((App)originalTerm).p).p;
         Term leibniz = ((App)((App)((App)originalTerm).p).q).p;
@@ -817,7 +898,8 @@ public class InferController {
      * @param proof: The proof tree so far
      * @return new proof if finished, else return the same proof
      */
-    private Term finishedDeductionOneSideProve(Term initialExpr, Term finalExpr, Term teoremProved, Term proof) {
+    private Term finishedDeductionOneSideProve(Term initialExpr, Term finalExpr, Term teoremProved, 
+                                               Term proof) {
         
         try {
         /* Jean
@@ -889,7 +971,7 @@ public class InferController {
      * To understand the arguments assume we have a prove that so far has proved (H == H /\ B1) == ... == (H == H /\ Bn)
      * @param initialExpr: Term that represents (H == H /\ B1)
      * @param finalExpr: Term that represents (H == H /\ Bn)
-     * @param teoremProved: The teorem the user is trying to prove
+     * @param teoremProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @return new proof if finished, else return the same proof
      */
@@ -1039,8 +1121,8 @@ public class InferController {
     
     /**
      * This function will create a hint for the direct method given the hint's elements
-     * In case the elements dont make sense it will return null
-     * @param teorem: teorem used on the hint
+     * In case the elements don't make sense it will return null
+     * @param teorem: theorem used on the hint
      * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
      * @param instantiationString: string that was used to parse instantiation
      * @param leibniz: bracket that represents leibniz on the hint
@@ -1108,8 +1190,8 @@ public class InferController {
     
     /**
      * This function will create a hint for the one side method given the hint's elements
-     * In case the elements dont make sense it will return null
-     * @param teorem: teorem used on the hint
+     * In case the elements don't make sense it will return null
+     * @param teorem: theorem used on the hint
      * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
      * @param instantiationString: string that was used to parse instantiation
      * @param leibniz: bracket that represents leibniz on the hint
@@ -1122,8 +1204,19 @@ public class InferController {
         return createDirectMethodInfer(teorem, instantiation, instantiationString, leibniz, leibnizString);
     }
     
-    private Term createWSInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString) 
-                 throws TypeVerificationException {
+    /**
+     * This function will create one step infer for the weakening method given the inference's elements
+     * In case the elements don't make sense it will return null
+     * @param teorem: theorem used on the infer
+     * @param instantiation: instantiation used on the statement in the form of arrays of variables 
+     *                       and terms
+     * @param instantiationString: string that was used to parse instantiation
+     * @param leibniz: bracket that represents the Leibniz function on the inference step
+     * @param leibnizString: string that was used to parse the Leibniz function
+     * @return a hint for the weakening method
+     */
+    private Term createWSInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, 
+                               Bracket leibniz, String leibnizString) throws TypeVerificationException {
         Term infer;
         
             if (instantiationString.equals("") && leibnizString.equals(""))
@@ -1169,13 +1262,13 @@ public class InferController {
     
     /**
      * This function will create a hint for the natural deduction one side method given the hint's elements
-     * In case the elements dont make sense it will return null
-     * @param teorem: teorem used on the hint
+     * In case the elements don't make sense it will return null
+     * @param teorem: theorem used on the hint
      * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
      * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents leibniz on the hint
-     * @param leibnizString: string that was used to parse leibniz
-     * @param teoremProved: teorem that we are proving using this hint
+     * @param leibniz: bracket that represents Leibniz on the hint
+     * @param leibnizString: string that was used to parse Leibniz
+     * @param teoremProved: theorem that we are proving using this hint
      * @return a hint for the natural deduction one side method
      */
     private Term createDeductionOneSideInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) 
@@ -1237,7 +1330,7 @@ public class InferController {
         
         // Here is the left IA side of the modus ponens hint 
         String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
-        Term iaLefTerm = combUtilities.getTerm(iaLeftString);
+        Term iaLefTerm = CombUtilities.getTerm(iaLeftString);
         
         //throw new TypeVerificationException();
         return new TypedApp(iaLefTerm, iaRighTerm);
@@ -1252,13 +1345,13 @@ public class InferController {
     
     /**
      * This function will create a hint for the natural deduction with direct method given the hint's elements
-     * In case the elements dont make sense it will return null
-     * @param teorem: teorem used on the hint
+     * In case the elements don't make sense it will return null
+     * @param teorem: theorem used on the hint
      * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
      * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents leibniz on the hint
-     * @param leibnizString: string that was used to parse leibniz
-     * @param teoremProved: teorem that we are proving using this hint
+     * @param leibniz: bracket that represents Leibniz on the hint
+     * @param leibnizString: string that was used to parse Leibniz
+     * @param teoremProved: theorem that we are proving using this hint
      * @return a hint for the natural deduction with direct method
      */
     private Term createDeductionDirectInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) 
@@ -1323,7 +1416,7 @@ public class InferController {
         /*Jean
         String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
         */   
-        Term iaLefTerm = combUtilities.getTerm(iaLeftString);
+        Term iaLefTerm = CombUtilities.getTerm(iaLeftString);
         
         //throw new TypeVerificationException();
         return new TypedApp(iaLefTerm, iaRighTerm);
@@ -1344,8 +1437,8 @@ public class InferController {
     
     /**
      * This method will return the typedTerm that represents the metaTheorem teo == true
-     * @param teo: theorem to be turned into metaTheorem 
-     * @return new metaTheorem for the given theorem, null if the argument isnt valid
+     * @param teo: theorem to be turned into teo == true
+     * @return new Theorem for the given template meta theorem, null if the argument isn't valid
      */
     public static TypedApp metaTheorem(Term teo) {
         Term A1 = new TypedA( new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"),new Var(112)),new Var(113)) ), new App(new App(new Const("c_{1}"),new Var(113)),new Var(112))) );
@@ -1380,9 +1473,11 @@ public class InferController {
     }
     
     /**
-     * This method will return the typedTerm that represents the metaTheorem teo == true
-     * @param teo: theorem to be turned into metaTheorem 
-     * @return new metaTheorem for the given theorem, null if the argument isnt valid
+     * This method will return the typedTerm that represents the metaTheorem true == teo. 
+     * This method use the proof of teo instead the statement of teo.
+     * 
+     * @param proof: proof of theorem teo to be turned into true == teo 
+     * @return new theorem for the given meta theorem template, null if the argument isn't valid
      */
     public static TypedApp metaTheoTrueLeft(Term proof) {
     
@@ -1408,6 +1503,20 @@ public class InferController {
         }
     }
     
+    /**
+     * This method return a derivation tree of the form: 
+     *
+     *     Gamma |- (x op y) == (!x op' !y)
+     *     -------------------------------- I [x,y:=p,q]
+     *     Gamma |- (p op q) == (!p op' !q)
+     * 
+     * where op' is ==> when op is <== and op' is <== when op is ==>
+     * 
+     * @param p: formula to be substituted in the tree
+     * @param q: formula to be substituted in the tree
+     * @param op: Constant that can be ==> or <==
+     * @return typed term that represent the derivation tree before
+     */
     private Term neg(Term p, Term q, Const op) {
         
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
@@ -1415,9 +1524,26 @@ public class InferController {
         String Q = q.toStringFinal();
         String neg = "I^{[x_{112}, x_{113} := "+P+", "+Q+"]}A^{c_{1} ("+op2+" (c_{7} x_{113}) (c_{7} x_{112})) ("+op+" x_{113} x_{112})}";
         
-        return combUtilities.getTerm(neg);
+        return CombUtilities.getTerm(neg);
     }
     
+    /**
+     * This method return a derivation tree of the form: 
+     *
+     *     Gamma |- (x op y) ==> ((x op1 z) op (y op1 z))
+     *     ---------------------------------------------- I [x,y,z:=p,q,r]
+     *     Gamma |- (p op q) ==> ((p op1 r) op (q op1 r))
+     * 
+     * where op' is ==> when op is <== and op' is <== when op is ==> 
+     * and op1 can be /\, \/, or <==
+     * 
+     * @param p: formula to be substituted in the tree
+     * @param q: formula to be substituted in the tree
+     * @param op: Constant that can be ==> or <==
+     * @param r: formula to be substituted in the tree
+     * @param op1: Constant that can be /\, \/, or <==
+     * @return typed term that represent the derivation tree before
+     */
     private Term wsl1(Term p, Term q, Const op, Term r, Const op1) {
         
         String P = p.toStringFinal();
@@ -1425,9 +1551,25 @@ public class InferController {
         String R = r.toStringFinal();
         String wsl1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{114} x_{113}) ("+op1+" x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
         
-        return combUtilities.getTerm(wsl1);
+        return CombUtilities.getTerm(wsl1);
     }
     
+    /**
+     * This method return a derivation tree of the form: 
+     *
+     *     Gamma |- (x op y) ==> ((x ==> z) op' (y ==> z))
+     *     ---------------------------------------------- I [x,y,z:=p,q,r]
+     *     Gamma |- (p op q) ==> ((p ==> r) op' (q ==> r))
+     * 
+     * where op' is ==> when op is <== and op' is <== when op is ==> 
+     * and op1 can be /\, \/, or <==
+     * 
+     * @param p: formula to be substituted in the tree
+     * @param q: formula to be substituted in the tree
+     * @param op: Constant that can be ==> or <==
+     * @param r: formula to be substituted in the tree
+     * @return typed term that represent the derivation tree before
+     */
     private Term wsl2(Term p, Term q, Const op, Term r) {
         
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
@@ -1436,9 +1578,25 @@ public class InferController {
         String R = r.toStringFinal();
         String wsl2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{2} x_{114} x_{113}) (c_{2} x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
         
-        return combUtilities.getTerm(wsl2);
+        return CombUtilities.getTerm(wsl2);
     }
     
+    /**
+     * This method return a derivation tree of the form: 
+     *
+     *     Gamma |- (x op y) ==> ((z op1 x) op (z op1 y))
+     *     ---------------------------------------------- I [x,y,z:=p,q,r]
+     *     Gamma |- (p op q) ==> ((r op1 p) op (r op1 q))
+     * 
+     * where op is ==> or <== and op1 can be /\, \/, or ==>
+     * 
+     * @param p: formula to be substituted in the tree
+     * @param q: formula to be substituted in the tree
+     * @param op: Constant that can be ==> or <==
+     * @param r: formula to be substituted in the tree
+     * @param op1: Constant that can be /\, \/, or ==>
+     * @return typed term that represent the derivation tree before
+     */
     private Term wsr1(Term p, Term q, Const op, Term r, Const op1) {
         
         String P = p.toStringFinal();
@@ -1446,9 +1604,24 @@ public class InferController {
         String R = r.toStringFinal();
         String wsr1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{113} x_{114}) ("+op1+" x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
         
-        return combUtilities.getTerm(wsr1);
+        return CombUtilities.getTerm(wsr1);
     }
     
+    /**
+     * This method return a derivation tree of the form: 
+     *
+     *     Gamma |- (x op y) ==> ((z <== x) op' (z <== y))
+     *     ----------------------------------------------- I [x,y,z:=p,q,r]
+     *     Gamma |- (p op q) ==> ((r <== p) op' (r <== q))
+     * 
+     * where where op' is ==> when op is <== and op' is <== when op is ==> 
+     * 
+     * @param p: formula to be substituted in the tree
+     * @param q: formula to be substituted in the tree
+     * @param op: Constant that can be ==> or <==
+     * @param r: formula to be substituted in the tree
+     * @return typed term that represent the derivation tree before
+     */
     private Term wsr2(Term p, Term q, Const op, Term r) {
         
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
@@ -1457,15 +1630,15 @@ public class InferController {
         String R = r.toStringFinal();
         String wsr2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{3} x_{113} x_{114}) (c_{3} x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
         
-        return combUtilities.getTerm(wsr2);
+        return CombUtilities.getTerm(wsr2);
     }
     
     /**
      * This method will return the typedTerm that represents the sub derivation
-     * tree that infer de use on leibniz in weakening/stregthening 
-     * @param leibniz: Term that represent de leibniz expresion 
+     * tree that infer de use on Leibniz in weakening/strengthening 
+     * @param leibniz: Term that represent de Leibniz expression 
      * @param nabla: derivation with root P op Q. The root is to be use as argument 
-     *             for leibniz rule with op in {Rightarrow,Leftarrow}
+     *             for Leibniz rule with op in {Rightarrow,Leftarrow}
      * @return new TypedTerm that represent a derivation with root 
      *         (lambda z.E)P op_2 (lambda z.E)Q with op_2 in {Rightarrow,Leftarrow}
      */
@@ -1515,9 +1688,10 @@ public class InferController {
         return nabla;
     }
     
-        /**
+    /**
      * return the index (counting in reverse) of the first inference that is not a 
      * equiv or = in a Transitivity method
+     * 
      * @param typedTerm derivation tree that code a Transitivity proof
      * @return index of the first no =inference
      */
@@ -1562,6 +1736,15 @@ public class InferController {
         return firstOpInf;
     }
     
+    /**
+     * This method construct a new derivation tree adding an one step infer to
+     * a proof written with the weakening/strengthening method
+     *  
+     * @param proof: Term that represent a proof written with the weakening/strengthening method
+     * @param infer: Term that represent one step infer
+     * @return new TypedTerm that represent a new derivation tree that 
+     *         add in the last line of proof the infer
+     */
     private Term addInferToWSProof(Term proof, Term infer) throws TypeVerificationException {
         Term type = proof.type();
         Term typeInf = infer.type();
@@ -1594,7 +1777,7 @@ public class InferController {
             }catch (ClassCastException e) {
                 throw new TypeVerificationException();
             }
-            return new TypedApp(new TypedApp(combUtilities.getTerm(deriv), proof), infer);
+            return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
         }
         else if (index != 0 && !eqInf) {
             String st = "c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8})";
@@ -1606,7 +1789,7 @@ public class InferController {
             }catch (ClassCastException e) {
                 throw new TypeVerificationException();
             }
-            return new TypedApp(new TypedApp(combUtilities.getTerm(deriv), proof), infer);
+            return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
         }
         else {
             if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l' ) {
@@ -1625,10 +1808,26 @@ public class InferController {
         }
     }
     
+    /**
+     * This method construct a new derivation tree adding an one step infer to
+     * a proof with the transitivity inference rule
+     *  
+     * @param proof: Term that represent the current proof
+     * @param infer: Term that represent the one step infer
+     * @return new TypedTerm that represent a new derivation tree that 
+     *         add in the last line of proof the infer
+     */
     private Term addInferToProof(Term proof, Term infer) throws TypeVerificationException {
         return new TypedApp(proof, infer);
     }
     
+    /**
+     * This method return true if and only if method is an incomplete non atomic proof method
+     *  
+     * @param method: Term that represent the current state of the proof method
+     * @return true if and only if method is waiting the selection of 
+     * another proof method to start de proof
+     */
     public static boolean isWaitingMethod(Term method) {
         
         Term m1, m2 = null;
@@ -1690,6 +1889,20 @@ public class InferController {
             return true;
     }
     
+    /**
+     * This method add a proof method for currentMethod to get a new compose method. 
+     * If currentMethod is of the form ...M1 (M2 (M3...Mn)), then the method return  
+     * ...M1 (M2 (M3...(Mn newMethod))). If currentMethod is of the from 
+     * ...AI (M2 (M3...Mn)) where (M2 (M3...Mn)) is not waiting method then the method 
+     * return ...((AI (M2 (M3...Mn))) newMethod). If currentMethod is of the from 
+     * ...((AI (M2 (M3...Mn))) (N1 (N2 (N3...Nm)))) where (N1 (N2 (N3...Nm))) is 
+     * waiting method, then the method return 
+     * ...((AI (M2 (M3...Mn))) (N1 (N2 (N3...(Nm newMethod)))))
+     *  
+     * @param currentMethod: Term that represent the current state of the proof method
+     * @param newMethod: new no compose Method 
+     * @return Term that represent a new proof method compose by currentMethod and newMethod.
+     */
     private Term updateMethod(String currentMethod, String newMethod) {
         
         if (currentMethod.equals(""))
@@ -1726,8 +1939,21 @@ public class InferController {
         }
     }
     
+    /**
+     * This method erase one basic proof method for currentMethod. 
+     * If currentMethod is of the form ...M1 (M2 (M3...(Mn M))), then the method return  
+     * ...M1 (M2 (M3...Mn)). If currentMethod is of the from 
+     * ...(AI (M2 (M3...Mn)) M) then the method  return ...(AI (M2 (M3...Mn))). 
+     * If currentMethod is of the from ...((AI (M2 (M3...Mn))) (N1 (N2 (N3...(Nm M))))) is 
+     * then the method return ...((AI (M2 (M3...Mn))) (N1 (N2 (N3...Nm))))
+     *  
+     * @param currentMethod: String that encode the current state of the proof method
+     * @return Term that represent a new proof method exactly as currentMethod but without the 
+     *         last proof method. If currentMethod encode an Atomic method return null.
+     */
     private Term eraseMethod(String currentMethod) {
-
+        // revisa en las llamadas a este metodo si se ahorra algo al recibir String 
+        // en lugar de Term
         if (currentMethod.length() <= 3)
             return null;
         else {
@@ -1752,6 +1978,15 @@ public class InferController {
         }
     }
     
+    /**
+     * Return true if and only if method is a base method, i.e. a method 
+     * that can't compose with another proof method. The base methods are 
+     * Direct Method, Starting From One Side Method, Transitivity Method, 
+     * Weakening Method, Strengthening Method
+     *  
+     * @param method: Term that represent the current state of the proof method
+     * @return true if and only if method is a base method.
+     */
     public static boolean isBaseMethod(Term method) {
         if (method instanceof App)
             return false;
@@ -1766,6 +2001,17 @@ public class InferController {
             return false;
     }
     
+    /**
+     * The statement that it's needed to prove change inside a sub proof. This method 
+     * calculate the statement within all the sub proofs a return the one in the 
+     * current sub proof
+     *  
+     * @param beginFormula: general statement to be proved, is the base to calculate 
+     *                      al de sub statement in the sub proofs
+     * @param method: Term that represent the current state of the proof method. This
+     *                term had the information about what is the current sub proof
+     * @return Term that represent the statement to be proved in the current sub proof.
+     */
     public static Term initStatement(Term beginFormula, Term method) {
         
         if (method.toString().equals("AI"))
@@ -1779,8 +2025,13 @@ public class InferController {
             consec = new App(new Const(7,"c_{7}"),consec);
             beginFormula = new App(new App(new Const(2,"c_{2}"),antec), consec);
             
-            return initStatement(beginFormula, ((App)method).q );
+            return initStatement(beginFormula, ((App)method).q);
         }
+        else if ( ((App)method).p.toStringFinal().equals("CO") ) {
+            beginFormula = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),beginFormula));
+            return initStatement(beginFormula, ((App)method).q);
+        }
+        // hay que poner else if para los otros metodos recursivos unarios
         else if ( ((App)method).p.toStringFinal().substring(0, 2).equals("AI") ) {
             if ( ((App)method).p instanceof Const ) {
                beginFormula = ((App)beginFormula).q;
@@ -1790,12 +2041,196 @@ public class InferController {
                return initStatement(beginFormula, ((App)method).q); 
             }
         }
-            return null;
+        // hay que poner else if para el metodo CA
+        return null;
     }
    
+    /**
+     * This method add 'formula' in one line sub proof for the current sub proof in 
+     * (typedTerm, method).
+     *  
+     * @param formula: first line to add for the current sub proof
+     * @param typedTerm: term that represent the current proof
+     * @param method: Term that represent the current state of the proof method. This
+     *                term had the information about what is the current sub proof
+     * @return Term that represent the statement to be proved in the current sub proof.
+     */
+    private Term addFirstLineSubProof(Term formula, Term typedTerm, Term method) {
+        Term auxMethod = method;
+        while (auxMethod instanceof App) {
+           if (isAIProof2Started(auxMethod) && isAIProof2Started(((App)auxMethod).q))
+           {
+             Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
+                                                                                    ((App)auxMethod).q);
+             return finishedAI2Proof(typedTerm,aux);
+           }
+           // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
+           else if (isAIProof2Started(auxMethod)) 
+           {
+               Map<String,String> values1 = new HashMap<String, String>();
+               values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
+               String aux = typedTerm.toStringFinal();
+               values1.put("ST2", formula.toStringFinal());
+               StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
+               String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
+               String metaTheo = sub1.replace(metaTheoT);
+               Map<String,String> values2 = new HashMap<String, String>();
+               values2.put("MT", metaTheo);
+               values2.put("T1Type", typedTerm.type().toStringFinal());
+               aux = typedTerm.toStringFinal();
+               values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
+               StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
+               String template = "S (I^{[x_{112}:=%(T1Type)]} A^{c_{1} x_{112} (c_{5} c_{8} x_{112})}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";
+               String proof = sub2.replace(template);
+               Term proofTerm = null;
+               try {
+                  proofTerm = new TypedApp(CombUtilities.getTerm(proof),typedTerm);
+               }
+               catch (TypeVerificationException e) {
+                  Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+               }
+               return proofTerm;
+           }
+           else
+               auxMethod = ((App)auxMethod).q;
+        }
+        return formula;
+    }
+    
+    /**
+     * True if and only if exists sub proof that is already started. This information 
+     * can infer from only the method term.
+     *  
+     * @param method: Term that represent the current state of the proof method. This
+     *                term had the information about what is the current sub proof
+     * @return True if and only if exists sub proof that is already started.
+     */
+    public static boolean isProofStarted(Term method) {
+        Term aux = method;
+        while (aux instanceof App) {
+            if (((App)aux).p instanceof App)
+                return true;
+            else 
+               aux = ((App)aux).q;
+        }
+        return aux instanceof Const && 
+                       (((Const)aux).getCon().equals("DM") ||
+                        ((Const)aux).getCon().equals("SS") ||   
+                        ((Const)aux).getCon().equals("TR") ||
+                        ((Const)aux).getCon().equals("WE") ||
+                        ((Const)aux).getCon().equals("ST")
+                       );
+    }
+    
+    /**
+     * True if and only if method is an And Introduction proof and in the second sub proof 
+     * exists sub proof (can be the same second sub proof) that is already started.
+     * 
+     * @param method: Term that represent the current state of the proof method. This
+     *                term had the information about what is the current sub proof
+     * @return True if and only if method is an And Introduction proof and in the second sub proof 
+     * exists sub proof (can be the same second sub proof) that is already started.
+     */
+    public static boolean isAIProof2Started(Term method) {
+        return method instanceof App && ((App)method).p instanceof App && 
+               ((App)((App)method).p).p.toStringFinal().equals("AI") && 
+               isProofStarted(((App)method).q);
+    }
+    
+    /**
+     * True if and only if the proof that represent typedTerm is an And Introduction 
+     * proof with only one line in the second proof.
+     *  
+     * @param typedTerm: Term that represent the proof.
+     * @return True if and only if the proof that represent typedTerm is an And Introduction 
+     *         proof with only one line in the second proof.
+     */
+    public static boolean isAIOneLineProof(Term typedTerm) {
+        return typedTerm instanceof App && ((App)typedTerm).p instanceof App &&
+                                    ((App)((App)typedTerm).p).q instanceof App && 
+                                   ((App)((App)((App)typedTerm).p).q).q instanceof App &&
+                       ((App)((App)((App)((App)typedTerm).p).q).q).q instanceof App &&
+                    ((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p instanceof TypedL &&
+    !(((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t.occur(new Var(122)));
+    }
+    
+    /**
+     * This method return the sub Term of typedTerm that represent the derivation tree 
+     * of only the current sub proof of the first And Introduction method searched in 
+     * method parameter.
+     *  
+     * @param typedTerm: Term that represent all the current proof.
+     * @param method: Term that represent the current state of the proof method. This
+     *                term had the information about what is the current sub proof
+     * @return sub Term of typedTerm that represent the derivation tree 
+     *         of only the current sub proof of the first And Introduction method searched 
+     *         in method parameter.
+     */
+    public static Term getSubProof(Term typedTerm, Term method) {
+       return getSubProof(typedTerm, method, false);
+    }
+    
+    /**
+     * This method return the sub Term of typedTerm that represent the derivation tree 
+     * of only the current sub proof if isRecursive parameter is true. If isRecursive 
+     * is false this method return the sub Term of typedTerm that represent the derivation tree 
+     * of only the current sub proof of the first And Introduction method searched in 
+     * method parameter.
+     *  
+     * @param typedTerm: Term that represent all the current proof.
+     * @param method: Term that represent the current state of the proof method. This
+     *                term had the information about what is the current sub proof.
+     * @param isRecursive: if the value is true, the search of the sub proof call this 
+     *                     method recursively.
+     * @return sub Term of typedTerm that represent the derivation tree 
+     *         of only the current sub proof. The deep of the sub proof depend on the 
+     *         value of isRecursive
+     */
+    public static Term getSubProof(Term typedTerm, Term method, boolean isRecursive) {
+        Term auxMethod = method;
+        while (auxMethod instanceof App) {
+          if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
+              ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
+              !isAIProof2Started(auxMethod)
+             )
+             return null;
+          else if (isAIProof2Started(auxMethod) && isAIOneLineProof(typedTerm))
+             return ((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t;
+          else if (isAIProof2Started(auxMethod) && !isAIOneLineProof(typedTerm)) 
+          {
+             if (isRecursive)
+               return getSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,true);
+             else
+               return ((App)((App)((App)((App)typedTerm).p).q).q).q;
+          }
+          else 
+             auxMethod = ((App)auxMethod).q;
+        }
+        return typedTerm;
+    }
+    
+    /**
+     * Controller that respond to http POST request encoded with JSON. Return an InferResponse
+     * Object with the the proof, in latex format, after an one step inference. 
+     *
+     * @param nStatement: id used by user to identify the statement of the inference. It is an HTTP POST 
+     *                    parameter encoded with JSON
+     * @param leibniz: String with the description of Leibniz of the inference in format C. It is an 
+     *                 HTTP POST parameter encoded with JSON
+     * @param instanciacion: String with the description of the substitution of the inference in format C. 
+     *                       It is an HTTP POST parameter encoded with JSON
+     * @param username: login of the user that make the request. It is in the url also
+     * @param nTeo: code of statement that the user is proving. It is in the url also
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also 
+     * @return InferResponse Object with the the proof, in latex format, after an one step inference. 
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Inferir",headers="Accept=application/json", produces= MediaType.APPLICATION_JSON_VALUE)    
-    public @ResponseBody InferResponse infer(@RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion, @PathVariable String username, 
-            @PathVariable String nTeo, @PathVariable String nSol, @RequestParam(value="nuevoMetodo") String nuevoMetodo/*, @RequestParam(value="teoremaInicial") String teoremaInicial, @RequestParam(value="nuevoMetodo") String nuevoMetodo */) 
+    public @ResponseBody InferResponse infer(@RequestParam(value="nStatement") String nStatement, 
+                                             @RequestParam(value="leibniz") String leibniz , 
+                                             @RequestParam(value="instanciacion") String instanciacion, 
+                                             @PathVariable String username, @PathVariable String nTeo, 
+                                             @PathVariable String nSol 
+                                             /*, @RequestParam(value="teoremaInicial") String teoremaInicial, @RequestParam(value="nuevoMetodo") String nuevoMetodo */) 
     {
         InferResponse response = new InferResponse();
         PredicadoId predicadoid=new PredicadoId();
@@ -1853,7 +2288,7 @@ public class InferController {
           TermParser parser2 = new TermParser(tokens2);
           try{*/
              //Jean el try descomentado solo con esta linea arr=parser2.instantiate(predicadoid,predicadoManager,simboloManager).value;
-          arr=termUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
+          arr=TermUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
           /*}
           catch(RecognitionException e){ // Wrong instantiation sent by the user
               String hdr = parser2.getErrorHeader(e);
@@ -1873,7 +2308,7 @@ public class InferController {
             TermParser parser3 = new TermParser(tokens3);
             try{*/
                //leibnizTerm =parser3.lambda(predicadoid,predicadoManager,simboloManager).value;
-            leibnizTerm =termUtilities.lambda(leibniz, predicadoid, predicadoManager, simboloManager);
+            leibnizTerm =TermUtilities.lambda(leibniz, predicadoid, predicadoManager, simboloManager);
             if ( ((Bracket)leibnizTerm).isIdFunction()) {
                 leibnizTerm = null;
                 leibniz = "";
@@ -1895,40 +2330,6 @@ public class InferController {
         String metodo = solucion.getMetodo();
         Term methodTerm = ProofMethodUtilities.getTerm(metodo);
         Term methodTermIter = methodTerm;
-        Term teoremProved = initStatement(formula, methodTerm);
-
-        // If the method is And Introduction, get the sub-tree that is being 
-        // proved
-        if (metodo.startsWith("And Introduction(")) {
-
-            // Get the path string
-            String[] methodAndPath = metodo.split("-");
-            metodo = methodAndPath[0];
-            char[] path = methodAndPath[1].toCharArray();
-
-            String[] subMethods;
-            
-            // Iterate over the path to get the correct subtree.
-            for (char c : path) {
-                
-                // TODO: we need to add a parser for recusive adoption of this 
-                // method
-                subMethods = metodo.substring(17,metodo.length()-1).split(";");
-                if (c == 'p') {
-                    teoremProved = ((App)teoremProved).q;
-                    metodo = subMethods[0];
-                    typedTerm = ((App)((App)typedTerm).p).q;
-                } else if (c == 'q') {
-                    teoremProved = ((App)(((App)teoremProved).p)).q;
-                    if (subMethods[1].equals("null")) {
-                        metodo = subMethods[0];
-                    } else {
-                        metodo = subMethods[1];
-                    }
-                    typedTerm = ((App)typedTerm).q;
-                }
-            }
-        }
         
         Stack<Term> methodStk = new Stack<Term>();
         Stack<Term> fatherProofs = new Stack<Term>();
@@ -1937,7 +2338,7 @@ public class InferController {
         Term initSt = formula;
         while (!(methodTermIter instanceof Const)) {
             methodStk.push(((App)methodTermIter).p);
-            initSt = initStatement(initSt,((App)methodTermIter).p);
+            initSt = initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
             formulasToProof.push(initSt);
             if (((App)methodTermIter).p instanceof App && 
                  ((App)((App)methodTermIter).p).p.toStringFinal().equals("AI")
@@ -1950,6 +2351,8 @@ public class InferController {
             }
             methodTermIter = ((App)methodTermIter).q;
         }
+        Term teoremProved = formulasToProof.pop();
+        
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROVE TYPE
         Term infer = null;
         try 
@@ -2077,120 +2480,29 @@ public class InferController {
         
         // Get the complete the method to check if the proof was And 
         // Introduction
-        String outerMethod = solucion.getMetodo();
-        Term originalTerm = solucion.getTypedTerm();
-        Term caseProof = null;
 
-        // Check if the proof was an And Introduction
-        if (outerMethod.startsWith("And Introduction(")) {
-
-            // Get the path string
-            String[] methodAndPath = outerMethod.split("-");
-            metodo = methodAndPath[0];
-            char[] path = methodAndPath[1].toCharArray();
-
-            // TODO: check the path to the correct tree
-            // We need to create a parse to apply this method recursively.
-            try {
-                //                      .
-                //                     / \
-                //         leftTreeTerm   caseqTerm
-                //              /   \ 
-                //          uTerm   casepTerm
-                //
-                // Append the new proof to the tree where it has to be.
-                Term leftTreeTerm = ((App)originalTerm).p;
-
-                System.out.println("leftTreeTerm: " + leftTreeTerm);
-
-                Term uTerm = ((App)leftTreeTerm).p;
-                Term caseqTerm =((App)originalTerm).q;
-                
-                // Store the proof of the case to check if it is final.
-                caseProof = finalProof;
-
-                // Check if it has to append the tree on the right or on the 
-                // left
-                if (path[0] == 'p') {
-                    finalProof = new TypedApp(
-                        new TypedApp(
-                            uTerm,
-                            finalProof
-                        ),
-                        caseqTerm
-                    );
-                } else {
-                    finalProof = new TypedApp(
-                        leftTreeTerm,
-                        finalProof
-                    );
+        Boolean isFinalSolution = teoremProved.equals(finalProof.type());
+        while (!methodStk.isEmpty())
+        {
+            Term methodTermAux = methodStk.pop();
+            if (isFinalSolution) {
+                if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("CR")) {
+                   finalProof = finishedCounterRecProve(formulasToProof.pop(), finalProof);
                 }
-
-            } catch (TypeVerificationException e) {
-                response.generarHistorial(username,formula, nTeo,finalProof,false,true, new Const(outerMethod),resuelveManager,disponeManager,simboloManager);
-                return response;
-            }
-        } 
-
-        Boolean isFinalSolution = false;
-        Boolean isCaseSolution = false;
-
-        // We need to check if we're finishing a case or the whole proof if we're
-        // on And Introduction method.
-        if (outerMethod.startsWith("And Introduction(") ) {
-
-            String[] methodAndPath = outerMethod.split("-");
-            char[] path = methodAndPath[1].toCharArray();
-
-            isCaseSolution = teoremProved.equals(caseProof.type()); 
-            
-            if (isCaseSolution) {
-                // If it is a solution for the first case, chage the path to 
-                // start the proof of q.
-                if (path[0] == 'p') {
-                    outerMethod = methodAndPath[0] + "-q";
-                    solucion.setMetodo(outerMethod);
-                    response.setEndCase(true);
-                // If not, we're proving the 2nd and last case.
-                } else {                    
-                    Term originalTeo = resuel.getTeorema().getTeoTerm();
-                    
-                    Term pProof = ((App)(((App)originalTerm).p)).q;
-                    Term qProof = caseProof;
-                    Term pTeo = ((App)originalTeo).q;
-                    Term qTeo = ((App)(((App)originalTeo).p)).q;
-
-                    System.out.println("qProof: " + qProof);
-
-                    Term joinedProof = finishAItemplates(pProof, qProof, pTeo, qTeo);
-                    
-                    solucion.setMetodo(methodAndPath[0]);
-                    solucion.setTypedTerm(joinedProof);
-                    isFinalSolution = originalTeo.equals(joinedProof.type());
+                else if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("CO")) {
+                   finalProof = finishedContradictionProve(formulasToProof.pop(), finalProof); 
+                }
+                else if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("AI")) {
+                   isFinalSolution = false;
+                   response.setEndCase(true);
                 }
             }
-        } 
-        // If we don't have cases, we still need to check if it is a final
-        // solution
-        else {
-            isFinalSolution = teoremProved.equals(finalProof.type());
-            while (!methodStk.isEmpty())
-            {
-                Term methodTermAux = methodStk.pop();
-                if (isFinalSolution) {
-                    if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("CR")) {
-                       finalProof = finishedCounterRecProve(formulasToProof.pop(), finalProof);
-                    }
-                    else if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("AI")) {
-                       isFinalSolution = false;
-                       response.setEndCase(true);
-                    }
-                }
-                if (methodTermAux instanceof App && ((App)methodTermAux).p.toStringFinal().equals("AI")) {
-                    finalProof = finishedAI2Proof(fatherProofs.pop(), finalProof);
-                }
+   // esto garantiza que despues de cada inferencia de un paso se actualice el arbol de la segunda prueba
+            if (methodTermAux instanceof App && ((App)methodTermAux).p.toStringFinal().equals("AI")) {
+                finalProof = finishedAI2Proof(fatherProofs.pop(), finalProof);
             }
         }
+        
         // newProve might or might not be different than pasoPostTerm
         
         // UPDATE SOLUCION 
@@ -2254,14 +2566,28 @@ public class InferController {
                                       .replace("%M1Q", template1q);
 
         // Parse the new tree from its string.
-        Term proof = combUtilities.getTerm(template2pq);
+        Term proof = CombUtilities.getTerm(template2pq);
 
         return proof;
     }
     
+    /**
+     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Object with the the proof, in latex format, without the last line. If delete the last 
+     * line implies that you must select a new proof method, the InferResponse has the select 
+     * method attribute on.
+     *
+     * @param username: login of the user that make the request. It is in the URL also
+     * @param nTeo: code of statement that the user is proving. It is in the URL also
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also 
+     * @return InferResponse Object with the the proof, in latex format, without the last line. If delete the last 
+     * line implies that you must select a new proof method, the InferResponse has the select 
+     * method attribute on. 
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Retroceder",produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse retroceder( /*@RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion,*/ @PathVariable String username, 
-            @PathVariable String nTeo, @PathVariable String nSol)
+    public @ResponseBody InferResponse retroceder( /*@RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion,*/ 
+                                                  @PathVariable String username, 
+                                                  @PathVariable String nTeo, @PathVariable String nSol)
     {   
         InferResponse response = new InferResponse();
 
@@ -2326,11 +2652,22 @@ public class InferController {
         return response;
     }
         
+    /**
+     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Object with the proof, in latex format, in witch the statement of the last sub proof is 
+     * is clickeable
+     *
+     * @param username: login of the user that make the request. It is in the url also
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also
+     * @param nTeo: code of statement that the user is proving. It is in the url also
+     * @return Return an InferResponse Object with the proof, in latex format, in witch the 
+     *         statement of the last sub proof is clickeable
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeableMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse teoremaClickeableMD( /*@RequestParam(value="teoid") String teoid,*/ 
-            @PathVariable String username, 
-            @PathVariable String nSol, 
-            @PathVariable String nTeo)
+                                                           @PathVariable String username, 
+                                                           @PathVariable String nSol, 
+                                                           @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse();
       
@@ -2377,6 +2714,18 @@ public class InferController {
         return response;
     }
     
+    /**
+     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Object with the proof, in latex format, in witch the statement of the last sub proof is 
+     * an equality (or equivalence) with both sides (left and right) clickeable 
+     *
+     * @param username: login of the user that make the request. It is in the url also
+     * @param nTeo: code of statement that the user is proving. It is in the url also
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also
+     * @return Return an InferResponse Object with the proof, in latex format, in witch the 
+     *         statement of the last sub proof is an equality (or equivalence) with both 
+     *         sides (left and right) clickeable
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeablePL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse teoremaClickeablePL( /*@RequestParam(value="teoid") String teoid,*/ 
             @PathVariable String username, 
@@ -2454,101 +2803,24 @@ public class InferController {
         return response;
     }
     
-    private Term addFirstLineSubProof(Term formula, Term typedTerm, Term method) {
-        if (isAIProof2Started(method) && isAIProof2Started(((App)method).q))
-        {
-            Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
-                                                                                        ((App)method).q);
-            return finishedAI2Proof(typedTerm,aux);
-        }
-        else if (isAIProof2Started(method)) 
-        {
-            Map<String,String> values1 = new HashMap<String, String>();
-            values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
-            String aux = typedTerm.toStringFinal();
-            values1.put("ST2", formula.toStringFinal());
-            StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
-            String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
-            String metaTheo = sub1.replace(metaTheoT);
-            Map<String,String> values2 = new HashMap<String, String>();
-            values2.put("MT", metaTheo);
-            values2.put("T1Type", typedTerm.type().toStringFinal());
-            aux = typedTerm.toStringFinal();
-            values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
-            StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
-            String template = "S (I^{[x_{112}:=%(T1Type)]} A^{c_{1} x_{112} (c_{5} c_{8} x_{112})}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";
-            String proof = sub2.replace(template);
-            Term proofTerm = null;
-            try {
-               proofTerm = new TypedApp(combUtilities.getTerm(proof),typedTerm);
-            }
-            catch (TypeVerificationException e) {
-                Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-            }
-            return proofTerm;
-        }
-        else
-            return formula;
-    }
-    
-    public static boolean isProofStarted(Term method) {
-        Term aux = method;
-        while (aux instanceof App) {
-            if (((App)aux).p instanceof App)
-                return true;
-            else {
-               aux = ((App)aux).q;
-               String m = aux.toStringFinal();
-            }
-        }
-        return aux instanceof Const && 
-                       (((Const)aux).getCon().equals("DM") ||
-                        ((Const)aux).getCon().equals("SS") ||   
-                        ((Const)aux).getCon().equals("TR") ||
-                        ((Const)aux).getCon().equals("WE") ||
-                        ((Const)aux).getCon().equals("ST")
-                       );
-    }
-    
-    // Pre: ya debe existir un metodo parcial en la segunda prueba
-    public static boolean isAIProof2Started(Term method) {
-        return method instanceof App && ((App)method).p instanceof App && 
-               ((App)((App)method).p).p.toStringFinal().equals("AI") && 
-               isProofStarted(((App)method).q);
-    }
-    
-    public static boolean isAIOneLineProof(Term typedTerm) {
-        return typedTerm instanceof App && ((App)typedTerm).p instanceof App &&
-                                    ((App)((App)typedTerm).p).q instanceof App && 
-                                   ((App)((App)((App)typedTerm).p).q).q instanceof App &&
-                       ((App)((App)((App)((App)typedTerm).p).q).q).q instanceof App &&
-                    ((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p instanceof TypedL &&
-    !(((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t.occur(new Var(122)));
-    }
-    
-    public static Term getSubProof(Term typedTerm, Term method) {
-        if (method instanceof App && ((App)method).p instanceof App && 
-            ((App)((App)method).p).p.toStringFinal().equals("AI") && 
-            !isAIProof2Started(method)
-           )
-           return null;
-        else if (method instanceof App && ((App)method).p instanceof App && 
-                 ((App)((App)method).p).p.toStringFinal().equals("AI") && 
-                 isAIProof2Started(method) && isAIOneLineProof(typedTerm)
-                )
-           return ((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t;
-        else if (method instanceof App && ((App)method).p instanceof App && 
-                 ((App)((App)method).p).p.toStringFinal().equals("AI") && 
-                 isAIProof2Started(method) && !isAIOneLineProof(typedTerm)
-                )
-           return ((App)((App)((App)((App)typedTerm).p).q).q).q;
-        else
-           return typedTerm;
-    }
-    
+    /**
+     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Object with the proof, in latex format, with only the statement selected for the 
+     * user in the first line of the current sub proof.
+     *
+     * @param teoid: ID of theorem that user select to start the Direct Method proof. It is a 
+     *               HTTP POST parameter encode with JSON
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also
+     * @param username: login of the user that make the request. It is in the URL also
+     * @param nTeo: code of statement that the user is proving. It is in the URL also 
+     * @return InferResponse Object with the the proof, in latex format, with only the statement 
+     *         selected for the user in the first line of the current sub proof.
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialMD(@RequestParam(value="teoid") String teoid, @PathVariable String nSol, @PathVariable String username, 
-            @PathVariable String nTeo) //Jean throws TypeVerificationException
+    public @ResponseBody InferResponse teoremaInicialMD(@RequestParam(value="teoid") String teoid, 
+                                                        @PathVariable String nSol, 
+                                                        @PathVariable String username, 
+                                                        @PathVariable String nTeo) //Jean throws TypeVerificationException
     {   
         String nuevoMetodo = "DM";
         InferResponse response = new InferResponse();
@@ -2697,6 +2969,7 @@ public class InferController {
         Term typedTerm = null;
         if (nSol.equals("new"))
         {
+            typedTerm = formulaTerm;
             Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
@@ -2708,56 +2981,18 @@ public class InferController {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
             String method = solucion.getMetodo();
             
-            // If the method is And Introduction, we have to look for the 
-            // correct sub tree to operate.
-            if (method.startsWith("And Introduction(")) {
-                
-                // Obtains the path of the current sub-tree.
-                String[] methodAndPath = method.split("-");
-                String[] methods = methodAndPath[0].substring(
-                    17, 
-                    methodAndPath[0].length() - 1
-                ).split(";");
-
-                Term caseqTerm = ((App)(((App)formulaAnterior).p)).q;
-                
-                try {
-                    // If first case method is null, there's no path to follow
-                    // We have to initialize the path.
-                    if (methods[0].equals("null")) {
-                        formulaTerm = new TypedApp(new TypedApp(new TypedU(), formulaTerm), caseqTerm); 
-                        // TODO: need to check this for recursive case
-                        // We need to implement a parser for recursive case
-                        nuevoMetodo = "And Introduction(" + nuevoMetodo + 
-                                      ";null)-p";
-                        
-                    } else {
-                        Term casepTerm = ((App)(((App)(solucion.getTypedTerm())).p)).q;
-
-                        formulaTerm = new TypedApp(new TypedApp(new TypedU(), casepTerm), formulaTerm);
-                        nuevoMetodo = "And Introduction(" + methods[0] + ";" + 
-                                      nuevoMetodo + ")-q";
-                    }
-                    solucion.setTypedTerm(formulaTerm);
-                } catch (TypeVerificationException e) {
-                    response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,true,new Const(nuevoMetodo),
-                                  resuelveManager,disponeManager,simboloManager);
-                    return response;
-                }
+            metodoTerm = updateMethod(method, nuevoMetodo);
+            if (teoid.substring(3,teoid.length()).equals(nTeo)) {
+               formulaTerm = initStatement(formulaTerm, metodoTerm);
+               typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+               solucion.setTypedTerm(typedTerm);
             } else {
-                metodoTerm = updateMethod(method, nuevoMetodo);
-                if (teoid.substring(3,teoid.length()).equals(nTeo)) {
-                   formulaTerm = initStatement(formulaTerm,metodoTerm);
-                   typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
-                   solucion.setTypedTerm(typedTerm);
-                } else {
-                   typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
-                   solucion.setTypedTerm(typedTerm);
-                }
-                nuevoMetodo = metodoTerm.toStringFinal();
-                solucion.setMetodo(nuevoMetodo);
-                solucionManager.updateSolucion(solucion);
+               typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+               solucion.setTypedTerm(typedTerm);
             }
+            nuevoMetodo = metodoTerm.toStringFinal();
+            solucion.setMetodo(nuevoMetodo);
+            solucionManager.updateSolucion(solucion);
         }
         
         response.generarHistorial(
@@ -2779,7 +3014,20 @@ public class InferController {
         return response;
     }
 
-    
+    /**
+     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Object with the proof, in latex format, with only the expression selected (right or left 
+     * side of the equation) for the user in the first line of the current sub proof.
+     *
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
+     * @param lado: String that encode the side of the equation selected for the user. It is a 
+     *              HTTP POST parameter encode with JSON
+     * @param username: login of the user that make the request. It is in the URL also
+     * @param nTeo: code of statement that the user is proving. It is in the URL also 
+     * @return InferResponse Object with the the proof, in latex format, with only the expression 
+     *         selected (right or left side of the equation) for the user in the first line of the 
+     *         current sub proof.
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialPL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse teoremaInicialPL(@PathVariable String nSol, 
                                                         @RequestParam(value="lado") String lado, 
@@ -2813,6 +3061,7 @@ public class InferController {
         */
         Solucion solucion = null;
         Term metodoTerm = null;
+        Term typedTerm = null;
         if (nSol.equals("new"))
         {
             solucion = new Solucion(resuelve,false,null, nuevoMetodo);
@@ -2839,19 +3088,23 @@ public class InferController {
             // Jean formulaTerm = ((App)formulaAnterior).q;
         }
         
-        solucion.setTypedTerm(formulaTerm);
         if (nSol.equals("new")) {
+            typedTerm = formulaTerm;
+            solucion.setTypedTerm(formulaTerm);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         }
-        else
+        else {
+            typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
+        }
         
         response.generarHistorial(
             username,
             formulaAnterior, 
             nTeo,
-            formulaTerm,
+            typedTerm,
             true,
             true,
             metodoTerm,
@@ -2866,6 +3119,17 @@ public class InferController {
         return response;
     }
     
+    /**
+     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Object with the proof, in latex format, with only the antecedent of the current statement 
+     * in the first line of the current sub proof.
+     *
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
+     * @param username: login of the user that make the request. It is in the URL also
+     * @param nTeo: code of statement that the user is proving. It is in the URL also 
+     * @return InferResponse Object with the the proof, in latex format, with only the antecedent 
+     *         of the current statement in the first line of the current sub proof.
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse teoremaInicialD(@PathVariable String nSol, 
                                                        @PathVariable String username, 
@@ -2885,6 +3149,7 @@ public class InferController {
         
         Term metodoTerm = null;
         Solucion solucion = null;
+        Term typedTerm = null;
         if (nSol.equals("new"))
         {
             solucion = new Solucion(resuelve,false,null, nuevoMetodo);
@@ -2895,7 +3160,7 @@ public class InferController {
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
             metodoTerm = updateMethod(method, nuevoMetodo);
-            formulaTerm = initStatement(formulaTerm,metodoTerm);
+            formulaTerm = initStatement(formulaTerm, metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
@@ -2913,19 +3178,23 @@ public class InferController {
             response.setLado("0");
         }
         
-        solucion.setTypedTerm(formulaTerm);
         if (nSol.equals("new")) {
+            typedTerm = formulaTerm;
+            solucion.setTypedTerm(formulaTerm);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
-        } else
+        } else {
+            typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
+        }
         
         solucionManager.addSolucion(solucion);
         response.generarHistorial(
             username,
             formulaAnterior, 
             nTeo,
-            formulaTerm,
+            typedTerm,
             true,
             true,
             metodoTerm,
@@ -2940,6 +3209,17 @@ public class InferController {
         return response;
     }
     
+    /**
+     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Object with the proof, in latex format, with only the consequent of the current statement 
+     * in the first line of the current sub proof.
+     *
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
+     * @param username: login of the user that make the request. It is in the URL also
+     * @param nTeo: code of statement that the user is proving. It is in the URL also 
+     * @return InferResponse Object with the the proof, in latex format, with only the consequent 
+     *         of the current statement in the first line of the current sub proof.
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialF", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse teoremaInicialF(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {
@@ -2954,6 +3234,7 @@ public class InferController {
         
         Term metodoTerm = null;
         Solucion solucion = null;
+        Term typedTerm = null;
         if (nSol.equals("new"))
         {
             solucion = new Solucion(resuelve,false,null,nuevoMetodo);
@@ -2964,7 +3245,7 @@ public class InferController {
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
             metodoTerm = updateMethod(method, nuevoMetodo);
-            formulaTerm = initStatement(formulaTerm,metodoTerm);
+            formulaTerm = initStatement(formulaTerm, metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
@@ -2982,19 +3263,23 @@ public class InferController {
             response.setLado("0");
         }
         
-        solucion.setTypedTerm(formulaTerm);
         if (nSol.equals("new")) {
+            typedTerm = formulaTerm;
+            solucion.setTypedTerm(formulaTerm);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
-        } else
+        } else {
+            typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
+        }
         
         solucionManager.addSolucion(solucion);
         response.generarHistorial(
             username,
             formulaAnterior, 
             nTeo,
-            formulaTerm,
+            typedTerm,
             true,
             true,
             metodoTerm,
@@ -3009,6 +3294,17 @@ public class InferController {
         return response;
     }
 
+    /**
+     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Object with the proof, in latex format, with only the antecedent of the current statement 
+     * in the first line of the current sub proof.
+     *
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
+     * @param username: login of the user that make the request. It is in the URL also
+     * @param nTeo: code of statement that the user is proving. It is in the URL also 
+     * @return InferResponse Object with the the proof, in latex format, with only the antecedent 
+     *         of the current statement in the first line of the current sub proof.
+     */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementT", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse iniStatementT(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {
@@ -3022,6 +3318,7 @@ public class InferController {
         
         Term metodoTerm = null;
         Solucion solucion = null;
+        Term typedTerm = null;
         if (nSol.equals("new"))
         {
             solucion = new Solucion(resuelve,false,null,nuevoMetodo);
@@ -3047,18 +3344,22 @@ public class InferController {
             response.setLado("0");
         }
         
-        solucion.setTypedTerm(formulaTerm);
         if (nSol.equals("new")) {
+            typedTerm = formulaTerm;
+            solucion.setTypedTerm(formulaTerm);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
-        } else
+        } else {
+            typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
+        }
         
         response.generarHistorial(
             username,
             formulaAnterior, 
             nTeo,
-            formulaTerm,
+            typedTerm,
             true,
             true,
             metodoTerm,
@@ -3073,6 +3374,42 @@ public class InferController {
         return response;
     }
     
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementCO", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse iniStatementCO(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    {   
+        String nuevoMetodo = "CO";
+        InferResponse response = new InferResponse();
+        
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        
+        Term metodoTerm = null;
+        Solucion solucion = null;
+        if (nSol.equals("new"))
+        {
+          metodoTerm = new Const(nuevoMetodo);
+          solucion = new Solucion(resuelve,false,null, nuevoMetodo);
+          solucionManager.addSolucion(solucion);
+          response.setnSol(solucion.getId()+"");
+        }
+        else
+        {   
+          solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+          metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
+          nuevoMetodo = metodoTerm.toStringFinal();
+          solucion.setMetodo(nuevoMetodo);
+          solucionManager.updateSolucion(solucion);
+        }
+        
+        response.generarHistorial(username,formulaAnterior, nTeo,solucion.getTypedTerm(),true,false,metodoTerm,
+                                      resuelveManager,disponeManager,simboloManager);
+        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
+        response.setHistorial(historial);  */
+        response.setCambiarMetodo("2");
+
+        return response;
+    }
+    
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementCR", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse iniStatementCR(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {   
@@ -3083,7 +3420,6 @@ public class InferController {
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
         
         Term metodoTerm = null;
-        
         Solucion solucion = null;
         try {
           if (nSol.equals("new"))
@@ -3101,7 +3437,7 @@ public class InferController {
           {   
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
-            if (((Const)((App)((App)initStatement(formulaAnterior,metodoTerm)).p).p).getId() != 2) {
+            if (((Const)((App)((App)initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
                response.setLado("0");
                return response;
             }
@@ -3126,12 +3462,13 @@ public class InferController {
      * Inits a proof for And Introduction method.
      * @param nSol Number of the solution.
      * @param username Name of the user that is making the proof.
-     * @param nTeo Number of teorem to be prooved.
+     * @param nTeo Number of theorem to be proved.
      * @return
      */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniAndI", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse iniAndI(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {
+        // revisa la recursion de este metodo si no hace falta un initStatement o getSubProof
         String nuevoMetodo = "AI";
         InferResponse response = new InferResponse();
         
@@ -3234,7 +3571,7 @@ public class InferController {
             // Case you have a solution already started.
             String expression2 = ((App)((App)formulaAnterior).p).q.toStringInf(simboloManager,"");
         }
-
+        
         return response;
 */
     }
@@ -3244,8 +3581,9 @@ public class InferController {
         this.usuarioManager = usuarioManager;
     }
     
-    public void setTerminoManager(TerminoManager terminoManager) 
+/*    public void setTerminoManager(TerminoManager terminoManager) 
     {
         this.terminoManager = terminoManager;
     }
+*/
 }
