@@ -39,13 +39,27 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class InferResponse {
     
-    private String historial;
+    // Has all the proof made at this point, written in LaTeX.
+    private String historial; 
+
     private String errorParser2;
     private String errorParser3;
-    private String cambiarMetodo;
-    private String nSol;
+
+    // Indicates if the users are at a step in which they have to select the proof method.
+    // If its value is "0", the option to select method does not appear.
+    private String cambiarMetodo; 
+
+    // Each demonstration that is attempted will have a different value in the database,
+    // despite that they are made by different users. "nSol" is that unique value.
+    private String nSol; 
+
+    // Indicates if the proof method is starting from one side.
     private String lado;
+
+    // Determines if the proof was solved so a congratulatory message should be displayed
     private String resuelto;
+
+    // This is not included in the JSON response. Its purpose is local for the "generarHistorial" method.
     private boolean valid;
 
     // Represents if the solution is ending a case.
@@ -261,6 +275,16 @@ public class InferResponse {
     	return "NoModus";
     }
     
+    /**
+     * This function generates a step in the demonstration of a theorem when the method is to
+     * start from one side. Note that this not only generates the hint, but the complete step.
+     * @param user 
+     * @param typedTerm
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @return The new step of the demonstration as a string
+     */
     private String hintOneSide(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
         
             String teo = "";
@@ -345,6 +369,16 @@ public class InferResponse {
             return hint;
     }
 
+    /**
+     * This function generates the hint of a step of a demonstration when the prove method is 
+     * weakening, but the current step is not an implication.
+     * @param user 
+     * @param ultInf
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @return The hint of the step as a string.
+     */
     private String hintWSEqInfer(String user, Term ultInf, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
         Term aux = ((TypedApp)ultInf).q;
         int z = ((Bracket)((TypedApp)ultInf).p.type()).x();
@@ -360,6 +394,16 @@ public class InferResponse {
         return hintOneSide(user, typedTerm, resuelveManager, disponeManager, s);
     }
     
+    /**
+     * This function generates the hint of a step of a demonstration when the prove method is 
+     * weakening, and the current step is an implication.
+     * @param user 
+     * @param ultInf
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @return The hint of the step as a string.
+     */
     private String hintWSOpInfer(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
         
         Term iter, ultInf;
@@ -404,6 +448,18 @@ public class InferResponse {
             return hint.substring(0, hint.length()-7)+"~and~E:"+leibniz.toStringInf(s, "")+"\\rangle";
     }
     
+    /**
+     * This function adds a proof of just one step into a bigger proof, 
+     * when the demonstration method is the direct one.
+     * @param user 
+     * @param typedTerm
+     * @param solved
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @param oneSide
+     * @return Nothing.
+     */
     private void setDirectProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s, boolean oneSide) {
         String primExp = "";
     	String hint = "";
@@ -644,6 +700,9 @@ public class InferResponse {
         this.setHistorial(auxHistorial);
     };
 
+    // >>> This will probably be removed because it corresponds to a previous codification
+    // to handle when a demostration calls another method, and then it calls another method, 
+    // and so on
     /**
      * Using the corresponding path, obtains the terms in placeholder's position from a term
      * @param rootTree
@@ -744,6 +803,14 @@ public class InferResponse {
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
     
+    /**
+     * Creates a LaTeX string that can be clicked by the user.
+     * @param newTerm
+     * @param clickeable
+     * @param method
+     * @param isRootTeorem
+     * @return The string that the user can click.
+     */
     private String clickeableST(Term newTerm, String clickeable, Term method, boolean isRootTeorem, 
                                 SimboloManager s) throws Exception {
 
@@ -768,7 +835,7 @@ public class InferResponse {
     }
     
     /**
-     * Calls function generarHistorial assuming that it is always a root teorem
+     * Calls function generarHistorial assuming that it is always a root theorem
      * and thus is doesn't contain identation.
      * @param user
      * @param formula
@@ -810,6 +877,23 @@ public class InferResponse {
         );
     }
 
+    /**
+     * Prints all the demonstration made at the moment. Note that if a new step will be added,
+     * all the proof from the beginning will be printed again.
+     * @param user
+     * @param formula
+     * @param header
+     * @param nTeo
+     * @param typedTerm
+     * @param valida
+     * @param labeled
+     * @param metodo
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @param clickeable
+     * @param isRootTeorem
+     */
     public void generarHistorial(
         String user, 
         Term formula,
