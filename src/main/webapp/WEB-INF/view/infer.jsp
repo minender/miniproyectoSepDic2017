@@ -30,15 +30,16 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
-        
+        <!--"[MathJax]/extensions/TeX/forminput.js"  "[Contrib]/forminput/forminput.js"-->
         <script type="text/x-mathjax-config">
           MathJax.Hub.Config({
           extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
           jax: ["input/TeX","output/HTML-CSS"],
-          tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true},
+          tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true,},
           TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}
          });
         </script>
+        <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML">-->
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript">
