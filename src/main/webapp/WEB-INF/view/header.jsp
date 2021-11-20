@@ -40,6 +40,13 @@
           <c:when test='${misTeoremasMenu.equals("active")}'>
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/buscarSoluciones.js"></script>
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/expandMeta.js"></script>
+            <c:choose>
+                <c:when test="${showCategorias.size() == 0}">
+                  <script>
+                    $(document).ready(function(){$("#exampleModal").modal('show');});
+                  </script>
+                </c:when>
+            </c:choose>
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
           </c:when>
         </c:choose>

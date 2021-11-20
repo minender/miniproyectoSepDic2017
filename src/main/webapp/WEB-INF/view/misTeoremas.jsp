@@ -32,7 +32,7 @@
             <div class="row flex align-items-center">
                 <h1>Theorems from ${usuario.getNombre()} ${usuario.getApellido()}</h1>
                 <a data-target="#exampleModal" data-toggle="modal">            
-                    <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
+                    <i id="cate-cog" class="fa fa-cog ml-2" aria-hidden="true"></i>                
                 </a>
             </div>
         </c:when>
@@ -41,7 +41,7 @@
             <div class="row flex align-items-center">
             <h1>My Theorems</h1>
             <a data-target="#exampleModal" data-toggle="modal">            
-                <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
+                <i id="cate-cog" class="fa fa-cog ml-2" aria-hidden="true"></i>                
             </a>
             </div>
         </c:otherwise>

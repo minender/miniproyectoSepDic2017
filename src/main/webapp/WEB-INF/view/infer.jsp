@@ -30,6 +30,13 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
+        <c:choose>
+            <c:when test="${showCategorias.size() == 0}">
+              <script>
+                $(document).ready(function(){$("#exampleModal").modal('show');});
+              </script>
+            </c:when>
+        </c:choose>
         <!--"[MathJax]/extensions/TeX/forminput.js"  "[Contrib]/forminput/forminput.js"-->
         <script type="text/x-mathjax-config">
           MathJax.Hub.Config({
@@ -417,7 +424,7 @@
                 <div class="row flex align-items-center">
                 <h3 style="margin-left: 5%; margin-top: 2%;padding:0px;height:40px;"><a>Theorems</a></h3>
                 <a data-target="#exampleModal" data-toggle="modal">            
-                    <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
+                    <i id="cate-cog" class="fa fa-cog ml-2" aria-hidden="true"></i>                
                 </a>
                </div>
             <ul style="padding-left: 20px;">

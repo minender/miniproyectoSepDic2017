@@ -124,6 +124,16 @@ body > .navbar .brand {
 	transition: all .2s linear;
 }
 
+i#cate-cog {
+    color:#6c757d;
+    cursor: pointer;
+    font-size:21px;
+}
+
+i#cate-cog:hover {
+    color: #0056b3;
+}
+
 a:hover {
    text-decoration: none;
 }

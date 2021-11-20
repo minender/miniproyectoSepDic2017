@@ -114,7 +114,6 @@ public class InferController {
         {
             return "redirect:/index";
         }
-        System.out.println("hola");
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
         for (Resuelve r: resuelves) // Este for debes mandarlo para el manager y quitar
         {                           // la construccion del metateorema del true
