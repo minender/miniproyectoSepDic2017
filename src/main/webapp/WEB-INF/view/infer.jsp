@@ -30,15 +30,23 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
-        
+        <c:choose>
+            <c:when test="${showCategorias.size() == 0}">
+              <script>
+                $(document).ready(function(){$("#exampleModal").modal('show');});
+              </script>
+            </c:when>
+        </c:choose>
+        <!--"[MathJax]/extensions/TeX/forminput.js"  "[Contrib]/forminput/forminput.js"-->
         <script type="text/x-mathjax-config">
           MathJax.Hub.Config({
           extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
           jax: ["input/TeX","output/HTML-CSS"],
-          tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true},
+          tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true,},
           TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}
          });
         </script>
+        <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML">-->
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript">
@@ -416,7 +424,7 @@
                 <div class="row flex align-items-center">
                 <h3 style="margin-left: 5%; margin-top: 2%;padding:0px;height:40px;"><a>Theorems</a></h3>
                 <a data-target="#exampleModal" data-toggle="modal">            
-                    <i class="fa fa-cog ml-2" aria-hidden="true"></i>                
+                    <i id="cate-cog" class="fa fa-cog ml-2" aria-hidden="true"></i>                
                 </a>
                </div>
             <ul style="padding-left: 20px;">

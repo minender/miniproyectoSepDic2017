@@ -80,7 +80,7 @@ public class TypedApp extends App implements TypedTerm{
                 Const op = (Const)leftChild.p;
 
                 // check if it's deducting an equivalence or not
-                if (!op.getCon().trim().equals("c_{1}"))
+                if (!(op.getCon().trim().equals("c_{1}") || op.getCon().trim().equals("c_{20}")))
                     throw new TypeVerificationException();
 
                 Term r1 = leftChild.q;
