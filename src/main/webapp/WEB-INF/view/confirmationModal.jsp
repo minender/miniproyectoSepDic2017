@@ -192,8 +192,7 @@
 			this.selectedMethod = 1;
 			closeModal();
 
-		}
-                else if (this.selectedMethod === "CO") { // weakening method
+		} else if (this.selectedMethod === "CO") { // contradiction method
 			
 			$("#selectTeoInicial").val("0");
 			COMethod();
@@ -201,8 +200,7 @@
 			this.selectedMethod = null;
 			closeModal();
 
-		}
-                else if (this.selectedMethod === "CR") { // weakening method
+		} else if (this.selectedMethod === "CR") { // counter-reciprocal method
 			
 			$("#selectTeoInicial").val("0");
 			$("#metodosDiv").hide();

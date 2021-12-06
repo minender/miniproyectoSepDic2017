@@ -3381,30 +3381,41 @@ public class InferController {
         InferResponse response = new InferResponse();
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+
+        // It is the theorem statement but parsed as a binary tree. 
+        // We call it as "previous" because it will change when the prove starts: ¬Statement => False
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm(); 
         
+        // Despite the new method is "CO", maybe it is nested into a previous one.
         Term metodoTerm = null;
         Solucion solucion = null;
+
         if (nSol.equals("new"))
         {
-          metodoTerm = new Const(nuevoMetodo);
-          solucion = new Solucion(resuelve,false,null, nuevoMetodo);
-          solucionManager.addSolucion(solucion);
-          response.setnSol(solucion.getId()+"");
+            metodoTerm = new Const(nuevoMetodo);
+
+            // The arguments are: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, and 4) demonstration method
+            solucion = new Solucion(resuelve,false,null, nuevoMetodo);
+
+            // Here is where we add a new row to the "solucion" table
+            solucionManager.addSolucion(solucion);
+            response.setnSol(solucion.getId()+""); // The concatenation with "" converts the id to a string
         }
         else
         {   
-          solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-          metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
-          nuevoMetodo = metodoTerm.toStringFinal();
-          solucion.setMetodo(nuevoMetodo);
-          solucionManager.updateSolucion(solucion);
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
+            nuevoMetodo = metodoTerm.toStringFinal();
+            solucion.setMetodo(nuevoMetodo);
+            solucionManager.updateSolucion(solucion);
         }
         
         response.generarHistorial(username,formulaAnterior, nTeo,solucion.getTypedTerm(),true,false,metodoTerm,
                                       resuelveManager,disponeManager,simboloManager);
         /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
         response.setHistorial(historial);  */
+
+        // It is "2" because we need the button "Go back" to appear in case we no longer want to use this demonstration method.
         response.setCambiarMetodo("2");
 
         return response;
@@ -3424,6 +3435,7 @@ public class InferController {
         try {
           if (nSol.equals("new"))
           {
+            // Determines if the prove can by made bu counter-reciprocal method
             if (((Const)((App)((App)formulaAnterior).p).p).getId() != 2) {
                response.setLado("0");
                return response;

@@ -40,6 +40,8 @@ function clickAlias(Math1,alias,valorAlias)
 
 function setForms(elegirMetodo) {
 
+    // The value '1' is for when the user is still selecting demonstration methods because the first one
+    // was not atomic. At that point, the buttons "Infer", "Go back" and "Clean" appear.
     if (elegirMetodo=='1') {
         $("#metodosDemostracion").val("0");
         $("#metodosDiv").show();
@@ -49,7 +51,10 @@ function setForms(elegirMetodo) {
         $('#BtnInferir').show();
         $("#inferForm").hide();
         $("#selectTeoInicial").val("1"); // yo no se si todavia esto hace falta
-    } else if (elegirMetodo=='2') {
+    } 
+    // The value '2' is for when the demonstration is starting, so the user may select the demonstration
+    // method but the buttons "Infer", "Go back" and "Clean" do not appear.
+    else if (elegirMetodo=='2') {
         $("#metodosDemostracion").val("0");
         $("#metodosDiv").show();
         $("#inferForm").show();
@@ -58,7 +63,10 @@ function setForms(elegirMetodo) {
         $('#jaxButtonsDiv').hide();
         $('#stSustLeibDiv').hide();
         $("#selectTeoInicial").val("1");
-    } else {
+    } 
+    // The rest is for when the demonstration is advanced, so he can make inferences, can go back
+    // a step, and does not need to select a demonstration method.
+    else {
         $("#selectTeoInicial").val("0");
         $('#stSustLeibDiv').show();
         $('#jaxButtonsDiv').show();
@@ -336,6 +344,8 @@ function COMethod(/*teoid*/){
                 //$('#nSolucion').val(data.nSol);
                 //nSol = $('#nSolucion').val();
                 var url = $(form).attr('action');
+
+                // We delete the last 3 characters because we know they are "new"
                 url = url.substring(0,url.length-3)+data.nSol;
                 $(form).attr('action',url);
             }

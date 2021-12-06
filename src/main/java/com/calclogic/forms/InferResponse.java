@@ -46,7 +46,9 @@ public class InferResponse {
     private String errorParser3;
 
     // Indicates if the users are at a step in which they have to select the proof method.
-    // If its value is "0", the option to select method does not appear.
+    // When it is "0", the option to select method does not appear.
+    // When it is "1", the option to select method appears, but not the button "Go back".
+    // When it is "2", the option to select method appears and also the "Go back" button.
     private String cambiarMetodo; 
 
     // Each demonstration that is attempted will have a different value in the database,
@@ -1116,12 +1118,19 @@ public class InferResponse {
             solved = type.equals(formula);
         else
             solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a
-        if (direct) {       // si se pide labeled o no la ultima linea, aqui se cablea con solved = true
+                           // si se pide labeled o no la ultima linea, aqui se cablea con solved = true
+
+        // Here is where we really generate the proof record accoding to the demonstration method
+        if (direct) {       
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, false);
-        }else if (oneSide)
+        }
+
+        else if (oneSide)
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);
+
         else if (weakening || strengthening || transitivity)
             setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);
+
         else if (counterRecip) {
             Term antec = ((App)formula).q;
             Term consec = ((App)((App)formula).p).q;
@@ -1136,7 +1145,7 @@ public class InferResponse {
                 lado = "0";
                 return;
             }
-            header+="By counter-reciprocal method, the following must proved:<br>"+statement+"Sub Proof:<br>";
+            header+="By counter-reciprocal method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
             if (metodo instanceof App) {
                 if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
                      // InferController.isBaseMethod(((App)metodo).q)
@@ -1149,6 +1158,8 @@ public class InferResponse {
                 this.setHistorial(header);
         }
         else if (contradiction) {
+            // This is saying: ¬formula => false, but the notation must be prefix and the first operand goes to the right.
+            // So, here what is really expressed is: (=> false) (¬formula).
             Term newFormula = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),formula)); 
             String statement = "";
             try {
@@ -1161,7 +1172,7 @@ public class InferResponse {
                 return;
             }
             
-            header+="By contradiction method, the following must proved:<br>"+statement+"Sub Proof:<br>";
+            header+="By contradiction method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
             if (metodo instanceof App) {
                 if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
                      // InferController.isBaseMethod(((App)metodo).q)
