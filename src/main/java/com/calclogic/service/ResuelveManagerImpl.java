@@ -8,6 +8,7 @@ import com.calclogic.entity.Teorema;
 import com.calclogic.parse.CombUtilities;
 
 import java.util.List;
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -138,6 +139,57 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelves;
     }
     
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminWithSol(String userLogin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdmin(userLogin);
+
+        try {
+            for (Resuelve resuelve : resuelves) {
+                List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelve.getId());
+                resuelve.setDemopendiente(-1);                
+                int numeroDeSols = 0;
+                for (Solucion sol: sols)
+                {
+                   if (!sol.isResuelto()){
+                      resuelve.setDemopendiente(sol.getId());
+                   }
+                   numeroDeSols ++;
+                }
+                
+                if(resuelve.isResuelto() && numeroDeSols == 0){
+                    resuelve.setEsAxioma(true);
+                }
+                else{
+                    resuelve.setEsAxioma(false);
+                    
+                }
+                
+                Teorema teo = resuelve.getTeorema();
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        // remove duplicates
+        List<Resuelve> toRemove = new ArrayList();
+        Teorema prevTeo = null;
+        for (Resuelve r: resuelves)
+        {
+            Teorema t = r.getTeorema();
+            if (prevTeo == t) {
+                toRemove.add(r);
+                continue;
+            }
+
+            prevTeo = t;
+        }
+        resuelves.removeAll(toRemove);
+        
+        return resuelves;
+    }
+    
     /**
      * Method to get a list of all the theorems of a specific user that are axioms
      * or that were demonstrated without the use of the theorem that is passed as
@@ -180,6 +232,57 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelves;
     }
     
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminWithSolWithoutAxiom(String userLogin,String teoNum){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdminWithoutAxiom(userLogin,teoNum);//getAllResuelveByUser(userLogin);
+
+        try {
+            for (Resuelve resuelve : resuelves) {
+                List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelve.getId());
+                resuelve.setDemopendiente(-1);                
+                int numeroDeSols = 0;
+                for (Solucion sol: sols)
+                {
+                   if (!sol.isResuelto()){
+                      resuelve.setDemopendiente(sol.getId());
+                   }
+                   numeroDeSols ++;
+                }
+                
+                if(resuelve.isResuelto() && numeroDeSols == 0){
+                    resuelve.setEsAxioma(true);
+                }
+                else{
+                    resuelve.setEsAxioma(false);
+                    
+                }
+                
+                Teorema teo = resuelve.getTeorema();
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        // remove duplicates
+        List<Resuelve> toRemove = new ArrayList();
+        Teorema prevTeo = null;
+        for (Resuelve r: resuelves)
+        {
+            Teorema t = r.getTeorema();
+            if (prevTeo == t) {
+                toRemove.add(r);
+                continue;
+            }
+
+            prevTeo = t;
+        }
+        resuelves.removeAll(toRemove);
+        
+        return resuelves;
+    }
+    
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user
      * having solved the demonstration of a theorem.
@@ -189,6 +292,21 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Transactional
     public List<Resuelve> getAllResuelveByUserResuelto(String userLogin){
         List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserResuelto(userLogin);
+        try {
+            for (Resuelve resuelve : resuelves) {
+                Teorema teo = resuelve.getTeorema();
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resuelves;
+    }
+    
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminResuelto(String userLogin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdminResuelto(userLogin);
         try {
             for (Resuelve resuelve : resuelves) {
                 Teorema teo = resuelve.getTeorema();

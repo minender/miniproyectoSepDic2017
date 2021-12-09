@@ -57,7 +57,7 @@ public class Resuelve  implements java.io.Serializable {
     }
 
     public int getDemopendiente() {
-        return demopendiente;
+        return this.demopendiente;
     }
 
     public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, Categoria categoria) {
