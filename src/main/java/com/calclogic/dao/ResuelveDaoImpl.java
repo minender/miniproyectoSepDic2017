@@ -99,6 +99,13 @@ public class ResuelveDaoImpl implements ResuelveDAO {
 
     }
     
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdmin(String userLogin){
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE usuario.login = :userLogin OR usuario.login = 'AdminTeoremas' order by char_length(numeroteorema), numeroteorema").setParameter("userLogin",userLogin).list();
+
+    }
+    
     /**
      * Method to get a list of all the theorems of a specific user that are axioms
      * or that were demonstrated without the use of the theorem that is passed as
@@ -116,6 +123,15 @@ public class ResuelveDaoImpl implements ResuelveDAO {
               // la lista el teorema teoNum
     }
     
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminWithoutAxiom(String userLogin, String teoNum){
+        return this.sessionFactory.getCurrentSession()
+                .createQuery("FROM Resuelve r WHERE (r.usuario.login = :userLogin OR r.usuario.login = 'AdminTeoremas') AND ((NOT EXISTS (SELECT s FROM Solucion s WHERE r.id = s.resuelve.id)) OR EXISTS (SELECT s FROM Solucion s, Resuelve e, Teorema t WHERE e.numeroteorema = :teoNum AND t.id = e.teorema.id AND r.id = s.resuelve.id AND NOT (s.demostracion LIKE '%A^{' || t.enunciado || '}%'))) ORDER BY char_length(r.numeroteorema), r.numeroteorema").setParameter("userLogin",userLogin).setParameter("teoNum",teoNum).list();
+              // TODO: revisa si este query se puede simplificar en caso en que no haga falta eobtener en 
+              // la lista el teorema teoNum
+    }
+    
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user
      * having solved the demonstration of a theorem.
@@ -126,6 +142,12 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     @Transactional
     public List<Resuelve> getAllResuelveByUserResuelto(String userLogin){
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE usuario.login = :userLogin AND resuelto = true").setParameter("userLogin",userLogin).list();
+    }
+    
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminResuelto(String userLogin){
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE (usuario.login = :userLogin OR usuario.login = 'AdminTeoremas') AND resuelto = true").setParameter("userLogin",userLogin).list();
     }
     
     /**

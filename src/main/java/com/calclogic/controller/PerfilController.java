@@ -345,7 +345,7 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
@@ -396,7 +396,7 @@ public class PerfilController {
             response.addProperty("error", "Debes estar logueado en el sistema");
             return response.toString();
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();

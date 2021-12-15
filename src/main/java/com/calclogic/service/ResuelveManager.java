@@ -58,6 +58,8 @@ public interface ResuelveManager {
      */
     public List<Resuelve> getAllResuelveByUserWithSol(String userLogin);
     
+    public List<Resuelve> getAllResuelveByUserOrAdminWithSol(String userLogin);
+    
     /**
      * Method to get a list of all the theorems of a specific user that are axioms
      * or that were demonstrated without the use of the theorem that is passed as
@@ -67,12 +69,16 @@ public interface ResuelveManager {
      */
     public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin,String teoNum);
     
+    public List<Resuelve> getAllResuelveByUserOrAdminWithSolWithoutAxiom(String userLogin,String teoNum);
+    
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user
      * having solved the demonstration of a theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      */
     public List<Resuelve> getAllResuelveByUserResuelto(String userLogin);
+    
+    public List<Resuelve> getAllResuelveByUserOrAdminResuelto(String userLogin);
 
     /**
      * Method to get a list of all the entries of the table that correspond 

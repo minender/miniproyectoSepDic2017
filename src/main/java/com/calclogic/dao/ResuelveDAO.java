@@ -53,6 +53,8 @@ public interface ResuelveDAO {
      */
     public List<Resuelve> getAllResuelveByUser(String userLogin);
     
+    public List<Resuelve> getAllResuelveByUserOrAdmin(String userLogin);
+    
     /**
      * Method to get a list of all the theorems of a specific user that are axioms
      * or that were demonstrated without the use of the theorem that is passed as
@@ -62,12 +64,16 @@ public interface ResuelveDAO {
      */
     public List<Resuelve> getAllResuelveByUserWithoutAxiom(String userLogin, String teoNum);
     
+    public List<Resuelve> getAllResuelveByUserOrAdminWithoutAxiom(String userLogin, String teoNum);
+    
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user
      * having solved the demonstration of a theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      */
     public List<Resuelve> getAllResuelveByUserResuelto(String userLogin);
+    
+    public List<Resuelve> getAllResuelveByUserOrAdminResuelto(String userLogin);
 
     /**
      * Method to get a list of all the entries of the table that correspond 

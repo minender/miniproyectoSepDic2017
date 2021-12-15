@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
@@ -114,7 +115,7 @@ public class InferController {
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
         for (Resuelve r: resuelves) // Este for debes mandarlo para el manager y quitar
         {                           // la construccion del metateorema del true
             Teorema t = r.getTeorema();
@@ -187,12 +188,21 @@ public class InferController {
             return "redirect:/index";
         }
         Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        if (resuel == null) {
+            resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo);
+            Usuario user = usuarioManager.getUsuario(username);
+            resuel.setUsuario(user);
+            resuel.setDemopendiente(-1);
+            resuel.setSolucions(new HashSet());
+            resuel.setResuelto(false);
+            resuel = resuelveManager.addResuelve(resuel);
+        }
         Term formula = resuel.getTeorema().getTeoTerm();
         String solId = "new";
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
         
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSolWithoutAxiom(username,nTeo);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,nTeo);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
@@ -358,6 +368,9 @@ public class InferController {
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
 
         //map.addAttribute("makeTerm",new MakeTerm());
+        //System.out.println(map.get("nTeo"));
+        //System.out.println(map.get("nSol"));
+        //System.out.println(map.get("selecTeo"));
         return "infer";
     }
     
@@ -1034,7 +1047,7 @@ public class InferController {
             
             
             // CHECK IF ANY TEHEOREM MATCHES THE FINAL EXPR
-            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username);
+            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminResuelto(username);
             Term teorem;
             Term mt;
             for(Resuelve resu: resuelves){
