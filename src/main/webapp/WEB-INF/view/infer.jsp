@@ -407,17 +407,17 @@
             <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Proof method</h3>
               <select class="form-control" id="metodosDemostracion">
                 <option value="0">Select a method</option>
-                <!--<option value="DM">Direct method</option>-->
+                <option value="DM">Direct method</option>
                 <option value="SS">Starting from one side</option>
-                <!--<option value="TR">Transitivity</option>
+                <option value="TR">Transitivity</option>
                 <option value="WE">Weakening</option>
                 <option value="ST">Strengthening</option>
-                <option value="ND">Natural deduction</option>
+                <!--<option value="ND">Natural deduction</option>-->
                 <option value="CO">Proof by contradiction</option>
                 <option value="CR">Counter-reciprocal</option>
-                <option value="AI">And introduction</option>
+                <option value="AI">Conjunction by parts</option>
                 <option value="CA">Case analysis</option>
-                <option value="WI">Witness</option>-->
+                <option value="WI">Witness</option>
               </select>
           </div>
             <article id="teoremas" class="teoremas">

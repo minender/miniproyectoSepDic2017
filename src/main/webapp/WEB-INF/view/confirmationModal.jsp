@@ -95,7 +95,7 @@
 		} else if (methodId === "CA") { // proof by cases method
 			type = "Case analysis";
 		} else if (methodId === "AI") { // And introduction method
-			type = "And introduction"
+			type = "Conjunction by parts"
 		} else if (methodId === "WI") { // And introduction method
 			type = "Witness"
 		}
