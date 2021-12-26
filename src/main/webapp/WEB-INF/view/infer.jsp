@@ -412,10 +412,10 @@
                 <option value="TR">Transitivity</option>
                 <option value="WE">Weakening</option>
                 <option value="ST">Strengthening</option>
-                <option value="ND">Natural deduction</option>
+                <!--<option value="ND">Natural deduction</option>-->
                 <option value="CO">Proof by contradiction</option>
                 <option value="CR">Counter-reciprocal</option>
-                <option value="AI">And introduction</option>
+                <option value="AI">Conjunction by parts</option>
                 <option value="CA">Case analysis</option>
                 <option value="WI">Witness</option>
               </select>
