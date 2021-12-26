@@ -489,16 +489,22 @@ function iniAndI(){
         dataType: 'json',
         data: data,
         success: function(data) {
-            $('#formula').html(data.historial);
-            MathJax.Hub.Typeset();
-            $("#metodosDiv").show();
-            // save new nSol created.
-            var nSol = $(form).attr('action').split('/').pop();
+            if(data.lado === "0"){
+                alert("The Conjunction by parts method cannot be used in the selected theorem.");
+                $("#metodosDiv").show();
+            }
+            else{
+                $('#formula').html(data.historial);
+                MathJax.Hub.Typeset();
+                $("#metodosDiv").show();
+                // save new nSol created.
+                var nSol = $(form).attr('action').split('/').pop();
 
-            if(nSol==="new"){
-               var url = $(form).attr('action');
-               url = url.substring(0,url.length-3) + data.nSol;
-               $(form).attr('action',url);
+                if(nSol==="new"){
+                    var url = $(form).attr('action');
+                    url = url.substring(0,url.length-3) + data.nSol;
+                    $(form).attr('action',url);
+                }
             }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {

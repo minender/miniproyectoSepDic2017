@@ -7,14 +7,22 @@ import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
+import com.calclogic.controller.InferController;
+import com.calclogic.lambdacalculo.TypeVerificationException;
+import com.calclogic.parse.CombUtilities;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.springframework.util.SerializationUtils;
 
 /**
@@ -156,6 +164,47 @@ public class Solucion implements java.io.Serializable {
         return resuelto;
     }
     
+    private Term AIoneLineSubProof(Term formula,Term father) {
+        Map<String,String> values1 = new HashMap<String, String>();
+        values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
+        String aux = typedTerm.toStringFinal();
+        values1.put("ST2", formula.toStringFinal());
+        StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
+        String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
+        String metaTheo = sub1.replace(metaTheoT);
+        try {
+          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo));
+          newProof = new TypedApp(new TypedApp(((App)((App)father).p).p, newProof),((App)father).q);
+        return newProof;
+        }
+        catch (TypeVerificationException e) {
+            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+            return father;
+        }
+    }
+    
+    private Term mergeSubProofs(Term subProof, List<Term> fathers) {
+        Term auxProof;
+        if (fathers.size()==1)
+            return subProof;
+        else {
+            int i;
+            if (subProof==null || subProof.type()==null) {
+             i=2;
+             auxProof =(subProof==null?((TypedApp)fathers.get(1)).q:AIoneLineSubProof(subProof,fathers.get(1)));
+            }
+            else {
+                i=1;
+                auxProof = subProof;
+            }
+            while (i < fathers.size()) {
+              auxProof = InferController.finishedAI2Proof(fathers.get(i), auxProof);
+              i++;
+            }
+            return auxProof;
+        }
+    }
+    
     public boolean thereIsAxiom(String axiom) {
         List<String> l = new ArrayList<String>();
         typedTerm.getAxioms(l);
@@ -189,8 +238,7 @@ public class Solucion implements java.io.Serializable {
 
     }*/
 
-    public int retrocederPaso(){
-    
+    public int retrocederPaso(Term methodTerm, String currentMethod){
             /*int tam = this.arregloInferencias.size();
             this.deserialize();
             if(tam>0){
@@ -198,58 +246,62 @@ public class Solucion implements java.io.Serializable {
             }
             this.serialize();*/
      //       System.out.println(typedTerm.toStringInfFinal());
-            if (typedTerm.type() == null){
-                typedTerm=null;
-                demostracion = "";
+     List<Term> li = new ArrayList<Term>();
+     li = InferController.getFatherAndSubProof(typedTerm,methodTerm,li);
+     Term auxTypedTerm = li.get(0);
+
+            if (auxTypedTerm.type() == null){
+                typedTerm= mergeSubProofs(null,li);
+                demostracion =(typedTerm==null?"":typedTerm.toStringFinal());
                 return 0;
             }
             if ( (
-                  !metodo.equals("WE") && !metodo.equals("ST") &&
-                  !metodo.equals("TR") &&
-                  typedTerm instanceof App && ((App)typedTerm).p.containTypedA()
+                  !currentMethod.equals("WE") && !currentMethod.equals("ST") &&
+                  !currentMethod.equals("TR") &&
+                  auxTypedTerm instanceof App && ((App)auxTypedTerm).p.containTypedA()
                  ) 
                  ||
                   // next line check if is a no one step proof 
                  (
-                   (metodo.equals("WE") || 
-                    metodo.equals("ST") || 
-                    metodo.equals("TR")
+                   (currentMethod.equals("WE") || 
+                    currentMethod.equals("ST") || 
+                    currentMethod.equals("TR")
                    ) 
                     &&
                    (
-                    (typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='t') ||
-                    (typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m' &&
-                     ((TypedApp)typedTerm).p instanceof TypedApp && 
-                     ((TypedApp)((TypedApp)typedTerm).p).inferType=='m' && 
-                     ((TypedApp)((TypedApp)typedTerm).p).p instanceof TypedApp &&
-                     ((TypedApp)((TypedApp)((TypedApp)typedTerm).p).p).inferType=='i'
+                    (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t') ||
+                    (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='m' &&
+                     ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
+                     ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='m' && 
+                     ((TypedApp)((TypedApp)auxTypedTerm).p).p instanceof TypedApp &&
+                     ((TypedApp)((TypedApp)((TypedApp)auxTypedTerm).p).p).inferType=='i'
                     )
                    )
                  )
                )
             {
-                if ((metodo.equals("WE") || 
-                     metodo.equals("ST") ||
-                     metodo.equals("TR")
+                if ((currentMethod.equals("WE") || 
+                     currentMethod.equals("ST") ||
+                     currentMethod.equals("TR")
                     ) 
                     && 
-                    !(typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='t')    
+                    !(auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t')    
                    ) 
                 {
-                    typedTerm = ((App)((App)typedTerm).p).q;
-                    if (typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
-                        ((TypedApp)typedTerm).p instanceof TypedApp && 
-                        ((TypedApp)((TypedApp)typedTerm).p).inferType=='s'     
+                    typedTerm = mergeSubProofs(((App)((App)auxTypedTerm).p).q,li);
+                    if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
+                        ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
+                        ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
                        )
-                        typedTerm = ((TypedApp)typedTerm).q;
+                        typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q,li);
                 }
                 else{
-                    typedTerm = ((App)typedTerm).p;
-                    if (typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
-                        ((TypedApp)typedTerm).p instanceof TypedApp && 
-                        ((TypedApp)((TypedApp)typedTerm).p).inferType=='s'     
+                    typedTerm = mergeSubProofs(((App)auxTypedTerm).p,li);
+                    if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
+                        ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
+                        ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
                        )
-                        typedTerm = ((TypedApp)typedTerm).q;
+                        typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q,li);
                     
                 }
                 demostracion = typedTerm.toStringFinal();
@@ -259,7 +311,7 @@ public class Solucion implements java.io.Serializable {
             }
             else
             {
-                typedTerm = ((App)typedTerm.type()).q;
+                typedTerm = mergeSubProofs(((App)auxTypedTerm.type()).q,li);
                 demostracion = typedTerm.toStringFinal();
      //           System.out.println(typedTerm.toStringInfFinal());
      //           System.out.println("1");

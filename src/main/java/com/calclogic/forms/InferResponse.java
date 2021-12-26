@@ -519,213 +519,12 @@ public class InferResponse {
         }
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
-    
-    /**
-     * Adds to the history the whole proof for cases that have a proof method
-     * different than "null"
-     * @param user
-     * @param formula
-     * @param nTeo
-     * @param typedTerm
-     * @param valid
-     * @param labeled
-     * @param method
-     * @param resuelveManager
-     * @param disponeManager
-     * @param simboloManager
-     */
-    private void setAIProof(
-        String user,
-        Term formula,
-        String nTeo, 
-        Term typedTerm,
-        Boolean valid,
-        Boolean labeled,
-        Term method,
-        ResuelveManager resuelveManager,
-        DisponeManager disponeManager,
-        SimboloManager simboloManager
-    ){
-
-        // Get the formulas for the cases
-        Term expression1 = ((App)formula).q;
-        String expression1Str = "$" + expression1.toStringInf(simboloManager,"") + "$";
-        Term expression2 = ((App)((App)formula).p).q;
-        String expression2Str = "$" + expression2.toStringInf(simboloManager,"") + "$";
-
-        // Get the path to the current sub-tree to be proved.
-        String[] mehtodAndPath = method.toStringFinal().split("-");
-        String methods = mehtodAndPath[0];
-        String[] subMethods = methods.substring(17, methods.length() - 1).split(";");
-        Term method1 = 
- (method instanceof App?(((App)method).p instanceof App?((App)((App)method).p).q:((App)method).q):null);
-        Term method2 = 
- (method instanceof App?(((App)method).p instanceof App?((App)method).q: null):null);
-        String auxHistorial = "<br>";
-
-        // Check if the proof is still incomplete
-        if (mehtodAndPath.length > 1) {
-            String path = mehtodAndPath[1];
-            
-            // If there's a proof, show first case proof.
-            if (!method1.equals("null")) {
-                
-                // Check if the method has been called from my teorems or from
-                // infer view.
-                // If we're proving we just want to see the case we're proving.
-                if ((!labeled) || (labeled && path.equals("p"))) {
-                    Term proof1 = ((App)((App)typedTerm).p).q;
-                    
-                    this.generarHistorial(
-                        user,
-                        expression1,
-                        "",
-                        expression1Str,
-                        proof1,
-                        valid,
-                        labeled,
-                        method1,
-                        resuelveManager,
-                        disponeManager,
-                        simboloManager,
-                        "n",
-                        false
-                    );
-                    
-                    auxHistorial += this.getHistorial();
-                }
-            } 
-            // Shows the start of first case when no method has been selected
-            // Checks it to be labeled in case we are in the infer view.
-            else if (labeled && path.equals("p")) {
-                auxHistorial += "Proof of " + expression1Str + ":<br><br>Proof:<br>"; 
-            }
-            
-            // If there's a proof, show a proof for the second case.
-            if (!method2.equals("null")) {
-                
-                // Check if the method has been called from my teorems or from
-                // infer view.
-                // If we're proving we just want to see the case we're proving.
-                if ((!labeled) || (labeled && path.equals("q"))) {
-                    Term proof2 = ((App)typedTerm).q;
-                    this.generarHistorial(
-                        user,
-                        expression2,
-                        "",
-                        expression2Str,
-                        proof2,
-                        valid,
-                        labeled,
-                        method2,
-                        resuelveManager,
-                        disponeManager,
-                        simboloManager, 
-                        "n",
-                        false
-                    );
-            
-                    auxHistorial += this.getHistorial();
-                }
-            }
-            // Shows the start of second case when the first one is finished
-            // Checks it to be labeled in case we are in the infer view.
-            else if (labeled && path.equals("q")) {
-                auxHistorial += "Proof of " + expression2Str + ":<br><br>Proof:<br>"; 
-            }
-        } 
-        // If the proof doensn't hava a path, is because it is completed.
-        else {
-            
-            // Extracting template2 from database
-            String template2 = plantillaTeoremaManager.getPlantillaTeoremaById(2)
-                                                      .getPath_to_placeholders();
-
-            // Getting path to placeholders of the template
-            String[] placeholdersTemp2 = template2.split(";");
-            String pathM1P = placeholdersTemp2[1].split(":")[1];
-            String pathM1Q = placeholdersTemp2[0].split(":")[1]; 
-
-            // Obtaining Terms of placeholders following path
-            Term M1P = navigateTroughTree(typedTerm, pathM1P);
-            Term M1Q = navigateTroughTree(typedTerm, pathM1Q);
-
-            // Extracting template1 from database
-            String template1 = plantillaTeoremaManager.getPlantillaTeoremaById(1)
-                                                      .getPath_to_placeholders();
-
-            // Getting path to placeholders of the template
-            String[] placeholdersTemp1 = template1.split(";");
-            String pathT2 = placeholdersTemp1[0].split(":")[1];
-
-            // Obtaining Terms of placeholders following path
-            Term proofCase1 = navigateTroughTree(M1P, pathT2);
-            Term proofCase2 = navigateTroughTree(M1Q, pathT2);
-
-            this.generarHistorial(
-                        user,
-                        expression1,
-                        "",
-                        expression1Str,
-                        proofCase1,
-                        valid,
-                        labeled,
-                        method1,
-                        resuelveManager,
-                        disponeManager,
-                        simboloManager,
-                        "n",
-                        false
-                    );
-                    
-            auxHistorial += this.getHistorial();
-
-            this.generarHistorial(
-                        user,
-                        expression2,
-                        "",
-                        expression2Str,
-                        proofCase2,
-                        valid,
-                        labeled,
-                        method2,
-                        resuelveManager,
-                        disponeManager,
-                        simboloManager,
-                        "n",
-                        false
-                    );
-                    
-            auxHistorial += this.getHistorial();
-        }
-
-        this.setHistorial(auxHistorial);
-    };
-
-    // >>> This will probably be removed because it corresponds to a previous codification
-    // to handle when a demostration calls another method, and then it calls another method, 
-    // and so on
-    /**
-     * Using the corresponding path, obtains the terms in placeholder's position from a term
-     * @param rootTree
-     * @param path
-     */
-    private Term navigateTroughTree(Term rootTree, String path) {
-        Term tree = rootTree;
-        for (char child : path.toCharArray()) {
-            if (child == 'p') {
-                tree = ((App)tree).p;
-            } else {
-                tree = ((App)tree).q;
-            }
-        }
-        return tree;
-    }
  
-    private void setWSProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {        
-        String primExp = "";
-    	String hint = "";
-        Term t;
+    private void setWSProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, 
+                            DisponeManager disponeManager, SimboloManager s) {        
+        String primExp;
+    	String hint;
+        //Term t;
         boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
                       InferController.isInverseImpl(((TypedApp)typedTerm).q.type(),typedTerm.type());
         Term iter = (reversed?((TypedApp)typedTerm).q:typedTerm);
@@ -911,7 +710,6 @@ public class InferResponse {
         String clickeable,
         Boolean isRootTeorem
     ) {        
- 
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
@@ -974,10 +772,10 @@ public class InferResponse {
             header += "Starting from one side";
         else if (weakening) 
             header += "By weakening method<br>";
-        else if (andIntroduction) 
+        else if (andIntroduction) // este caso es imposible
             header += "Proof of " + nTeo + ":<br><br>";
         else
-            header += "Proof:<br>";
+            ;
         // header += "Proof:<br>";
         
         Term type = typedTerm==null?null:typedTerm.type();
@@ -1196,7 +994,7 @@ public class InferResponse {
                 lado = "0";
                 return;
             }
-            header+="By And Introduction method:<br>Statement 1:<br>"+statement+"Sub Proof:<br>";
+            header+="By Conjunction by parts method:<br>Statement 1:<br>"+statement+"Sub Proof:<br>";
             if (metodo instanceof Const) 
             {
                historial = header;
@@ -1452,15 +1250,16 @@ public class InferResponse {
     		header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
     	}
 
-        if (/*!andIntroduction &&*/ !recursive)
+        if (/*!andIntroduction &&*/ !recursive) {
     	    historial = header+"<center>$" +historial+"</center>";
+            if (!valida) 
+    		historial = historial+"$$\\text{No valid inference}$$";
+        }
         else if (/*!andIntroduction &&*/ recursive)
             ;
         //else 
     	//    this.setHistorial(header +this.getHistorial());
-    	if (!valida)
-    		historial = historial+"$$\\text{No valid inference}$$";
-
+    	
     	//this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");        
     }
     
