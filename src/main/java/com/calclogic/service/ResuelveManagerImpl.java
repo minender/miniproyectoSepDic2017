@@ -139,6 +139,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelves;
     }
     
+
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUserOrAdminWithSol(String userLogin){

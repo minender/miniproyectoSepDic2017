@@ -193,7 +193,6 @@
 			closeModal();
 
 		} else if (this.selectedMethod === "CO") { // contradiction method
-			
 			$("#selectTeoInicial").val("0");
 			COMethod();
 

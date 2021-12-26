@@ -106,7 +106,6 @@ function teoremaClickeablePL(/*teoId*/){
     var data = {};
     //data["teoid"] = teoId;
     var form = $('#inferForm');
-    console.log($('#inferForm').attr('action'));
     $.ajax({
         type: 'POST',
         url: $(form).attr('action')+"/teoremaClickeablePL",

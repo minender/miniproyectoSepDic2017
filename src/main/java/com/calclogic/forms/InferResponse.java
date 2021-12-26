@@ -983,6 +983,7 @@ public class InferResponse {
         Term type = typedTerm==null?null:typedTerm.type();
 
         boolean solved;
+        System.out.println("Justo después de boolean solved");
         if (typedTerm==null && metodo == null && !recursive)
         {
             this.setHistorial(this.getHistorial()+header);

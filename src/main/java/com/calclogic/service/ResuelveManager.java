@@ -58,6 +58,11 @@ public interface ResuelveManager {
      */
     public List<Resuelve> getAllResuelveByUserWithSol(String userLogin);
     
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user and to
+     * the admin user.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     */
     public List<Resuelve> getAllResuelveByUserOrAdminWithSol(String userLogin);
     
     /**

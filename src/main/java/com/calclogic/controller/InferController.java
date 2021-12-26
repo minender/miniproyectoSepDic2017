@@ -71,7 +71,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value="/infer")
 public class InferController {
-      
     @Autowired
     private UsuarioManager usuarioManager;
     @Autowired
@@ -188,6 +187,8 @@ public class InferController {
             return "redirect:/index";
         }
         Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+
+        // Case when the user could only see the theorem but had not a Resuelve object associated to it
         if (resuel == null) {
             resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo);
             Usuario user = usuarioManager.getUsuario(username);
@@ -368,9 +369,6 @@ public class InferController {
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
 
         //map.addAttribute("makeTerm",new MakeTerm());
-        //System.out.println(map.get("nTeo"));
-        //System.out.println(map.get("nSol"));
-        //System.out.println(map.get("selecTeo"));
         return "infer";
     }
     
@@ -402,10 +400,18 @@ public class InferController {
         
             if (tipoTeo.equals("ST")){
                 Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                // Case when the user could only see the theorem but had not a Resuelve object associated to it
+                if (resuelve == null) {
+                    resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                }
                 statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
             }
             else if(tipoTeo.equals("MT")){
                 Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                // Case when the user could only see the theorem but had not a Dispone object associated to it
+                if (dispone == null) {
+                    dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                }
                 statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
             }
             else {    
@@ -413,7 +419,7 @@ public class InferController {
                 return response;
             }
             if (statementTerm == null) {
-                response.setError("The statement doesn't exists");
+                response.setError("The statement doesn't exist");
                 return response;
             }
         }
@@ -496,10 +502,18 @@ public class InferController {
         
             if (tipoTeo.equals("ST")){
                 Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                // Case when the user could only see the theorem but had not a Resuelve object associated to it
+                if (resuelve == null) {
+                    resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                }
                 statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
             }
             else if(tipoTeo.equals("MT")){
                 Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                // Case when the user could only see the theorem but had not a Dispone object associated to it
+                if (dispone == null) {
+                    dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                }
                 statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
             }
             else {    
@@ -507,7 +521,7 @@ public class InferController {
                 return response;
             }
             if (statementTerm == null) {
-                response.setError("The statement doesn't exists");
+                response.setError("The statement doesn't exist");
                 return response;
             }
         }
@@ -518,73 +532,67 @@ public class InferController {
 
         // String freeV = statementTerm.freeVars();
         if (!freeV.equals("")) {
-         String[] freeVars = freeV.split(",");
-         Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            String[] freeVars = freeV.split(",");
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
 
-         String metodo = solucion.getMetodo();
-         Term typedTerm = getSubProof(solucion.getTypedTerm(),ProofMethodUtilities.getTerm(metodo),true);
+            String metodo = solucion.getMetodo();
+            Term typedTerm = getSubProof(solucion.getTypedTerm(),ProofMethodUtilities.getTerm(metodo),true);
 
-         Term lastLine = typedTerm.type();
-         if (lastLine == null)
-            lastLine = typedTerm;
-         else
-            lastLine = ((App)((App)lastLine).p).q;
-         Term leibnizTerm = null;
-         // CREATE THE INSTANTIATION
-         Sust sust = null;
-         Equation eq;
-         boolean zUnifiable = true;
-         if (!leibniz.equals("")){
-           leibnizTerm =TermUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
-           eq = new Equation(leibnizTerm,lastLine);
-           sust = eq.mgu(simboloManager);
-           if (sust != null) // si z no es de tipo atomico, no se puede unificar en primer orden
-            leibnizTerm = eq.mgu(simboloManager).getTerms().get(0);
-           else
-            zUnifiable = false;
-         }
-         else 
-           leibnizTerm = lastLine;
-         if (zUnifiable)  {
-            eq = new Equation(((App)statementTerm).q,leibnizTerm);
-            sust = eq.mgu(simboloManager);
-            if (sust == null) {
-                eq = new Equation(((App)((App)statementTerm).p).q,leibnizTerm);
+            Term lastLine = typedTerm.type();
+            if (lastLine == null)
+                lastLine = typedTerm;
+            else
+                lastLine = ((App)((App)lastLine).p).q;
+
+            Term leibnizTerm = null;
+            // CREATE THE INSTANTIATION
+            Sust sust = null;
+            Equation eq;
+            boolean zUnifiable = true;
+            if (!leibniz.equals("")){
+                leibnizTerm =TermUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
+                eq = new Equation(leibnizTerm,lastLine);
                 sust = eq.mgu(simboloManager);
+                if (sust != null) // si z no es de tipo atomico, no se puede unificar en primer orden
+                    leibnizTerm = eq.mgu(simboloManager).getTerms().get(0);
+                else
+                    zUnifiable = false;
             }
-         }
-         
-         if (sust != null) {
-            String[] sustVars = sust.getVars().toString().replaceAll("[\\s\\[\\]]", "").split(",");
-            String[] sustFormatC = new String[freeVars.length];
-            String[] sustLatex = new String[freeVars.length];
-            for (int i=0; i<freeVars.length; i++) {
-                int j = sust.getVars().indexOf(new Var(freeVars[i].toCharArray()[0]));
-                if (j != -1) {
-                    sustFormatC[i] = sust.getTerms().get(j).toStringFormatC(simboloManager,"",0,"substitutionButtonsId."+freeVars[i]);
-                    sustLatex[i] = sust.getTerms().get(j).toStringWithInputs(simboloManager,"","substitutionButtonsId."+freeVars[i]);
-                }
-                else {
-                    sustFormatC[i] = "";
-                    sustLatex[i] = "";
-                }
-            }
+            else 
+                leibnizTerm = lastLine;
 
-            response.setSustFormatC(sustFormatC);
-            response.setSustLatex(sustLatex);
-            return response;
-         }
-         else {
-           response.setSustFormatC(null);
-           response.setSustLatex(null);
-           return response;  
-         }
-       }
-       else {
-           response.setSustFormatC(null);
-           response.setSustLatex(null);
-           return response;
-       }
+            if (zUnifiable)  {
+                eq = new Equation(((App)statementTerm).q,leibnizTerm);
+                sust = eq.mgu(simboloManager);
+                if (sust == null) {
+                    eq = new Equation(((App)((App)statementTerm).p).q,leibnizTerm);
+                    sust = eq.mgu(simboloManager);
+                }
+            }
+             
+            if (sust != null) {
+                String[] sustVars = sust.getVars().toString().replaceAll("[\\s\\[\\]]", "").split(",");
+                String[] sustFormatC = new String[freeVars.length];
+                String[] sustLatex = new String[freeVars.length];
+                for (int i=0; i<freeVars.length; i++) {
+                    int j = sust.getVars().indexOf(new Var(freeVars[i].toCharArray()[0]));
+                    if (j != -1) {
+                        sustFormatC[i] = sust.getTerms().get(j).toStringFormatC(simboloManager,"",0,"substitutionButtonsId."+freeVars[i]);
+                        sustLatex[i] = sust.getTerms().get(j).toStringWithInputs(simboloManager,"","substitutionButtonsId."+freeVars[i]);
+                    }
+                    else {
+                        sustFormatC[i] = "";
+                        sustLatex[i] = "";
+                    }
+                }
+                response.setSustFormatC(sustFormatC);
+                response.setSustLatex(sustLatex);
+                return response;
+            }
+        }
+        response.setSustFormatC(null);
+        response.setSustLatex(null);
+        return response;
     }
     
     /**
@@ -2261,10 +2269,18 @@ public class InferController {
         
             if (tipoTeo.equals("ST")){
                 Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                // Case when the user could only see the theorem but had not a Resuelve object associated to it
+                if (resuelve == null) {
+                    resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                }
                 statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
             }
             else if(tipoTeo.equals("MT")){
                 Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                // Case when the user could only see the theorem but had not a Dispone object associated to it
+                if (dispone == null) {
+                    dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                }
                 statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
             }
             else {
@@ -2272,7 +2288,7 @@ public class InferController {
                 return response;
             }
             if (statementTerm == null) {
-                response.setErrorParser2("The statement doesn't exists");
+                response.setErrorParser2("The statement doesn't exist");
                 return response;
             }
         }
@@ -2295,21 +2311,21 @@ public class InferController {
         // CREATE THE INSTANTIATION
         ArrayList<Object> arr = null;
         if (!instanciacion.equals("")){
-          /*Jean solo esta linea CharStream in2 = CharStreams.fromString(instanciacion);
-          TermLexer lexer2 = new TermLexer(in2);
-          CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
-          TermParser parser2 = new TermParser(tokens2);
-          try{*/
+            /*Jean solo esta linea CharStream in2 = CharStreams.fromString(instanciacion);
+            TermLexer lexer2 = new TermLexer(in2);
+            CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
+            TermParser parser2 = new TermParser(tokens2);
+            try{*/
              //Jean el try descomentado solo con esta linea arr=parser2.instantiate(predicadoid,predicadoManager,simboloManager).value;
-          arr=TermUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
-          /*}
-          catch(RecognitionException e){ // Wrong instantiation sent by the user
+            arr=TermUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
+            /*}
+            catch(RecognitionException e){ // Wrong instantiation sent by the user
               String hdr = parser2.getErrorHeader(e);
               String msg = e.getMessage(); 
               response.setErrorParser2(hdr + " " + msg);
                 
               return response;
-          }*/
+            }*/
         }
         
         // CREATE LEIBNIZ
@@ -2335,7 +2351,7 @@ public class InferController {
                 return response;
             }*/
         }   
-      
+
         Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
         Term typedTerm = solucion.getTypedTerm();
@@ -2343,12 +2359,14 @@ public class InferController {
         String metodo = solucion.getMetodo();
         Term methodTerm = ProofMethodUtilities.getTerm(metodo);
         Term methodTermIter = methodTerm;
+        String strMethodTermIter = methodTermIter.toStringFinal();
         
         Stack<Term> methodStk = new Stack<Term>();
         Stack<Term> fatherProofs = new Stack<Term>();
         Stack<Term> formulasToProof = new Stack<Term>();
         formulasToProof.push(formula);
         Term initSt = formula;
+
         while (!(methodTermIter instanceof Const)) {
             methodStk.push(((App)methodTermIter).p);
             initSt = initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
@@ -2365,23 +2383,23 @@ public class InferController {
             methodTermIter = ((App)methodTermIter).q;
         }
         Term teoremProved = formulasToProof.pop();
-        
+    
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROVE TYPE
         Term infer = null;
         try 
         {
-            if(methodTermIter.toStringFinal().equals("DM")) {
-            infer = createDirectMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            } else if (methodTermIter.toStringFinal().equals("SS")) {
-            infer = createOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            } else if (methodTermIter.toStringFinal().equals("WE") || 
-                          methodTermIter.toStringFinal().equals("ST") || 
-                          methodTermIter.toStringFinal().equals("TR")
+            if(strMethodTermIter.equals("DM")) {
+                infer = createDirectMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
+            } else if (strMethodTermIter.equals("SS")) {
+                infer = createOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
+            } else if (strMethodTermIter.equals("WE") || 
+                          strMethodTermIter.equals("ST") || 
+                          strMethodTermIter.equals("TR")
                       ) {
                 infer = createWSInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            } else if (methodTermIter.toStringFinal().equals("Natural Deduction,one-sided")) {
-            infer = createDeductionOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
-            } else if (methodTermIter.toStringFinal().equals("Natural Deduction,direct")) {
+            } else if (strMethodTermIter.equals("Natural Deduction,one-sided")) {
+                infer = createDeductionOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+            } else if (strMethodTermIter.equals("Natural Deduction,direct")) {
                 infer = createDeductionDirectInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
             }
             /*
@@ -2398,7 +2416,7 @@ public class InferController {
 +               }
             */
         // If something went wrong building the new hint
-        }catch(TypeVerificationException e) {
+        } catch(TypeVerificationException e) {
             response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
             return response;
         }
@@ -2420,9 +2438,9 @@ public class InferController {
             try {
                 if (i == 1 && j == 0)
                     infer = new TypedApp(new TypedS(infer.type()), infer);
-                if (methodTermIter.toStringFinal().equals("WE") || 
-                    methodTermIter.toStringFinal().equals("ST") ||
-                    methodTermIter.toStringFinal().equals("TR")    
+                if (strMethodTermIter.equals("WE") || 
+                    strMethodTermIter.equals("ST") ||
+                    strMethodTermIter.equals("TR")    
                    ) 
                 {
                     newProof=addInferToWSProof(currentProof, infer); // si no da excepcion cuando 
@@ -2455,67 +2473,73 @@ public class InferController {
                 }
             }
             i = (j == 1?i:i+1);
-        }
-        
-        // IF HERE THEN THE INFER WAS VALID
+        }       
         
         response.setResuelto("0");
              
-        Term proof = newProof;
-        Term expr = proof.type();
+        Term expr = newProof.type();
         Term initialExpr = ((App)expr).q;
         Term finalExpr = ((App)((App)expr).p).q;
         
         // CHECK IF THE PROOF FINISHED
-        
         Term finalProof = newProof;
-        
+
         // Depending on the method we create a new proof if we finished
-        if(methodTermIter.toStringFinal().equals("DM")) {
-            finalProof = finishedDirectMethodProve(teoremProved, proof, username, nTeo);
-        }else if(methodTermIter.toStringFinal().equals("SS")) {
-            finalProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, proof);
-        }else if(methodTermIter.toStringFinal().equals("Natural Deduction,one-sided")) {
-            finalProof = finishedDeductionOneSideProve(initialExpr, finalExpr, teoremProved, proof);
-        }else if(methodTermIter.toStringFinal().equals("Natural Deduction,direct")) {
-            finalProof = finishedDeductionDirectProve(initialExpr, teoremProved, finalExpr, proof, username);   
-        }else if(methodTermIter.toStringFinal().equals("WE")) {
-            finalProof = finishedWeakProve(expr, teoremProved, proof);
-        }else if(methodTermIter.toStringFinal().equals("ST")) {
-            finalProof = finishedStrengProve(expr, teoremProved, proof);
-        }else if(methodTermIter.toStringFinal().equals("TR")) {
-            finalProof = finishedTransProve(expr, teoremProved, proof);
-        }
+        switch (strMethodTermIter){
+            case "DM":
+                finalProof = finishedDirectMethodProve(teoremProved, newProof, username, nTeo);
+                break;
+            case "SS":
+                finalProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, newProof);
+                break;
+            case "Natural Deduction,one-sided":
+                finalProof = finishedDeductionOneSideProve(initialExpr, finalExpr, teoremProved, newProof);
+                break;
+            case "Natural Deduction,direct":
+                finalProof = finishedDeductionDirectProve(initialExpr, teoremProved, finalExpr, newProof, username); 
+                break;
+            case "WE":
+                finalProof = finishedWeakProve(expr, teoremProved, newProof);
+                break;
+            case "ST":
+                finalProof = finishedStrengProve(expr, teoremProved, newProof);
+                break;
+            case "TR":
+                finalProof = finishedTransProve(expr, teoremProved, newProof);
+                break;
+            default: 
+                break;
+        }   
         
         /* Jean
         newProof = finishedDeductionDirectProve(teoremProved, proof, username);
         */
         
-        // Get the complete the method to check if the proof was And 
-        // Introduction
+        // Get the complete method in case it was not atomic
 
         Boolean isFinalSolution = teoremProved.equals(finalProof.type());
         while (!methodStk.isEmpty())
         {
             Term methodTermAux = methodStk.pop();
-            if (isFinalSolution) {
-                if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("CR")) {
-                   finalProof = finishedCounterRecProve(formulasToProof.pop(), finalProof);
-                }
-                else if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("CO")) {
-                   finalProof = finishedContradictionProve(formulasToProof.pop(), finalProof); 
-                }
-                else if (methodTermAux instanceof Const && methodTermAux.toStringFinal().equals("AI")) {
-                   isFinalSolution = false;
-                   response.setEndCase(true);
+            if (isFinalSolution && methodTermAux instanceof Const) {
+                switch (methodTermAux.toStringFinal()){
+                    case "CR":
+                        finalProof = finishedCounterRecProve(formulasToProof.pop(), finalProof);
+                        break;
+                    case "CO":
+                        finalProof = finishedContradictionProve(formulasToProof.pop(), finalProof);
+                        break;
+                    case "AI":
+                       isFinalSolution = false;
+                       response.setEndCase(true);
                 }
             }
-   // esto garantiza que despues de cada inferencia de un paso se actualice el arbol de la segunda prueba
+            // This ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App && ((App)methodTermAux).p.toStringFinal().equals("AI")) {
                 finalProof = finishedAI2Proof(fatherProofs.pop(), finalProof);
             }
         }
-        
+
         // newProve might or might not be different than pasoPostTerm
         
         // UPDATE SOLUCION 
@@ -2530,6 +2554,7 @@ public class InferController {
         }
 
         solucionManager.updateSolucion(solucion);
+        System.out.println("formula = "+formula);
         response.generarHistorial(
             username,
             formula, 
@@ -2542,6 +2567,7 @@ public class InferController {
             disponeManager,
             simboloManager
         );
+        System.out.println(">>>Voy a retornar response = "+ response);
         return response;
     }
 
@@ -2966,16 +2992,19 @@ public class InferController {
         Term formulaTerm = null;
         if (teoid.substring(0, 3).equals("ST-"))
         {
-          Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
-          //String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
-          formulaTerm = resuelve.getTeorema().getTeoTerm();
-          //formula = formulaTerm.toStringInfLabeled();
+            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
+            if (resuelve == null){
+                resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()));
+            }
+            //String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
+            formulaTerm = resuelve.getTeorema().getTeoTerm();
+            //formula = formulaTerm.toStringInfLabeled();
         }
         else if (teoid.substring(0, 3).equals("MT-"))
         {
-          Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
-          formulaTerm = dispone.getMetateorema().getTeoTerm();
-          //formula = formulaTerm.toStringInfLabeled();
+            Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
+            formulaTerm = dispone.getMetateorema().getTeoTerm();
+            //formula = formulaTerm.toStringInfLabeled();
         }
         
         Term metodoTerm = null;
@@ -3057,7 +3086,6 @@ public class InferController {
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        
         Term formulaTerm = resuelve.getTeorema().getTeoTerm();
         
         /* Jean
@@ -3396,7 +3424,7 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
 
         // It is the theorem statement but parsed as a binary tree. 
-        // We call it as "previous" because it will change when the prove starts: ¬Statement => False
+        // We call it as "previous" because it will change when the proof starts: ¬Statement => False
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm(); 
         
         // Despite the new method is "CO", maybe it is nested into a previous one.
