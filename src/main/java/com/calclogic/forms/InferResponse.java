@@ -288,7 +288,6 @@ public class InferResponse {
      * @return The new step of the demonstration as a string
      */
     private String hintOneSide(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
-        
             String teo = "";
             String leib = "";
             String inst = "";
@@ -297,76 +296,74 @@ public class InferResponse {
             boolean naturalInfer=typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m';
             Term ultInf = (naturalInfer?((TypedApp)typedTerm).p:typedTerm);
             
-            if (ultInf instanceof App)
-                if (((App)ultInf).q instanceof App)
-                  if (((App)((App)ultInf).q).q instanceof App)
-                  {
-                  //  Term aux = ((App)ultInf.type()).q;
-        //            primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                    teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
-                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s,"");
-                    inst = "~\\text{with}~" + inst;
-                    leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                    leib = "~\\text{and}~" + leib;
-                  }
-                  else
-                  {
-                    //Term aux = ((App)ultInf.type()).q;
-          //          primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                    teo = ((App)((App)ultInf).q).q.type().toStringFinal();
-                    if (((App)ultInf).p instanceof TypedS)
-                      if (((App)((App)ultInf).q).p instanceof TypedI)
-                      {
-                        inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
+            if (ultInf instanceof App){
+                if (((App)ultInf).q instanceof App){
+                    if (((App)((App)ultInf).q).q instanceof App){
+                        //  Term aux = ((App)ultInf.type()).q;
+                        // primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
+                        teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
+                        inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s,"");
                         inst = "~\\text{with}~" + inst;
-                      }
-                      else
-                      {
                         leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
                         leib = "~\\text{and}~" + leib;
-                      }
-                    else
-                    {
-                        inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                        inst = "~\\text{with}~" + inst;
-                        leib = ((App)ultInf).p.type().toStringInf(s,"");
-                        leib = "~\\text{and}~" + leib;
                     }
-                  }
-                else
-                {
-                  Term pType = ((App)ultInf).p.type();
-                  if (((App)ultInf).p instanceof TypedI)
-                  {
-                    inst = pType.toStringInf(s,"");
-                    inst = "~\\text{with}~" + inst;
-                  }
-                  else if (((App)ultInf).p instanceof TypedL)
-                    leib = "~\\text{and}~" + pType.toStringInf(s,"");
-                  // El caso SA no entra en ninguna de estas dos guardias y solo se asigna teo
-                  teo = ((App)ultInf).q.type().toStringFinal();
-                  
+                    else {
+                        //Term aux = ((App)ultInf.type()).q;
+                        //primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
+                        teo = ((App)((App)ultInf).q).q.type().toStringFinal();
+                        if (((App)ultInf).p instanceof TypedS){
+                            if (((App)((App)ultInf).q).p instanceof TypedI){
+                                inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
+                                inst = "~\\text{with}~" + inst;
+                            }
+                            else {
+                                leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
+                                leib = "~\\text{and}~" + leib;
+                            }
+                        } else {
+                            inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
+                            inst = "~\\text{with}~" + inst;
+                            leib = ((App)ultInf).p.type().toStringInf(s,"");
+                            leib = "~\\text{and}~" + leib;
+                        }
+                    }
+                } else {
+                    Term pType = ((App)ultInf).p.type();
+                    if (((App)ultInf).p instanceof TypedI){
+                        inst = pType.toStringInf(s,"");
+                        inst = "~\\text{with}~" + inst;
+                    }
+                    else if (((App)ultInf).p instanceof TypedL){
+                        leib = "~\\text{and}~" + pType.toStringInf(s,"");
+                    }
+                    // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
+                    teo = ((App)ultInf).q.type().toStringFinal();
                 }
-            else
-            {
-              Term aux = ultInf.type();
-              teo = aux.toStringFinal();
-              //  primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
+            } else {
+                Term aux = ultInf.type();
+                teo = aux.toStringFinal();
+                //  primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
             } 
           
             int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 
                                     :((Const)((App)((App)ultInf.type()).p).p).getId());
             String op = s.getSimbolo(conId).getNotacion_latex();
+
             Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
-            if (theo == null)
-            {
-               teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
-               hint = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
+            Boolean entry = true;
+            if (theo == null){
+                theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo);
+
+                if (theo == null){
+                    teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
+                    hint = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
+                    entry = false;
+                }
             }
-            else
-            {
-              teo = theo.getNumeroteorema();
-              hint = op+"~~~~~~\\langle \\text{st}~("+teo+")"+inst+leib+"\\rangle";
+
+            if (entry){
+                teo = theo.getNumeroteorema();
+                hint = op+"~~~~~~\\langle \\text{st}~("+teo+")"+inst+leib+"\\rangle";         
             }
             return hint;
     }
@@ -478,23 +475,29 @@ public class InferResponse {
             Term aux = ((App)((App)iter.type()).p).q;
             lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));  
         }
-        else if( ((TypedApp)typedTerm).p instanceof TypedApp && 
-                 ((TypedApp)((TypedApp)typedTerm).p).inferType=='s' 
+        else {
+            String nTeo = ((TypedApp)typedTerm).q.type().toStringFinal();
+            Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, nTeo);
+            // Case when the user could only see the theorem but had not a Resuelve object associated to it
+            if (eqHintResuel == null){
+                eqHintResuel = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", nTeo);
+            }
+            equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")";
+
+            if( ((TypedApp)typedTerm).p instanceof TypedApp && 
+                ((TypedApp)((TypedApp)typedTerm).p).inferType=='s' 
                ) 
-        {
-            iter = ((TypedApp)((TypedApp)typedTerm).p).q;
-            Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, ((TypedApp)typedTerm).q.type().toStringFinal());
-            equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")";
-            lastline = ((App)((App)iter.type()).p).q.toStringInf(s,"")+equanimityHint+"$";
+            {
+                iter = ((TypedApp)((TypedApp)typedTerm).p).q;       
+                lastline = ((App)((App)iter.type()).p).q.toStringInf(s,"")+equanimityHint+"$";
+            }
+            else  {
+                iter = ((TypedApp)typedTerm).p;
+                equanimity = true;
+                lastline = ((App)((App)iter.type()).p).q.toStringInf(s,"")+"$";
+            }
         }
-        else  {
-            iter = ((TypedApp)typedTerm).p;
-            Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, ((TypedApp)typedTerm).q.type().toStringFinal());
-            equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")";
-            equanimity = true;
-            lastline = ((App)((App)iter.type()).p).q.toStringInf(s,"")+"$";
-        }
-        
+
     	Term ultInf = null;
         while (iter!=ultInf)
         {
@@ -781,7 +784,6 @@ public class InferResponse {
         Term type = typedTerm==null?null:typedTerm.type();
 
         boolean solved;
-        System.out.println("Justo después de boolean solved");
         if (typedTerm==null && metodo == null && !recursive)
         {
             this.setHistorial(this.getHistorial()+header);
@@ -924,8 +926,9 @@ public class InferResponse {
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, false);
         }
 
-        else if (oneSide)
+        else if (oneSide){
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);
+        }
 
         else if (weakening || strengthening || transitivity)
             setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);

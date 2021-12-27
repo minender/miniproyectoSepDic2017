@@ -408,10 +408,6 @@ public class InferController {
             }
             else if(tipoTeo.equals("MT")){
                 Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                // Case when the user could only see the theorem but had not a Dispone object associated to it
-                if (dispone == null) {
-                    dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                }
                 statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
             }
             else {    
@@ -510,10 +506,6 @@ public class InferController {
             }
             else if(tipoTeo.equals("MT")){
                 Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                // Case when the user could only see the theorem but had not a Dispone object associated to it
-                if (dispone == null) {
-                    dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                }
                 statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
             }
             else {    
@@ -626,7 +618,7 @@ public class InferController {
         // Case when the direct method started from the teorem being proved
         if(teoremProved.equals(initialExpr)) {
             // List of teorems solved by the user
-            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSolWithoutAxiom(username,teoNum);
+            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,teoNum);
             Term teorem;
             Term mt;
             for(Resuelve resu: resuelves){ // todo este for deberia ser un simple Query
@@ -2388,10 +2380,6 @@ public class InferController {
             }
             else if(tipoTeo.equals("MT")){
                 Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                // Case when the user could only see the theorem but had not a Dispone object associated to it
-                if (dispone == null) {
-                    dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                }
                 statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
             }
             else {
@@ -2665,7 +2653,6 @@ public class InferController {
         }
 
         solucionManager.updateSolucion(solucion);
-        System.out.println("formula = "+formula);
         response.generarHistorial(
             username,
             formula, 
@@ -2678,7 +2665,6 @@ public class InferController {
             disponeManager,
             simboloManager
         );
-        System.out.println(">>>Voy a retornar response = "+ response);
         return response;
     }
     
