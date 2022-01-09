@@ -749,18 +749,18 @@ public class InferResponse {
         boolean andIntroduction = false;
         
         if(metodo != null) {
-           // Must check if we are doing Natural deduction
-           naturalDirect = metodo.toStringFinal().equals("ND DM");
-           naturalSide = metodo.toStringFinal().equals("ND SS");
-           counterRecip = metodo.toStringFinal().substring(0, 2).equals("CR");
-           contradiction = metodo.toStringFinal().substring(0, 2).equals("CO");
-           oneSide = metodo.toStringFinal().equals("SS");
-           direct = metodo.toStringFinal().equals("DM");
-           weakening = metodo.toStringFinal().equals("WE");
-           strengthening = metodo.equals("ST");
-           transitivity = metodo.equals("TR");
-           andIntroduction = metodo.toStringFinal().substring(0, 2).equals("AI");
-           valid = valida;
+            // Must check if we are doing Natural deduction
+            naturalDirect = metodo.toStringFinal().equals("ND DM");
+            naturalSide = metodo.toStringFinal().equals("ND SS");
+            counterRecip = metodo.toStringFinal().substring(0, 2).equals("CR");
+            contradiction = metodo.toStringFinal().substring(0, 2).equals("CO");
+            oneSide = metodo.toStringFinal().equals("SS");
+            direct = metodo.toStringFinal().equals("DM");
+            weakening = metodo.toStringFinal().equals("WE");
+            strengthening = metodo.equals("ST");
+            transitivity = metodo.equals("TR");
+            andIntroduction = metodo.toStringFinal().substring(0, 2).equals("AI");
+            valid = valida;
         //}
         }
         

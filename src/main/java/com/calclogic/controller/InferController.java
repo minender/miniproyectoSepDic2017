@@ -856,26 +856,43 @@ public class InferController {
      * @return proof of theoremProved if finished, else return the same proof
      */
     private Term finishedContradictionProve(Term teoremProved, Term proof) {
-       try {
-         String str1 = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
-         Term st1 = CombUtilities.getTerm(str1);
-         String str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
-         Term st2 = CombUtilities.getTerm(str2);
-         List<Var> vars = new ArrayList<Var>();    
-         List<Term> terms = new ArrayList<Term>();
-         vars.add(0, new Var(112));   
-         terms.add(0, teoremProved);
-         Sust sus = new Sust(vars, terms);
-         TypedA A1 = new TypedA(st1);
-         TypedA A2 = new TypedA(st2);
-         TypedI I = new TypedI(sus);
-         return new TypedApp(new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2)),proof);
+        System.out.println("Entré en finishedContradictionProve");
+        try {
+            // This string says: ¬p => false == ¬(¬p)
+            String str1 = "c_{1} x_{112} (c_{2} c_{9} (c_{7} x_{112}))";
+            //String str1 = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
+            Term st1 = CombUtilities.getTerm(str1);
+
+            // This string says: ¬(¬p) == p
+            String str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
+            Term st2 = CombUtilities.getTerm(str2);
+
+            // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
+            List<Var> vars = new ArrayList<Var>();    
+            List<Term> terms = new ArrayList<Term>();
+
+            // In this case the substitution only needs one variable to be assigned [x112 := teoremProved]
+            vars.add(0, new Var(112));   
+            terms.add(0, teoremProved);
+
+            // Here is where the substitution is applied
+            Sust sus = new Sust(vars, terms);
+
+            // We make the two formulas at the beginning to be treated as axioms
+            TypedA A1 = new TypedA(st1);
+            TypedA A2 = new TypedA(st2);
+
+            // We give the instantiation format to the substitution above
+            TypedI I = new TypedI(sus);
+
+            System.out.println("Voy a retornar lo nuevo");
+            //return new TypedApp(new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2)),proof);
+            return new TypedApp(new TypedApp(I,A1), proof);
              
-       }catch (TypeVerificationException e)  {
-          Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
-       }
-       
-       return proof;
+        }catch (TypeVerificationException e)  {
+            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
+        }
+        return proof;
     }
     
     /**
@@ -2099,11 +2116,12 @@ public class InferController {
      * @return Term that represent the statement to be proved in the current sub proof.
      */
     public static Term initStatement(Term beginFormula, Term method) {
-        
-        if (method.toString().equals("AI"))
-            return ((App)beginFormula).q;
-        else if (method instanceof Const)
+        if (method.toString().equals("AI")){
+            return ((App)beginFormula).q;           
+        }
+        else if (method instanceof Const){
             return beginFormula;
+        }
         else if ( ((App)method).p.toStringFinal().equals("CR") ) {
             Term antec = ((App)beginFormula).q;
             antec = new App(new Const(7 ,"c_{7}"), antec);
@@ -2458,7 +2476,6 @@ public class InferController {
         String metodo = solucion.getMetodo();
         Term methodTerm = ProofMethodUtilities.getTerm(metodo);
         Term methodTermIter = methodTerm;
-        String strMethodTermIter = methodTermIter.toStringFinal();
         
         Stack<Term> methodStk = new Stack<Term>();
         Stack<Term> fatherProofs = new Stack<Term>();
@@ -2485,6 +2502,7 @@ public class InferController {
     
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROVE TYPE
         Term infer = null;
+        String strMethodTermIter = methodTermIter.toStringFinal();
         try 
         {
             if(strMethodTermIter.equals("DM")) {
@@ -2535,8 +2553,9 @@ public class InferController {
         j = 0;
         while (newProof == null && i < 2) {
             try {
-                if (i == 1 && j == 0)
+                if (i == 1 && j == 0){
                     infer = new TypedApp(new TypedS(infer.type()), infer);
+                }
                 if (strMethodTermIter.equals("WE") || 
                     strMethodTermIter.equals("ST") ||
                     strMethodTermIter.equals("TR")    
