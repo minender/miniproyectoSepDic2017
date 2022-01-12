@@ -883,8 +883,8 @@ public class InferController {
             // We give the instantiation format to the substitution above
             TypedI I = new TypedI(sus);
 
-            return new TypedApp(new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2)),proof);
-             
+            return new TypedApp(new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2)),proof); 
+                     
         }catch (TypeVerificationException e)  {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
         }
