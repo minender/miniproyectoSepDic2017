@@ -76,8 +76,10 @@ import com.calclogic.service.TeoremaManager;
 import com.calclogic.service.TeoriaManager;
 import com.calclogic.service.PlantillaTeoremaManager;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
@@ -87,6 +89,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -337,6 +340,23 @@ public class PerfilController {
         return "help";
     }
     
+    private Term dual(Term statement) {
+        String theo = statement.toStringFinal();
+        theo = theo.replaceAll("c_\\{2\\}", "%(c3)");
+        theo = theo.replaceAll("c_\\{3\\}", "%(c2)");
+        theo = theo.replaceAll("c_\\{4\\}", "%(c5)");
+        theo = theo.replaceAll("c_\\{5\\}", "%(c4)");
+        Map<String,String> values = new HashMap<String, String>();
+        values.put("c2", "c_{2}");
+        values.put("c3", "c_{3}");
+        values.put("c4", "c_{4}");
+        values.put("c5", "c_{5}");
+        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
+        theo = sub.replace(theo);
+
+        return CombUtilities.getTerm(theo);
+    }
+    
     @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.GET)
     public String misTeoremasView(@PathVariable String username, ModelMap map) {
         if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
@@ -350,7 +370,8 @@ public class PerfilController {
         {
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
-            t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
+            //t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
+            t.setMetateoTerm(dual(t.getTeoTerm()));
         }
         /*
         List<Teorema> teoremas = usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username));
@@ -491,11 +512,25 @@ public class PerfilController {
         InferResponse response = new InferResponse();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
-        Simbolo s = simboloManager.getSimbolo(1);
-        Simbolo s2 = simboloManager.getSimbolo(8);
-        Term teorema = new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad())),resuelve.getTeorema().getTeoTerm());
+        String proof = solucionManager.getAllSolucionesByResuelve(resuelve.getId()).get(0).getDemostracion();
+        /*Simbolo s = simboloManager.getSimbolo(1);
+        Simbolo s2 = simboloManager.getSimbolo(8);*/
+        Term teorema = dual(teo);//new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad())),resuelve.getTeorema().getTeoTerm());
         String nTeo = resuelve.getNumeroteorema();
-        Term A1 = new TypedA( new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()), new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(113)),new Var(112))) );
+        proof = proof.replaceAll("c_\\{2\\}", "%(c3)");
+        proof = proof.replaceAll("c_\\{3\\}", "%(c2)");
+        proof = proof.replaceAll("c_\\{4\\}", "%(c5)");
+        proof = proof.replaceAll("c_\\{5\\}", "%(c4)");
+        Map<String,String> values = new HashMap<String, String>();
+        values.put("c2", "c_{2}");
+        values.put("c3", "c_{3}");
+        values.put("c4", "c_{4}");
+        values.put("c5", "c_{5}");
+        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
+        proof = sub.replace(proof);
+
+        Term typedTerm = CombUtilities.getTerm(proof);
+        /*Term A1 = new TypedA( new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()), new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(113)),new Var(112))) );
         Term A2 = new TypedA( new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(113)),
                                      new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(113)),
                                                                new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad()))));
@@ -523,9 +558,9 @@ public class PerfilController {
         }
         catch (TypeVerificationException e){
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-        }
+        }*/
         
-        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"), resuelveManager, disponeManager, simboloManager);
+        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("SS"), resuelveManager, disponeManager, simboloManager);
         return response;
     }
     

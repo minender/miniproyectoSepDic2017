@@ -417,7 +417,7 @@
                 <option value="CR">Counter-reciprocal</option>
                 <option value="AI">Conjunction by parts</option>
                 <option value="CA">Case analysis</option>
-                <option value="WI">Witness</option>
+                <!--<option value="WI">Witness</option>-->
               </select>
           </div>
             <article id="teoremas" class="teoremas">

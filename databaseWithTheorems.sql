@@ -789,7 +789,7 @@ COPY userdb.resuelve (id, nombreteorema, numeroteorema, resuelto, loginusuario, 
 -- Name: resuelve_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-SELECT pg_catalog.setval('userdb.resuelve_id_seq', 107, true);
+SELECT pg_catalog.setval('userdb.resuelve_id_seq', 1, true);
 
 
 --
@@ -814,7 +814,7 @@ COPY userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, pr
 -- Name: simbolo_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-SELECT pg_catalog.setval('userdb.simbolo_id_seq', 10, true);
+SELECT pg_catalog.setval('userdb.simbolo_id_seq', 1, true);
 
 
 --
@@ -951,7 +951,7 @@ COPY userdb.teorema (id, enunciado, esquema, aliases) FROM stdin;
 -- Name: teorema_id_seq; Type: SEQUENCE SET; Schema: userdb; Owner: userdb
 --
 
-SELECT pg_catalog.setval('userdb.teorema_id_seq', 107, true);
+SELECT pg_catalog.setval('userdb.teorema_id_seq', 1, true);
 
 
 --
