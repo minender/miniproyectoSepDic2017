@@ -469,7 +469,7 @@ public class InferController {
     }
     
     /**
-     * Controller for automatic filling of the substitution form in the user session.
+     * Controller for automatic filling of the substitution form in the user session. 
      * 
      * @param nStatement: code that identifies the statement. It is a JSON encode HTTP POST parameter
      * @param leibniz: String with the E of Leibniz rule in format C. It is JSON encode 

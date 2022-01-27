@@ -6,15 +6,15 @@
    and replaces the input box where the user was holding its mouse with the recently clicked
    operator
  * @param text string that represents the notation of symbol associated to the button that was clicked
- * @param simboloId int that is the id of the symbol of the button that as clicked
+ * @param simboloId int that is the id of the symbol of the button that was clicked
  * @param isAlias boolean that tells us if is an alias what we need to insert 
  * @returns nothing
  */
 function insertAtMathjaxDiv(text,simboloId, isAlias){
-	
+	alert("Entré insertAtMathjaxDiv ");
 	var input = document.activeElement; // get the input box where the cursor was
 	
-	// if the cursor was not on any element, or the element wasnt a Math_Jax 
+	// if the cursor was not on any element, or the element wasn't a Math_Jax 
 	// input field, return
 	if(!input || !(input.classList.contains("MathJax_Input"))){
 		return 
@@ -172,7 +172,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 
 
 /**
- * This function set the mathjax form 
+ * This function sets the mathjax form 
    to the correct attributes
  * @param form mathjax form to set attributes of
  * @param maxlength how many characters to allow in the input box
@@ -180,8 +180,18 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
  * @returns nothing
  */
 function setMathJaxFormAttributes(form, maxlength, rootId) {
+	alert("Entré, form = " + form);
+	//alert("form 2 = " + ${form});
+	// alert("Entré, form = " + form.value);
 
-	
+	// for (var key in window['${rootId}' + 'simboloDic']) {
+	//     // check if is an alias
+	//     if (window['${rootId}' + 'simboloDic'][key].hasOwnProperty('numericId')) {           
+	//     	window['${rootId}' + 'simboloDic'][key]['numericId'] = stringToIntString(key);
+	//     }
+	// }
+
+
 	form.maxLength = maxlength;
 	form.setAttribute('data-rootId', rootId);
 	form.onkeydown = function() {
@@ -189,10 +199,8 @@ function setMathJaxFormAttributes(form, maxlength, rootId) {
 
 	    // If the user presses del and the input box was empty we must delete this operator 
 	    // in the mathjax div
-	    if( (key == 8 || key == 46) && this.value == "" ) {
-	    	
-	    	deleteOperator(this.id, rootId);
-	    		
+	    if( (key == 8 || key == 46) && this.value == "" ) {	
+	    	deleteOperator(this.id, rootId);		
 	    }    
 	}
 }
@@ -206,7 +214,7 @@ function setMathJaxFormAttributes(form, maxlength, rootId) {
  * @returns dinctionary with key the id of the input form and value its content
  */
 function saveMathJaxFormContent(divId){
-	
+	alert("Entré saveMathJaxFormContent ");
 	// Get all input boxes from the div
 	var inputs = $('#' + divId + ' .MathJax_Input').toArray();
 
@@ -228,7 +236,7 @@ function saveMathJaxFormContent(divId){
  * @returns nothing
  */
 function loadMathJaxFormContent(divId, dictionarySave){
-	
+	alert("Entré loadMathJaxFormContent ");
 	// Get the new input boxes
 	var inputs = $('#' + divId.replace(/(\.)/g, "\\.") + ' .MathJax_Input').toArray();
 	// Set the value of each new input box to its old value
@@ -251,7 +259,7 @@ function loadMathJaxFormContent(divId, dictionarySave){
  * @returns new string for jax to display 
  */
 function deleteOperator(FormId, rootId){
-	
+	alert("Entré deleteOperator");
 	var id = rootId + "MathJaxDiv";
 	var input = document.getElementById(FormId); // get the input box
 	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div
@@ -399,7 +407,7 @@ function deleteOperator(FormId, rootId){
  * @returns nothing
  */
 function deleteOperatorParserString(formId, rootId){
-	
+	alert("Entré deleteOperatorParserString");
 	var oldParentId = formId.substring(0, formId.length - 1);// the id the new input box will have
 	
 	var lastChar = formId[formId.length-1];// the last char of the id tells us if is right or left child
@@ -516,7 +524,7 @@ function deleteOperatorParserString(formId, rootId){
  * @returns
  */
 function setInputValueOnParser(rootId){
-	
+	alert("Entré setInputValueOnParser");
 	rootId += '_';
 	
 	var textareaId = window[rootId + '_InputForm'];
@@ -548,7 +556,7 @@ function setInputValueOnParser(rootId){
  * @returns nothing
  */
 function cleanJax(rootId){
-	
+	alert("Entré cleanJax");
 	
 	rootId += '_';
 	 
@@ -566,6 +574,7 @@ function cleanJax(rootId){
  * @returns
  */
 function cleanMathJax(rootId){
+	alert("Entré cleanMathJax");
 	var jaxDivId = rootId + "MathJaxDiv";
 	var math = MathJax.Hub.getAllJax(jaxDivId)[0]; // get the jax alement from the div
 	var startText = "{" + window[rootId + 'prefixMathJax'] + "\\FormInput{" + rootId + "}}";
@@ -578,6 +587,7 @@ function cleanMathJax(rootId){
  * @returns
  */
 function cleanParserString(rootId){
+	alert("Entré cleanParserString");
 	var startText = "Input{" + rootId + "}";
 	window[rootId + 'parserString'] = startText;
 	return startText;
@@ -601,9 +611,9 @@ function stringToIntString(string){
  * This function takes a C notation with the information neccesary to set
  * the jaxInputDictionary for the given notation, sets the dictionary, turns the 
  * notation into the proper C notation and sets the parseString 
- * This function is meant to be used when the user generates a leibnz by using 
+ * This function is meant to be used when the user generates a leibniz by using 
  * the mouse. This function also sets the new latex notation in mathjax
- * An example of what this method takes as argument is ambda z.C1(Input{q,leibnizSymbolsId_2,phatherOpId1},Input{z,leibnizSymbolsId_1,phatherOpId1})
+ * An example of what this method takes as argument is lambda z.C1(Input{q,leibnizSymbolsId_2,phatherOpId1},Input{z,leibnizSymbolsId_1,phatherOpId1})
  * @param cNotation C notation to recover from
  * @param latexNotation latex notation to display
  * @returns
@@ -770,7 +780,8 @@ var simboloDic = window[rootId + 'simboloDic'];
  * @returns nothing
  */
 function preSet(rootId){
-	
+	alert("Entré preSet");
+	cleanParserString
 	var id = rootId + "MathJaxDiv";
 	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div
 	
