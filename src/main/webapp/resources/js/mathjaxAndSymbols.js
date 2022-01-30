@@ -11,7 +11,6 @@
  * @returns nothing
  */
 function insertAtMathjaxDiv(text,simboloId, isAlias){
-	alert("Entré insertAtMathjaxDiv ");
 	var input = document.activeElement; // get the input box where the cursor was
 	
 	// if the cursor was not on any element, or the element wasn't a Math_Jax 
@@ -180,18 +179,6 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
  * @returns nothing
  */
 function setMathJaxFormAttributes(form, maxlength, rootId) {
-	alert("Entré, form = " + form);
-	//alert("form 2 = " + ${form});
-	// alert("Entré, form = " + form.value);
-
-	// for (var key in window['${rootId}' + 'simboloDic']) {
-	//     // check if is an alias
-	//     if (window['${rootId}' + 'simboloDic'][key].hasOwnProperty('numericId')) {           
-	//     	window['${rootId}' + 'simboloDic'][key]['numericId'] = stringToIntString(key);
-	//     }
-	// }
-
-
 	form.maxLength = maxlength;
 	form.setAttribute('data-rootId', rootId);
 	form.onkeydown = function() {
@@ -214,7 +201,6 @@ function setMathJaxFormAttributes(form, maxlength, rootId) {
  * @returns dinctionary with key the id of the input form and value its content
  */
 function saveMathJaxFormContent(divId){
-	alert("Entré saveMathJaxFormContent ");
 	// Get all input boxes from the div
 	var inputs = $('#' + divId + ' .MathJax_Input').toArray();
 
@@ -236,7 +222,6 @@ function saveMathJaxFormContent(divId){
  * @returns nothing
  */
 function loadMathJaxFormContent(divId, dictionarySave){
-	alert("Entré loadMathJaxFormContent ");
 	// Get the new input boxes
 	var inputs = $('#' + divId.replace(/(\.)/g, "\\.") + ' .MathJax_Input').toArray();
 	// Set the value of each new input box to its old value
@@ -259,7 +244,6 @@ function loadMathJaxFormContent(divId, dictionarySave){
  * @returns new string for jax to display 
  */
 function deleteOperator(FormId, rootId){
-	alert("Entré deleteOperator");
 	var id = rootId + "MathJaxDiv";
 	var input = document.getElementById(FormId); // get the input box
 	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div
@@ -407,7 +391,6 @@ function deleteOperator(FormId, rootId){
  * @returns nothing
  */
 function deleteOperatorParserString(formId, rootId){
-	alert("Entré deleteOperatorParserString");
 	var oldParentId = formId.substring(0, formId.length - 1);// the id the new input box will have
 	
 	var lastChar = formId[formId.length-1];// the last char of the id tells us if is right or left child
@@ -524,7 +507,6 @@ function deleteOperatorParserString(formId, rootId){
  * @returns
  */
 function setInputValueOnParser(rootId){
-	alert("Entré setInputValueOnParser");
 	rootId += '_';
 	
 	var textareaId = window[rootId + '_InputForm'];
@@ -556,7 +538,6 @@ function setInputValueOnParser(rootId){
  * @returns nothing
  */
 function cleanJax(rootId){
-	alert("Entré cleanJax");
 	
 	rootId += '_';
 	 
@@ -574,7 +555,6 @@ function cleanJax(rootId){
  * @returns
  */
 function cleanMathJax(rootId){
-	alert("Entré cleanMathJax");
 	var jaxDivId = rootId + "MathJaxDiv";
 	var math = MathJax.Hub.getAllJax(jaxDivId)[0]; // get the jax alement from the div
 	var startText = "{" + window[rootId + 'prefixMathJax'] + "\\FormInput{" + rootId + "}}";
@@ -587,7 +567,6 @@ function cleanMathJax(rootId){
  * @returns
  */
 function cleanParserString(rootId){
-	alert("Entré cleanParserString");
 	var startText = "Input{" + rootId + "}";
 	window[rootId + 'parserString'] = startText;
 	return startText;
@@ -780,7 +759,6 @@ var simboloDic = window[rootId + 'simboloDic'];
  * @returns nothing
  */
 function preSet(rootId){
-	alert("Entré preSet");
 	cleanParserString
 	var id = rootId + "MathJaxDiv";
 	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div

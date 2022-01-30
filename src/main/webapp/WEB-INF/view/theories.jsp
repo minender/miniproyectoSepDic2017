@@ -12,12 +12,13 @@
 <html>
 <tiles:insertDefinition name="header" />
 <script type="text/x-mathjax-config">
-          MathJax.Hub.Config({
-          tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-          processEscapes: true
-          }
-         });
+	MathJax.Hub.Config({
+		//extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
+		extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"],
+		jax: ["input/TeX","output/HTML-CSS"],
+		tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]},
+		TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}  
+	});
 </script>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>

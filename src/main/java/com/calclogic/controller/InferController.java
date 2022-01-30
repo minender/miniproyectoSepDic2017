@@ -626,6 +626,7 @@ public class InferController {
                                                // todo este for deberia ser un simple Query
                                                // todo este for deberia ser un simple Query
                                                // Quedo claro? deberia ser un simple Query
+            	// This is the theorem that is in the database
                 teorem = resu.getTeorema().getTeoTerm();
                 mt = new App(new App(new Const("c_{1}"),new Const("true")),teorem);
                 // If the current teorem or teorem==true matches the final expression (and this teorem is not the one being proved) 

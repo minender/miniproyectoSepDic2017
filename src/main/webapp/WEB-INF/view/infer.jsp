@@ -10,25 +10,9 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <!DOCTYPE html>
 <html>
-
-    <!-- Desde aqui -->
+    <tiles:insertDefinition name="header" />
     <head>
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-180084260-1"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'UA-180084260-1');
-        </script>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>CalcLogic</title>
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
-        <script src="${pageContext.request.contextPath}/static/js/popper.min.js"></script>
-        <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.min.js"></script>
         <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
-        <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
         <c:choose>
             <c:when test="${showCategorias.size() == 0}">
@@ -37,20 +21,6 @@
                 </script>
             </c:when>
         </c:choose>
-        <!--"[MathJax]/extensions/TeX/forminput.js"  "[Contrib]/forminput/forminput.js"-->
-        <script type="text/x-mathjax-config">
-            MathJax.Hub.Config({
-                // Previous version
-                //extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
-
-                extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"],
-                jax: ["input/TeX","output/HTML-CSS"],
-                tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true,},
-                TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}
-            });
-        </script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML"></script>
-        <!--<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>-->
         <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript">
             

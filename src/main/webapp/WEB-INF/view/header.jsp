@@ -13,7 +13,9 @@
     <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
+    <script src="${pageContext.request.contextPath}/static/js/popper.min.js"></script>
     <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.min.js"></script>
+    <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
     <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
 
@@ -27,13 +29,7 @@
         <c:when test='${!perfilMenu.equals("active") && !agregarTeoremaMenu.equals("active")}'>
             <script type="text/x-mathjax-config">
                 MathJax.Hub.Config({
-                    //tex2jax: {
-                        //// Línea nueva
-                        //extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"],
-                        //inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                        //processEscapes: true
-                    //}
-
+                    //extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
                     extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"],
                     jax: ["input/TeX","output/HTML-CSS"],
                     tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true,},

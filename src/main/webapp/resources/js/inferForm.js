@@ -117,19 +117,19 @@ $(function() {
 });
 
 function hasNumericClass(element){
-                    let clases = $(element).attr("class");
-                    isNumeric = false;
-                    if (clases){
-                        clases = clases.split(" ");
-                        for (let i = 0; i<clases.length;i++){
-                            if ($.isNumeric(clases[i])){
-                                isNumeric = true
-                            }
-                        }
-                    }
-                    return isNumeric
-                    
-                }
+    let clases = $(element).attr("class");
+    isNumeric = false;
+    if (clases){
+        clases = clases.split(" ");
+        for (let i = 0; i<clases.length;i++){
+            if ($.isNumeric(clases[i])){
+                isNumeric = true
+            }
+        }
+    }
+    return isNumeric
+    
+}
 
 function leibnizMouse(p1,p2){
 

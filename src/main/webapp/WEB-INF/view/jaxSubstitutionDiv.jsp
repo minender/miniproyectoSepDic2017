@@ -22,10 +22,11 @@
 <script>
 	//This allows the use of forminput mathjax extension in this view
 	MathJax.Hub.Config({
-		   extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
-		   jax: ["input/TeX","output/HTML-CSS"],
-		   tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]},
-		   TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}        	   
+	   //extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
+	   extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"],
+	   jax: ["input/TeX","output/HTML-CSS"],
+	   tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]},
+	   TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}         	   
 	});
 	
 	

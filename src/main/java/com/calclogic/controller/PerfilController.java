@@ -346,8 +346,7 @@ public class PerfilController {
             return "redirect:/index";
         }
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
-        for (Resuelve r: resuelves)
-        {
+        for (Resuelve r: resuelves){
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));

@@ -3,6 +3,7 @@ package com.calclogic.entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Comparator;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -130,5 +131,17 @@ public class Resuelve  implements java.io.Serializable {
     
     public void setSolucions(Set solucions) {
         this.solucions = solucions;
+    }
+
+    // This allows a list of Resuelves to be ordered according to the id of the theorems
+    // The instruction will be: "Collections.sort(<list>, Resuelve.CompareResuelveByTeorema)"
+    public static Comparator<Resuelve> CompareResuelveByTeorema = new Comparator<Resuelve>() {
+        public int compare(Resuelve r1, Resuelve r2){
+            int teo1 = r1.getTeorema().getId();
+            int teo2 = r2.getTeorema().getId();
+  
+            return teo1 - teo2; // For ascending order
+            // return teo2 - teo1; // For descending order
+        }
     }
 }
