@@ -46,16 +46,8 @@
 
 
 <script src="${pageContext.request.contextPath}/static/js/mathjaxAndSymbols.js"></script>
-<!--<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>-->
+<tiles:insertDefinition name="header" />
 <script>
-	//This allows the use of forminput mathjax extension in this view
-	MathJax.Hub.Config({
-	   //extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
-	   extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"],
-	   jax: ["input/TeX","output/HTML-CSS"],
-	   tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]},
-	   TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}        	   
-	});
 		
 	//DEFINE GLOBAL VARIABLES 
 	// Create a symbol dictionary with all their data
@@ -76,9 +68,6 @@
 	/* setTimeout(function() {
 		preSet('${rootId}');
 	}, 1000); */
-	
-	
-	
 	
 	// If a new MathJax input gets added this sets its attributes
 	document.getElementById('${rootId}' + "MathJaxDiv").addEventListener('DOMNodeInserted', function( event ) {

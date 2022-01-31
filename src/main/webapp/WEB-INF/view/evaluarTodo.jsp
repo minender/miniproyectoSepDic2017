@@ -8,16 +8,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <!--<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js"></script>-->
-    <title>Miniproyecto</title>
-  </head>
-  <body >
+  <tiles:insertDefinition name="header" />
 
+  <body >
     <h1>Evaluando</h1>
-        
         
     $$${terminos.get(0)}$$
 

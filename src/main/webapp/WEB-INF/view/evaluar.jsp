@@ -9,16 +9,11 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <!DOCTYPE html>
 <html>
+  <tiles:insertDefinition name="header" />
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <!--<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>-->
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/d3.v3.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias2.js"></script>
     <script src="${pageContext.request.contextPath}/static/js/jquery-1.10.2.js"></script>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
     <title>Miniproyecto</title>
   </head>

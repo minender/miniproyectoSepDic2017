@@ -20,13 +20,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
 
     <c:choose>
-        <c:when test='${agregarTeoremaMenu.equals("active")}'>
-            <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>                
-        </c:when>
-    </c:choose>
-
-    <c:choose>
-        <c:when test='${!perfilMenu.equals("active") && !agregarTeoremaMenu.equals("active")}'>
+        <c:when test='${!perfilMenu.equals("active")}'> <!-- Here we exclude the views which we don't want to import these configurations-->
             <script type="text/x-mathjax-config">
                 MathJax.Hub.Config({
                     //extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
