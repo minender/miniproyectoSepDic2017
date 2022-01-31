@@ -6,6 +6,8 @@
 <html>
   <tiles:insertDefinition name="header" />
   <head>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
     <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.slim.min.js"></script>
   </head>
 
