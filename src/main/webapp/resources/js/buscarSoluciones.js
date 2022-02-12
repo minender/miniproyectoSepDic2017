@@ -1,4 +1,4 @@
-
+// Used by "misTeoremas.jsp"
 function buscarSoluciones(idTeo){
     var url = window.location.href + "/listaSolucion";
     var data = {};
@@ -32,12 +32,11 @@ function buscarSoluciones(idTeo){
                 alert("The selected theorem has no saved proofs.");
                 $("#panelSoluciones").removeClass("d-none");
             }
-        }
-        
-        
+        }  
     });
 }
 
+// Used by "misTeoremas.jsp"
 function buscarMetaSoluciones(idTeo){
     $('#listaSoluciones').html("");
     var link = "<a href='javascript:buscarMetaFormula("+idTeo+");'> ";

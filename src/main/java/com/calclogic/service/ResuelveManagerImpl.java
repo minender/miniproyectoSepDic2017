@@ -151,7 +151,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
 
         // Copy of the original list that we sort according to theorems' ids in order that duplicates appear contiguous
         List<Resuelve> resuelvesCopy = new ArrayList<>(resuelves); 
-        Collections.sort(resuelvesCopy, Resuelve.CompareResuelveByTeorema);
+        Collections.sort(resuelvesCopy, Resuelve.CompareByTheoremId);
 
         Teorema prevTeo = null;
         Resuelve prevResuelve = null;
@@ -254,7 +254,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
 
         // Copy of the original list that we sort according to theorems' ids in order that duplicates appear contiguous
         List<Resuelve> resuelvesCopy = new ArrayList<>(resuelves); 
-        Collections.sort(resuelvesCopy, Resuelve.CompareResuelveByTeorema);
+        Collections.sort(resuelvesCopy, Resuelve.CompareByTheoremId);
 
         Teorema prevTeo = null;
         Resuelve prevResuelve = null;
