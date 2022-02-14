@@ -209,47 +209,47 @@ public class InferResponse {
     }*/
     
     public boolean isIAA(Term root, SimboloManager s) {
-    	
-    	if(!(root instanceof App)) return false;
-    	
-    	Term leftSide = ((App)root).p.type();
-    	
-    	if( ((App)root).q instanceof TypedA &&
-    	    ((App)root).p instanceof App &&
-    	    ((App)((App)root).p).p instanceof TypedI &&
-    	    ((App)((App)root).p).q instanceof TypedA &&
-    	    										 
-    	    leftSide instanceof App && ((App)leftSide).p instanceof App &&
-    	    (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") && 
-    	    ((App)leftSide).q.equals(((App)root).q.type())
-    	    
-    	) return true;
-    	
-    	return false;
-    	
+        
+        if(!(root instanceof App)) return false;
+        
+        Term leftSide = ((App)root).p.type();
+        
+        if( ((App)root).q instanceof TypedA &&
+            ((App)root).p instanceof App &&
+            ((App)((App)root).p).p instanceof TypedI &&
+            ((App)((App)root).p).q instanceof TypedA &&
+                                                     
+            leftSide instanceof App && ((App)leftSide).p instanceof App &&
+            (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") && 
+            ((App)leftSide).q.equals(((App)root).q.type())
+            
+        ) return true;
+        
+        return false;
+        
     }
     
     public boolean isIAIA(Term root, SimboloManager s) {
-    	
-    	if(!(root instanceof App)) return false;
-    	
-    	Term leftSide = ((App)root).p.type();
-    	
-    	if( ((App)root).q instanceof App &&
-        	((App)((App)root).q).p instanceof TypedI &&
-        	((App)((App)root).q).q instanceof TypedA &&
-    	    ((App)root).p instanceof App &&
-    	    ((App)((App)root).p).p instanceof TypedI &&
-    	    ((App)((App)root).p).q instanceof TypedA &&
-    	    
-    	    leftSide instanceof App && ((App)leftSide).p instanceof App &&
-    	    (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") && 
-    	    ((App)leftSide).q.equals(((App)root).q.type())
-    	    
-    	) return true;
-    	
-    	return false;    	
-    	
+        
+        if(!(root instanceof App)) return false;
+        
+        Term leftSide = ((App)root).p.type();
+        
+        if( ((App)root).q instanceof App &&
+            ((App)((App)root).q).p instanceof TypedI &&
+            ((App)((App)root).q).q instanceof TypedA &&
+            ((App)root).p instanceof App &&
+            ((App)((App)root).p).p instanceof TypedI &&
+            ((App)((App)root).p).q instanceof TypedA &&
+            
+            leftSide instanceof App && ((App)leftSide).p instanceof App &&
+            (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") && 
+            ((App)leftSide).q.equals(((App)root).q.type())
+            
+        ) return true;
+        
+        return false;       
+        
     }
     
     /**
@@ -259,22 +259,22 @@ public class InferResponse {
      * @return "Nomodus" if is not modus ponens, another string depending on the case
      */
     public String isModusPonens(Term root, SimboloManager s) {
-    	
-    	if(!(root instanceof App)) return "NoModus";
-    	
-    	// Case 1: IAA
-    	if(isIAA(root, s)) return "IAA";
-    	
-    	// Case 2: IAIA
-    	if(isIAIA(root, s)) return "IAIA";
-    	
-    	// Case 3: S(IAIA)
-    	if( ((App)root).p instanceof TypedS && isIAIA(((App)root).q, s)) return "S(IAIA)";
-    	
-    	// Case 4: S(IAA)
-    	if( ((App)root).p instanceof TypedS && isIAA(((App)root).q, s)) return "S(IAA)";
-    	
-    	return "NoModus";
+        
+        if(!(root instanceof App)) return "NoModus";
+        
+        // Case 1: IAA
+        if(isIAA(root, s)) return "IAA";
+        
+        // Case 2: IAIA
+        if(isIAIA(root, s)) return "IAIA";
+        
+        // Case 3: S(IAIA)
+        if( ((App)root).p instanceof TypedS && isIAIA(((App)root).q, s)) return "S(IAIA)";
+        
+        // Case 4: S(IAA)
+        if( ((App)root).p instanceof TypedS && isIAA(((App)root).q, s)) return "S(IAA)";
+        
+        return "NoModus";
     }
     
     /**
@@ -389,7 +389,7 @@ public class InferResponse {
         catch (TypeVerificationException e) {
             Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
             return "";
-	}
+    }
         return hintOneSide(user, typedTerm, resuelveManager, disponeManager, s);
     }
     
@@ -449,7 +449,7 @@ public class InferResponse {
     
     /**
      * This function adds a proof of just one step into a bigger proof, 
-     * when the demonstration method is the direct one.
+     * when the demonstration method is the direct one or start from one side
      * @param user 
      * @param typedTerm
      * @param solved
@@ -461,7 +461,7 @@ public class InferResponse {
      */
     private void setDirectProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s, boolean oneSide) {
         String primExp = "";
-    	String hint = "";
+        String hint = "";
         boolean equanimity = false;
         String equanimityHint = "";
         Term iter;
@@ -498,7 +498,7 @@ public class InferResponse {
             }
         }
 
-    	Term ultInf = null;
+        Term ultInf = null;
         while (iter!=ultInf)
         {
             if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t' ) {
@@ -522,19 +522,115 @@ public class InferResponse {
         }
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }
+
+    /**
+     * This function adds a proof of just one step into a bigger proof, 
+     * when the demonstration method is counter reciprocal
+     * @param user 
+     * @param typedTerm
+     * @param solved
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @param header
+     * @param clickeable
+     * @param metodo
+     * @param valida
+     * @param labeled
+     * @param formula
+     * @param nTeo
+     * @return Nothing.
+     */
+    private void setCounterRecipProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, 
+        SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
+        Term antec = ((App)formula).q;
+        Term consec = ((App)((App)formula).p).q;
+        Term newFormula = new App(new App(new Const(2, "c_{2}") , new App(new Const(7 ,"c_{7}"), antec)),
+                                                            new App(new Const(7,"c_{7}"),consec));
+        String statement = "";
+        try {
+           statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                              + "$</center>";
+        }
+        catch (Exception e) {
+            lado = "0";
+            return;
+        }
+        header+="By counter-reciprocal method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
+        if (metodo instanceof App) {
+            if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
+                 // InferController.isBaseMethod(((App)metodo).q)
+               )
+                typedTerm = ((App)typedTerm).q;
+            generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+                             resuelveManager, disponeManager, s, clickeable, false);
+        }
+        else
+            this.setHistorial(header);
+    }
+
+    /**
+     * This function adds a proof of just one step into a bigger proof, 
+     * when the demonstration method is contradiction
+     * @param user 
+     * @param typedTerm
+     * @param solved
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @param header
+     * @param clickeable
+     * @param metodo
+     * @param valida
+     * @param labeled
+     * @param formula
+     * @param nTeo
+     * @return Nothing.
+     */
+    private void setContradictionProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, 
+        SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
+        // This is saying: ¬formula => false, but the notation must be prefix and the first operand goes to the right.
+        // So, here what is really expressed is: (=> false) (¬formula).
+        Term newFormula = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),formula)); 
+        String statement = "";
+        try {
+           statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                              + "$</center>";
+        }
+        catch (Exception e) {
+            Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
+            lado = "0";
+            return;
+        }
+        
+        header+="By contradiction method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
+        if (metodo instanceof App) {
+            if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
+                 // InferController.isBaseMethod(((App)metodo).q)
+               ){
+                typedTerm = ((App)typedTerm).q;
+            }
+            generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+                             resuelveManager, disponeManager, s, clickeable, false);
+        }
+        else{
+            this.setHistorial(header);
+        }
+    }
+
  
     private void setWSProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, 
                             DisponeManager disponeManager, SimboloManager s) {        
         String primExp;
-    	String hint;
+        String hint;
         //Term t;
         boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
                       InferController.isInverseImpl(((TypedApp)typedTerm).q.type(),typedTerm.type());
         Term iter = (reversed?((TypedApp)typedTerm).q:typedTerm);
         boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
                       ((TypedApp)iter).q.type().toStringFinal().equals("c_{8}");
-    	iter = (lastEquan?((TypedApp)iter).p:iter);
-    	Term ultInf = null;
+        iter = (lastEquan?((TypedApp)iter).p:iter);
+        Term ultInf = null;
         int i = 0;
         int firstOpInf = InferController.wsFirstOpInferIndex(iter);
         
@@ -750,18 +846,17 @@ public class InferResponse {
         
         if(metodo != null) {
             // Must check if we are doing Natural deduction
-            naturalDirect = metodo.toStringFinal().equals("ND DM");
-            naturalSide = metodo.toStringFinal().equals("ND SS");
-            counterRecip = metodo.toStringFinal().substring(0, 2).equals("CR");
-            contradiction = metodo.toStringFinal().substring(0, 2).equals("CO");
-            oneSide = metodo.toStringFinal().equals("SS");
-            direct = metodo.toStringFinal().equals("DM");
-            weakening = metodo.toStringFinal().equals("WE");
-            strengthening = metodo.equals("ST");
-            transitivity = metodo.equals("TR");
+            naturalDirect   = metodo.toStringFinal().equals("ND DM");
+            naturalSide     = metodo.toStringFinal().equals("ND SS");
+            counterRecip    = metodo.toStringFinal().substring(0, 2).equals("CR");
+            contradiction   = metodo.toStringFinal().substring(0, 2).equals("CO");
+            oneSide         = metodo.toStringFinal().equals("SS");
+            direct          = metodo.toStringFinal().equals("DM");
+            weakening       = metodo.toStringFinal().equals("WE");
+            strengthening   = metodo.equals("ST");
+            transitivity    = metodo.equals("TR");
             andIntroduction = metodo.toStringFinal().substring(0, 2).equals("AI");
-            valid = valida;
-        //}
+            valid           = valida;
         }
         
         // if not, just print the expression we're going to proof.
@@ -799,122 +894,122 @@ public class InferResponse {
         if (typedTerm!=null && type == null && valida && !recursive)// Case where what we want to print is the first line
         {
             solved = false;
-       	    String firstLine = "";
+            String firstLine = "";
             if(naturalSide){
-    		firstLine = ((App)((App)typedTerm).p).q.toStringInfLabeled(s);	
-    		this.setHistorial(this.getHistorial()+header+"<br>Assuming H1: $"+ ((App)typedTerm).q.toStringInf(s, "") +"$<center>$"+firstLine+"</center>");
-    	    }else {
-    		firstLine = typedTerm.toStringInfLabeled(s);
-    		this.setHistorial(this.getHistorial()+header+"<center>$"+firstLine+"</center>");
-    	    }
+            firstLine = ((App)((App)typedTerm).p).q.toStringInfLabeled(s);  
+            this.setHistorial(this.getHistorial()+header+"<br>Assuming H1: $"+ ((App)typedTerm).q.toStringInf(s, "") +"$<center>$"+firstLine+"</center>");
+            }else {
+            firstLine = typedTerm.toStringInfLabeled(s);
+            this.setHistorial(this.getHistorial()+header+"<center>$"+firstLine+"</center>");
+            }
             return;
         }
 
         // In case natural deduction direct just started
         /*if( naturalDirect && (((TypedApp)typedTerm).p instanceof TypedI || ( ((App)type).q.toString().equals("c_{8}") && ((TypedApp)((TypedApp)((TypedApp)typedTerm).p).p).p instanceof TypedI) )) {
-        	// Just print the first expression and ignore the rest of the hints
-        	String firstLine = ((App)((App)((App)((App)((App)((App)type).p).q).p).q).p).q.toStringInf(s, "");
-        	this.setHistorial(header+"<br>Assuming H1: $"+ ((App)((App)((App)type).p).q).q.toStringInf(s, "") +"$<center>$"+firstLine+"$</center>");
-        	
-        	return;
+            // Just print the first expression and ignore the rest of the hints
+            String firstLine = ((App)((App)((App)((App)((App)((App)type).p).q).p).q).p).q.toStringInf(s, "");
+            this.setHistorial(header+"<br>Assuming H1: $"+ ((App)((App)((App)type).p).q).q.toStringInf(s, "") +"$<center>$"+firstLine+"$</center>");
+            
+            return;
         }*/
 
         // CHECK IF EQUANIMITY HAPPENED
-    	/*boolean equanimity;
-    	try{
-    		if (!(((TypedApp)typedTerm).p instanceof TypedS) && ((App)((TypedApp)typedTerm).p.type()).q.equals(((TypedApp)typedTerm).q.type()) 
-    				&& ((App)((App)((TypedApp)typedTerm).p.type()).p).p.toString().equals("c_{1}"))
-    			equanimity = true;
-    		else
-    			equanimity = false;
-    	}
-    	catch (ClassCastException e){
-    		equanimity = false;
-    	}
+        /*boolean equanimity;
+        try{
+            if (!(((TypedApp)typedTerm).p instanceof TypedS) && ((App)((TypedApp)typedTerm).p.type()).q.equals(((TypedApp)typedTerm).q.type()) 
+                    && ((App)((App)((TypedApp)typedTerm).p.type()).p).p.toString().equals("c_{1}"))
+                equanimity = true;
+            else
+                equanimity = false;
+        }
+        catch (ClassCastException e){
+            equanimity = false;
+        }
 
-    	String equanimityHint = ""; // This will be printed if equanimity needs to be printed at the ending of the proof (or begging in certain cases)
-    	Boolean equanimity2 = false; // will be true if the proof started with the theorem needed to be printed
-    	Term goal = null;
-    	*/
-    	
-    	// CREATE EQUANIMITY HINT STRING TO PRINT
-    	// Case1: when natural deduction direct finished 
-    	/*if(equanimity && naturalDirect) {
-    		if(((TypedApp)((TypedApp) typedTerm).p).p instanceof TypedS ) {// started with theorem being proved 
-    			goal = ((App)((App)((TypedApp)((TypedApp)((TypedApp)((TypedApp)typedTerm).p).q).p).p.type()).p).q;
-    			goal = ((App)((App)((App)((App)goal).p).q).p).q;
-    			typedTerm = ((TypedApp)((TypedApp)((TypedApp)((TypedApp)((TypedApp)typedTerm).p).q).p).p).p;
-    			
-    		}else {// started with another theorem
-    			
-    			// In this case finding the goal will require going to the start of the proof
-    			goal = typedTerm;
-    			while( ! (((TypedApp)((TypedApp)((TypedApp)goal).p).p).p instanceof TypedI)) {
-    				goal = ((TypedApp)goal).p;
-    			}
-    			goal = ((App)((App)(((TypedApp)goal).q).type()).p).q;
-    			goal = ((App)((App)((App)((App)goal).p).q).p).q;
-    			typedTerm = ((TypedApp)((TypedApp)typedTerm).p).p;
-    			
-    			equanimity2 = true;
-    		}
-    	// Case2: when natural deduction one side finished
-    	}else if(equanimity && naturalSide) {
-    		typedTerm = ((TypedApp)typedTerm).q;
-    		type = typedTerm.type();
-    		// If doing one side demostration and started from the right side
-        	if(naturalSide && ((TypedApp)typedTerm).p instanceof TypedS) {
-        		// Be really sure the S is there coz we started from the right
-        		// So check if the initial expression is the right side and the final one the left side of the theorem
-        		Resuelve res = resuelveManager.getResuelveByUserAndTeoNum(user, nTeo);
-        		Term teoProved = res.getTeorema().getTeoTerm();
-        		Term initialExpr = ((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).q).p).q).p).q;
-        		Term finalExpr = ((App)((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).p).q).p).q).p).q;
-        		if(initialExpr.equals(((App)((App)((App)((App)teoProved).p).q).p).q) && finalExpr.equals(((App)((App)((App)teoProved).p).q).q) ) {
-        			typedTerm = ((TypedApp)typedTerm).q;
-        			type = typedTerm.type();	
-        		}
-        	}
-    		// ignore equanimity in this case since it wont be printed
-    		equanimity = false;
-    	// Case3: when direct method finished and started from the theorem being proved
-    	}else if (equanimity && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedS){
-    		goal = (((TypedApp)typedTerm).q).type();	
-    		typedTerm = ((TypedApp)typedTerm).p;
-    		typedTerm = ((TypedApp)typedTerm).q;
-    	// Case4: when direct method finished and started from another theorem
-    	}else if (equanimity){
-    		goal = (((TypedApp)typedTerm).q).type();	
-    		typedTerm = ((TypedApp)typedTerm).p;
-    		equanimity2 = true;
-    	}*/
-    	
-    	/*if(equanimity) {
-    		type = typedTerm.type();
-    		Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, goal.toStringFinal());
-    		if (eqHintResuel == null) {
-    			equanimityHint = disponeManager.getDisponeByUserAndMetaeorema(user, goal.toStringFinal()).getNumerometateorema();
-    			equanimityHint = "~~~-~mt~("+equanimityHint+")";
-    		}
-    		else
-    		{    
-    			equanimityHint = eqHintResuel.getNumeroteorema();
-    			equanimityHint = "~~~-~st~("+equanimityHint+")";
-    		}
-    	}*/
+        String equanimityHint = ""; // This will be printed if equanimity needs to be printed at the ending of the proof (or begging in certain cases)
+        Boolean equanimity2 = false; // will be true if the proof started with the theorem needed to be printed
+        Term goal = null;
+        */
+        
+        // CREATE EQUANIMITY HINT STRING TO PRINT
+        // Case1: when natural deduction direct finished 
+        /*if(equanimity && naturalDirect) {
+            if(((TypedApp)((TypedApp) typedTerm).p).p instanceof TypedS ) {// started with theorem being proved 
+                goal = ((App)((App)((TypedApp)((TypedApp)((TypedApp)((TypedApp)typedTerm).p).q).p).p.type()).p).q;
+                goal = ((App)((App)((App)((App)goal).p).q).p).q;
+                typedTerm = ((TypedApp)((TypedApp)((TypedApp)((TypedApp)((TypedApp)typedTerm).p).q).p).p).p;
+                
+            }else {// started with another theorem
+                
+                // In this case finding the goal will require going to the start of the proof
+                goal = typedTerm;
+                while( ! (((TypedApp)((TypedApp)((TypedApp)goal).p).p).p instanceof TypedI)) {
+                    goal = ((TypedApp)goal).p;
+                }
+                goal = ((App)((App)(((TypedApp)goal).q).type()).p).q;
+                goal = ((App)((App)((App)((App)goal).p).q).p).q;
+                typedTerm = ((TypedApp)((TypedApp)typedTerm).p).p;
+                
+                equanimity2 = true;
+            }
+        // Case2: when natural deduction one side finished
+        }else if(equanimity && naturalSide) {
+            typedTerm = ((TypedApp)typedTerm).q;
+            type = typedTerm.type();
+            // If doing one side demostration and started from the right side
+            if(naturalSide && ((TypedApp)typedTerm).p instanceof TypedS) {
+                // Be really sure the S is there coz we started from the right
+                // So check if the initial expression is the right side and the final one the left side of the theorem
+                Resuelve res = resuelveManager.getResuelveByUserAndTeoNum(user, nTeo);
+                Term teoProved = res.getTeorema().getTeoTerm();
+                Term initialExpr = ((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).q).p).q).p).q;
+                Term finalExpr = ((App)((App)((App)((App)((App)((App)((TypedApp)typedTerm).q.type()).p).q).p).q).p).q;
+                if(initialExpr.equals(((App)((App)((App)((App)teoProved).p).q).p).q) && finalExpr.equals(((App)((App)((App)teoProved).p).q).q) ) {
+                    typedTerm = ((TypedApp)typedTerm).q;
+                    type = typedTerm.type();    
+                }
+            }
+            // ignore equanimity in this case since it wont be printed
+            equanimity = false;
+        // Case3: when direct method finished and started from the theorem being proved
+        }else if (equanimity && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).p instanceof TypedS){
+            goal = (((TypedApp)typedTerm).q).type();    
+            typedTerm = ((TypedApp)typedTerm).p;
+            typedTerm = ((TypedApp)typedTerm).q;
+        // Case4: when direct method finished and started from another theorem
+        }else if (equanimity){
+            goal = (((TypedApp)typedTerm).q).type();    
+            typedTerm = ((TypedApp)typedTerm).p;
+            equanimity2 = true;
+        }*/
+        
+        /*if(equanimity) {
+            type = typedTerm.type();
+            Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, goal.toStringFinal());
+            if (eqHintResuel == null) {
+                equanimityHint = disponeManager.getDisponeByUserAndMetaeorema(user, goal.toStringFinal()).getNumerometateorema();
+                equanimityHint = "~~~-~mt~("+equanimityHint+")";
+            }
+            else
+            {    
+                equanimityHint = eqHintResuel.getNumeroteorema();
+                equanimityHint = "~~~-~st~("+equanimityHint+")";
+            }
+        }*/
     
-    	// Save last expression to append it later
-    	/*String pasoPost="";
-	if(naturalDirect) {
+        // Save last expression to append it later
+        /*String pasoPost="";
+    if(naturalDirect) {
             Term aux= ((App)((App)((App)((App)((App)((App)type).p).q).p).q).p).q;
             pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+(equanimity2?"":equanimityHint)+(solved?"$":"");
-	}else if(naturalSide){
+    }else if(naturalSide){
             Term aux=((App)((App)((App)((App)type).p).q).p).q;
-            pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+(equanimity2?"":equanimityHint)+(solved?"$":"");	
-	}else {
+            pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+(equanimity2?"":equanimityHint)+(solved?"$":""); 
+    }else {
             Term aux= ((App)((App)type).p).q;
-            pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+(equanimity2?"":equanimityHint)+(solved?"$":"");	
-	}*/
+            pasoPost= (solved?aux.toStringInf(s,""):aux.toStringInfLabeled(s))+(equanimity2?"":equanimityHint)+(solved?"$":""); 
+    }*/
         if (labeled && !recursive)
             solved = type.equals(formula);
         else
@@ -934,57 +1029,10 @@ public class InferResponse {
             setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);
 
         else if (counterRecip) {
-            Term antec = ((App)formula).q;
-            Term consec = ((App)((App)formula).p).q;
-            Term newFormula = new App(new App(new Const(2, "c_{2}") , new App(new Const(7 ,"c_{7}"), antec)),
-                                                                new App(new Const(7,"c_{7}"),consec));
-            String statement = "";
-            try {
-               statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
-                                  + "$</center>";
-            }
-            catch (Exception e) {
-                lado = "0";
-                return;
-            }
-            header+="By counter-reciprocal method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
-            if (metodo instanceof App) {
-                if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
-                     // InferController.isBaseMethod(((App)metodo).q)
-                   )
-                    typedTerm = ((App)typedTerm).q;
-                generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
-                                 resuelveManager, disponeManager, s, clickeable, false);
-            }
-            else
-                this.setHistorial(header);
+            setCounterRecipProof(user, typedTerm, solved, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
         }
         else if (contradiction) {
-            // This is saying: ¬formula => false, but the notation must be prefix and the first operand goes to the right.
-            // So, here what is really expressed is: (=> false) (¬formula).
-            Term newFormula = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),formula)); 
-            String statement = "";
-            try {
-               statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
-                                  + "$</center>";
-            }
-            catch (Exception e) {
-                Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
-                lado = "0";
-                return;
-            }
-            
-            header+="By contradiction method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
-            if (metodo instanceof App) {
-                if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
-                     // InferController.isBaseMethod(((App)metodo).q)
-                   )
-                    typedTerm = ((App)typedTerm).q;
-                generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
-                                 resuelveManager, disponeManager, s, clickeable, false);
-            }
-            else
-                this.setHistorial(header);
+            setContradictionProof(user, typedTerm, solved, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
         }
         else if (andIntroduction) {
             //setAIProof(user, formula, nTeo, typedTerm, valida, labeled, metodo, resuelveManager, disponeManager, s);
@@ -1046,225 +1094,225 @@ public class InferResponse {
             ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
         else if (naturalSide)
             ; //setDirectProof(user, translateToOneSide(typedTerm), resuelveManager, disponeManager, s, true);
-    	/*while (iter!=ultInf) 
-    	{
-    		// In case we reach the start of natural deduction direct
+        /*while (iter!=ultInf) 
+        {
+            // In case we reach the start of natural deduction direct
             if( naturalDirect && (((TypedApp)iter).p instanceof TypedI || ( ((App)type).q.toString().equals("c_{8}") && ((TypedApp)((TypedApp)((TypedApp)iter).p).p).p instanceof TypedI) )) {
-            	// skip the rest of the hints
-            	break;
+                // skip the rest of the hints
+                break;
 //>>>>>>> origin/metodoField
             }
-    		
-    		// If there are still hints (TypedA)
-    		if (iter instanceof App && ((App)iter).p.containTypedA())
-    		{
-    			// Must check if is naturalDeduction special hint which has a typedA on the left 
-    			if((naturalDirect || naturalSide)  && !isModusPonens(iter, s).equals("NoModus") ){
-    				ultInf = iter;
-    			}else {
-    				ultInf = ((App)iter).q;
-    				iter = ((App)iter).p;
-    			}
-    		}
-    		else
-    			ultInf = iter;
+            
+            // If there are still hints (TypedA)
+            if (iter instanceof App && ((App)iter).p.containTypedA())
+            {
+                // Must check if is naturalDeduction special hint which has a typedA on the left 
+                if((naturalDirect || naturalSide)  && !isModusPonens(iter, s).equals("NoModus") ){
+                    ultInf = iter;
+                }else {
+                    ultInf = ((App)iter).q;
+                    iter = ((App)iter).p;
+                }
+            }
+            else
+                ultInf = iter;
 
-    		// Check if the current hint is a modus pones
-    		String isModusPonens = isModusPonens(ultInf, s);
-    		
-    		boolean ultInfApp = ultInf instanceof App;
-    		
-    		// CASE 1 : ultInf.q.q is App
-    		if(ultInfApp && ((App)ultInf).q instanceof App  && ((App)((App)ultInf).q).q instanceof App) {
-    			
-    			Term aux = ((App)ultInf.type()).q;
+            // Check if the current hint is a modus pones
+            String isModusPonens = isModusPonens(ultInf, s);
+            
+            boolean ultInfApp = ultInf instanceof App;
+            
+            // CASE 1 : ultInf.q.q is App
+            if(ultInfApp && ((App)ultInf).q instanceof App  && ((App)((App)ultInf).q).q instanceof App) {
+                
+                Term aux = ((App)ultInf.type()).q;
 
-				if(naturalDirect) {
-					aux = ((App)((App)((App)((App)aux).p).q).p).q;
-				}else if(naturalSide){
-					aux = ((App)((App)aux).p).q;	
-				}
-				primExp = aux.toStringInf(s, "")+(aux.equals(goal)?equanimityHint:"");
-				teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
-				inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s, "");
-				inst = "~with~" + inst;
-				if((naturalDirect || naturalSide)  && isModusPonens.equals("S(IAIA)")){// Modus ponens case S(IAIA)
-					// Leib will be in the TypedI intance, in the 4th Sust variable E
-				    Term phiTerm =  new App((Term)( ((TypedI)((App)((App)((App)ultInf).q).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
-					leib = "E^{z}:~" + phiTerm.toStringInf(s,"");
-				}else if(naturalDirect) {
-					Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q).p).q);
-					leib = ndLeiBracket.toStringInf(s, "");
-				}else if(naturalSide){
-					Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q);
-					leib = nsLeiBracket.toStringInf(s, "");
-				}else {
-					leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
-				}
-				
-				leib = "~and~" + leib;
-				// If leibniz is z dont print it
-				if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
-					leib = "";
-				}
-				
-			// CASE 2 : ultInf.q is App
-    		}else if (ultInfApp && ((App)ultInf).q instanceof App) {
-    			
-    			Term aux = ((App)ultInf.type()).q;
-				if(naturalDirect) {
-					aux = ((App)((App)((App)((App)aux).p).q).p).q;
-				}else if(naturalSide){
-					aux = ((App)((App)aux).p).q;	
-				}
-				primExp = aux.toStringInf(s, "")+(aux.equals(goal)?equanimityHint:"");
-				teo = ((App)((App)ultInf).q).q.type().toStringFinal();
-				if (((App)ultInf).p instanceof TypedS)
-					if (((App)((App)ultInf).q).p instanceof TypedI)
-					{
-						inst = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
-						inst = "~with~" + inst;
-					}
-					else
-					{
-						if((naturalDirect || naturalSide)  && isModusPonens.equals("S(IAA)")) {
-							// Leib will be in the TypedI intance, in the 4th Sust variable E
-						    Term phiTerm =  new App((Term)( ((TypedI)((App)((App)((App)ultInf).q).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
-							leib = "E^{z}:~" + phiTerm.toStringInf(s,"");
-						}else if(naturalDirect) {
-							Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q).p).q);
-							leib = ndLeiBracket.toStringInf(s, "");
-						}else if(naturalSide){
-							Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q);
-							leib = nsLeiBracket.toStringInf(s, "");
-						}else {
-							leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
-						}
-						leib = "~and~" + leib;
-						// If leibniz is z dont print it
-						if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
-							leib = "";
-						}
+                if(naturalDirect) {
+                    aux = ((App)((App)((App)((App)aux).p).q).p).q;
+                }else if(naturalSide){
+                    aux = ((App)((App)aux).p).q;    
+                }
+                primExp = aux.toStringInf(s, "")+(aux.equals(goal)?equanimityHint:"");
+                teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
+                inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s, "");
+                inst = "~with~" + inst;
+                if((naturalDirect || naturalSide)  && isModusPonens.equals("S(IAIA)")){// Modus ponens case S(IAIA)
+                    // Leib will be in the TypedI intance, in the 4th Sust variable E
+                    Term phiTerm =  new App((Term)( ((TypedI)((App)((App)((App)ultInf).q).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
+                    leib = "E^{z}:~" + phiTerm.toStringInf(s,"");
+                }else if(naturalDirect) {
+                    Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q).p).q);
+                    leib = ndLeiBracket.toStringInf(s, "");
+                }else if(naturalSide){
+                    Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q);
+                    leib = nsLeiBracket.toStringInf(s, "");
+                }else {
+                    leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
+                }
+                
+                leib = "~and~" + leib;
+                // If leibniz is z dont print it
+                if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
+                    leib = "";
+                }
+                
+            // CASE 2 : ultInf.q is App
+            }else if (ultInfApp && ((App)ultInf).q instanceof App) {
+                
+                Term aux = ((App)ultInf.type()).q;
+                if(naturalDirect) {
+                    aux = ((App)((App)((App)((App)aux).p).q).p).q;
+                }else if(naturalSide){
+                    aux = ((App)((App)aux).p).q;    
+                }
+                primExp = aux.toStringInf(s, "")+(aux.equals(goal)?equanimityHint:"");
+                teo = ((App)((App)ultInf).q).q.type().toStringFinal();
+                if (((App)ultInf).p instanceof TypedS)
+                    if (((App)((App)ultInf).q).p instanceof TypedI)
+                    {
+                        inst = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
+                        inst = "~with~" + inst;
+                    }
+                    else
+                    {
+                        if((naturalDirect || naturalSide)  && isModusPonens.equals("S(IAA)")) {
+                            // Leib will be in the TypedI intance, in the 4th Sust variable E
+                            Term phiTerm =  new App((Term)( ((TypedI)((App)((App)((App)ultInf).q).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
+                            leib = "E^{z}:~" + phiTerm.toStringInf(s,"");
+                        }else if(naturalDirect) {
+                            Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q).p).q);
+                            leib = ndLeiBracket.toStringInf(s, "");
+                        }else if(naturalSide){
+                            Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)((App)ultInf).q).p.type()).t).p).q);
+                            leib = nsLeiBracket.toStringInf(s, "");
+                        }else {
+                            leib = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
+                        }
+                        leib = "~and~" + leib;
+                        // If leibniz is z dont print it
+                        if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
+                            leib = "";
+                        }
 
-					}
-				else
-				{
-					inst = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
-					inst = "~with~" + inst;
-					
-					if((naturalDirect || naturalSide)  && isModusPonens.equals("IAIA")) {
-						// Leib will be in the TypedI intance, in the 4th Sust variable E
-					    Term phiTerm =  new App((Term)(((TypedI)((App)((App)ultInf).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
-						leib = "E^{z}:~" + phiTerm.toStringInf(s,"");
-					}else if(naturalDirect) {
-						Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)ultInf).p.type()).t).p).q).p).q);
-						leib = ndLeiBracket.toStringInf(s, "");
-					}else if(naturalSide){
-						Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)ultInf).p.type()).t).p).q);
-						leib = nsLeiBracket.toStringInf(s, "");
-					}else {
-						leib = ((App)ultInf).p.type().toStringInf(s, "");
-					}
-					leib = "~and~" + leib;
-					// If leibniz is z dont print it
-					if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
-						leib = "";
-					}
-				}
-    		
-			// CASE 3 : ultInf is App
-    		}else if (ultInfApp) {
-    			
-    			teo = ((App)ultInf).q.type().toStringFinal();
-				if (((App)ultInf).p instanceof TypedI)
-				{
-					inst = ((App)ultInf).p.type().toStringInf(s,"");
-					inst = "~with~" + inst;
+                    }
+                else
+                {
+                    inst = ((App)((App)ultInf).q).p.type().toStringInf(s, "");
+                    inst = "~with~" + inst;
+                    
+                    if((naturalDirect || naturalSide)  && isModusPonens.equals("IAIA")) {
+                        // Leib will be in the TypedI intance, in the 4th Sust variable E
+                        Term phiTerm =  new App((Term)(((TypedI)((App)((App)ultInf).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
+                        leib = "E^{z}:~" + phiTerm.toStringInf(s,"");
+                    }else if(naturalDirect) {
+                        Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)ultInf).p.type()).t).p).q).p).q);
+                        leib = ndLeiBracket.toStringInf(s, "");
+                    }else if(naturalSide){
+                        Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)ultInf).p.type()).t).p).q);
+                        leib = nsLeiBracket.toStringInf(s, "");
+                    }else {
+                        leib = ((App)ultInf).p.type().toStringInf(s, "");
+                    }
+                    leib = "~and~" + leib;
+                    // If leibniz is z dont print it
+                    if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
+                        leib = "";
+                    }
+                }
+            
+            // CASE 3 : ultInf is App
+            }else if (ultInfApp) {
+                
+                teo = ((App)ultInf).q.type().toStringFinal();
+                if (((App)ultInf).p instanceof TypedI)
+                {
+                    inst = ((App)ultInf).p.type().toStringInf(s,"");
+                    inst = "~with~" + inst;
 
-				}
-				else if (((App)ultInf).p instanceof TypedL) {
-					leib = "~and~" + ((App)ultInf).p.type().toStringInf(s,"");
-					if(naturalDirect) {
-						Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)ultInf).p.type()).t).p).q).p).q);
-						leib = "~and~" + ndLeiBracket.toStringInf(s, "");
-					}else if(naturalSide){
-						Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)ultInf).p.type()).t).p).q);
-						leib = "~and~" + nsLeiBracket.toStringInf(s, "");
-					}
-					// If leibniz is z dont print it
-					if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
-						leib = "";
-					}
-				}
-				else if ((naturalDirect || naturalSide)  && isModusPonens.equals("IAA")){ // In case we are seeing a naturalDeduction special hint
-					// Leib will be in the TypedI intance, in the 4th Sust variable E
-				    Term phiTerm =  new App((Term)(((TypedI)((App)((App)ultInf).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
-					leib = "~and~E^{z}:~" + phiTerm.toStringInf(s,"");
-				} 
-				Term aux = ((App)ultInf.type()).q;
+                }
+                else if (((App)ultInf).p instanceof TypedL) {
+                    leib = "~and~" + ((App)ultInf).p.type().toStringInf(s,"");
+                    if(naturalDirect) {
+                        Bracket ndLeiBracket = new Bracket(new Var('z'), ((App)((App)((App)((App)((Bracket)((App)ultInf).p.type()).t).p).q).p).q);
+                        leib = "~and~" + ndLeiBracket.toStringInf(s, "");
+                    }else if(naturalSide){
+                        Bracket nsLeiBracket = new Bracket(new Var('z'), ((App)((App)((Bracket)((App)ultInf).p.type()).t).p).q);
+                        leib = "~and~" + nsLeiBracket.toStringInf(s, "");
+                    }
+                    // If leibniz is z dont print it
+                    if(leib.equals("~and~(E^{z}: z)") || leib.equals("~and~E^{z}: z")) {
+                        leib = "";
+                    }
+                }
+                else if ((naturalDirect || naturalSide)  && isModusPonens.equals("IAA")){ // In case we are seeing a naturalDeduction special hint
+                    // Leib will be in the TypedI intance, in the 4th Sust variable E
+                    Term phiTerm =  new App((Term)(((TypedI)((App)((App)ultInf).p).p).getInstantiation().getTerms().get(3).clone2()), new Var(122)).reducir();
+                    leib = "~and~E^{z}:~" + phiTerm.toStringInf(s,"");
+                } 
+                Term aux = ((App)ultInf.type()).q;
 
-				if(naturalDirect) {
-					aux = ((App)((App)((App)((App)aux).p).q).p).q;
-				}else if(naturalSide){
-					aux = ((App)((App)aux).p).q;	
-				}
-				primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-				
-			// CASE 4 : ultInf is not App	
-    		}else {
-    			Term aux = ultInf.type();
+                if(naturalDirect) {
+                    aux = ((App)((App)((App)((App)aux).p).q).p).q;
+                }else if(naturalSide){
+                    aux = ((App)((App)aux).p).q;    
+                }
+                primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
+                
+            // CASE 4 : ultInf is not App   
+            }else {
+                Term aux = ultInf.type();
 
-    			if(naturalDirect) {
-    				aux = ((App)((App)((App)((App)aux).p).q).p).q;
-    			}else if(naturalSide){
-    				aux = ((App)((App)aux).p).q;	
-    			}
+                if(naturalDirect) {
+                    aux = ((App)((App)((App)((App)aux).p).q).p).q;
+                }else if(naturalSide){
+                    aux = ((App)((App)aux).p).q;    
+                }
 
-    			teo = aux.toStringFinal();
-    			primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-    		}
+                teo = aux.toStringFinal();
+                primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
+            }
 
 
-    		int conId = ((Const)((App)((App)ultInf.type()).p).p).getId();
-    		String op = s.getSimbolo(conId).getNotacion_latex();
+            int conId = ((Const)((App)((App)ultInf.type()).p).p).getId();
+            String op = s.getSimbolo(conId).getNotacion_latex();
 
-    		Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
-    		if (theo == null)
-    		{
-    			teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
-    			hint = op+"~~~~~~\\langle mt~("+teo+")"+inst+leib+"\\rangle";
-    		}
-    		else
-    		{
-    			teo = theo.getNumeroteorema();
-    			hint = op+"~~~~~~\\langle st~("+teo+")"+inst+leib+"\\rangle";
-    		}
-    		
- 		
-    		this.setHistorial("~~~~~~" + primExp +" \\\\"+ hint +"\\\\"+this.getHistorial());
-    		primExp = "";
-    		teo = "";
-    		leib = "";
-    		inst = "";
-    		hint = "";
-    	} */
-    	
-    	// Add the hypothesis if we are doing natural deduction
-    	if(naturalDirect || naturalSide) { 
-    		header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
-    	}
+            Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
+            if (theo == null)
+            {
+                teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
+                hint = op+"~~~~~~\\langle mt~("+teo+")"+inst+leib+"\\rangle";
+            }
+            else
+            {
+                teo = theo.getNumeroteorema();
+                hint = op+"~~~~~~\\langle st~("+teo+")"+inst+leib+"\\rangle";
+            }
+            
+        
+            this.setHistorial("~~~~~~" + primExp +" \\\\"+ hint +"\\\\"+this.getHistorial());
+            primExp = "";
+            teo = "";
+            leib = "";
+            inst = "";
+            hint = "";
+        } */
+        
+        // Add the hypothesis if we are doing natural deduction
+        if(naturalDirect || naturalSide) { 
+            header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
+        }
 
         if (/*!andIntroduction &&*/ !recursive) {
-    	    historial = header+"<center>$" +historial+"</center>";
+            historial = header+"<center>$" +historial+"</center>";
             if (!valida) 
-    		historial = historial+"$$\\text{No valid inference}$$";
+            historial = historial+"$$\\text{No valid inference}$$";
         }
         else if (/*!andIntroduction &&*/ recursive)
             ;
         //else 
-    	//    this.setHistorial(header +this.getHistorial());
-    	
-    	//this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");        
+        //    this.setHistorial(header +this.getHistorial());
+        
+        //this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");        
     }
     
 }
