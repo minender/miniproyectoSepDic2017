@@ -463,10 +463,11 @@ public class InferResponse {
         String primExp = "";
         String hint = "";
         boolean equanimity = false;
-        String equanimityHint = "";
         Term iter;
         String lastline = "";
         
+        /* If the demonstrarion method is starting from one side, or the typedTerm is not an inference
+           but just a functional application (an App) or is an equanimity inference */
         if (oneSide || !(typedTerm instanceof TypedApp) || ((TypedApp)typedTerm).inferType!='e') {
             if (solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='s') 
                iter = ((TypedApp)typedTerm).q;
@@ -475,14 +476,34 @@ public class InferResponse {
             Term aux = ((App)((App)iter.type()).p).q;
             lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));  
         }
-        else {
-            String nTeo = ((TypedApp)typedTerm).q.type().toStringFinal();
+        // Case when direct method is applied and we start from the expression to be proved
+        else { 
+            String nTeo;        // Plain string of the last step of the demonstration
+            String eqSust = ""; // Indicates the instantiation (if any) that was necessary to apply to the already proven theorem
+            String equanimityHint = ""; // Text that indicates the already proven theorem in which the current proof finalized
+
+            // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
+            if (((TypedApp)typedTerm).q instanceof TypedApp){
+                nTeo = ((TypedApp)((TypedApp)typedTerm).q).q.type().toStringFinal();
+                eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringInf(s,"");
+            }
+            else {
+                // Note that here we have a less "q" respect of the previous case because in there 
+                // there was an additional tree representing the instantiation
+                nTeo = ((TypedApp)typedTerm).q.type().toStringFinal();
+            }
+
+            // We get the Resuelve row associated to the demonstrated theorem in order that we can 
+            // later get its current number (established by the user) to indicate that it is what
+            // was used to end the demonstration
             Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, nTeo);
+
             // Case when the user could only see the theorem but had not a Resuelve object associated to it
             if (eqHintResuel == null){
                 eqHintResuel = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", nTeo);
             }
-            equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")";
+
+            equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")"+eqSust;
 
             if( ((TypedApp)typedTerm).p instanceof TypedApp && 
                 ((TypedApp)((TypedApp)typedTerm).p).inferType=='s' 

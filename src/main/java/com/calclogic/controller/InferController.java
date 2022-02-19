@@ -605,21 +605,22 @@ public class InferController {
      * the proof given as argument.
      * 
      * To understand the arguments assume we have a prove that so far has proved A == ... == F
-     * @param teoremProved: The theorem the user is trying to prove
+     * @param theoremProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @param username: name of the user doing the prove
      * @param teoNum: id that identify the theorem that the user is trying to prove
      * @return new proof if finished, else return the same proof
      */
-    private Term finishedDirectMethodProve(Term teoremProved, Term proof, String username, String teoNum) {
+    private Term finishedDirectMethodProve(Term theoremProved, Term proof, String username, String teoNum) {
         Term expr = proof.type();
         Term initialExpr = ((App)expr).q;
-        Term finalExpr = ((App)((App)expr).p).q;
-        // Case when the direct method started from the teorem being proved
-        if(teoremProved.equals(initialExpr)) {
-            // List of teorems solved by the user
+        Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
+
+        // Case when the direct method started from the theorem being proved
+        if(theoremProved.equals(initialExpr)) {
+            // List of teorems solved by the user. We examine them to check if the current proof already reached one 
             List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,teoNum);
-            Term teorem;
+            Term theorem;
             Term mt;
             for(Resuelve resu: resuelves){ // todo este for deberia ser un simple Query
                                                // todo este for deberia ser un simple Query
@@ -627,27 +628,43 @@ public class InferController {
                                                // todo este for deberia ser un simple Query
                                                // Quedo claro? deberia ser un simple Query
             	// This is the theorem that is in the database
-                teorem = resu.getTeorema().getTeoTerm();
-                mt = new App(new App(new Const("c_{1}"),new Const("true")),teorem);
-                // If the current teorem or teorem==true matches the final expression (and this teorem is not the one being proved) 
-                if(!teorem.equals(teoremProved) && (teorem.equals(finalExpr) || mt.equals(finalExpr))) {
+                theorem = resu.getTeorema().getTeoTerm();
+                mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem);
+
+                // If the current theorem or theorem==true matches the final expression (and this theorem is not the one being proved) 
+                if (!theorem.equals(theoremProved) && (theorem.equals(finalExpr) || mt.equals(finalExpr))){
                     try {
                         return new TypedApp(new TypedApp(new TypedS(proof.type()), proof),new TypedA(finalExpr)); 
                     }catch (TypeVerificationException e) {
-                         Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                        Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
                     }
-                }   
+                } 
+
+                // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
+                // >>> It does not work if we do it backwards
+                Equation eq = new Equation(theorem, finalExpr);
+                Sust sust = eq.mgu(simboloManager);
+
+                // Case when last line is an instantiation of the compared theorem
+                if (sust != null){
+                    try {
+                        TypedA A = new TypedA(theorem); // We treat the compared theorem as an axiom
+                        TypedI I = new TypedI(sust); // We give the instantiation format to the substitution above
+
+                        return new TypedApp(new TypedApp(new TypedS(proof.type()), proof),new TypedApp(I,A));
+
+                    }catch (TypeVerificationException e) {
+                        Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                    }
+                }     
             }
-                
-            
-            // If the prove hasnt finished
+                        
+            // If the proof hasn't finished
             return proof;
         }
         
-        // Case when the direct method started from another teorem
-        
-        // Finished
-        if(finalExpr.equals(teoremProved)) {
+        // Case when the direct method started from another theorem
+        if(finalExpr.equals(theoremProved)) {
             try {
                 return new TypedApp(proof, new TypedA(initialExpr));
             }catch (TypeVerificationException e) {
@@ -655,7 +672,7 @@ public class InferController {
             }
         }
         
-        // If the prove hasnt finished
+        // If the proof hasn't finished
         return proof;
     }
    
@@ -685,7 +702,7 @@ public class InferController {
             } 
         }
         
-        // If the prove hasnt finished
+        // If the proof hasn't finished
         return proof;
     }
 
@@ -768,7 +785,7 @@ public class InferController {
      }catch (TypeVerificationException e)  {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
       } 
-        // If the prove hasnt finished
+        // If the proof hasn't finished
         return proof;
     }
     
@@ -808,7 +825,7 @@ public class InferController {
       }catch (TypeVerificationException e)  {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
       } 
-        // If the prove hasnt finished
+        // If the proof hasn't finished
         return proof;
     }    
     

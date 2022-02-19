@@ -27,13 +27,13 @@ public class Teorema  implements java.io.Serializable {
     @Column(name="id")
     @GeneratedValue( strategy= GenerationType.SEQUENCE, generator="teorema_id_seq")
     @SequenceGenerator(name="teorema_id_seq", sequenceName="teorema_id_seq")
-     private int id;
-     private String enunciado; // Is the formula of the theorem, expressed with the application notation
-     private Term teoTerm; // Is the formula but parsed in order that it is seen as a tree.
-     private Term metateoTerm;
-     private boolean esquema;
-     private String aliases;
-     private Set resuelves = new HashSet(0);
+    private int id;
+    private String enunciado; // Is the formula of the theorem, expressed with the application notation
+    private Term teoTerm; // Is the formula but parsed in order that it is seen as a tree.
+    private Term metateoTerm;
+    private boolean esquema;
+    private String aliases;
+    private Set resuelves = new HashSet(0);
 
     public Teorema() {
     }
