@@ -39,6 +39,7 @@ import com.calclogic.service.UsuarioManager;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.MetateoremaManager;
+import com.calclogic.service.TeoremaManager;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.PlantillaTeoremaManager;
@@ -83,6 +84,8 @@ public class InferController {
     private PlantillaTeoremaManager plantillaTeoremaManager;
     @Autowired
     private MetateoremaManager metateoremaManager;
+    @Autowired
+    private TeoremaManager teoremaManager;
     @Autowired
     private ResuelveManager resuelveManager;
     @Autowired
@@ -3709,4 +3712,34 @@ public class InferController {
         this.terminoManager = terminoManager;
     }
 */
+    @RequestMapping(value="/deleteSol/{username}/{idSol:.+}", method=RequestMethod.GET)
+    public String deleteSolucion(@PathVariable String username, @PathVariable String idSol, ModelMap map) {
+        try {
+            int idSolInt = Integer.parseInt(idSol);
+            if (this.solucionManager.deleteSolucion(idSolInt, username)) {
+                return "";
+            }
+            return "error";
+        }
+        catch (NumberFormatException e) {
+            return "error";
+        }
+    }
+    
+    @RequestMapping(value="/deleteTeo/{username}/{idTeo:.+}", method=RequestMethod.GET)
+    public String deleteTeoremaOrResuelve(@PathVariable String username, @PathVariable String idTeo, ModelMap map) {
+        try {
+            int idTeoInt = Integer.parseInt(idTeo);
+            if (this.teoremaManager.deleteTeorema(idTeoInt, username)) {
+                return "";
+            }
+            return "error";
+        }
+        catch (NumberFormatException e) {
+            return "error";
+        }
+        finally {
+            return "index";
+        }
+    }
 }

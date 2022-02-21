@@ -49,7 +49,7 @@ public interface UsuarioManager {
 	 * @param teorema Theorem to be deleted.
      * @return Nothing.
      */ 
-    public void deleteTeorema(Usuario usuario, Teorema teorema);
+    //public void deleteTeorema(Usuario usuario, Teorema teorema);
 	
     /**
      * Method to get a list of all the theorems that correspond to a specific user.

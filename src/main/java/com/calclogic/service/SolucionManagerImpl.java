@@ -2,6 +2,8 @@ package com.calclogic.service;
 
 import com.calclogic.dao.SolucionDAO;
 import com.calclogic.entity.Solucion;
+import com.calclogic.entity.Resuelve;
+import com.calclogic.entity.Usuario;
 import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.parse.CombUtilities;
@@ -89,8 +91,15 @@ public class SolucionManagerImpl implements SolucionManager {
      */ 
     @Override
     @Transactional
-    public void deleteSolucion(int id){
-        solucionDAO.deleteSolucion(id);
+    public boolean deleteSolucion(int id, String username){
+        Solucion solucion = solucionDAO.getSolucion(id);
+        Resuelve resuelve = solucion.getResuelve();
+        Usuario user = resuelve.getUsuario();
+        if (user.getLogin().equals(username)) {
+            solucionDAO.deleteSolucion(id);
+            return true;   
+        }
+        return false;
     }
     
     /**

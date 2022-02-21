@@ -143,5 +143,5 @@ public class Resuelve  implements java.io.Serializable {
             return teo1 - teo2; // For ascending order
             // return teo2 - teo1; // For descending order
         }
-    }
+    };
 }

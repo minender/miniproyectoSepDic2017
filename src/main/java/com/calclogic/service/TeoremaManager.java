@@ -24,7 +24,7 @@ public interface TeoremaManager {
      * @param id Is the principal key of the theorem to delete.
      * @return Nothing.
      */ 
-    public void deleteTeorema(int id);
+    public boolean deleteTeorema(int id, String username);
     
 	/**
      * Method to get a theorem by its principal key.

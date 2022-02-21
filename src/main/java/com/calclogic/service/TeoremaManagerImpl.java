@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Iterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,10 +62,33 @@ public class TeoremaManagerImpl implements TeoremaManager {
      */ 
     @Override
     @Transactional
-    public void deleteTeorema(int id) {
+    public boolean deleteTeorema(int id, String username) {
 
         // Si solo hay 1 usuario usandolo, entonces aplica teoremaDAO.deleteTeorema(id)
-        teoremaDAO.deleteTeorema(id);
+        List <Resuelve> resuelves = resuelveDAO.getResuelveByTeorema(id);
+        if (resuelves.size() == 1) {
+            Resuelve resuelve = resuelves.get(0);
+            if (resuelve.getUsuario().getLogin().equals(username)) {
+                resuelveDAO.deleteResuelve((resuelve.getId()));
+                teoremaDAO.deleteTeorema(id);
+                return true;
+            }
+        }
+        else if (resuelves.size() > 1){
+            Iterator<Resuelve> resIter = resuelves.iterator();
+            Resuelve resuelve = resIter.next();
+            while (resIter.hasNext()
+                    && (resuelve.getTeorema().getId() != id
+                        || !resuelve.getUsuario().getLogin().equals(username)
+                    )
+                  ) {
+                resuelve = resIter.next();
+            }
+            resuelveDAO.deleteResuelve((resuelve.getId()));
+            return true;
+        }
+        return false;
+        
     }
 
 	/**

@@ -46,7 +46,7 @@ public interface SolucionManager {
      * @param id Is the principal key of the Solucion object to delete.
      * @return Nothing.
      */ 
-    public void deleteSolucion(int id);
+    public boolean deleteSolucion(int id, String username);
 
     /**
      * Method to get a Solucion object by its principal key.
