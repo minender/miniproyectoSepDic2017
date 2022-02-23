@@ -3712,34 +3712,4 @@ public class InferController {
         this.terminoManager = terminoManager;
     }
 */
-    @RequestMapping(value="/deleteSol/{username}/{idSol:.+}", method=RequestMethod.GET)
-    public String deleteSolucion(@PathVariable String username, @PathVariable String idSol, ModelMap map) {
-        try {
-            int idSolInt = Integer.parseInt(idSol);
-            if (this.solucionManager.deleteSolucion(idSolInt, username)) {
-                return "";
-            }
-            return "error";
-        }
-        catch (NumberFormatException e) {
-            return "error";
-        }
-    }
-    
-    @RequestMapping(value="/deleteTeo/{username}/{idTeo:.+}", method=RequestMethod.GET)
-    public String deleteTeoremaOrResuelve(@PathVariable String username, @PathVariable String idTeo, ModelMap map) {
-        try {
-            int idTeoInt = Integer.parseInt(idTeo);
-            if (this.teoremaManager.deleteTeorema(idTeoInt, username)) {
-                return "";
-            }
-            return "error";
-        }
-        catch (NumberFormatException e) {
-            return "error";
-        }
-        finally {
-            return "index";
-        }
-    }
 }

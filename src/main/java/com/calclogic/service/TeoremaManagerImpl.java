@@ -1,6 +1,7 @@
 package com.calclogic.service;
 import com.calclogic.dao.TeoremaDAO;
 import com.calclogic.dao.ResuelveDAO;
+import com.calclogic.dao.SolucionDAO;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Teorema;
 import com.calclogic.lambdacalculo.Term;
@@ -28,6 +29,8 @@ public class TeoremaManagerImpl implements TeoremaManager {
     private TeoremaDAO teoremaDAO;
     @Autowired
     private ResuelveDAO resuelveDAO;
+    @Autowired
+    private SolucionDAO solucionDAO;
     
     //@Autowired
     //private CombUtilities combUtilities;
@@ -66,8 +69,21 @@ public class TeoremaManagerImpl implements TeoremaManager {
 
         // Si solo hay 1 usuario usandolo, entonces aplica teoremaDAO.deleteTeorema(id)
         List <Resuelve> resuelves = resuelveDAO.getResuelveByTeorema(id);
+        if (resuelves == null) {
+            teoremaDAO.deleteTeorema(id);
+            return true;
+        }
+        // Si no, se borra solo el resuelve si no hay demostraciones
         if (resuelves.size() == 1) {
             Resuelve resuelve = resuelves.get(0);
+            // Verificar que el resuelve pertenezca al usuario actual
+            if (!resuelve.getUsuario().getLogin().equals(username)){
+                return false;
+            }
+            // Evitar que se borre el resuelve si tiene soluciones
+            if (solucionDAO.getAllSolucionesByResuelve(resuelve.getId()).size() > 0){
+                return false;
+            }
             if (resuelve.getUsuario().getLogin().equals(username)) {
                 resuelveDAO.deleteResuelve((resuelve.getId()));
                 teoremaDAO.deleteTeorema(id);

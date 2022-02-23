@@ -93,6 +93,9 @@ public class SolucionManagerImpl implements SolucionManager {
     @Transactional
     public boolean deleteSolucion(int id, String username){
         Solucion solucion = solucionDAO.getSolucion(id);
+        if (solucion == null) {
+            return false;
+        }
         Resuelve resuelve = solucion.getResuelve();
         Usuario user = resuelve.getUsuario();
         if (user.getLogin().equals(username)) {
