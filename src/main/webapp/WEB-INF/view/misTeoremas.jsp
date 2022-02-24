@@ -103,6 +103,11 @@
                         
                             </c:otherwise>
                           </c:choose>
+                          <c:choose>
+                            <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas')}">
+                               <a href="javascript:delTeo(${resu.getTeorema().getId()})"><i class="fa fa-trash" aria-hidden="true" ></i></a>
+                            </c:when>
+                          </c:choose>
                         </p>
                       </li>
                     </c:otherwise>

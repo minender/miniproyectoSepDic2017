@@ -106,3 +106,22 @@ function delSol(idSol){
         }
     });
 }
+
+function delTeo(idTeo){
+    
+    var data = {};
+    var url = window.location.href + "/deleteTeo/" + idTeo;
+    console.log(url);
+    $("#modalLoading").css('display','inline-block');
+    $.ajax({
+        type:'POST',
+        url: url,
+        data:data,
+        success: function(data){
+            $("#modalLoading").css('display','none');
+            alert(data);
+            location.reload();
+            //MathJax.Hub.Typeset();
+        }
+    });
+}

@@ -365,6 +365,8 @@ public class PerfilController {
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
+        //List<Resuelve> resuelvesAdmin = resuelveManager.getAllResuelveByUser(currentUser.getLogin());
+        //List<Teorema> teoremasAdmin = teoremaManager.getTeoremaByResuelveList(resuelvesAdmin);
         map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
         map.addAttribute("usuario", usr);
         map.addAttribute("guardarMenu","");
@@ -1841,7 +1843,7 @@ public class PerfilController {
         }
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/deleteTeo/{idTeo:.+}", method=RequestMethod.GET)
+    @RequestMapping(value="/{username}/misTeoremas/deleteTeo/{idTeo:.+}", method=RequestMethod.POST)
     @ResponseBody
     public String deleteTeoremaOrResuelve(@PathVariable String username, @PathVariable String idTeo, ModelMap map) {
         if ( (Usuario)session.getAttribute("user") == null 
