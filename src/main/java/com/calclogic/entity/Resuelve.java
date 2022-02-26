@@ -139,9 +139,9 @@ public class Resuelve  implements java.io.Serializable {
         public int compare(Resuelve r1, Resuelve r2){
             int teo1 = r1.getTeorema().getId();
             int teo2 = r2.getTeorema().getId();
-  
-            return teo1 - teo2; // For ascending order
+
             // return teo2 - teo1; // For descending order
+            return teo1 - teo2; // For ascending order      
         }
     }
 }
