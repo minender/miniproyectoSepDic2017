@@ -39,6 +39,7 @@ import com.calclogic.service.UsuarioManager;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.MetateoremaManager;
+import com.calclogic.service.TeoremaManager;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.PlantillaTeoremaManager;
@@ -83,6 +84,8 @@ public class InferController {
     private PlantillaTeoremaManager plantillaTeoremaManager;
     @Autowired
     private MetateoremaManager metateoremaManager;
+    @Autowired
+    private TeoremaManager teoremaManager;
     @Autowired
     private ResuelveManager resuelveManager;
     @Autowired

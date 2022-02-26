@@ -365,6 +365,8 @@ public class PerfilController {
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
+        //List<Resuelve> resuelvesAdmin = resuelveManager.getAllResuelveByUser(currentUser.getLogin());
+        //List<Teorema> teoremasAdmin = teoremaManager.getTeoremaByResuelveList(resuelvesAdmin);
         map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
         map.addAttribute("usuario", usr);
         map.addAttribute("guardarMenu","");
@@ -1820,5 +1822,43 @@ public class PerfilController {
         {
             alias=ali;
         }
-    }   
+    }
+    
+    @RequestMapping(value="/{username}/misTeoremas/deleteSol/{idSol:.+}", method=RequestMethod.POST)
+    @ResponseBody
+    public String deleteSolucion(@PathVariable String username, @PathVariable String idSol, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null 
+              || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) {
+            return "Error deleting proof";
+        }
+        try {
+            int idSolInt = Integer.parseInt(idSol);
+            if (this.solucionManager.deleteSolucion(idSolInt, username)) {
+                return "Proof deleted";
+            }
+            return "Error deleting proof";
+        }
+        catch (NumberFormatException e) {
+            return "Error deleting proof";
+        }
+    }
+    
+    @RequestMapping(value="/{username}/misTeoremas/deleteTeo/{idTeo:.+}", method=RequestMethod.POST)
+    @ResponseBody
+    public String deleteTeoremaOrResuelve(@PathVariable String username, @PathVariable String idTeo, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null 
+              || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) {
+            return "error";
+        }
+        try {
+            int idTeoInt = Integer.parseInt(idTeo);
+            if (this.teoremaManager.deleteTeorema(idTeoInt, username)) {
+                return "ok";
+            }
+            return "error";
+        }
+        catch (NumberFormatException e) {
+            return "error";
+        }
+    }
 }

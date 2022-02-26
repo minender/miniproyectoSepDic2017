@@ -105,6 +105,7 @@ public class UsuarioManagerImpl implements UsuarioManager {
 	 * @param teorema Theorem to be deleted.
      * @return Nothing.
      */ 
+    /**
     @Override
     @Transactional
     public void deleteTeorema(Usuario usuario, Teorema teorema) {
@@ -127,6 +128,7 @@ public class UsuarioManagerImpl implements UsuarioManager {
             }
         }
     }
+    * */
     
     /**
      * Method to get a list of all entries of the table that represent students, that is,
