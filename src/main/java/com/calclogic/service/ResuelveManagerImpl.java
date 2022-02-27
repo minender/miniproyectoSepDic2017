@@ -330,6 +330,33 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Transactional
     public List<Resuelve> getAllResuelveByUserOrAdminResuelto(String userLogin){
         List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdminResuelto(userLogin);
+
+        // ----------------- Remove duplicates ----------------------
+        List<Resuelve> toRemove = new ArrayList(); // List of rows to remove
+
+        // Copy of the original list that we sort according to theorems' ids in order that duplicates appear contiguous
+        List<Resuelve> resuelvesCopy = new ArrayList<>(resuelves); 
+        Collections.sort(resuelvesCopy, Resuelve.CompareByTheoremId);
+
+        Teorema prevTeo = null;
+        Resuelve prevResuelve = null;
+
+        for (Resuelve r: resuelvesCopy) {
+            Teorema t = r.getTeorema();
+            if (prevTeo == t) {
+                if (r.getUsuario().getLogin().equals(userLogin)){
+                    toRemove.add(prevResuelve);
+                } else {
+                    toRemove.add(r);
+                }
+                continue;
+            }
+            prevTeo = t;
+            prevResuelve = r;
+        }
+        resuelves.removeAll(toRemove);
+
+        // --------------------- Here we get the theorems parsed -------------------------
         try {
             for (Resuelve resuelve : resuelves) {
                 Teorema teo = resuelve.getTeorema();
@@ -338,6 +365,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
         return resuelves;
     }
     

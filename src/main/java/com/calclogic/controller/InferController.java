@@ -45,6 +45,7 @@ import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.PlantillaTeoremaManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -600,136 +601,283 @@ public class InferController {
         response.setSustLatex(null);
         return response;
     }
-    
+
     /**
-     * This function will only be correct if called when using DirectMethod
-     * This function will return a new prove tree in case it finds out that the last hint of prove
-     * caused the whole prove to be correct under the DirectMethod. In other case it will return 
-     * the proof given as argument.
+     * This function checks if a base demonstration has finished depending on the method used.
+     * If it determines it has not finished, it returns the same proof tree given as argument.
      * 
-     * To understand the arguments assume we have a prove that so far has proved A == ... == F
-     * @param theoremProved: The theorem the user is trying to prove
+     * @param theoremBeingProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @param username: name of the user doing the prove
-     * @param teoNum: id that identify the theorem that the user is trying to prove
+     * @param teoNum: id that identifies the theorem that the user is trying to prove
+     * @param method: method used in the demonstration
      * @return new proof if finished, else return the same proof
      */
-    private Term finishedDirectMethodProve(Term theoremProved, Term proof, String username, String teoNum) {
-        Term expr = proof.type();
-        Term initialExpr = ((App)expr).q;
+    private Term finishedBaseProof(Term theoremBeingProved, Term proof, String username, String method) {
+        Term expr = proof.type(); 
+        Term initialExpr = ((App)expr).q; // The expression (could be a theorem) from which the user started the demonstration
         Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
 
-        // Case when the direct method started from the theorem being proved
-        if(theoremProved.equals(initialExpr)) {
-            // List of teorems solved by the user. We examine them to check if the current proof already reached one 
-            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,teoNum);
-            Term theorem;
-            Term mt;
-            for(Resuelve resu: resuelves){ // todo este for deberia ser un simple Query
-                                               // todo este for deberia ser un simple Query
-                                               // todo este for deberia ser un simple Query
-                                               // todo este for deberia ser un simple Query
-                                               // Quedo claro? deberia ser un simple Query
-            	// This is the theorem that is in the database
-                theorem = resu.getTeorema().getTeoTerm();
-                mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem);
+        try{
+            switch (method){
 
-                // If the current theorem or theorem==true matches the final expression (and this theorem is not the one being proved) 
-                if (!theorem.equals(theoremProved) && (theorem.equals(finalExpr) || mt.equals(finalExpr))){
-                    try {
-                        return new TypedApp(new TypedApp(new TypedS(proof.type()), proof),new TypedA(finalExpr)); 
-                    }catch (TypeVerificationException e) {
-                        Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                // Direct method --> assume we have a proof that so far has proved A == ... == F
+                case "DM":
+                    // Case when we started from the theorem being proved
+                    if(theoremBeingProved.equals(initialExpr)) {
+                        // List of theorems solved by the user. We examine them to check if the current proof already reached one 
+                        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminResuelto(username);
+                        Term theorem, mt;
+                        Term equanimityExpr = null; // Expression with which equanimity will be applied
+
+                        for(Resuelve resu: resuelves){ 
+                            theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
+                            mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem); // theorem == true
+
+                            // If the current theorem or theorem==true matches the final expression (and this theorem is not the one being proved) 
+                            if (!theorem.equals(theoremBeingProved) && (theorem.equals(finalExpr) || mt.equals(finalExpr))){
+                                equanimityExpr = new TypedA(finalExpr);
+                            } 
+                            else {
+                                // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
+                                // >>> It would not work if we did it backwards: (finalExpr, theorem)
+                                Equation eq = new Equation(theorem, finalExpr);
+                                Sust sust = eq.mgu(simboloManager);
+
+                                // Case when last line is an instantiation of the compared theorem
+                                if (sust != null){
+                                    // The equanimity is applied with the instantiated theorem, not with the last line instantiated
+                                    equanimityExpr = new TypedApp(new TypedI(sust), new TypedA(theorem)); 
+                                }   
+                            }
+                            if (equanimityExpr != null){
+                                return new TypedApp(new TypedApp(new TypedS(proof.type()), proof), equanimityExpr);
+                            }
+                        }
                     }
-                } 
-
-                // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
-                // >>> It does not work if we do it backwards
-                Equation eq = new Equation(theorem, finalExpr);
-                Sust sust = eq.mgu(simboloManager);
-
-                // Case when last line is an instantiation of the compared theorem
-                if (sust != null){
-                    try {
-                        TypedA A = new TypedA(theorem); // We treat the compared theorem as an axiom
-                        TypedI I = new TypedI(sust); // We give the instantiation format to the substitution above
-
-                        return new TypedApp(new TypedApp(new TypedS(proof.type()), proof),new TypedApp(I,A));
-
-                    }catch (TypeVerificationException e) {
-                        Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                    // Case when we started from another theorem
+                    if(finalExpr.equals(theoremBeingProved)) {
+                        return new TypedApp(proof, new TypedA(initialExpr));
                     }
-                }     
-            }
+                    break;
+
+                // Starting from one side --> assume we have a proof that so far has proved A == ... == F
+                case "SS":
+                    // If the theorem the user is trying to prove is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
+                    if(initialExpr.equals(((App)((App)theoremBeingProved).p).q) && finalExpr.equals(((App)theoremBeingProved).q)){
+                        return new TypedApp(new TypedS(proof.type()), proof);
+                    }
+                    break;
+
+                // Transitivity method --> assume we have a proof that so far has proved A == ... == F
+                case "TR":
+                    // if at least one opInference was made and reaches the goal
+                    if(wsFirstOpInferIndex(proof)!=0 && ((App)((App)expr).p).q.equals(theoremBeingProved) ){ 
+                        return new TypedApp(proof,new TypedA(new Const("c_{8}"))); // true
+                    }
+                    break;
+
+                // Weakening or strengthening method ---> do the last equanimity and symmetry of => steps to finish
+                case "WE":
+                case "ST":
+                    Term arrow = ((App)((App)theoremBeingProved).p).p.toStringFinal();
+                    Boolean rightArrow = arrow.equals("c_{2}"); // =>
+                    Boolean leftArrow = arrow.equals("c_{3}"); // <=
+
+                    // If we are weakening and the statement is A=>B or we are strengthening and the statement is A<=B
+                    if (((method == "WE") && rightArrow) || ((method == "ST") && leftArrow)){
+                        return finishedBaseProof(theoremBeingProved, proof, username, "TR");
+                    }
+                    /* If we are weakening and the statement is A<=B or we are strengthening and the statement is A=>B,
+                       and at least one inference was made.
+                       >>>> NOTE: if the app forces to start from the left side, this case may be impossible (not sure) */
+                    if ((((method == "WE") && leftArrow) || ((method == "ST") && rightArrow)) && (wsFirstOpInferIndex(proof)!=0)){
+                        // Axiom: (q => p) == (p <= q)
+                        TypedA axiom = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+                        TypedI instantiation;
+
+                        if (isInverseImpl(expr,theoremBeingProved)){
+                            if (method == "WE"){
+                                instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]"));
+                            }
+                            else {
+                                instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]"));
+                            }
+                            return new TypedApp(new TypedApp(instantiation,axiom),proof);
+                        }
+                        if (isInverseImpl(((App)((App)expr).p).q,theoremBeingProved)){
+                            Term aux;
+                            if (method == "WE"){
+                                instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]"));
+                                aux = new TypedApp(instantiation,axiom);
+
+                                return new TypedApp(new TypedApp(new TypedS(aux.type()),aux),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
+                            }
+                            else {
+                                instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]"));
+                                aux = new TypedApp(instantiation,axiom);
+
+                                return new TypedApp(aux,new TypedApp(proof,new TypedA(new Const("c_{8}"))));
+                            }
+                        }
+                    }
+                    break;
+
+                // Starting from one side method with natural deduction ---> assume we have a proof that so far has proved  H /\ Bi == ... == H /\ Bn
+                case "Natural Deduction,one-sided":
+                    initialExpr = ((App)((App)initialExpr).p).q;
+                    finalExpr = ((App)((App)finalExpr).p).q;
+                    
+                    Term b1 = ((App)((App)((App)theoremBeingProved).p).q).q;
+                    Term bf = ((App)((App)((App)((App)theoremBeingProved).p).q).p).q;
+
+                    Boolean startedFromRight = initialExpr.equals(bf) && finalExpr.equals(b1);
+
+                    // If here then finished
+                    if( (initialExpr.equals(b1) && finalExpr.equals(bf)) || startedFromRight){
+                        Term H = ((App)theoremBeingProved).q;
+                        TypedApp newProof = (TypedApp)proof;
                         
-            // If the proof hasn't finished
-            return proof;
-        }
-        
-        // Case when the direct method started from another theorem
-        if(finalExpr.equals(theoremProved)) {
-            try {
-                return new TypedApp(proof, new TypedA(initialExpr));
-            }catch (TypeVerificationException e) {
-                 Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                        if (startedFromRight) {
+                            newProof = new TypedApp(new TypedS(proof.type()),proof);
+                        }
+                        
+                        // (p => (q == r)) == p /\ q == p /\ r
+                        TypedA A = new TypedA(new App(new App(new Const("c_{1}"), 
+                                new App( new App(new Const("c_{1}"),new App(new App(new Const("c_{5}"),new Var('r')),new Var('p'))),new App(new App(new Const("c_{5}"),new Var('q')),new Var('p')))),
+                                new App(new App(new Const("c_{2}"),new App(new App(new Const("c_{1}"),new Var('r')),new Var('q'))), new Var('p'))));
+                        
+                        // Parallel substitution [p, q, r := H, B1, Bn]
+                        List<Var> vars = new ArrayList<Var>();
+                        List<Term> terms = new ArrayList<Term>();
+
+                        Collections.addAll(vars, new Var('p'), new Var('q'), new Var('r'));
+                        Collections.addAll(terms, H, b1, bf);           
+                        Sust instantiation = new Sust(vars, terms);
+                        TypedI I = new TypedI(instantiation);
+                        
+                        TypedApp left = new TypedApp(I, A);
+                        left = new TypedApp(new TypedS(left.type()),left);
+                        
+                        return new TypedApp(left, newProof);
+                    }
+                    break;
+
+                // Direct method with natural deduction ---> assume we have a proof that so far has proved (H == H /\ B1) == ... == (H == H /\ Bn)
+                case "Natural Deduction,direct":
+                    // Take away H == H /\
+                    finalExpr = ((App)((App)((App)((App)finalExpr).p).q).p).q;
+                    Term H = ((App)theoremBeingProved).q; 
+
+                    // Take away H from H => B
+                    theoremBeingProved = ((App)((App)theoremBeingProved).p).q;
+                    
+                    // Case when we started from another theorem (c_{8} is "true") and the proof has finished
+                    if (initialExpr.equals(new Const("c_{8}")) && finalExpr.equals(theoremBeingProved)) {           
+                        
+                        // Parallel substitution [p, q := H, B] 
+                        List<Var> vars = new ArrayList<Var>();
+                        List<Term> terms = new ArrayList<Term>();
+
+                        Collections.addAll(vars, new Var('p'), new Var('q'));
+                        Collections.addAll(terms, H, finalExpr);  
+                        Sust instantiation = new Sust(vars, terms);
+                        TypedI I = new TypedI(instantiation);
+                        
+                        // p => q == (p == p /\ q)                
+                        TypedA A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"),new Var('q')),new Var('p'))), new Var('p'))),
+                                new App(new App(new Const("c_{2}"), new Var('q')), new Var('p'))));
+                        
+                        // HINT (H => B) == (H == H /\ B) 
+                        TypedApp hint = new TypedApp(I, A);
+                        hint = new TypedApp(new TypedS(hint.type()), hint);
+                        
+                        TypedApp newProof = new TypedApp(proof, hint);
+                        
+                        // Need to add equanimity since proved true == H => B
+                        return new TypedApp(newProof, new TypedA(new Const("c_{8}")));                             
+                        
+                    }
+                    // Case when we started from the theorem being proved
+                    else { 
+                        
+                        // List of theorems solved by the user. We examine them to check if the current proof already reached one 
+                        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminResuelto(username);
+                        Term theorem, mt;
+                        
+                        for(Resuelve resu: resuelves){
+                            theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
+                            mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem); // theorem == true
+                            
+                            // If the current theorem or theorem==true matches the final expression (and this theorem is not the one being proved) 
+                            if(!theorem.equals(theoremBeingProved) && (theorem.equals(finalExpr) || mt.equals(finalExpr))) {
+                                // ----- HINT 1 -----
+                                
+                                // H = H ^ z
+                                Bracket leib = new Bracket(new Var('z'), new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), H)), H));
+                                TypedL L = new TypedL(leib);
+                                TypedApp metaTheorem= metaTheorem(theorem); // Create theorem == true
+                                TypedApp hint1 = new TypedApp(L, metaTheorem);
+                                
+                                // ----- HINT 2 -----
+                                
+                                // H == z
+                                leib = new Bracket(new Var('z'), new App(new App(new Const("c_{1}"), new Var('z')), H));
+                                L = new TypedL(leib);
+                                
+                                // Parallel substitution [p := H] 
+                                ArrayList<Var> vars = new ArrayList<Var>();
+                                ArrayList<Term> terms = new ArrayList<Term>();
+                                vars.add(new Var('p'));   
+                                terms.add(H);
+                                Sust instantiation = new Sust(vars, terms);
+                                TypedI I = new TypedI(instantiation);
+                                
+                                // p /\ true == p
+                                TypedA A = new TypedA(new App( new App( new Const("c_{1}") ,new Var('p')), new App(new App(new Const("c_{5}"), new Const("c_{8}")), new Var('p'))));
+                                
+                                TypedApp hint2 = new TypedApp(I, A);
+                                hint2 = new TypedApp(L, hint2);
+                                
+                                // ----- HINT 3 -----
+                                
+                                // needs  true == (q == q) gotta prove it with associativity and true == q == q
+                                
+                                // true == (q == q)
+                                A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new Var('q')),new Var('q'))),new Const("c_{8}")));
+                                
+                                // Parallel substitution [q := H] 
+                                vars = new ArrayList<Var>();
+                                vars.add(new Var('q'));   
+                                instantiation = new Sust(vars, terms);
+                                I = new TypedI(instantiation);
+                                
+                                TypedApp hint3 = new TypedApp(I,A);
+                                TypedS S = new TypedS(hint3.type());
+                                hint3 = new TypedApp(S, hint3);
+                                
+                                // ----- BUILD THE NEW PROOF -----
+                                TypedApp newProof = new TypedApp(proof, hint1);
+                                newProof = new TypedApp(newProof, hint2);
+                                newProof = new TypedApp(newProof, hint3);          
+                                
+                                // Needs to add equanimity since proved H => B == true
+                                return new TypedApp(new TypedApp(new TypedS(newProof.type()), newProof),new TypedA(new Const("c_{8}")));
+                            }   
+                        }
+                    
+                    }
+                    break;
+                default:
+                    break;
             }
         }
-        
-        // If the proof hasn't finished
-        return proof;
-    }
-   
-    /**
-     * This function will only be correct if called when using Starting from one side method
-     * This function will return a new prove tree in case it finds out that the last hint of prove
-     * caused the whole prove to be correct under the One side method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * To understand the arguments assume we have a prove that so far has proved A == ... == F
-     * @param initialExpr: Term that represents A
-     * @param finalExpr: Term that represents F
-     * @param teoremProved: The theorem the user is trying to prove (even if the original is of 
-     *                      the form H => A == B in this case H /\ A ==  H /\ B must be given 
-     *                      instead)
-     * @param proof: The proof tree so far
-     * @return new proof if finished, else return the same proof
-     */
-    private Term finishedOneSideProve(Term initialExpr, Term finalExpr, Term teoremProved, Term proof) {
-
-        // If the one side prove started from the right side
-        if(initialExpr.equals(((App)((App)teoremProved).p).q) && finalExpr.equals(((App)teoremProved).q)){
-            try {
-                 return new TypedApp(new TypedS(proof.type()), proof);
-            }catch (TypeVerificationException e) {
-                 Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-            } 
-        }
-        
-        // If the proof hasn't finished
-        return proof;
-    }
-
-    /**
-     * This function will only be correct if called when using Transitivity method
-     * This function will return a new prove tree in case it finds out that the last hint of prove
-     * caused the whole prove to be correct under the Transitivity method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * To understand the arguments assume we have a prove that so far has proved A == ... == F
-     * @param expr: Term that represents F
-     * @param teoremProved: The theorem that user is trying to prove
-     * @param proof: The proof tree so far
-     * @return new proof if finished, else return the same proof
-     */
-    private Term finishedTransProve(Term expr, Term teoremProved, Term proof) {
-     try {
-            // if at least one opInference was made an reach the goal
-            if(wsFirstOpInferIndex(proof) != 0 && ((App)((App)expr).p).q.equals(teoremProved) )
-              return new TypedApp(proof,new TypedA(new Const("c_{8}")));
-        }catch (TypeVerificationException e)  {
+        catch (TypeVerificationException e)  {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
-        }
-     return proof;
+        } 
+
+        // If the proof hasn't finished
+        return proof;
     }
     
     /**
@@ -749,88 +897,7 @@ public class InferController {
                 ((App)t1).q.equals(((App)((App)t2).p).q) && 
                ((App)((App)t1).p).q.equals(((App)t2).q) && 
                ((App)((App)t2).p).p.toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
-    }
-    
-    /**
-     * This function will only be correct if called when using Weakening method
-     * This function will return a new prove tree in case it finds out that the last infer of prove
-     * caused the whole prove to be correct under the Weakening method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * Do the last equanimity and symmetry of => steps to finish a Weakening proof
-     * @param expr: root of the proof tree
-     * @param teoremProved: The theorem the user is trying to prove 
-     * @param proof: The proof tree so far
-     * @return proof of theoremProved if finished, else return the same proof
-     */
-    private Term finishedWeakProve(Term expr, Term teoremProved, Term proof) {
-     try {
-        // If the statement is A=>B
-        if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{2}") ) {
-            // if at least one opInference was made an reach the goal
-            if(wsFirstOpInferIndex(proof) != 0 && ((App)((App)expr).p).q.equals(teoremProved) )
-              return new TypedApp(proof,new TypedA(new Const("c_{8}")));
-        }
-        // me parece que si la app obliga a empezar de la izquierda, este else es imposible
-        else if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{3}") ) {
-            if (wsFirstOpInferIndex(proof)!=0 && isInverseImpl(expr,teoremProved) ) {
-                TypedA ax = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
-                TypedI inst = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]"));
-                return new TypedApp(new TypedApp(inst,ax),proof);
-            }
-            if(wsFirstOpInferIndex(proof)!=0 && isInverseImpl(((App)((App)expr).p).q,teoremProved) ) {
-                TypedA ax = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
-                TypedI inst = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]"));
-                Term aux = new TypedApp(inst,ax);
-                return new TypedApp(new TypedApp(new TypedS(aux.type()),aux),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
-            }
-        }
-     }catch (TypeVerificationException e)  {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
-      } 
-        // If the proof hasn't finished
-        return proof;
-    }
-    
-    /**
-     * This function will only be correct if called when using Strengthening method
-     * This function will return a new prove tree in case it finds out that the last infer of prove
-     * caused the whole prove to be correct under Strengthening method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * Do the last equanimity and symmetry of => steps to finish a Strengthening proof
-     * @param expr: root of the proof tree
-     * @param teoremProved: The theorem the user is trying to prove 
-     * @param proof: The proof tree so far
-     * @return proof of theoremProved if finished, else return the same proof
-     */
-    private Term finishedStrengProve(Term expr, Term teoremProved, Term proof) {
-     try {
-        // If the statement is A=>B
-        if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{3}") ) {
-            // if at least one opInference was made an reach the goal
-            if(wsFirstOpInferIndex(proof) != 0 && ((App)((App)expr).p).q.equals(teoremProved) )
-              return new TypedApp(proof,new TypedA(new Const("c_{8}")));
-        }
-        // me parece que si la app obliga a empezar de la izquierda, este else es imposible
-        else if ( ((App)((App)teoremProved).p).p.toStringFinal().equals("c_{2}") ) {
-            if (wsFirstOpInferIndex(proof)!=0 && isInverseImpl(expr,teoremProved) ) {
-                TypedA ax = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
-                TypedI inst = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]"));
-                return new TypedApp(new TypedApp(inst,ax),proof);
-            }
-            if(wsFirstOpInferIndex(proof)!=0 && isInverseImpl(((App)((App)expr).p).q,teoremProved) ) {
-                TypedA ax = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
-                TypedI inst = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]"));
-                return new TypedApp(new TypedApp(inst,ax),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
-            }
-        }
-      }catch (TypeVerificationException e)  {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
-      } 
-        // If the proof hasn't finished
-        return proof;
-    }    
+    }  
     
     /**
      * This function will only be correct if called when using Counter-Reciprocal method
@@ -891,7 +958,7 @@ public class InferController {
             List<Term> terms = new ArrayList<Term>();
 
             // In this case the substitution only needs one variable to be assigned [x112 := teoremProved]
-            vars.add(0, new Var(112));   
+            vars.add(0, new Var(112)); // p
             terms.add(0, teoremProved);
 
             // Here is where the substitution is applied
@@ -941,240 +1008,6 @@ public class InferController {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
             return originalTerm;
         }
-    }
-    
-    /**
-     * This function will only be correct if called when using Starting from one side method with natural deduction
-     * This function will return a new prove tree in case it finds out that the last hint of prove
-     * caused the whole prove to be correct under the One side natural deduction method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * To understand the arguments assume we have a prove that so far has proved  H /\ Bi == ... == H /\ Bn
-     * @param initialExpr: Term that represents H /\ Bi
-     * @param finalExpr: Term that represents H /\ Bn
-     * @param teoremProved: The theorem the user is trying to prove
-     * @param proof: The proof tree so far
-     * @return new proof if finished, else return the same proof
-     */
-    private Term finishedDeductionOneSideProve(Term initialExpr, Term finalExpr, Term teoremProved, 
-                                               Term proof) {
-        
-        try {
-        /* Jean
-        Term expr = proof.type();
-+       Term initialExpr = ((App)expr).q;
-+       Term finalExpr = ((App)((App)expr).p).q;*/
-            
-        initialExpr = ((App)((App)initialExpr).p).q;
-        finalExpr = ((App)((App)finalExpr).p).q;
-        
-        Term b1 = ((App)((App)((App)teoremProved).p).q).q;
-        Term bf = ((App)((App)((App)((App)teoremProved).p).q).p).q;
-        Term H = ((App)teoremProved).q;
-        
-        
-        Boolean finishedFromRight = initialExpr.equals(bf) && finalExpr.equals(b1);
-        // If didnt finish
-        if( !(initialExpr.equals(b1) && finalExpr.equals(bf))  && !finishedFromRight){
-            return proof;
-        }
-       
-        // If here then finished
-        
-        
-        TypedApp newProof = (TypedApp)proof;
-        
-        // If started from the right 
-        if (finishedFromRight) {
-            newProof = new TypedApp(new TypedS(proof.type()),proof);
-        }
-        
-        // (p => ( q == r)) == p /\ q == p /\ r
-        TypedA A = new TypedA(new App(new App(new Const("c_{1}"), 
-                new App( new App(new Const("c_{1}"),new App(new App(new Const("c_{5}"),new Var('r')),new Var('p'))),new App(new App(new Const("c_{5}"),new Var('q')),new Var('p')))),
-                new App(new App(new Const("c_{2}"),new App(new App(new Const("c_{1}"),new Var('r')),new Var('q'))), new Var('p'))));
-        
-        // p,q,q := H,B1,Bn
-        ArrayList<Var> vars = new ArrayList<Var>();
-        vars.add(new Var('p')); 
-        vars.add(new Var('q'));   
-        vars.add(new Var('r'));  
-        ArrayList<Term> terms = new ArrayList<Term>();
-        terms.add(H);
-        terms.add(b1);
-        terms.add(bf);
-        Sust instantiation = new Sust(vars, terms);
-        TypedI I = new TypedI(instantiation);
-        
-        TypedApp left = new TypedApp(I, A);
-        left = new TypedApp(new TypedS(left.type()),left);
-        
-        newProof = new TypedApp(left, newProof);
-        
-        return newProof;
-        
-        }catch (Exception e) {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-            return proof;
-        }
-        
-    }
-    
-    /**
-     * This function will only be correct if called when using Direct method with natural deduction
-     * This function will return a new prove tree in case it finds out that the last hint of proof
-     * caused the whole prove to be correct under the Direct natural deduction method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * To understand the arguments assume we have a prove that so far has proved (H == H /\ B1) == ... == (H == H /\ Bn)
-     * @param initialExpr: Term that represents (H == H /\ B1)
-     * @param finalExpr: Term that represents (H == H /\ Bn)
-     * @param teoremProved: The theorem the user is trying to prove
-     * @param proof: The proof tree so far
-     * @return new proof if finished, else return the same proof
-     */
-    private Term finishedDeductionDirectProve(Term initialExpr, Term teoremProved,Term finalExpr, Term proof, String username) {
-        
-        /*Jean
-        Term expr = proof.type();
-+       Term initialExpr = ((App)expr).q;
-+       Term finalExpr = ((App)((App)expr).p).q;*/
-
-        
-        // Take away H == H /\
-        finalExpr = ((App)((App)((App)((App)finalExpr).p).q).p).q;
-        Term H = ((App)teoremProved).q; 
-        // Take away H from H => B
-        teoremProved = ((App)((App)teoremProved).p).q;
-        
-        if(initialExpr.equals(new Const("c_{8}"))) {// Started with another theorem
-            
-            if(finalExpr.equals(teoremProved)) {// if finished
-                
-                try {
-                // HINT (H => B) == (H == H /\ B) 
-                
-                // p,q := H,B
-                ArrayList<Var> vars = new ArrayList<Var>();
-                vars.add(new Var('p')); 
-                vars.add(new Var('q'));   
-                ArrayList<Term> terms = new ArrayList<Term>();
-                terms.add(H);
-                terms.add(finalExpr);
-                Sust instantiation = new Sust(vars, terms);
-                TypedI I = new TypedI(instantiation);
-                
-                // p => q == (p == p /\ q)
-                
-                TypedA A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"),new Var('q')),new Var('p'))), new Var('p'))),
-                        new App(new App(new Const("c_{2}"), new Var('q')), new Var('p'))));
-                
-                TypedApp hint = new TypedApp(I, A);
-                hint = new TypedApp(new TypedS(hint.type()), hint);
-                
-                TypedApp newProof = new TypedApp(proof, hint);
-                
-                // Need to add equanimity since proved true == H => B
-                newProof = new TypedApp(newProof, new TypedA(new Const("c_{8}")));
-                return newProof;
-                
-                
-                }catch (TypeVerificationException e) {
-                    Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-                    return proof;
-                }
-                
-                
-                
-            }
-            
-        }else {// Started with the theorem being proved
-            
-            
-            // CHECK IF ANY TEHEOREM MATCHES THE FINAL EXPR
-            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminResuelto(username);
-            Term teorem;
-            Term mt;
-            for(Resuelve resu: resuelves){
-                teorem = resu.getTeorema().getTeoTerm();
-                mt = new App(new App(new Const("c_{1}"),new Const("true")),teorem);
-                
-                // If the current teorem or teorem==true matches the final expression (and this teorem is not the one being proved) 
-                if(!teorem.equals(teoremProved) && (teorem.equals(finalExpr) || mt.equals(finalExpr))) {
-                    try {
-                        // HINT 1
-                        
-                        // H = H ^ z
-                        Bracket leib = new Bracket(new Var('z'), new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), H)), H));
-                        TypedL L = new TypedL(leib);
-                        // Create teorema == true
-                        TypedApp metaTheorem= metaTheorem(teorem);
-                        
-                        TypedApp hint1 = new TypedApp(L, metaTheorem);
-                        
-                        // HINT 2
-                        
-                        // H == z
-                        leib = new Bracket(new Var('z'), new App(new App(new Const("c_{1}"), new Var('z')), H));
-                        L = new TypedL(leib);
-                        
-                        // p := H
-                        ArrayList<Var> vars = new ArrayList<Var>();
-                        vars.add(new Var('p'));   
-                        ArrayList<Term> terms = new ArrayList<Term>();
-                        terms.add(H);
-                        Sust instantiation = new Sust(vars, terms);
-                        TypedI I = new TypedI(instantiation);
-                        
-                        // p /\ true == p
-                        TypedA A = new TypedA(new App( new App( new Const("c_{1}") ,new Var('p')), new App(new App(new Const("c_{5}"), new Const("c_{8}")), new Var('p'))));
-                        
-                        TypedApp hint2 = new TypedApp(I, A);
-                        hint2 = new TypedApp(L, hint2);
-                        
-                        // HINT 3
-                        
-                        // need  true == (q == q) gotta prove it with associativity and true == q == q
-                        
-                        // true == (q == q)
-                        A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new Var('q')),new Var('q'))),new Const("c_{8}")));
-                        
-                        // q := H
-                        vars = new ArrayList<Var>();
-                        vars.add(new Var('q'));   
-                        instantiation = new Sust(vars, terms);
-                        I = new TypedI(instantiation);
-                        
-                        TypedApp hint3 = new TypedApp(I,A);
-                        
-                        TypedS S = new TypedS(hint3.type());
-                        
-                        hint3 = new TypedApp(S, hint3);
-                        
-                        
-                        // BUILD THE NEW PROOF
-                        
-                        TypedApp newProof = new TypedApp(proof, hint1);
-                        newProof = new TypedApp(newProof, hint2);
-                        newProof = new TypedApp(newProof, hint3);
-                        
-                        
-                        // Need to add equanimity since proved H => B == true
-                        newProof = new TypedApp(new TypedApp(new TypedS(newProof.type()), newProof),new TypedA(new Const("c_{8}")));
-                        return newProof;
-                        
-                    }catch (TypeVerificationException e) {
-                         Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-                         return proof;
-                    }
-                }   
-            }
-        
-        }
-        
-        // If the proof hasnt finished
-        return proof;
-        
     }
     
     /**
@@ -2611,40 +2444,12 @@ public class InferController {
         }       
         
         response.setResuelto("0");
-             
-        Term expr = newProof.type();
-        Term initialExpr = ((App)expr).q;
-        Term finalExpr = ((App)((App)expr).p).q;
         
         // CHECK IF THE PROOF FINISHED
         Term finalProof = newProof;
 
         // Depending on the method we create a new proof if we finished
-        switch (strMethodTermIter){
-            case "DM":
-                finalProof = finishedDirectMethodProve(teoremProved, newProof, username, nTeo);
-                break;
-            case "SS":
-                finalProof = finishedOneSideProve(initialExpr, finalExpr, teoremProved, newProof);
-                break;
-            case "Natural Deduction,one-sided":
-                finalProof = finishedDeductionOneSideProve(initialExpr, finalExpr, teoremProved, newProof);
-                break;
-            case "Natural Deduction,direct":
-                finalProof = finishedDeductionDirectProve(initialExpr, teoremProved, finalExpr, newProof, username); 
-                break;
-            case "WE":
-                finalProof = finishedWeakProve(expr, teoremProved, newProof);
-                break;
-            case "ST":
-                finalProof = finishedStrengProve(expr, teoremProved, newProof);
-                break;
-            case "TR":
-                finalProof = finishedTransProve(expr, teoremProved, newProof);
-                break;
-            default: 
-                break;
-        }   
+ 		finalProof = finishedBaseProof(teoremProved, newProof, username, strMethodTermIter);
         
         /* Jean
         newProof = finishedDeductionDirectProve(teoremProved, proof, username);
