@@ -56,7 +56,6 @@
                     </c:otherwise>
                 </c:choose>--%>
                     
-                    
                 $("#metodosDemostracion").change(function(){
                     let commonPrefix = "Are you sure you want to use the";
                     let commonSufix = "method?";
@@ -71,9 +70,6 @@
                 });
                 
                 $('#formula').on('click','#teoremaMD',function(event){
-                    /*var data = {};
-                    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-                    var form = $('#inferForm');*/
                     var selectTeoInicial = $("#selectTeoInicial").val();
                     if (selectTeoInicial==="1"){
                         teoremaInicialMD("ST-${nTeo}");
@@ -81,67 +77,72 @@
                 });
                 
                 $('#formula').on('click','.teoremaClick',function(event){
-                    var data = {};
-                    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-                    var form = $('#inferForm');
-                    //var teoSol = $("#nSolucion").val();
-                    //var teoId = $("#nTeorema").val();
-                    //data["teoSol"] = teoSol;
-                    if(this.id==='d'){
-                        data["lado"] = "d";
-                        $.ajax({
-                            type: 'POST',
-                            url: $(form).attr('action')+"/teoremaInicialPL",
-                            dataType: 'json',
-                            data: data,
-                            success: function(data) {
-                                $('#formula').html(data.historial);
-                                MathJax.Hub.Typeset();
-                                //$('#teoremaInicial').val("ST-"+teoId + "@d");
-                                $("#inferForm").show();
-                                //$("#nuevoMetodo").val("1");
-                                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
-                                if(nSol==="new"){
-                                    //$('#nSolucion').val(data.nSol);
-                                    //nSol = $('#nSolucion').val();
-                                    var url = $(form).attr('action');
-                                    url = url.substring(0,url.length-3)+data.nSol;
-                                    $(form).attr('action',url);
-                                }
-                            },
-                            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-                            }
-                        }); 
-                    }
-                    else if(this.id==='i'){
-                        data["lado"] = "i";
-                        $.ajax({
-                            type: 'POST',
-                            url: $(form).attr('action')+"/teoremaInicialPL",
-                            dataType: 'json',
-                            data: data,
-                            success: function(data) {
-                                $('#formula').html(data.historial);
-                                MathJax.Hub.Typeset();
-                                //$('#teoremaInicial').val("ST-"+teoId + "@i");
-                                $("#inferForm").show();
-                                //$("#nuevoMetodo").val("1");
-                                var nSol = $(form).attr('action').split('/').pop();//$('#nSolucion').val();
-                                if(nSol==="new"){
-                                    //$('#nSolucion').val(data.nSol);
-                                    //nSol = $('#nSolucion').val();
-                                    var url = $(form).attr('action');
-                                    url = url.substring(0,url.length-3)+data.nSol;
-                                    $(form).attr('action',url);
-                                }
-                            },
-                            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                                alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-                            }
-                        });
-                    } 
+                    // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
+                    teoremaInicialPL(this.id); 
                 });
+
+                // $('#formula').on('click','.teoremaClick',function(event){
+                //     var data = {};
+                //     //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
+                //     var form = $('#inferForm');
+                //     //var teoSol = $("#nSolucion").val();
+                //     //var teoId = $("#nTeorema").val();
+                //     //data["teoSol"] = teoSol;
+                //     if(this.id==='d'){
+                //         data["lado"] = "d";
+                //         $.ajax({
+                //             type: 'POST',
+                //             url: $(form).attr('action')+"/teoremaInicialPL",
+                //             dataType: 'json',
+                //             data: data,
+                //             success: function(data) {
+                //                 $('#formula').html(data.historial);
+                //                 MathJax.Hub.Typeset();
+                //                 //$('#teoremaInicial').val("ST-"+teoId + "@d");
+                //                 $("#inferForm").show();
+                //                 //$("#nuevoMetodo").val("1");
+                //                 var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
+                //                 if(nSol==="new"){
+                //                     //$('#nSolucion').val(data.nSol);
+                //                     //nSol = $('#nSolucion').val();
+                //                     var url = $(form).attr('action');
+                //                     url = url.substring(0,url.length-3)+data.nSol;
+                //                     $(form).attr('action',url);
+                //                 }
+                //             },
+                //             error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                //               alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+                //             }
+                //         }); 
+                //     }
+                //     else if(this.id==='i'){
+                //         data["lado"] = "i";
+                //         $.ajax({
+                //             type: 'POST',
+                //             url: $(form).attr('action')+"/teoremaInicialPL",
+                //             dataType: 'json',
+                //             data: data,
+                //             success: function(data) {
+                //                 $('#formula').html(data.historial);
+                //                 MathJax.Hub.Typeset();
+                //                 //$('#teoremaInicial').val("ST-"+teoId + "@i");
+                //                 $("#inferForm").show();
+                //                 //$("#nuevoMetodo").val("1");
+                //                 var nSol = $(form).attr('action').split('/').pop();//$('#nSolucion').val();
+                //                 if(nSol==="new"){
+                //                     //$('#nSolucion').val(data.nSol);
+                //                     //nSol = $('#nSolucion').val();
+                //                     var url = $(form).attr('action');
+                //                     url = url.substring(0,url.length-3)+data.nSol;
+                //                     $(form).attr('action',url);
+                //                 }
+                //             },
+                //             error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                //                 alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+                //             }
+                //         });
+                //     } 
+                // });
                 
                 var p1=[];
                 var p2=[];

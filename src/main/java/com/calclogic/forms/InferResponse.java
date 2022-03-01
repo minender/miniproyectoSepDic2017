@@ -142,7 +142,6 @@ public class InferResponse {
     public void setErrorParser3(String errorParser3) {
         this.errorParser3 = errorParser3;
     }
-    
 
 /*    public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, Term typedTerm, SimboloManager s) {//List<PasoInferencia> inferencias){
         
@@ -755,6 +754,7 @@ public class InferResponse {
             return newTerm.toStringInf(s,"");
     }
     
+    
     /**
      * Calls function generarHistorial assuming that it is always a root theorem
      * and thus is doesn't contain identation.
@@ -834,11 +834,11 @@ public class InferResponse {
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
         if (isRootTeorem && metodo == null)
-          cambiarMetodo = "1";
+            cambiarMetodo = "1";
         else if (isRootTeorem && InferController.isWaitingMethod(metodo)) 
-          cambiarMetodo = "2";
+            cambiarMetodo = "2";
         else if(isRootTeorem)
-          cambiarMetodo ="0";
+            cambiarMetodo ="0";
         
         // If we're printing a root teorem, print it as a teorem.
         if (isRootTeorem) {
@@ -853,35 +853,23 @@ public class InferResponse {
                 return ;
             }
         }
-        
-        boolean naturalDirect = false;
-        boolean naturalSide = false;
-        boolean counterRecip = false;
-        boolean contradiction = false;
-        boolean oneSide = false;
-        boolean direct = false;
-        boolean weakening = false;
-        boolean strengthening = false;
-        boolean transitivity = false;
-        boolean andIntroduction = false;
-        
+
+        String strMethod = "   "; // We need substring(0,2) can always be applied
         if(metodo != null) {
-            // Must check if we are doing Natural deduction
-            naturalDirect   = metodo.toStringFinal().equals("ND DM");
-            naturalSide     = metodo.toStringFinal().equals("ND SS");
-            counterRecip    = metodo.toStringFinal().substring(0, 2).equals("CR");
-            contradiction   = metodo.toStringFinal().substring(0, 2).equals("CO");
-            oneSide         = metodo.toStringFinal().equals("SS");
-            direct          = metodo.toStringFinal().equals("DM");
-            weakening       = metodo.toStringFinal().equals("WE");
-            strengthening   = metodo.equals("ST");
-            transitivity    = metodo.equals("TR");
-            andIntroduction = metodo.toStringFinal().substring(0, 2).equals("AI");
-            valid           = valida;
+            valid = valida;
+            strMethod = metodo.toStringFinal();
         }
-        
-        // if not, just print the expression we're going to proof.
-        //else {
+        boolean naturalDirect   = strMethod.equals("ND DM");
+        boolean naturalSide     = strMethod.equals("ND SS");
+        boolean counterRecip    = strMethod.substring(0, 2).equals("CR");
+        boolean contradiction   = strMethod.substring(0, 2).equals("CO");
+        boolean oneSide         = strMethod.equals("SS");
+        boolean direct          = strMethod.equals("DM");
+        boolean weakening       = strMethod.equals("WE");
+        boolean strengthening   = strMethod.equals("ST");
+        boolean transitivity    = strMethod.equals("TR");
+        boolean andIntroduction = strMethod.substring(0, 2).equals("AI");
+
         boolean recursive = false;
         if (counterRecip || contradiction || andIntroduction) 
             recursive = true;
@@ -900,28 +888,25 @@ public class InferResponse {
         Term type = typedTerm==null?null:typedTerm.type();
 
         boolean solved;
-        if (typedTerm==null && metodo == null && !recursive)
-        {
+        if (typedTerm==null && metodo == null && !recursive){
             this.setHistorial(this.getHistorial()+header);
             solved = false;
             return;
         }
-        if (typedTerm!=null && type == null && !valida && !recursive)
-        {
+        if (typedTerm!=null && type == null && !valida && !recursive){
             this.setHistorial(this.getHistorial()+header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$\\text{No valid inference}$$");
             solved = false;
             return;
         }
-        if (typedTerm!=null && type == null && valida && !recursive)// Case where what we want to print is the first line
-        {
+        if (typedTerm!=null && type == null && valida && !recursive) { // Case where what we want to print is the first line
             solved = false;
             String firstLine = "";
             if(naturalSide){
-            firstLine = ((App)((App)typedTerm).p).q.toStringInfLabeled(s);  
-            this.setHistorial(this.getHistorial()+header+"<br>Assuming H1: $"+ ((App)typedTerm).q.toStringInf(s, "") +"$<center>$"+firstLine+"</center>");
+                firstLine = ((App)((App)typedTerm).p).q.toStringInfLabeled(s);  
+                this.setHistorial(this.getHistorial()+header+"<br>Assuming H1: $"+ ((App)typedTerm).q.toStringInf(s, "") +"$<center>$"+firstLine+"</center>");
             }else {
-            firstLine = typedTerm.toStringInfLabeled(s);
-            this.setHistorial(this.getHistorial()+header+"<center>$"+firstLine+"</center>");
+                firstLine = typedTerm.toStringInfLabeled(s);
+                this.setHistorial(this.getHistorial()+header+"<center>$"+firstLine+"</center>");
             }
             return;
         }
@@ -1337,3 +1322,4 @@ public class InferResponse {
     }
     
 }
+

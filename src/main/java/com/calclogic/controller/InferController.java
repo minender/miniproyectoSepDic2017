@@ -613,7 +613,7 @@ public class InferController {
      * @param method: method used in the demonstration
      * @return new proof if finished, else return the same proof
      */
-    private Term finishedBaseProof(Term theoremBeingProved, Term proof, String username, String method) {
+    private Term finishedBaseMethodProof(Term theoremBeingProved, Term proof, String username, String method) {
         Term expr = proof.type(); 
         Term initialExpr = ((App)expr).q; // The expression (could be a theorem) from which the user started the demonstration
         Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
@@ -686,7 +686,7 @@ public class InferController {
 
                     // If we are weakening and the statement is A=>B or we are strengthening and the statement is A<=B
                     if (((method == "WE") && rightArrow) || ((method == "ST") && leftArrow)){
-                        return finishedBaseProof(theoremBeingProved, proof, username, "TR");
+                        return finishedBaseMethodProof(theoremBeingProved, proof, username, "TR");
                     }
                     /* If we are weakening and the statement is A<=B or we are strengthening and the statement is A=>B,
                        and at least one inference was made.
@@ -1009,322 +1009,141 @@ public class InferController {
             return originalTerm;
         }
     }
-    
+
     /**
-     * This function will create a hint for the direct method given the hint's elements
-     * In case the elements don't make sense it will return null
-     * @param teorem: theorem used on the hint
+     * This function will create a hint for the current base method given the hint's elements.
+     * In case the elements don't make sense it will return null.
+     * @param theoremHint: theorem used on the hint
      * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
      * @param instantiationString: string that was used to parse instantiation
      * @param leibniz: bracket that represents Leibniz on the hint
      * @param leibnizString: string that was used to parse Leibniz
+     * @param theoremBeingProved: theorem that we are proving using this hint
+     * @param method: method used in the demonstration
      * @return a hint for the direct method
      */
-    private Term createDirectMethodInfer(Term teorem, ArrayList<Object> instantiation, 
-                                         String instantiationString, Bracket leibniz, String leibnizString ) 
-                 throws TypeVerificationException
-    {
-        
-        Term hint = null;
-        //try {
-            if (instantiationString.equals("") && leibnizString.equals(""))
-                hint = new TypedA(teorem);
-            else if (instantiationString.equals(""))
-            {
-                TypedA A = new TypedA(teorem);
-                TypedL L = new TypedL(leibniz);
-                hint = new TypedApp(L,A);
-            }
-            else if (leibnizString.equals(""))
-            {
-                TypedA A = new TypedA(teorem);
-                TypedI I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-                hint = new TypedApp(I,A);
-            }
-            else
-            {
-                TypedA A = new TypedA(teorem);
-                TypedI I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-                TypedL L = new TypedL((Bracket)leibniz);
-                hint = new TypedApp(L,new TypedApp(I,A));
-            } 
-        /*}catch(TypeVerificationException e) { // If something went wrong return null
-            e.printStackTrace();
-            return null;
-        } */
-        
-        /*Jean
-        if (instantiationString.equals("") && leibnizString.equals(""))
-+               hint = new TypedA(teorem);
-+       else if (instantiationString.equals(""))
-+       {
-+               TypedA A = new TypedA(teorem);
-+               TypedL L = new TypedL(leibniz);
-+               hint = new TypedApp(L,A);
-+       }
-+       else if (leibnizString.equals(""))
-+       {
-+               TypedA A = new TypedA(teorem);
-+               TypedI I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-+               hint = new TypedApp(I,A);
-+       }
-+       else
-+       {
-+               TypedA A = new TypedA(teorem);
-+               TypedI I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-+               TypedL L = new TypedL((Bracket)leibniz);
-+               hint = new TypedApp(L,new TypedApp(I,A));
-+       }
-        */
-        
-        return hint;
-    }
-    
-    /**
-     * This function will create a hint for the one side method given the hint's elements
-     * In case the elements don't make sense it will return null
-     * @param teorem: theorem used on the hint
-     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
-     * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents leibniz on the hint
-     * @param leibnizString: string that was used to parse leibniz
-     * @return a hint for the one side method
-     */
-    private Term createOneSideInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString) 
-                 throws TypeVerificationException
-    {
-        return createDirectMethodInfer(teorem, instantiation, instantiationString, leibniz, leibnizString);
-    }
-    
-    /**
-     * This function will create one step infer for the weakening method given the inference's elements
-     * In case the elements don't make sense it will return null
-     * @param teorem: theorem used on the infer
-     * @param instantiation: instantiation used on the statement in the form of arrays of variables 
-     *                       and terms
-     * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents the Leibniz function on the inference step
-     * @param leibnizString: string that was used to parse the Leibniz function
-     * @return a hint for the weakening method
-     */
-    private Term createWSInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, 
-                               Bracket leibniz, String leibnizString) throws TypeVerificationException {
-        Term infer;
-        
-            if (instantiationString.equals("") && leibnizString.equals(""))
-                infer = new TypedA(teorem);
-            else if (instantiationString.equals(""))
-            {
-                    TypedA A = new TypedA(teorem);
-                    Term c;
-                    if ( teorem instanceof App && ((App)teorem).p instanceof App &&
-                         (c=((App)(((App)teorem).p)).p) != null && c instanceof Const &&
-                         (((Const)c).getId() == 2 || ((Const)c).getId() == 3) 
-                       )
+    private Term createBaseMethodInfer(Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
+            Bracket leibniz, String leibnizString, Term theoremBeingProved, String method) 
+            throws TypeVerificationException{
+
+        Term infer = null;
+        TypedI I = null;
+        TypedA A = new TypedA(theoremHint);
+        TypedL L = new TypedL(leibniz);
+        Boolean noInstantiation = instantiationString.equals("");
+        Boolean noLeibniz = leibnizString.equals("");
+        String groupMethod = (method=="DM" || method=="SS") ? "D" : ((method=="TR" || method=="WE" || method=="ST") ? "T" : "N");
+
+        switch(groupMethod){
+
+            // Direct, starting from one side, transitivity, weakening or strengthening method
+            case "D":
+            case "T":
+                Term c;       
+                if (noInstantiation && noLeibniz){
+                    infer = A;
+                }
+                else if (noInstantiation){
+                    if ((groupMethod=="T") && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
+                         (c=((App)(((App)theoremHint).p)).p) != null && c instanceof Const &&
+                         (((Const)c).getId() == 2 || ((Const)c).getId() == 3) ){
+
                         infer = parityLeibniz(leibniz, A);
-                    else {
-                        TypedL L = new TypedL(leibniz);
-                        infer = new TypedApp(L,A);    
+                    }else {
+                        infer = new TypedApp(L,A);
+                    } 
+                }
+                else{
+
+                    I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
+                    if (noLeibniz){
+                        infer = new TypedApp(I,A);
                     }
-            }
-            else if (leibnizString.equals(""))
-            {
-                    TypedA A = new TypedA(teorem);
-                    TypedI I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-                    infer = new TypedApp(I,A);
-            }
-            else
-            {
-                    TypedA A = new TypedA(teorem);
-                    TypedI I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-                    Term c;
-                    if ( teorem instanceof App && ((App)teorem).p instanceof App &&
-                         (c=((App)((App)teorem).p).p) != null && c instanceof Const &&
-                         (((Const)c).getId() == 2 || ((Const)c).getId() == 3 )
-                       )
+                    else if ((groupMethod=="T") && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
+                            (c=((App)((App)theoremHint).p).p) != null && c instanceof Const &&
+                            (((Const)c).getId() == 2 || ((Const)c).getId() == 3) ){
+
                         infer = parityLeibniz(leibniz,new TypedApp(I,A));
-                    else {
-                        TypedL L = new TypedL((Bracket)leibniz);
-                        infer = new TypedApp(L,new TypedApp(I,A));    
+                    } else {
+                        L = new TypedL((Bracket)leibniz);
+                        infer = new TypedApp(L,new TypedApp(I,A));
                     }
-            } 
+                }
+                break;
 
-        return infer;        
-    }
-    
-    /**
-     * This function will create a hint for the natural deduction one side method given the hint's elements
-     * In case the elements don't make sense it will return null
-     * @param teorem: theorem used on the hint
-     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
-     * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents Leibniz on the hint
-     * @param leibnizString: string that was used to parse Leibniz
-     * @param teoremProved: theorem that we are proving using this hint
-     * @return a hint for the natural deduction one side method
-     */
-    private Term createDeductionOneSideInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) 
-                 throws TypeVerificationException
-    {
+            // Natural deduction
+            case "N":
+                // First must check if we are dealing with a special modus ponens hint 
+                // If its not a special hint (it's not an implication) just return the same we would do with the direct method
+                if(!((App)((App)theoremHint).p).p.toStringInf(simboloManager, "").equals("\\Rightarrow")){
+                    
+                    if(!noLeibniz) { // If there is a leibniz add H to it 
+                        if (method=="Natural Deduction,one-sided"){
+                            leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), leibniz.t), ((App)theoremBeingProved).q));
+                        }else { // Direct method
+                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), leibniz.t), ((App)teoremProved).q)) ,((App)teoremProved).q));
+                        }
+                    }else {
+                        // Use a leibniz that represents H /\ z
+                        if (method=="Natural Deduction,one-sided"){
+                            leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), new Var('z')), ((App)theoremBeingProved).q));
+                        } else { // Direct method
+                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), ((App)teoremProved).q)) ,((App)teoremProved).q));
+                        }
+                        leibnizString = "69";
+                    }
+                    infer = createBaseMethodInfer(theoremHint, instantiation, instantiationString, leibniz, leibnizString, theoremBeingProved, "DM");
+                }
+                else { // IF REACHED HERE WE NEED A MODUS PONENS HINT
+                    String e = "\\Phi_{}"; // by default use empty phi which represents leibniz z
+                    Term iaRightTerm = A;
+                    
+                    // Example of left IA
+                    // I^{[A,B,C,E := \equiv true q,\equiv q q,\equiv true true, \Phi_{cb} true \equiv]}A^{\Rightarrow (\equiv (\wedge (E C) A) (\wedge (E B) A)) (\Rightarrow (\equiv C B) A)}
+                    
+                    // A,B and C are in the hint being used 
+                    Term cTerm = ((App)((App)((App)((App)theoremHint).p).q).p).q;
+                    Term bTerm = ((App)((App)((App)theoremHint).p).q).q;
+                    Term aTerm = ((App)theoremHint).q;
+                
+                    // If there is instantiation change a,b and c properly
+                    if(!noInstantiation) {
+                        I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
+                        cTerm = (new TypedApp(I, new TypedA(cTerm))).type();
+                        bTerm = (new TypedApp(I, new TypedA(bTerm))).type();
+                        aTerm = (new TypedApp(I, new TypedA(aTerm))).type();
+                        // Need to add I to the right side
+                        iaRightTerm = new TypedApp(I, iaRightTerm);
+                    }
+                    
+                    // If there is leibniz change e properly
+                    if(!leibnizString.equals("")) {
+                        Term phiLeibniz = leibniz.traducBD();
+                        e = phiLeibniz.toStringFinal();
+                    }
 
-//      try {
-        
-        // First must check if we are dealing with a special modus ponens hint 
-        
-        // If its not a special hint (is not an implication) just return the same we would do with the direct method
-        if(!((App)((App)teorem).p).p.toStringInf(simboloManager, "").equals("\\Rightarrow")){
-            
-            if( !leibnizString.equals("")) { // If there is a leibniz
-                // Add H to it 
-            leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), leibniz.t), ((App)teoremProved).q));
-            }else {
-                // Use a leibniz that represents H /\ z
-            leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), new Var('z')), ((App)teoremProved).q));
-            leibnizString = "69";
-            }
-            return createDirectMethodInfer(teorem, instantiation, instantiationString, leibniz, leibnizString);
-        }
-        
-        // IF REACHED HERE WE NEED A MODUS PONENS HINT
-        
-        TypedI I = null;
-        String e = "\\Phi_{}"; // by default use empty phi which represents leibniz z
-        Term iaRighTerm = new TypedA(teorem);
-        
-        // Example of left IA
-        // I^{[A,B,C,E := \equiv true q,\equiv q q,\equiv true true, \Phi_{cb} true \equiv]}A^{\Rightarrow (\equiv (\wedge (E C) A) (\wedge (E B) A)) (\Rightarrow (\equiv C B) A)}
-        
-        // A,B and C are in the hint being used 
-        
-        Term cTerm = ((App)((App)((App)((App)teorem).p).q).p).q;
-        Term bTerm = ((App)((App)((App)teorem).p).q).q;
-        Term aTerm = ((App)teorem).q;
-    
-        // If there is instantiation change a,b and c properly
-        if(!instantiationString.equals("")) {
-            I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-            cTerm = (new TypedApp(I, new TypedA(cTerm))).type();
-            bTerm = (new TypedApp(I, new TypedA(bTerm))).type();
-            aTerm = (new TypedApp(I, new TypedA(aTerm))).type();
-            // Need to add I to the right side
-            iaRighTerm = new TypedApp(I, iaRighTerm);
-        }
-        
-        // If there is leibniz change e properly
-        if(!leibnizString.equals("")) {
-            Term phiLeibniz = leibniz.traducBD();
-            e = phiLeibniz.toStringFinal();
-        }
-        
-        String c = cTerm.toStringFinal();
-        String b = bTerm.toStringFinal();
-        String a = aTerm.toStringFinal();
-        
-        // Here is the left IA side of the modus ponens hint 
-        String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
-        Term iaLefTerm = CombUtilities.getTerm(iaLeftString);
-        
-        //throw new TypeVerificationException();
-        return new TypedApp(iaLefTerm, iaRighTerm);
-        
-        
-        /*}catch(Exception e) { // If something goes wrong return null
-            e.printStackTrace();
-            return null;
-        }*/
+                    String c = cTerm.toStringFinal();
+                    String b = bTerm.toStringFinal();
+                    String a = aTerm.toStringFinal();
+                    
+                    // Here is the left IA side of the modus ponens hint 
+                    String iaLeftString;
+                    if (method=="Natural Deduction,one-sided"){
+                        iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
+                    } else { // Direct method
+                        iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) x_{65}) (c_{1}  (c_{5} (x_{69} x_{66}) x_{65}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
+                    }
+                    Term iaLeftTerm = CombUtilities.getTerm(iaLeftString);
+                    
+                    //throw new TypeVerificationException();
+                    infer = new TypedApp(iaLeftTerm, iaRightTerm);
+                }
+                break;
 
-    }
-    
-    /**
-     * This function will create a hint for the natural deduction with direct method given the hint's elements
-     * In case the elements don't make sense it will return null
-     * @param teorem: theorem used on the hint
-     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
-     * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents Leibniz on the hint
-     * @param leibnizString: string that was used to parse Leibniz
-     * @param teoremProved: theorem that we are proving using this hint
-     * @return a hint for the natural deduction with direct method
-     */
-    private Term createDeductionDirectInfer(Term teorem, ArrayList<Object> instantiation, String instantiationString, Bracket leibniz, String leibnizString, Term teoremProved) 
-                 throws TypeVerificationException
-    {
-
-//      try {
-        
-        // First must check if we are dealing with a special modus ponens hint 
-        
-        // If its not modus ponens (is not an implication) just return the same we would do with the direct method
-        if(!((App)((App)teorem).p).p.toStringInf(simboloManager, "").equals("\\Rightarrow")){
-            
-            if( !leibnizString.equals("")) { // If there is a leibniz
-                // Add H == H /\ to it 
-                leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), leibniz.t), ((App)teoremProved).q)) ,((App)teoremProved).q));
-            }else {
-                // Use a leibniz that represents H /\ z
-                leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), ((App)teoremProved).q)) ,((App)teoremProved).q));
-                leibnizString = "69";
-            }
-            return createDirectMethodInfer(teorem, instantiation, instantiationString, leibniz, leibnizString);
+            default:
+                break;
         }
-        
-        // IF REACHED HERE WE NEED A MODUS PONENS HINT
-        
-        TypedI I = null;
-        String e = "\\Phi_{}"; // by default use empty phi which represents leibniz z
-        Term iaRighTerm = new TypedA(teorem);
-        
-        // Example of left IA
-        // I^{[A,B,C,E := \equiv true q,\equiv q q,\equiv true true, \Phi_{cb} true \equiv]}A^{\Rightarrow (\equiv (\wedge (E C) A) (\wedge (E B) A)) (\Rightarrow (\equiv C B) A)}
-        
-        // A,B and C are in the hint being used 
-        
-        Term cTerm = ((App)((App)((App)((App)teorem).p).q).p).q;
-        Term bTerm = ((App)((App)((App)teorem).p).q).q;
-        Term aTerm = ((App)teorem).q;
-    
-        // If there is instantiation change a,b and c properly
-        if(!instantiationString.equals("")) {
-            I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-            cTerm = (new TypedApp(I, new TypedA(cTerm))).type();
-            bTerm = (new TypedApp(I, new TypedA(bTerm))).type();
-            aTerm = (new TypedApp(I, new TypedA(aTerm))).type();
-            // Need to add I to the right side
-            iaRighTerm = new TypedApp(I, iaRighTerm);
-        }
-        
-        // If there is leibniz change e properly
-        if(!leibnizString.equals("")) {
-            Term phiLeibniz = leibniz.traducBD();
-            e = phiLeibniz.toStringFinal();
-        }
-        
-        String c = cTerm.toStringFinal();
-        String b = bTerm.toStringFinal();
-        String a = aTerm.toStringFinal();
-        
-        // Here is the left IA side of the modus ponens hint                                                      
-        String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{1}  (c_{5} (x_{69} x_{67}) x_{65}) x_{65}) (c_{1}  (c_{5} (x_{69} x_{66}) x_{65}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
-        /*Jean
-        String iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
-        */   
-        Term iaLefTerm = CombUtilities.getTerm(iaLeftString);
-        
-        //throw new TypeVerificationException();
-        return new TypedApp(iaLefTerm, iaRighTerm);
-        
-        
-        /*}catch(Exception e) { // If something goes wrong return null
-            e.printStackTrace();
-            return null;
-        }*/
-        
-        /*Jean
-        // need this L to make the hint fit for H == z
-+       TypedL L = new TypedL(new Bracket(new Var('z'), new App(new App(new Const("c_{1}"),new Var('z')) ,aTerm)));
-        
-        return  new TypedApp(L, new TypedApp(iaLefTerm, iaRighTerm));
-        */
+        return infer;
     }
     
     /**
@@ -1679,88 +1498,78 @@ public class InferController {
     }
     
     /**
-     * This method construct a new derivation tree adding an one step infer to
-     * a proof written with the weakening/strengthening method
+     * This method constructs a new derivation tree adding an one step infer to a proof
      *  
-     * @param proof: Term that represent a proof written with the weakening/strengthening method
-     * @param infer: Term that represent one step infer
-     * @return new TypedTerm that represent a new derivation tree that 
-     *         add in the last line of proof the infer
+     * @param proof: Term that represents a proof
+     * @param infer: Term that represents one step infer
+     * @param method: method used in the demonstration
+     * @return new TypedTerm that represents a new derivation tree that 
+     *         adds in the last line of proof the infer
      */
-    private Term addInferToWSProof(Term proof, Term infer) throws TypeVerificationException {
-        Term type = proof.type();
-        Term typeInf = infer.type();
-        String op;
-        String opInf;
-        try {
-            op = ((App)((App)type).p).p.toStringFinal();
-            opInf = ((App)((App)typeInf).p).p.toStringFinal();
-        }
-        catch (ClassCastException e) {
-            throw new TypeVerificationException();
-        }
-        if ( !op.equals("c_{1}") && !op.equals("c_{20}") ) {
-            proof = metaTheoTrueLeft(proof);
-            type = proof.type();
-        }
-        int index = wsFirstOpInferIndex(proof);
-        boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{20}");
-        if ( index == 0 && eqInf) {
-            return new TypedApp(proof, infer);
-        }
-        else if (index == 0 && !eqInf) {
-            String eq = op;
-            String st = "c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
-            String deriv = "";
+    private Term addInferToProof(Term proof, Term infer, String method) throws TypeVerificationException {
+        if (method.equals("WE") || method.equals("ST") || method.equals("TR")) {
+            Term type = proof.type();
+            Term typeInf = infer.type();
+            String op;
+            String opInf;
             try {
-            String E = "\\Phi_{b} ("+ ((App)infer.type()).p+")";
-            deriv = 
-            "I^{[x_{101}, x_{102}, x_{69} := "+((App)type).q+", "+((App)((App)type).p).q+", "+E+"]} A^{"+st+"}";
-            }catch (ClassCastException e) {
+                op = ((App)((App)type).p).p.toStringFinal();
+                opInf = ((App)((App)typeInf).p).p.toStringFinal();
+            }
+            catch (ClassCastException e) {
                 throw new TypeVerificationException();
             }
-            return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
-        }
-        else if (index != 0 && !eqInf) {
-            String st = "c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8})";
-            String deriv = "";
-            try {
-            Term aux = (App)((App)((App)type).p).q;
-            deriv = 
-            "I^{[x_{112}, x_{113}, x_{114} := "+((App)aux).q+", "+((App)((App)aux).p).q+", "+((App)((App)typeInf).p).q+"]} A^{"+st+"}";
-            }catch (ClassCastException e) {
-                throw new TypeVerificationException();
+            if ( !op.equals("c_{1}") && !op.equals("c_{20}") ) {
+                proof = metaTheoTrueLeft(proof);
+                type = proof.type();
             }
-            return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
-        }
-        else {
-            if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l' ) {
-                Term aux = ((App)((App)type).p).q;
-                Term oldLeib = ((Bracket)((TypedApp)infer).p.type()).t;
-                Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,oldLeib),((App)aux).q));
-                infer = new TypedApp(new TypedL(leibniz),((TypedApp)infer).q);
+            int index = wsFirstOpInferIndex(proof);
+            boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{20}");
+            if ( index == 0 && eqInf) {
                 return new TypedApp(proof, infer);
+            }
+            else if (index == 0 && !eqInf) {
+                String eq = op;
+                String st = "c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
+                String deriv = "";
+                try {
+                    String E = "\\Phi_{b} ("+ ((App)infer.type()).p+")";
+                    deriv = "I^{[x_{101}, x_{102}, x_{69} := "+((App)type).q+", "+((App)((App)type).p).q+", "+E+"]} A^{"+st+"}";
+                }
+                catch (ClassCastException e) {
+                    throw new TypeVerificationException();
+                }
+                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
+            }
+            else if (index != 0 && !eqInf) {
+                String st = "c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8})";
+                String deriv = "";
+                try {
+                    Term aux = (App)((App)((App)type).p).q;
+                    deriv = "I^{[x_{112}, x_{113}, x_{114} := "+((App)aux).q+", "+((App)((App)aux).p).q+", "+((App)((App)typeInf).p).q+"]} A^{"+st+"}";
+                }catch (ClassCastException e) {
+                    throw new TypeVerificationException();
+                }
+                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
             }
             else {
-                Term aux = ((App)((App)type).p).q;
-                Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,new Var('z')),((App)aux).q));
-                infer = new TypedApp(new TypedL(leibniz),infer);
-                return new TypedApp(proof, infer);
+                if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l' ) {
+                    Term aux = ((App)((App)type).p).q;
+                    Term oldLeib = ((Bracket)((TypedApp)infer).p.type()).t;
+                    Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,oldLeib),((App)aux).q));
+                    infer = new TypedApp(new TypedL(leibniz),((TypedApp)infer).q);
+                    return new TypedApp(proof, infer);
+                }
+                else {
+                    Term aux = ((App)((App)type).p).q;
+                    Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,new Var('z')),((App)aux).q));
+                    infer = new TypedApp(new TypedL(leibniz),infer);
+                    return new TypedApp(proof, infer);
+                }
             }
+        } else {
+            return new TypedApp(proof, infer);
         }
-    }
-    
-    /**
-     * This method construct a new derivation tree adding an one step infer to
-     * a proof with the transitivity inference rule
-     *  
-     * @param proof: Term that represent the current proof
-     * @param infer: Term that represent the one step infer
-     * @return new TypedTerm that represent a new derivation tree that 
-     *         add in the last line of proof the infer
-     */
-    private Term addInferToProof(Term proof, Term infer) throws TypeVerificationException {
-        return new TypedApp(proof, infer);
     }
     
     /**
@@ -2348,42 +2157,16 @@ public class InferController {
             }
             methodTermIter = ((App)methodTermIter).q;
         }
-        Term teoremProved = formulasToProof.pop();
+        Term theoremBeingProved = formulasToProof.pop();
     
-        // CREATE THE NEW INFERENCE DEPENDING ON THE PROVE TYPE
+        // CREATE THE NEW INFERENCE DEPENDING ON THE PROOF TYPE
         Term infer = null;
         String strMethodTermIter = methodTermIter.toStringFinal();
-        try 
-        {
-            if(strMethodTermIter.equals("DM")) {
-                infer = createDirectMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            } else if (strMethodTermIter.equals("SS")) {
-                infer = createOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            } else if (strMethodTermIter.equals("WE") || 
-                          strMethodTermIter.equals("ST") || 
-                          strMethodTermIter.equals("TR")
-                      ) {
-                infer = createWSInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-            } else if (strMethodTermIter.equals("Natural Deduction,one-sided")) {
-                infer = createDeductionOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
-            } else if (strMethodTermIter.equals("Natural Deduction,direct")) {
-                infer = createDeductionDirectInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
-            }
-            /*
-            if(metodo.equals("Direct method")) {
-+                       infer = createDirectMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-+               }else if(metodo.equals("Starting from one side")) {
-+                       infer = createOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-+               }else if(metodo.equals("DWeakening")) {
-+                       infer = createWSInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz);
-+               }else if(metodo.equals("Natural Deduction,one-sided")) {
-+                       infer = createDeductionOneSideInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
-+               }else if(metodo.equals("Natural Deduction,direct")) {
-+                       infer = createDeductionDirectInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
-+               }
-            */
-        // If something went wrong building the new hint
-        } catch(TypeVerificationException e) {
+        
+        try {
+            infer = createBaseMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm(), strMethodTermIter);
+        } 
+        catch(TypeVerificationException e) { // If something went wrong building the new hint
             response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
             return response;
         }
@@ -2393,11 +2176,13 @@ public class InferController {
         
         boolean onlyOneLine = typedTerm.type() == null;
         Term currentProof;
-        if (onlyOneLine) // If the proof only has one line so far
-            currentProof = new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),
-                            typedTerm),typedTerm));
-        else
+        if (onlyOneLine){// If the proof only has one line so far
+            currentProof = new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),typedTerm),typedTerm));
+        }
+        else{
             currentProof = typedTerm;
+        }
+
         int i, j;
         i = 0;
         j = 0;
@@ -2406,26 +2191,11 @@ public class InferController {
                 if (i == 1 && j == 0){
                     infer = new TypedApp(new TypedS(infer.type()), infer);
                 }
-                if (strMethodTermIter.equals("WE") || 
-                    strMethodTermIter.equals("ST") ||
-                    strMethodTermIter.equals("TR")    
-                   ) 
-                {
-                    newProof=addInferToWSProof(currentProof, infer); // si no da excepcion cuando 
-                                 // typedTerm.type()==null entonces la inferencia 
-                    //es valida con respecto a la primera exp
-                } 
-                else {
-                    newProof=addInferToProof(currentProof, infer);// si no da excepcion cuando 
-                                 // typedTerm.type()==null entonces la inferencia 
-                    //es valida con respecto a la primera exp
-                }
-                if (onlyOneLine) 
-                    newProof=infer;
+                // If addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression
+                newProof = onlyOneLine ? infer : addInferToProof(currentProof, infer, strMethodTermIter);
             }
             catch (TypeVerificationException e) {
-                if ((i == 1 && !onlyOneLine) || (i == 1 && j == 1))
-                {
+                if ((i == 1 && !onlyOneLine) || (i == 1 && j == 1)){
                     response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
@@ -2447,17 +2217,15 @@ public class InferController {
         
         // CHECK IF THE PROOF FINISHED
         Term finalProof = newProof;
-
-        // Depending on the method we create a new proof if we finished
- 		finalProof = finishedBaseProof(teoremProved, newProof, username, strMethodTermIter);
+        finalProof = finishedBaseMethodProof(theoremBeingProved, newProof, username, strMethodTermIter);
         
         /* Jean
-        newProof = finishedDeductionDirectProve(teoremProved, proof, username);
+        newProof = finishedDeductionDirectProve(theoremBeingProved, proof, username);
         */
         
         // Get the complete method in case it was not atomic
 
-        Boolean isFinalSolution = teoremProved.equals(finalProof.type());
+        Boolean isFinalSolution = theoremBeingProved.equals(finalProof.type());
         while (!methodStk.isEmpty())
         {
             Term methodTermAux = methodStk.pop();
@@ -2508,7 +2276,7 @@ public class InferController {
         );
         return response;
     }
-    
+
     /**
      * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
      * Object with the the proof, in latex format, without the last line. If delete the last 
