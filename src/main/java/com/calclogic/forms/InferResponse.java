@@ -462,6 +462,7 @@ public class InferResponse {
         String primExp = "";
         String hint = "";
         boolean equanimity = false;
+        String equanimityHint = ""; // Text that indicates in which already proven theorem the current demonstration finalized (if any)
         Term iter;
         String lastline = "";
         
@@ -473,13 +474,12 @@ public class InferResponse {
             else
                iter = typedTerm;
             Term aux = ((App)((App)iter.type()).p).q;
-            lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));  
+            lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));
         }
         // Case when direct method is applied and we start from the expression to be proved
         else { 
             String nTeo;        // Plain string of the last step of the demonstration
             String eqSust = ""; // Indicates the instantiation (if any) that was necessary to apply to the already proven theorem
-            String equanimityHint = ""; // Text that indicates the already proven theorem in which the current proof finalized
 
             // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
             if (((TypedApp)typedTerm).q instanceof TypedApp){
@@ -519,8 +519,7 @@ public class InferResponse {
         }
 
         Term ultInf = null;
-        while (iter!=ultInf)
-        {
+        while (iter!=ultInf){
             if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t' ) {
                 ultInf = ((TypedApp)iter).q;
                 iter = ((TypedApp)iter).p;
@@ -531,11 +530,11 @@ public class InferResponse {
                 ultInf = iter;
                 Term ultInfType = ultInf.type();
                 primExp = ((App)ultInfType).q.toStringInf(s,"");
-                if ( equanimity)
+                if (equanimity){
                     primExp += equanimityHint;
+                }
             } 
             hint = hintOneSide(user, ultInf, resuelveManager, disponeManager, s);
-            
             this.setHistorial("~~~~~~" + primExp +" \\\\"+ hint +"\\\\"+this.getHistorial());
             primExp = "";
             hint = "";

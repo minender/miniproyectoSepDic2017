@@ -73,49 +73,112 @@ function setForms(elegirMetodo) {
     }
 }
 
-// This funcion is called from confirmationModal.jsp
-function teoremaClickeableMD(/*teoId*/){
-    var data = {};
-    //data["teoid"] = teoId;
-    var form = $('#inferForm');
-    $.ajax({
-        type: 'POST',
-        url: $(form).attr('action')+"/teoremaClickeableMD",
-        dataType: 'json',
-        data: data,
-        success: function(data) {
-            if(data.lado === "0"){
-                alert("The selected theorem does not apply to the direct method.");
-                $("#metodosDiv").show();
-            }
-            else{
-                $('#formula').html(data.historial);
-                MathJax.Hub.Typeset();
-            }
-        }
-    });
+// Determines the last part of the url that will be sent to an infer controller
+function urlTermination(urlcase){
+    let termination;
+
+    switch(urlcase){
+        case "DM Clickable": // Direct method, clickable
+            termination = "/teoremaClickeableMD";
+            break;
+        case "DM": // Direct method
+            termination = "/teoremaInicialMD";
+            break;
+        case "SS Clickable": // Starting from one side method, clickable
+            termination = "/teoremaClickeablePL";
+            break;
+        case "SS": // Starting from one side method
+            termination = "/teoremaInicialPL";
+            break;
+        case "WE": // Weakening method (The "D" refers to "Debilitamiento")
+            termination = "/teoremaInicialD";
+            break;
+        case "ST": // Strenghtening method (The "F" refers to "Fortalecimiento")
+            termination = "/teoremaInicialF";
+            break;
+        case "TR": // Transitivity method
+            termination = "/iniStatementT";
+            break;
+        case "CO": // Contradiction method
+            termination = "/iniStatementCO";
+            break;
+        case "CR": // Counter-reciprocal method
+            termination = "/iniStatementCR";
+            break;
+        case "AI": // And introduction method
+            termination = "/iniAndI";
+            break;
+        default:
+            break;
+    }
+    return termination;
 }
 
-function teoremaClickeablePL(/*teoId*/){
-    var data = {};
-    //data["teoid"] = teoId;
+/**
+ * @param method -> demonstration method.
+ * @param lado -> when proving with starting from one side, select the side from which the proof may begin.
+ * @param teoid -> id of the theorem that is going to be proved.
+ *
+ * @return -> boolean that is only true when the AJAX was send successfully and the method can be applied to the theorem
+ */
+async function proofMethodAjax(method, teoid=null, lado=null){
+    console.log("Entré en proofMethodAjax, method = ", method);
+    var data = {teoid, lado};
     var form = $('#inferForm');
-    $.ajax({
+
+    var completeSuccess = true
+
+    await $.ajax({
         type: 'POST',
-        url: $(form).attr('action')+"/teoremaClickeablePL",
+        url: $(form).attr('action') + urlTermination(method),
         dataType: 'json',
-        data: data,
-        success: function(data) {
-            if(data.lado === "0"){
-                alert("The selected theorem does not apply to the Start from one side method.");
+        data,
+        success: function(newData) {
+            if(newData.lado === "0"){
+                alert("The selected method does not apply to the current theorem");
                 $("#metodosDiv").show();
+                completeSuccess = false;
             }
             else{
-                $('#formula').html(data.historial);
+                $('#formula').html(newData.historial);
                 MathJax.Hub.Typeset();
+
+                // When the Ajax does not correspond to a theorem clickable, there is already an associated 
+                // entry in the solucion table, so newData.nSol is not null.
+                var clickable = (method.split(" ").pop() == "Clickable");
+                if (!clickable){
+                    setForms(newData.cambiarMetodo);
+
+                    switch(method){
+                        case "DM": // Direct method
+                            $(".teoIdName").css({"cursor":"","color":""});
+                            $(".operator").css({"cursor":"pointer","color":"#08c"});
+                            $("#currentTeo").hide();
+                            break;
+                        case "AI": // And introduction method
+                            $("#metodosDiv").show(); // This overrides what was set in "setForms"
+                        default:
+                            break;
+                    }
+
+                    // Note this can only be made when clickable is false because newData.nSol is not null. 
+                    var nSol = $(form).attr('action').split('/').pop();
+                    if(nSol === "new"){
+                        var url = $(form).attr('action');
+
+                        // We delete the last 3 characters because we know they are "new" and replace them with the new nSol
+                        url = url.substring(0,url.length-3) + newData.nSol;
+                        $(form).attr('action',url);
+                    }
+                }
             }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            completeSuccess = false;
         }
     });
+    return completeSuccess;
 }
 
 function showInstantiation(){
@@ -235,344 +298,8 @@ function automaticSubst(){
     }
 }
 
-// This function is called from infer.jsp
-function teoremaInicialMD(teoid){
-    var data = {};
-    data["teoid"] = teoid;
-    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-    //var teoSol = $("#nSolucion").val();
-    //data["teoSol"] = teoSol;
-    var form = $('#inferForm');
-    $.ajax({
-        type: 'POST',
-        url: $(form).attr('action')+"/teoremaInicialMD",
-        dataType: 'json',
-        data: data,
-        success: function(data) {
-            $('#formula').html(data.historial);
-            MathJax.Hub.Typeset();
-            setForms("0");
-            //$('#inferForm').show();
-            //$("#nuevoMetodo").val("1");
-            //$('#teoremaInicial').val(teoid);
-            $("#selectTeoInicial").val("0"); // esto no creo que siga haciendo falta
-            $(".teoIdName").css({"cursor":"","color":""});
-            $(".operator").css({"cursor":"pointer","color":"#08c"});
-            $("#currentTeo").hide();
-            var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
-            if(nSol==="new"){
-               //$('#nSolucion').val(data.nSol);
-               //nSol = $('#nSolucion').val();
-               var url = $(form).attr('action');
-               url = url.substring(0,url.length-3)+data.nSol;
-               $(form).attr('action',url);
-            }
-        },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-            }
-    });
-}
-
-// This function is called from infer.jsp
-function teoremaInicialPL(id){
-    var data = {};
-    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-    var form = $('#inferForm');
-    //var teoSol = $("#nSolucion").val();
-    //var teoId = $("#nTeorema").val();
-    //data["teoSol"] = teoSol;
-    if(id==='d'){
-        data["lado"] = "d";
-        $.ajax({
-            type: 'POST',
-            url: $(form).attr('action')+"/teoremaInicialPL",
-            dataType: 'json',
-            data: data,
-            success: function(data) {
-                $('#formula').html(data.historial);
-                MathJax.Hub.Typeset();
-                //$('#teoremaInicial').val("ST-"+teoId + "@d");
-                $("#inferForm").show();
-                //$("#nuevoMetodo").val("1");
-                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
-                if(nSol==="new"){
-                    //$('#nSolucion').val(data.nSol);
-                    //nSol = $('#nSolucion').val();
-                    var url = $(form).attr('action');
-                    url = url.substring(0,url.length-3)+data.nSol;
-                    $(form).attr('action',url);
-                }
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-            }
-        }); 
-    }
-    else if(id==='i'){
-        data["lado"] = "i";
-        $.ajax({
-            type: 'POST',
-            url: $(form).attr('action')+"/teoremaInicialPL",
-            dataType: 'json',
-            data: data,
-            success: function(data) {
-                $('#formula').html(data.historial);
-                MathJax.Hub.Typeset();
-                //$('#teoremaInicial').val("ST-"+teoId + "@i");
-                $("#inferForm").show();
-                //$("#nuevoMetodo").val("1");
-                var nSol = $(form).attr('action').split('/').pop();//$('#nSolucion').val();
-                if(nSol==="new"){
-                    //$('#nSolucion').val(data.nSol);
-                    //nSol = $('#nSolucion').val();
-                    var url = $(form).attr('action');
-                    url = url.substring(0,url.length-3)+data.nSol;
-                    $(form).attr('action',url);
-                }
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-            }
-        });
-    } 
-}
-
-
-function CRMethod(/*teoid*/){    
-    var data = {};
-    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-    //var teoSol = $("#nSolucion").val();
-    //data["teoSol"] = teoSol;
-    var form = $('#inferForm');
-
-    $.ajax({
-        type: 'POST',
-        url: $(form).attr('action')+"/iniStatementCR",
-        dataType: 'json',
-        data: data,
-        success: function(data) {
-            if(data.lado === "0"){
-                alert("The counter-reciprocal method cannot be used in the selected theorem.");
-                $("#metodosDiv").show();
-            }
-            else{
-                $('#formula').html(data.historial);
-                MathJax.Hub.Typeset();
-                //$('#teoremaInicial').val(teoid + "@" + data.lado);
-                setForms(data.cambiarMetodo);
-                //$("#inferForm").show();
-                //$("#nuevoMetodo").val("1");
-                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
-                if(nSol==="new"){
-                    //$('#nSolucion').val(data.nSol);
-                    //nSol = $('#nSolucion').val();
-                    var url = $(form).attr('action');
-                    url = url.substring(0,url.length-3)+data.nSol;
-                    $(form).attr('action',url);
-                }
-            }
-        },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-            }
-    });
-    
-}
-
-function COMethod(/*teoid*/){
-    var data = {};
-    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-    //var teoSol = $("#nSolucion").val();
-    //data["teoSol"] = teoSol;
-    var form = $('#inferForm');
-
-    $.ajax({
-        type: 'POST',
-        url: $(form).attr('action')+"/iniStatementCO",
-        dataType: 'json',
-        data: data,
-        success: function(data) {
-            $('#formula').html(data.historial);
-            MathJax.Hub.Typeset();
-            //$('#teoremaInicial').val(teoid + "@" + data.lado);
-            setForms(data.cambiarMetodo);
-            //$("#inferForm").show();
-            //$("#nuevoMetodo").val("1");
-            var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
-            if(nSol==="new"){
-                //$('#nSolucion').val(data.nSol);
-                //nSol = $('#nSolucion').val();
-                var url = $(form).attr('action');
-
-                // We delete the last 3 characters because we know they are "new"
-                url = url.substring(0,url.length-3)+data.nSol;
-                $(form).attr('action',url);
-            }
-        },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-            }
-    });
-    
-}
-
-function metodoD(/*teoid*/){
-    var data = {};
-    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-    //var teoSol = $("#nSolucion").val();
-    //data["teoSol"] = teoSol;
-    var form = $('#inferForm');
-    $.ajax({
-        type: 'POST',
-        url: $(form).attr('action')+"/teoremaInicialD",
-        dataType: 'json',
-        data: data,
-        success: function(data) {
-            if(data.lado === "0"){
-                alert("The weakening method cannot be used in the selected theorem.");
-                $("#metodosDiv").show();
-            }
-            else{
-                $('#formula').html(data.historial);
-                MathJax.Hub.Typeset();
-                //$('#teoremaInicial').val(teoid + "@" + data.lado);
-                //$("#inferForm").show();
-                setForms("0");
-                //$("#nuevoMetodo").val("1");
-                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
-                if(nSol==="new"){
-                    //$('#nSolucion').val(data.nSol);
-                    //nSol = $('#nSolucion').val();
-                    var url = $(form).attr('action');
-                    url = url.substring(0,url.length-3)+data.nSol;
-                    $(form).attr('action',url);
-                }
-            }
-        },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-            }
-    });
-    
-}
-
-function metodoF(/*teoid*/){
-    var data = {};
-    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-    //var teoSol = $("#nSolucion").val();
-    //data["teoSol"] = teoSol;
-    var form = $('#inferForm');
-    
-    $.ajax({
-        type: 'POST',
-        url: $(form).attr('action')+"/teoremaInicialF",
-        dataType: 'json',
-        data: data,
-        success: function(data) {
-            if(data.lado === "0"){
-                alert("The strengthening method cannot be used in the selected theorem.");
-                $("#metodosDiv").show();
-            }
-            else{
-                $('#formula').html(data.historial);
-                MathJax.Hub.Typeset();
-                //$('#teoremaInicial').val(teoid + "@" + data.lado);
-                //$("#inferForm").show();
-                setForms("0");
-                //$("#nuevoMetodo").val("1");
-                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
-                if(nSol==="new"){
-                    //$('#nSolucion').val(data.nSol);
-                    //nSol = $('#nSolucion').val();
-                    var url = $(form).attr('action');
-                    url = url.substring(0,url.length-3)+data.nSol;
-                    $(form).attr('action',url);
-                }
-            }
-        },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-            }
-    });
-    
-}
-
-function transMethod(/*teoid*/){
-    var data = {};
-    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-    //var teoSol = $("#nSolucion").val();
-    //data["teoSol"] = teoSol;
-    var form = $('#inferForm');
-    
-    $.ajax({
-        type: 'POST',
-        url: $(form).attr('action')+"/iniStatementT",
-        dataType: 'json',
-        data: data,
-        success: function(data) {
-            if(data.lado === "0"){
-                alert("The Transitivity method cannot be used in the selected theorem.");
-                $("#metodosDiv").show();
-            }
-            else{
-                $('#formula').html(data.historial);
-                MathJax.Hub.Typeset();
-                //$('#teoremaInicial').val(teoid + "@" + data.lado);
-                //$("#inferForm").show();
-                setForms("0");
-                //$("#nuevoMetodo").val("1");
-                var nSol =  $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
-                if(nSol==="new"){
-                    //$('#nSolucion').val(data.nSol);
-                    //nSol = $('#nSolucion').val();
-                    var url = $(form).attr('action');
-                    url = url.substring(0,url.length-3)+data.nSol;
-                    $(form).attr('action',url);
-                }
-            }
-        },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-            }
-    });
-    
-}
-
-function iniAndI(){
-    var data = {};
-    var form = $('#inferForm');
-
-    $.ajax({
-        type: 'POST',
-        url: $(form).attr('action')+"/iniAndI",
-        dataType: 'json',
-        data: data,
-        success: function(data) {
-            if(data.lado === "0"){
-                alert("The Conjunction by parts method cannot be used in the selected theorem.");
-                $("#metodosDiv").show();
-            }
-            else{
-                $('#formula').html(data.historial);
-                MathJax.Hub.Typeset();
-                $("#metodosDiv").show();
-                // save new nSol created.
-                var nSol = $(form).attr('action').split('/').pop();
-
-                if(nSol==="new"){
-                    var url = $(form).attr('action');
-                    url = url.substring(0,url.length-3) + data.nSol;
-                    $(form).attr('action',url);
-                }
-            }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-            alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-        }
-    });
-}
-
+// This function is called when in the direct method we select as the initial theorem one
+// that is not which we are currently trying to prove
 function clickTeoremaInicial(teoid){
     var id = "";
     if (teoid.substring(0,3)==="ST-"){
@@ -584,11 +311,13 @@ function clickTeoremaInicial(teoid){
     document.getElementById(id).onclick = function(event){
         var selectTeoInicial = $("#selectTeoInicial").val();
         if (selectTeoInicial==="1"){
-            teoremaInicialMD(teoid);
+            proofMethodAjax("DM", teoid);
         }
     };
 }
 
+// This is called when we select a theorem from the ride side of the view infer, in order to use
+// it as a hint
 function clickOperator(Math1,myField,teoid,vars){
     var render=document.getElementById(Math1);
     render.onclick = function (event) {

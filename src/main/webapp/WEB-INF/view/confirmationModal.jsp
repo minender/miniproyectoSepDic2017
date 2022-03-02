@@ -145,119 +145,6 @@
         Accepts the confirmation prompted to the user, takes an action depending
         on the proog method previously selected.
     */
-    function accept() {
-        // pick type
-        if(this.selectedMethod === "DM") { // direct method
-            $("#selectTeoInicial").val("1");
-
-            // sets the body of the modal
-            let message = 'Select the theorem with which the proof will begin.';
-            setModalBody(message);
-
-            $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
-            $(".operator").css({"cursor":"","color":""});
-            $("#metodosDiv").hide();
-            teoremaClickeableMD();
-
-            // switch to information modal
-            switchToOkButtons();
-
-        } else if (this.selectedMethod === "SS") { // one-sided method
-            
-            $("#selectTeoInicial").val("0");
-
-            // sets the body of the modal
-            let message = 'Select the side where the proof will start.';
-            setModalBody(message);
-
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            teoremaClickeablePL();
-
-            switchToOkButtons();
-
-        } else if (this.selectedMethod === "WE") { // weakening method
-            
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            metodoD();
-
-            this.selectedMethod = null;
-            closeModal();
-
-        } else if (this.selectedMethod === "ST") { // strengthening method
-
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            metodoF();
-
-            this.selectedMethod = null;
-            closeModal();
-
-        } else if (this.selectedMethod === "TR") { // transitivity method
-            
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            transMethod();
-
-            this.selectedMethod = 1;
-            closeModal();
-
-        } else if (this.selectedMethod === "CO") { // contradiction method
-            $("#selectTeoInicial").val("0");
-            COMethod();
-
-            this.selectedMethod = null;
-            closeModal();
-
-        } else if (this.selectedMethod === "CR") { // counter-reciprocal method
-            
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            CRMethod();
-
-            this.selectedMethod = null;
-            closeModal();
-
-        }  else if (this.selectedMethod === "CA") { // proof by cases method
-
-            let message = 'Enter the number of cases that will be proved.';
-            setModalBody(message);
-
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-
-            switchToOkButtons();
-            $('#input_cases').removeClass('d-none');
-
-        } else if (this.selectedMethod === "AI") { // and introduction method
-                    
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            iniAndI();
-
-            this.selectedMethod = null;
-            $('#metodosDemostracion').val("0");
-
-            // This message cannot be shown if the ajax returned an error
-            let message = "Please, select a proof method for the case.";
-            document.getElementById('modal-body').innerHTML = message;
-            switchToOkButtons();
-
-        } else {
-            closeModal();
-        }
-    }
-
-    /*
-        Accepts the confirmation prompted to the user, takes an action depending
-        on the proog method previously selected.
-    */
     // function accept() {
     //     // pick type
     //     if(this.selectedMethod === "DM") { // direct method
@@ -270,7 +157,7 @@
     //         $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
     //         $(".operator").css({"cursor":"","color":""});
     //         $("#metodosDiv").hide();
-    //         proofMethodAjax("DM Clickable");
+    //         teoremaClickeableMD();
 
     //         // switch to information modal
     //         switchToOkButtons();
@@ -285,7 +172,7 @@
 
     //         $("#metodosDiv").hide();
     //         $("#currentTeo").hide();
-    //         proofMethodAjax("SS Clickable");
+    //         teoremaClickeablePL();
 
     //         switchToOkButtons();
 
@@ -294,7 +181,7 @@
     //         $("#selectTeoInicial").val("0");
     //         $("#metodosDiv").hide();
     //         $("#currentTeo").hide();
-    //         proofMethodAjax("WE");
+    //         metodoD();
 
     //         this.selectedMethod = null;
     //         closeModal();
@@ -304,7 +191,7 @@
     //         $("#selectTeoInicial").val("0");
     //         $("#metodosDiv").hide();
     //         $("#currentTeo").hide();
-    //         proofMethodAjax("ST");
+    //         metodoF();
 
     //         this.selectedMethod = null;
     //         closeModal();
@@ -314,14 +201,14 @@
     //         $("#selectTeoInicial").val("0");
     //         $("#metodosDiv").hide();
     //         $("#currentTeo").hide();
-    //         proofMethodAjax("TR");
+    //         transMethod();
 
     //         this.selectedMethod = 1;
     //         closeModal();
 
     //     } else if (this.selectedMethod === "CO") { // contradiction method
     //         $("#selectTeoInicial").val("0");
-    //         proofMethodAjax("CO");
+    //         COMethod();
 
     //         this.selectedMethod = null;
     //         closeModal();
@@ -331,7 +218,7 @@
     //         $("#selectTeoInicial").val("0");
     //         $("#metodosDiv").hide();
     //         $("#currentTeo").hide();
-    //         proofMethodAjax("CR");
+    //         CRMethod();
 
     //         this.selectedMethod = null;
     //         closeModal();
@@ -352,7 +239,7 @@
                     
     //         $("#metodosDiv").hide();
     //         $("#currentTeo").hide();
-    //         proofMethodAjax("AI");
+    //         iniAndI();
 
     //         this.selectedMethod = null;
     //         $('#metodosDemostracion').val("0");
@@ -366,6 +253,119 @@
     //         closeModal();
     //     }
     // }
+
+    /*
+        Accepts the confirmation prompted to the user, takes an action depending
+        on the proog method previously selected.
+    */
+    function accept() {
+        // pick type
+        if(this.selectedMethod === "DM") { // direct method
+            $("#selectTeoInicial").val("1");
+
+            // sets the body of the modal
+            let message = 'Select the theorem with which the proof will begin.';
+            setModalBody(message);
+
+            $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
+            $(".operator").css({"cursor":"","color":""});
+            $("#metodosDiv").hide();
+            proofMethodAjax("DM Clickable");
+
+            // switch to information modal
+            switchToOkButtons();
+
+        } else if (this.selectedMethod === "SS") { // one-sided method
+            
+            $("#selectTeoInicial").val("0");
+
+            // sets the body of the modal
+            let message = 'Select the side where the proof will start.';
+            setModalBody(message);
+
+            $("#metodosDiv").hide();
+            $("#currentTeo").hide();
+            proofMethodAjax("SS Clickable");
+
+            switchToOkButtons();
+
+        } else if (this.selectedMethod === "WE") { // weakening method
+            
+            $("#selectTeoInicial").val("0");
+            $("#metodosDiv").hide();
+            $("#currentTeo").hide();
+            proofMethodAjax("WE");
+
+            this.selectedMethod = null;
+            closeModal();
+
+        } else if (this.selectedMethod === "ST") { // strengthening method
+
+            $("#selectTeoInicial").val("0");
+            $("#metodosDiv").hide();
+            $("#currentTeo").hide();
+            proofMethodAjax("ST");
+
+            this.selectedMethod = null;
+            closeModal();
+
+        } else if (this.selectedMethod === "TR") { // transitivity method
+            
+            $("#selectTeoInicial").val("0");
+            $("#metodosDiv").hide();
+            $("#currentTeo").hide();
+            proofMethodAjax("TR");
+
+            this.selectedMethod = 1;
+            closeModal();
+
+        } else if (this.selectedMethod === "CO") { // contradiction method
+            $("#selectTeoInicial").val("0");
+            proofMethodAjax("CO");
+
+            this.selectedMethod = null;
+            closeModal();
+
+        } else if (this.selectedMethod === "CR") { // counter-reciprocal method
+            
+            $("#selectTeoInicial").val("0");
+            $("#metodosDiv").hide();
+            $("#currentTeo").hide();
+            proofMethodAjax("CR");
+
+            this.selectedMethod = null;
+            closeModal();
+
+        }  else if (this.selectedMethod === "CA") { // proof by cases method
+
+            let message = 'Enter the number of cases that will be proved.';
+            setModalBody(message);
+
+            $("#selectTeoInicial").val("0");
+            $("#metodosDiv").hide();
+            $("#currentTeo").hide();
+
+            switchToOkButtons();
+            $('#input_cases').removeClass('d-none');
+
+        } else if (this.selectedMethod === "AI") { // and introduction method
+                    
+            $("#metodosDiv").hide();
+            $("#currentTeo").hide();
+            proofMethodAjax("AI");
+
+            this.selectedMethod = null;
+            $('#metodosDemostracion').val("0");
+
+            // This message cannot be shown if the ajax returned an error
+            let message = "Please, select a proof method for the case.";
+            document.getElementById('modal-body').innerHTML = message;
+            switchToOkButtons();
+
+        } else {
+            closeModal();
+        }
+    }
 
     /*
         Hides the modal 

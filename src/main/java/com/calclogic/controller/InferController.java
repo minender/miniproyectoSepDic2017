@@ -680,7 +680,7 @@ public class InferController {
                 // Weakening or strengthening method ---> do the last equanimity and symmetry of => steps to finish
                 case "WE":
                 case "ST":
-                    Term arrow = ((App)((App)theoremBeingProved).p).p.toStringFinal();
+                    String arrow = ((App)((App)theoremBeingProved).p).p.toStringFinal();
                     Boolean rightArrow = arrow.equals("c_{2}"); // =>
                     Boolean leftArrow = arrow.equals("c_{3}"); // <=
 
@@ -1039,14 +1039,14 @@ public class InferController {
             // Direct, starting from one side, transitivity, weakening or strengthening method
             case "D":
             case "T":
-                Term c;       
+                Term C;       
                 if (noInstantiation && noLeibniz){
                     infer = A;
                 }
                 else if (noInstantiation){
                     if ((groupMethod=="T") && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                         (c=((App)(((App)theoremHint).p)).p) != null && c instanceof Const &&
-                         (((Const)c).getId() == 2 || ((Const)c).getId() == 3) ){
+                         (C=((App)(((App)theoremHint).p)).p) != null && C instanceof Const &&
+                         (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
 
                         infer = parityLeibniz(leibniz, A);
                     }else {
@@ -1060,8 +1060,8 @@ public class InferController {
                         infer = new TypedApp(I,A);
                     }
                     else if ((groupMethod=="T") && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                            (c=((App)((App)theoremHint).p).p) != null && c instanceof Const &&
-                            (((Const)c).getId() == 2 || ((Const)c).getId() == 3) ){
+                            (C=((App)((App)theoremHint).p).p) != null && C instanceof Const &&
+                            (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
 
                         infer = parityLeibniz(leibniz,new TypedApp(I,A));
                     } else {
@@ -1081,14 +1081,14 @@ public class InferController {
                         if (method=="Natural Deduction,one-sided"){
                             leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), leibniz.t), ((App)theoremBeingProved).q));
                         }else { // Direct method
-                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), leibniz.t), ((App)teoremProved).q)) ,((App)teoremProved).q));
+                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), leibniz.t), ((App)theoremBeingProved).q)) ,((App)theoremBeingProved).q));
                         }
                     }else {
                         // Use a leibniz that represents H /\ z
                         if (method=="Natural Deduction,one-sided"){
                             leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), new Var('z')), ((App)theoremBeingProved).q));
                         } else { // Direct method
-                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), ((App)teoremProved).q)) ,((App)teoremProved).q));
+                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), ((App)theoremBeingProved).q)) ,((App)theoremBeingProved).q));
                         }
                         leibnizString = "69";
                     }
@@ -1409,7 +1409,7 @@ public class InferController {
     public static int wsFirstOpInferIndex1(Term typedTerm) {
         Term iter;
         iter = typedTerm;
-    	Term ultInf = null;
+        Term ultInf = null;
         int i = 0;
         int firstOpInf = 0;
         while (iter!=ultInf)
@@ -1498,8 +1498,9 @@ public class InferController {
     }
     
     /**
-     * This method constructs a new derivation tree adding an one step infer to a proof
-     *  
+     * This method constructs a new derivation tree adding an one step infer to a proof.
+     * This is not a pure function; it may change the the values of its given params in an external context.
+     * 
      * @param proof: Term that represents a proof
      * @param infer: Term that represents one step infer
      * @param method: method used in the demonstration
@@ -1638,8 +1639,7 @@ public class InferController {
         }
         else
             return true;
-    }
-    
+    }    
     /**
      * This method add a proof method for currentMethod to get a new compose method. 
      * If currentMethod is of the form ...M1 (M2 (M3...Mn)), then the method return  
@@ -2192,7 +2192,11 @@ public class InferController {
                     infer = new TypedApp(new TypedS(infer.type()), infer);
                 }
                 // If addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression
-                newProof = onlyOneLine ? infer : addInferToProof(currentProof, infer, strMethodTermIter);
+                // NOTE: The application of this procedure may have colateral effects, so it cannot be omitted when "onlyOneLine" is true
+                newProof = addInferToProof(currentProof, infer, strMethodTermIter);
+                if (onlyOneLine){
+                    newProof = infer;
+                }
             }
             catch (TypeVerificationException e) {
                 if ((i == 1 && !onlyOneLine) || (i == 1 && j == 1)){
