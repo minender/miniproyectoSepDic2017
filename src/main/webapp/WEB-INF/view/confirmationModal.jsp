@@ -57,62 +57,36 @@
     // currently selected proof method.
     let selectedMethod = null;
 
+    // Lets the current method be shown as a whole phrase to the user
+    var methodPhrase = {
+        DM: "Direct",
+        SS: "Starting from one side",
+        WE: "Weakening",
+        ST: "Strengthening",
+        ND: "Natural Deduction",
+        TR: "Transitivity",
+        CO: "Contradiction",
+        CR: "Counter-reciprocal",
+        CA: "Case analysis",
+        AI: "Conjunction by parts",
+        WI: "Witness",
+    };
+
     /*
         Opens the modal to get some confirmation from user depending on the 
         proof method selected.
         methodId: id of the proof method selected
     */
     function openModal(methodId) {
-
-        // variables inicialization
         let commonPrefix = "Are you sure you want to use the";
         let commonSufix = "Method?";
-        let type = null;
+        let type = methodPhrase[methodId];
 
         // pick method to take actions correspondingly
         this.selectedMethod = methodId;
         $('#ok-buttons').addClass('d-none');
         $('#input_cases').addClass('d-none');
         $('#accept-cancel-buttons').removeClass('d-none');
-
-        // Pick type
-        switch (methodId){
-            case "DM": 
-                type = "Direct";
-                break;
-            case "SS": 
-                type = "Starting from one side";
-                break;
-            case "WE": 
-                type = "Weakening";
-                break;
-            case "ST": 
-                type = "Strengthening";
-                break;
-            case "ND": 
-                type = "Natural Deduction";
-                break;
-            case "TR": 
-                type = "Transitivity";
-                break;
-            case "CO": 
-                type = "Contradiction";
-                break;
-            case "CR": 
-                type = "Counter-reciprocal";
-                break;
-            case "CA": 
-                type = "Case analysis";
-                break;
-            case "AI": 
-                type = "Conjunction by parts";
-                break;
-            case "WI": 
-                type = "Witness";
-                break;
-            default:
-                break;
-        }
 
         // build the message for the confirmation
         let message = commonPrefix + " " + type + " " + commonSufix;
@@ -145,238 +119,72 @@
         Accepts the confirmation prompted to the user, takes an action depending
         on the proog method previously selected.
     */
-    // function accept() {
-    //     // pick type
-    //     if(this.selectedMethod === "DM") { // direct method
-    //         $("#selectTeoInicial").val("1");
+    async function accept() {
+        $("#selectTeoInicial").val("0");
+        let message = null;
+        let method = this.selectedMethod;
 
-    //         // sets the body of the modal
-    //         let message = 'Select the theorem with which the proof will begin.';
-    //         setModalBody(message);
+        switch (method){
+            case "DM": // Direct method
+                $("#selectTeoInicial").val("1");
 
-    //         $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
-    //         $(".operator").css({"cursor":"","color":""});
-    //         $("#metodosDiv").hide();
-    //         teoremaClickeableMD();
+                // This is what makes the theorem be clickable
+                $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
+                $(".operator").css({"cursor":"","color":""});
 
-    //         // switch to information modal
-    //         switchToOkButtons();
+                message = 'Please, select the theorem with which the proof will begin.';
 
-    //     } else if (this.selectedMethod === "SS") { // one-sided method
-            
-    //         $("#selectTeoInicial").val("0");
+                // If the AJAX is called from here, we must put the current expression as clickable.
+                // The other case will be called from the view "infer.jsp"
+                method = "DM Clickable"; 
+                break;
 
-    //         // sets the body of the modal
-    //         let message = 'Select the side where the proof will start.';
-    //         setModalBody(message);
+            case "SS": // One-sided method
+                message = 'Please, select the side from which the proof will begin.';
 
-    //         $("#metodosDiv").hide();
-    //         $("#currentTeo").hide();
-    //         teoremaClickeablePL();
+                // If the AJAX is called from here, we must put the current expression as clickable.
+                // The other case will be called from the view "infer.jsp"
+                method = "SS Clickable"; 
+                break;
 
-    //         switchToOkButtons();
+            case "CA": // Proof by cases method
+                message = 'Please, enter the number of cases that will be proved.';
+                $('#input_cases').removeClass('d-none');
+                break;
 
-    //     } else if (this.selectedMethod === "WE") { // weakening method
-            
-    //         $("#selectTeoInicial").val("0");
-    //         $("#metodosDiv").hide();
-    //         $("#currentTeo").hide();
-    //         metodoD();
+            case "AI": // And introduction method
+                message = "Please, select a proof method for the case.";
+                break;
 
-    //         this.selectedMethod = null;
-    //         closeModal();
+            case "CO": // Contradiction method
+            case "CR": // Counter-reciprocal method
+                message = "Please, select another method to do the sub-proof.";
+                break;
 
-    //     } else if (this.selectedMethod === "ST") { // strengthening method
+            case "WE": // Weakening method
+            case "ST": // Strengthening method
+            case "TR": // Transitivity method
+            default:
+                break;
+        }
 
-    //         $("#selectTeoInicial").val("0");
-    //         $("#metodosDiv").hide();
-    //         $("#currentTeo").hide();
-    //         metodoF();
+        let success = await proofMethodAjax(method);
 
-    //         this.selectedMethod = null;
-    //         closeModal();
-
-    //     } else if (this.selectedMethod === "TR") { // transitivity method
-            
-    //         $("#selectTeoInicial").val("0");
-    //         $("#metodosDiv").hide();
-    //         $("#currentTeo").hide();
-    //         transMethod();
-
-    //         this.selectedMethod = 1;
-    //         closeModal();
-
-    //     } else if (this.selectedMethod === "CO") { // contradiction method
-    //         $("#selectTeoInicial").val("0");
-    //         COMethod();
-
-    //         this.selectedMethod = null;
-    //         closeModal();
-
-    //     } else if (this.selectedMethod === "CR") { // counter-reciprocal method
-            
-    //         $("#selectTeoInicial").val("0");
-    //         $("#metodosDiv").hide();
-    //         $("#currentTeo").hide();
-    //         CRMethod();
-
-    //         this.selectedMethod = null;
-    //         closeModal();
-
-    //     }  else if (this.selectedMethod === "CA") { // proof by cases method
-
-    //         let message = 'Enter the number of cases that will be proved.';
-    //         setModalBody(message);
-
-    //         $("#selectTeoInicial").val("0");
-    //         $("#metodosDiv").hide();
-    //         $("#currentTeo").hide();
-
-    //         switchToOkButtons();
-    //         $('#input_cases').removeClass('d-none');
-
-    //     } else if (this.selectedMethod === "AI") { // and introduction method
-                    
-    //         $("#metodosDiv").hide();
-    //         $("#currentTeo").hide();
-    //         iniAndI();
-
-    //         this.selectedMethod = null;
-    //         $('#metodosDemostracion').val("0");
-
-    //         // This message cannot be shown if the ajax returned an error
-    //         let message = "Please, select a proof method for the case.";
-    //         document.getElementById('modal-body').innerHTML = message;
-    //         switchToOkButtons();
-
-    //     } else {
-    //         closeModal();
-    //     }
-    // }
-
-    /*
-        Accepts the confirmation prompted to the user, takes an action depending
-        on the proog method previously selected.
-    */
-    function accept() {
-        // pick type
-        if(this.selectedMethod === "DM") { // direct method
-            $("#selectTeoInicial").val("1");
-
-            // sets the body of the modal
-            let message = 'Select the theorem with which the proof will begin.';
+        if (success && (message!=null)){ // Case in which we must put a message
             setModalBody(message);
-
-            $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
-            $(".operator").css({"cursor":"","color":""});
-            $("#metodosDiv").hide();
-            proofMethodAjax("DM Clickable");
-
-            // switch to information modal
             switchToOkButtons();
-
-        } else if (this.selectedMethod === "SS") { // one-sided method
-            
-            $("#selectTeoInicial").val("0");
-
-            // sets the body of the modal
-            let message = 'Select the side where the proof will start.';
-            setModalBody(message);
-
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            proofMethodAjax("SS Clickable");
-
-            switchToOkButtons();
-
-        } else if (this.selectedMethod === "WE") { // weakening method
-            
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            proofMethodAjax("WE");
-
-            this.selectedMethod = null;
-            closeModal();
-
-        } else if (this.selectedMethod === "ST") { // strengthening method
-
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            proofMethodAjax("ST");
-
-            this.selectedMethod = null;
-            closeModal();
-
-        } else if (this.selectedMethod === "TR") { // transitivity method
-            
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            proofMethodAjax("TR");
-
-            this.selectedMethod = 1;
-            closeModal();
-
-        } else if (this.selectedMethod === "CO") { // contradiction method
-            $("#selectTeoInicial").val("0");
-            proofMethodAjax("CO");
-
-            this.selectedMethod = null;
-            closeModal();
-
-        } else if (this.selectedMethod === "CR") { // counter-reciprocal method
-            
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            proofMethodAjax("CR");
-
-            this.selectedMethod = null;
-            closeModal();
-
-        }  else if (this.selectedMethod === "CA") { // proof by cases method
-
-            let message = 'Enter the number of cases that will be proved.';
-            setModalBody(message);
-
-            $("#selectTeoInicial").val("0");
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-
-            switchToOkButtons();
-            $('#input_cases').removeClass('d-none');
-
-        } else if (this.selectedMethod === "AI") { // and introduction method
-                    
-            $("#metodosDiv").hide();
-            $("#currentTeo").hide();
-            proofMethodAjax("AI");
-
-            this.selectedMethod = null;
-            $('#metodosDemostracion').val("0");
-
-            // This message cannot be shown if the ajax returned an error
-            let message = "Please, select a proof method for the case.";
-            document.getElementById('modal-body').innerHTML = message;
-            switchToOkButtons();
-
-        } else {
+        }
+        else {
             closeModal();
         }
     }
 
-    /*
-        Hides the modal 
-    */
+    // Hides the modal 
     function closeModal() {
         $('#confirmationModal').modal('hide');
     }
 
-    /*
-     Closes modal and adds formula inputs for proof by cases
-    */
+    // Closes modal and adds formula inputs for proof by cases
     function okButton() {
         if( this.selectedMethod === "7"){
             $("#formulaInput").removeClass('d-none');

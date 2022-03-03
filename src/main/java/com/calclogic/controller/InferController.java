@@ -466,7 +466,7 @@ public class InferController {
             }
 
         }else {
-            response.setError("user doesn't exists");
+            response.setError("user doesn't exist");
         }
         
         return response;

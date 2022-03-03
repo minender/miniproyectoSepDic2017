@@ -12,8 +12,9 @@
 <html>
     <tiles:insertDefinition name="header" />
     <head>
-        <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
-        <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
+        <base href="${pageContext.request.contextPath}/perfil/${usuario.login}/"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
         <c:choose>
             <c:when test="${showCategorias.size() == 0}">
                 <script>
@@ -21,6 +22,8 @@
                 </script>
             </c:when>
         </c:choose>
+        <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
+        <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
         <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript">
             
@@ -258,11 +261,6 @@
                 });
             })
         </script>
-        <base href="${pageContext.request.contextPath}/perfil/${usuario.login}/"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
         <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">-->
 
 
