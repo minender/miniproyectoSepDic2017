@@ -86,7 +86,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
         dataType: 'json',
         data,
         success: function(newData) {
-            if(newData.lado === "0"){
+            if(newData.lado === "0"){ // Remember that "lado" is also used to indicate errors
                 alert("The selected method does not apply to the current theorem");
                 $("#metodosDiv").show();
                 completeSuccess = false;

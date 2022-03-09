@@ -207,7 +207,7 @@ public class InferController {
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
         
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,nTeo);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,nTeo); // Maybe: getAllResuelveByUserOrAdminResuelto
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
@@ -898,81 +898,79 @@ public class InferController {
                ((App)((App)t1).p).q.equals(((App)t2).q) && 
                ((App)((App)t2).p).p.toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
     }  
-    
+
     /**
-     * This function will only be correct if called when using Counter-Reciprocal method
-     * This function will return a new prove tree in case it finds out that the last infer of prove
-     * caused the whole prove to be correct under the sub proof method. In other case it will return 
+     * This function will only be correct if called when using a compound method
+     * It will return a new proof tree in case it finds out that the last inference
+     * caused the whole proof to be correct under the sub-proof method. In other case it will return 
      * the proof given as argument.
      * 
-     * Do the last step using axiom p => q == !q => !p to finish the Counter-Reciprocal proof
-     * @param teoremProved: The theorem that user is trying to prove 
+     * @param theoremBeingProved: The theorem that user is trying to prove 
      * @param proof: The proof tree so far
-     * @return proof of theoremProved if finished, else return the same proof
+     * @param method: method used in the demonstration
+     * @return proof of theoremBeingProved if finished, else return the same proof
      */
-    private Term finishedCounterRecProve(Term teoremProved, Term proof) {
-       try {
-         String str = "c_{1} (c_{2} (c_{7} x_{112}) (c_{7} x_{113})) (c_{2} x_{113} x_{112})";
-         Term st = CombUtilities.getTerm(str);
-         List<Var> vars = new ArrayList<Var>();
-         List<Term> terms = new ArrayList<Term>();
-         vars.add(0, new Var(112));
-         vars.add(0, new Var(113));
-         terms.add(0, ((App)teoremProved).q);
-         terms.add(0, ((App)((App)teoremProved).p).q);
-         Sust sus = new Sust(vars, terms);
-         TypedA A = new TypedA(st);
-         TypedI I = new TypedI(sus);
-         return new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),proof);
-             
-       }catch (TypeVerificationException e)  {
-          Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
-       }
-       
-       return proof;
-    }
-    
-    /**
-     * This function will only be correct if called when using Counter-Reciprocal method
-     * This function will return a new prove tree in case it finds out that the last infer of prove
-     * caused the whole prove to be correct under the sub proof method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * Do the last step using axiom p => q == !q => !p to finish the Counter-Reciprocal proof
-     * @param teoremProved: The theorem that user is trying to prove 
-     * @param proof: The proof tree so far
-     * @return proof of theoremProved if finished, else return the same proof
-     */
-    private Term finishedContradictionProve(Term teoremProved, Term proof) {
+    private Term finishedCompoundMethodProof(Term theoremBeingProved, Term proof, String method) {
         try {
-            // This string says: ¬p => false == ¬(¬p)
-            String str1 = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
-            Term st1 = CombUtilities.getTerm(str1);
-
-            // This string says: ¬(¬p) == p
-            String str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
-            Term st2 = CombUtilities.getTerm(str2);
-
             // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
-            List<Var> vars = new ArrayList<Var>();    
+            List<Var> vars = new ArrayList<Var>();
             List<Term> terms = new ArrayList<Term>();
 
-            // In this case the substitution only needs one variable to be assigned [x112 := teoremProved]
-            vars.add(0, new Var(112)); // p
-            terms.add(0, teoremProved);
+            Term axiomTree = null;
 
-            // Here is where the substitution is applied
-            Sust sus = new Sust(vars, terms);
+            switch (method){
+                // Counter-reciprocal
+                case "CR": 
+                    // This string says: p => q == ¬q => ¬p
+                    String str = "c_{1} (c_{2} (c_{7} x_{112}) (c_{7} x_{113})) (c_{2} x_{113} x_{112})";
+                    Term st = CombUtilities.getTerm(str);
 
-            // We make the two formulas at the beginning to be treated as axioms
-            TypedA A1 = new TypedA(st1);
-            TypedA A2 = new TypedA(st2);
+                    // We make that formula to be treated as an axiom
+                    TypedA A = new TypedA(st); 
+            
+                    // Substitution [p,q := ...]
+                    vars.add(0, new Var(112)); // Letter 'p'
+                    vars.add(0, new Var(113)); // Letter 'q'
+                    terms.add(0, ((App)theoremBeingProved).q);
+                    terms.add(0, ((App)((App)theoremBeingProved).p).q);
+                    Sust sus = new Sust(vars, terms);
+                    
+                    // We give the instantiation format to the substitution above
+                    TypedI I = new TypedI(sus);
 
-            // We give the instantiation format to the substitution above
-            TypedI I = new TypedI(sus);
+                    axiomTree = new TypedApp(new TypedS(),new TypedApp(I,A));
+                    break;
 
-            return new TypedApp(new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2)),proof); 
-                     
+                // Contradiction
+                case "CO":
+                    // This string says: ¬p => false == ¬(¬p)
+                    String str1 = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
+                    Term st1 = CombUtilities.getTerm(str1);
+
+                    // This string says: ¬(¬p) == p
+                    String str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
+                    Term st2 = CombUtilities.getTerm(str2);
+
+                    // We make the two formulas above to be treated as axioms
+                    TypedA A1 = new TypedA(st1);
+                    TypedA A2 = new TypedA(st2);
+
+                    // Substitution [p := teoremProved]
+                    vars.add(0, new Var(112)); // Letter'p'
+                    terms.add(0, theoremBeingProved);
+                    Sust sus = new Sust(vars, terms);
+
+                    // We give the instantiation format to the substitution above
+                    TypedI I = new TypedI(sus);
+
+                    axiomTree = new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2));
+                    break;
+
+                default:
+                    break;
+            }
+            return new TypedApp(axiomTree, proof);
+             
         }catch (TypeVerificationException e)  {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
         }
@@ -1001,8 +999,8 @@ public class InferController {
         Term firstStAndTrue = ((App)((App)originalTerm).p).p;
         Term leibniz = ((App)((App)((App)originalTerm).p).q).p;
         try {
-          Term newProof = new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,theoTerm)),firstProof);
-          return newProof;
+            Term newProof = new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,theoTerm)),firstProof);
+            return newProof;
         }
         catch (TypeVerificationException e) {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
@@ -1821,41 +1819,39 @@ public class InferController {
     private Term addFirstLineSubProof(Term formula, Term typedTerm, Term method) {
         Term auxMethod = method;
         while (auxMethod instanceof App) {
-           if (isAIProof2Started(auxMethod) && isAIProof2Started(((App)auxMethod).q))
-           {
-             Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
+            if (isAIProof2Started(auxMethod) && isAIProof2Started(((App)auxMethod).q)){
+                Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
                                                                                     ((App)auxMethod).q);
-             return finishedAI2Proof(typedTerm,aux);
-           }
-           // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
-           else if (isAIProof2Started(auxMethod)) 
-           {
-               Map<String,String> values1 = new HashMap<String, String>();
-               values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
-               String aux = typedTerm.toStringFinal();
-               values1.put("ST2", formula.toStringFinal());
-               StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
-               String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
-               String metaTheo = sub1.replace(metaTheoT);
-               Map<String,String> values2 = new HashMap<String, String>();
-               values2.put("MT", metaTheo);
-               values2.put("T1Type", typedTerm.type().toStringFinal());
-               aux = typedTerm.toStringFinal();
-               values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
-               StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
-               String template = "S (I^{[x_{112}:=%(T1Type)]} A^{c_{1} x_{112} (c_{5} c_{8} x_{112})}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";
-               String proof = sub2.replace(template);
-               Term proofTerm = null;
-               try {
-                  proofTerm = new TypedApp(CombUtilities.getTerm(proof),typedTerm);
-               }
-               catch (TypeVerificationException e) {
-                  Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-               }
-               return proofTerm;
-           }
-           else
-               auxMethod = ((App)auxMethod).q;
+                return finishedAI2Proof(typedTerm,aux);
+            }
+            // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
+            else if (isAIProof2Started(auxMethod)) {
+                Map<String,String> values1 = new HashMap<String, String>();
+                values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
+                String aux = typedTerm.toStringFinal();
+                values1.put("ST2", formula.toStringFinal());
+                StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
+                String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
+                String metaTheo = sub1.replace(metaTheoT);
+                Map<String,String> values2 = new HashMap<String, String>();
+                values2.put("MT", metaTheo);
+                values2.put("T1Type", typedTerm.type().toStringFinal());
+                aux = typedTerm.toStringFinal();
+                values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
+                StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
+                String template = "S (I^{[x_{112}:=%(T1Type)]} A^{c_{1} x_{112} (c_{5} c_{8} x_{112})}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";
+                String proof = sub2.replace(template);
+                Term proofTerm = null;
+                try {
+                    proofTerm = new TypedApp(CombUtilities.getTerm(proof),typedTerm);
+                }
+                catch (TypeVerificationException e) {
+                    Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                }
+                return proofTerm;
+            }else{
+                auxMethod = ((App)auxMethod).q;
+            }
         }
         return formula;
     }
@@ -1952,22 +1948,25 @@ public class InferController {
     public static Term getSubProof(Term typedTerm, Term method, boolean isRecursive) {
         Term auxMethod = method;
         while (auxMethod instanceof App) {
-          if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-              ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
-              !isAIProof2Started(auxMethod)
-             )
-             return null;
-          else if (isAIProof2Started(auxMethod) && isAIOneLineProof(typedTerm))
-             return ((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t;
-          else if (isAIProof2Started(auxMethod) && !isAIOneLineProof(typedTerm)) 
-          {
-             if (isRecursive)
-               return getSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,true);
-             else
-               return ((App)((App)((App)((App)typedTerm).p).q).q).q;
-          }
-          else 
-             auxMethod = ((App)auxMethod).q;
+            if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
+                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
+                    !isAIProof2Started(auxMethod)
+                    ){
+                return null;
+            }
+            else if (isAIProof2Started(auxMethod) && isAIOneLineProof(typedTerm)){
+                return ((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t;
+            }
+            else if (isAIProof2Started(auxMethod) && !isAIOneLineProof(typedTerm)){
+                if (isRecursive){
+                    return getSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,true);
+                }
+                else{
+                    return ((App)((App)((App)((App)typedTerm).p).q).q).q;
+                }
+            } else{
+                auxMethod = ((App)auxMethod).q;
+            }
         }
         return typedTerm;
     }
@@ -1985,26 +1984,25 @@ public class InferController {
     public static List<Term> getFatherAndSubProof(Term typedTerm, Term method, List<Term> li) {
         Term auxMethod = method;
         while (auxMethod instanceof App) {
-          if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-              ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
-              !isProofStarted(((App)auxMethod).q)
-             )
-          {
-             li.add(0,typedTerm);
-             return li;
-          }
-          else if (isAIProof2Started(auxMethod) && isAIOneLineProof(typedTerm)) {
-             li.add(0, typedTerm);
-             li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t);
-             return li;
-          }
-          else if (isAIProof2Started(auxMethod) && !isAIOneLineProof(typedTerm)) 
-          {
-             li.add(0, typedTerm);
-             return getFatherAndSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,li);
-          }
-          else 
-             auxMethod = ((App)auxMethod).q;
+            if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
+                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
+                    !isProofStarted(((App)auxMethod).q)
+                    ){
+                li.add(0,typedTerm);
+                return li;
+            }
+            else if (isAIProof2Started(auxMethod) && isAIOneLineProof(typedTerm)){
+                li.add(0, typedTerm);
+                li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t);
+                return li;
+            }
+            else if (isAIProof2Started(auxMethod) && !isAIOneLineProof(typedTerm)){
+                li.add(0, typedTerm);
+                return getFatherAndSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,li);
+            }
+            else{
+                auxMethod = ((App)auxMethod).q;
+            }
         }
         li.add(0, typedTerm);
         return li;
@@ -2228,7 +2226,6 @@ public class InferController {
         */
         
         // Get the complete method in case it was not atomic
-
         Boolean isFinalSolution = theoremBeingProved.equals(finalProof.type());
         while (!methodStk.isEmpty())
         {
@@ -2236,14 +2233,17 @@ public class InferController {
             if (isFinalSolution && methodTermAux instanceof Const) {
                 switch (methodTermAux.toStringFinal()){
                     case "CR":
-                        finalProof = finishedCounterRecProve(formulasToProof.pop(), finalProof);
+                        finalProof = finishedCompoundMethodProof(formulasToProof.pop(), finalProof, "CR");
                         break;
                     case "CO":
-                        finalProof = finishedContradictionProve(formulasToProof.pop(), finalProof);
+                        finalProof = finishedCompoundMethodProof(formulasToProof.pop(), finalProof, "CO");
                         break;
                     case "AI":
-                       isFinalSolution = false;
-                       response.setEndCase(true);
+                        isFinalSolution = false;
+                        response.setEndCase(true);
+                        break;
+                    default:
+                        break;
                 }
             }
             // This ensures that after each one-step inference the tree for the second proof is updated
@@ -2657,8 +2657,7 @@ public class InferController {
         */
         //String formula = "";
         Term formulaTerm = null;
-        if (teoid.substring(0, 3).equals("ST-"))
-        {
+        if (teoid.substring(0, 3).equals("ST-")){
             Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
             if (resuelve == null){
                 resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()));
@@ -2667,8 +2666,7 @@ public class InferController {
             formulaTerm = resuelve.getTeorema().getTeoTerm();
             //formula = formulaTerm.toStringInfLabeled();
         }
-        else if (teoid.substring(0, 3).equals("MT-"))
-        {
+        else if (teoid.substring(0, 3).equals("MT-")){
             Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
             formulaTerm = dispone.getMetateorema().getTeoTerm();
             //formula = formulaTerm.toStringInfLabeled();
@@ -2676,16 +2674,14 @@ public class InferController {
         
         Term metodoTerm = null;
         Term typedTerm = null;
-        if (nSol.equals("new"))
-        {
+        if (nSol.equals("new")){
             typedTerm = formulaTerm;
             Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
             metodoTerm = new Const(nuevoMetodo);
         }
-        else
-        {
+        else{
             // Obtains the solution from DB.
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
             String method = solucion.getMetodo();
@@ -2770,13 +2766,11 @@ public class InferController {
         Solucion solucion = null;
         Term metodoTerm = null;
         Term typedTerm = null;
-        if (nSol.equals("new"))
-        {
+        if (nSol.equals("new")){
             solucion = new Solucion(resuelve,false,null, nuevoMetodo);
             metodoTerm = new Const(nuevoMetodo);
         }
-        else
-        {
+        else{
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
             metodoTerm = updateMethod(method, nuevoMetodo);
@@ -2858,13 +2852,11 @@ public class InferController {
         Term metodoTerm = null;
         Solucion solucion = null;
         Term typedTerm = null;
-        if (nSol.equals("new"))
-        {
+        if (nSol.equals("new")){
             solucion = new Solucion(resuelve,false,null, nuevoMetodo);
             metodoTerm = new Const(nuevoMetodo);
         }
-        else
-        {
+        else{
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
             metodoTerm = updateMethod(method, nuevoMetodo);
@@ -2943,13 +2935,11 @@ public class InferController {
         Term metodoTerm = null;
         Solucion solucion = null;
         Term typedTerm = null;
-        if (nSol.equals("new"))
-        {
+        if (nSol.equals("new")){
             solucion = new Solucion(resuelve,false,null,nuevoMetodo);
             metodoTerm = new Const(nuevoMetodo);
         }
-        else
-        {
+        else{
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
             metodoTerm = updateMethod(method, nuevoMetodo);
@@ -3098,8 +3088,7 @@ public class InferController {
         Term metodoTerm = null;
         Solucion solucion = null;
 
-        if (nSol.equals("new"))
-        {
+        if (nSol.equals("new")){
             metodoTerm = new Const(nuevoMetodo);
 
             // The arguments are: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, and 4) demonstration method
@@ -3109,8 +3098,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+""); // The concatenation with "" converts the id to a string
         }
-        else
-        {   
+        else{   
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
@@ -3141,31 +3129,29 @@ public class InferController {
         Term metodoTerm = null;
         Solucion solucion = null;
         try {
-          if (nSol.equals("new"))
-          {
-            // Determines if the prove can by made bu counter-reciprocal method
-            if (((Const)((App)((App)formulaAnterior).p).p).getId() != 2) {
-               response.setLado("0");
-               return response;
+            if (nSol.equals("new")){
+                // Determines if the prove can by made bu counter-reciprocal method
+                if (((Const)((App)((App)formulaAnterior).p).p).getId() != 2) {
+                    response.setLado("0");
+                    return response;
+                }
+                metodoTerm = new Const(nuevoMetodo);
+                solucion = new Solucion(resuelve,false,null, nuevoMetodo);
+                solucionManager.addSolucion(solucion);
+                response.setnSol(solucion.getId()+"");
             }
-            metodoTerm = new Const(nuevoMetodo);
-            solucion = new Solucion(resuelve,false,null, nuevoMetodo);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-          }
-          else
-          {   
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
-            if (((Const)((App)((App)initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
-               response.setLado("0");
-               return response;
+            else {   
+                solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+                metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
+                if (((Const)((App)((App)initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
+                   response.setLado("0");
+                   return response;
+                }
+                nuevoMetodo = metodoTerm.toStringFinal();
+                solucion.setMetodo(nuevoMetodo);
+                solucionManager.updateSolucion(solucion);
             }
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-            solucionManager.updateSolucion(solucion);
-          }
-        }catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             response.setLado("0");
             return response;
         }
@@ -3209,8 +3195,7 @@ public class InferController {
         Term metodoTerm = null;
         Term typedTerm = null;
         
-        if (nSol.equals("new"))
-        {
+        if (nSol.equals("new")){
             metodoTerm = new Const(nuevoMetodo);
             Solucion solucion = new Solucion(resuelve,false,null, nuevoMetodo);
             solucionManager.addSolucion(solucion);

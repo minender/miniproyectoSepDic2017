@@ -55,7 +55,9 @@ public class InferResponse {
     // despite that they are made by different users. "nSol" is that unique value.
     private String nSol; 
 
-    // Indicates if the proof method is starting from one side.
+    // Indicates if the proof there was an error in the "generarHistorial" function,
+    // in which case its value is '0', and also when the proof method is starting from one side
+    // it indicates the side: 'd' for the right one (derecho) and 'i' for the left one (izquierdo).
     private String lado;
 
     // Determines if the proof was solved so a congratulatory message should be displayed
