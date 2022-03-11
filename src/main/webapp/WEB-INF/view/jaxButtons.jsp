@@ -37,4 +37,3 @@
 
 
 <script src="${pageContext.request.contextPath}/static/js/mathjaxAndSymbols.js"></script>
-<tiles:insertDefinition name="header" />

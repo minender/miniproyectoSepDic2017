@@ -15,7 +15,6 @@
 </div>
 
 
-<tiles:insertDefinition name="header" />
 <script src="${pageContext.request.contextPath}/static/js/mathjaxAndSymbols.js"></script>
 <script>
 	

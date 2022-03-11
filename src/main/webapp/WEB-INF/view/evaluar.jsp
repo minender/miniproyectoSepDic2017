@@ -9,7 +9,6 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <!DOCTYPE html>
 <html>
-  <tiles:insertDefinition name="header" />
   <head>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/d3.v3.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias2.js"></script>

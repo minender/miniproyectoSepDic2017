@@ -2174,7 +2174,10 @@ public class InferController {
         
         boolean onlyOneLine = typedTerm.type() == null;
         Term currentProof;
-        if (onlyOneLine){// If the proof only has one line so far
+        if (onlyOneLine){
+            // If the proof only has one line so far, it may not be a boolean expression yet, because it could only 
+            // be arithmetic, like 3 + 4. But since we always need it to be boolean, if the only line was P, we make 
+            // the proof to be provisionally: P == P. Soon we will discard again the first P-
             currentProof = new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),typedTerm),typedTerm));
         }
         else{
@@ -2189,10 +2192,14 @@ public class InferController {
                 if (i == 1 && j == 0){
                     infer = new TypedApp(new TypedS(infer.type()), infer);
                 }
-                // If addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression
-                // NOTE: The application of this procedure may have colateral effects, so it cannot be omitted when "onlyOneLine" is true
+                // If addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
+                // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
                 newProof = addInferToProof(currentProof, infer, strMethodTermIter);
                 if (onlyOneLine){
+                    // If the proof only has one line with expression P for the user, then at this point it is interally P == P
+                    // as explained previously. But since we don't need the first P and the new inference "infer" consists of 
+                    // the three parts that will be shown to the user: 1) the previous expression P, 2) the hint and 3) the new expresssion,
+                    // then we make the proof to be equal to that inference.
                     newProof = infer;
                 }
             }
@@ -2230,13 +2237,13 @@ public class InferController {
         while (!methodStk.isEmpty())
         {
             Term methodTermAux = methodStk.pop();
+            String strMethodTermAux = methodTermAux.toStringFinal();
+
             if (isFinalSolution && methodTermAux instanceof Const) {
-                switch (methodTermAux.toStringFinal()){
+                switch (strMethodTermAux){
                     case "CR":
-                        finalProof = finishedCompoundMethodProof(formulasToProof.pop(), finalProof, "CR");
-                        break;
                     case "CO":
-                        finalProof = finishedCompoundMethodProof(formulasToProof.pop(), finalProof, "CO");
+                        finalProof = finishedCompoundMethodProof(formulasToProof.pop(), finalProof, strMethodTermAux);
                         break;
                     case "AI":
                         isFinalSolution = false;

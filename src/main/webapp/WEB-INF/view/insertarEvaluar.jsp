@@ -32,7 +32,6 @@
         <title>Miniproyecto</title>
     </head>
     <body>
-        <tiles:insertDefinition name="header" />
         <h1>Inserte su predicado a computar</h1>
     <center>
     <sf:form action="/Miniproyecto/eval/${usuario.getLogin()}" method="POST" modelAttribute="insertarEvaluar">
