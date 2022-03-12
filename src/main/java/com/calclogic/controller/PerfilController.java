@@ -1853,9 +1853,9 @@ public class PerfilController {
         try {
             int idTeoInt = Integer.parseInt(idTeo);
             if (this.teoremaManager.deleteTeorema(idTeoInt, username)) {
-                return "ok";
+                return "Theorem deleted";
             }
-            return "error";
+            return "Couldn't delete theorem\nMake sure the theorem has no proofs";
         }
         catch (NumberFormatException e) {
             return "error";

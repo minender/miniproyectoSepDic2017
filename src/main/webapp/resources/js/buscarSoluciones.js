@@ -21,7 +21,7 @@ function buscarSoluciones(idTeo){
                     key = "(Incomplete) Proof "+i;
                 var link = "<a href='javascript:buscarFormula("+ data.soluciones[key] +","+ data.idTeo +");'> ";
                 link = link + key + "</a>";//"Proof " + i + "</a>";
-                var basurita = "<a href='javascript:delSol(" + data.soluciones[key] + ");'><i class=\"fa fa-trash\"></i></a>";
+                var basurita = "<a onclick=\"return confirm('Are you sure you want to delete the proof?')\" href='javascript:delSol(" + data.soluciones[key] + ");'><i class=\"fa fa-trash\"></i></a>";
                 link = link + " " + basurita;
                 $('#listaSoluciones').append("<li>" + link + " </li>");
 

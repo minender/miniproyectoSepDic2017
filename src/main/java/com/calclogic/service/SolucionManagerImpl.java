@@ -1,8 +1,10 @@
 package com.calclogic.service;
 
+import com.calclogic.dao.ResuelveDAO;
 import com.calclogic.dao.SolucionDAO;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Resuelve;
+import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Usuario;
 import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
@@ -10,6 +12,7 @@ import com.calclogic.parse.CombUtilities;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,9 @@ public class SolucionManagerImpl implements SolucionManager {
        
     @Autowired
     private SolucionDAO solucionDAO;
+    @Autowired
+    private ResuelveDAO resuelveDAO;
+        
     
     //@Autowired
     //private CombUtilities combUtilities;
@@ -99,9 +105,34 @@ public class SolucionManagerImpl implements SolucionManager {
         Resuelve resuelve = solucion.getResuelve();
         Usuario user = resuelve.getUsuario();
         if (user.getLogin().equals(username)) {
-            solucionDAO.deleteSolucion(id);
+            Set<Solucion> li = resuelve.getSolucions();
+            int nSol = li.size();
+            if (nSol == 1) {
+                Teorema teorema = resuelve.getTeorema();
+                Resuelve resuelveAdmin = resuelveDAO.getResuelveByUserAndTeorema("AdminTeoremas", teorema.getId());
+                solucionDAO.deleteSolucion(id);
+                if (resuelveAdmin != null) {
+                    resuelveDAO.deleteResuelve(resuelve.getId());
+                }
+                else {
+                    resuelve.setResuelto(false);
+                    resuelveDAO.updateResuelve(resuelve);
+                }
+            }
+            else {
+                solucionDAO.deleteSolucion(id);
+                if (nSol == 2) {
+                    for (Solucion sol: li) {
+                        if (sol.getId() != id && !sol.getResuelto()) {
+                            resuelve.setResuelto(false);
+                            resuelveDAO.updateResuelve(resuelve);
+                        }
+                    }
+                }
+            }
             return true;   
         }
+        
         return false;
     }
     

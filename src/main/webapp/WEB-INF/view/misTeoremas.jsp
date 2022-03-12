@@ -68,7 +68,12 @@
                       <li >
                         <p >
                              <i class="fa fa-lock" aria-hidden="true" ></i>
-                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}                     
+                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
+                          <c:choose>
+                            <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas')}">
+                               <a onclick="return confirm('Are you sure you want to delete the proof?')" href="javascript:delTeo(${resu.getTeorema().getId()})"><i class="fa fa-trash" aria-hidden="true" ></i></a>
+                            </c:when>
+                          </c:choose>
                         </p> 
                       </li>
                       
@@ -103,15 +108,11 @@
                         
                             </c:otherwise>
                           </c:choose>
-                          <c:choose>
-                            <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas')}">
-                               <a href="javascript:delTeo(${resu.getTeorema().getId()})"><i class="fa fa-trash" aria-hidden="true" ></i></a>
-                            </c:when>
-                          </c:choose>
                         </p>
                       </li>
                     </c:otherwise>
                   </c:choose>
+                          
                 </c:when>
               </c:choose>
             </c:forEach>
