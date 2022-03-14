@@ -71,7 +71,7 @@
                           (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
                           <c:choose>
                             <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas')}">
-                               <a onclick="return confirm('Are you sure you want to delete the proof?')" href="javascript:delTeo(${resu.getTeorema().getId()})"><i class="fa fa-trash" aria-hidden="true" ></i></a>
+                               <a onclick="return confirm('Are you sure you want to delete the theorem?')" href="javascript:delTeo(${resu.getTeorema().getId()})"><i class="fa fa-trash" aria-hidden="true" ></i></a>
                             </c:when>
                           </c:choose>
                         </p> 

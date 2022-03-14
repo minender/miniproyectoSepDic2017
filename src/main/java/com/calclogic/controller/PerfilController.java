@@ -1836,10 +1836,10 @@ public class PerfilController {
             if (this.solucionManager.deleteSolucion(idSolInt, username)) {
                 return "Proof deleted";
             }
-            return "Error deleting proof";
+            return "Couldn't delete proof\nMake sure the theorem isn't used in any other proofs";
         }
         catch (NumberFormatException e) {
-            return "Error deleting proof";
+            return "error";
         }
     }
     

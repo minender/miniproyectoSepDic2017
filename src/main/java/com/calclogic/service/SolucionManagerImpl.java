@@ -104,28 +104,36 @@ public class SolucionManagerImpl implements SolucionManager {
         }
         Resuelve resuelve = solucion.getResuelve();
         Usuario user = resuelve.getUsuario();
+        Teorema teorema = resuelve.getTeorema();
         if (user.getLogin().equals(username)) {
             Set<Solucion> li = resuelve.getSolucions();
             int nSol = li.size();
             if (nSol == 1) {
-                Teorema teorema = resuelve.getTeorema();
                 Resuelve resuelveAdmin = resuelveDAO.getResuelveByUserAndTeorema("AdminTeoremas", teorema.getId());
-                solucionDAO.deleteSolucion(id);
                 if (resuelveAdmin != null) {
+                    solucionDAO.deleteSolucion(id);
                     resuelveDAO.deleteResuelve(resuelve.getId());
                 }
                 else {
+                    if (!solucionDAO.solutionsWithAxiom(teorema.getId()).isEmpty()){
+                        return false;
+                    }
+                    solucionDAO.deleteSolucion(id);
                     resuelve.setResuelto(false);
                     resuelveDAO.updateResuelve(resuelve);
                 }
             }
             else {
-                solucionDAO.deleteSolucion(id);
                 if (nSol == 2) {
                     for (Solucion sol: li) {
                         if (sol.getId() != id && !sol.getResuelto()) {
+                            if (!solucionDAO.solutionsWithAxiom(teorema.getId()).isEmpty()){
+                                return false;
+                            }
+                            solucionDAO.deleteSolucion(id);
                             resuelve.setResuelto(false);
                             resuelveDAO.updateResuelve(resuelve);
+                            break;
                         }
                     }
                 }
