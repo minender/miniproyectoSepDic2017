@@ -91,7 +91,6 @@ function delSol(idSol){
     
     var data = {};
     var url = window.location.href + "/deleteSol/" + idSol;
-    console.log(url);
     $("#modalLoading").css('display','inline-block');
     $.ajax({
         type:'POST',

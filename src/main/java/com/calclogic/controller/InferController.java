@@ -917,26 +917,34 @@ public class InferController {
             List<Term> terms = new ArrayList<Term>();
 
             Term axiomTree = null;
+            Sust sus = null;
+            TypedI I = null;
+            TypedA A = null;
+            TypedA A2 = null;
+            String str = null;
+            String str2 = null;
+            Term st = null;
+            Term st2 = null;
 
             switch (method){
                 // Counter-reciprocal
                 case "CR": 
                     // This string says: p => q == ¬q => ¬p
-                    String str = "c_{1} (c_{2} (c_{7} x_{112}) (c_{7} x_{113})) (c_{2} x_{113} x_{112})";
-                    Term st = CombUtilities.getTerm(str);
+                    str = "c_{1} (c_{2} (c_{7} x_{112}) (c_{7} x_{113})) (c_{2} x_{113} x_{112})";
+                    st = CombUtilities.getTerm(str);
 
                     // We make that formula to be treated as an axiom
-                    TypedA A = new TypedA(st); 
+                    A = new TypedA(st); 
             
                     // Substitution [p,q := ...]
                     vars.add(0, new Var(112)); // Letter 'p'
                     vars.add(0, new Var(113)); // Letter 'q'
                     terms.add(0, ((App)theoremBeingProved).q);
                     terms.add(0, ((App)((App)theoremBeingProved).p).q);
-                    Sust sus = new Sust(vars, terms);
+                    sus = new Sust(vars, terms);
                     
                     // We give the instantiation format to the substitution above
-                    TypedI I = new TypedI(sus);
+                    I = new TypedI(sus);
 
                     axiomTree = new TypedApp(new TypedS(),new TypedApp(I,A));
                     break;
@@ -944,26 +952,26 @@ public class InferController {
                 // Contradiction
                 case "CO":
                     // This string says: ¬p => false == ¬(¬p)
-                    String str1 = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
-                    Term st1 = CombUtilities.getTerm(str1);
+                    str = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
+                    st = CombUtilities.getTerm(str);
 
                     // This string says: ¬(¬p) == p
-                    String str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
-                    Term st2 = CombUtilities.getTerm(str2);
+                    str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
+                    st2 = CombUtilities.getTerm(str2);
 
                     // We make the two formulas above to be treated as axioms
-                    TypedA A1 = new TypedA(st1);
-                    TypedA A2 = new TypedA(st2);
+                    A = new TypedA(st);
+                    A2 = new TypedA(st2);
 
                     // Substitution [p := teoremProved]
                     vars.add(0, new Var(112)); // Letter'p'
                     terms.add(0, theoremBeingProved);
-                    Sust sus = new Sust(vars, terms);
+                    sus = new Sust(vars, terms);
 
                     // We give the instantiation format to the substitution above
-                    TypedI I = new TypedI(sus);
+                    I = new TypedI(sus);
 
-                    axiomTree = new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2));
+                    axiomTree = new TypedApp(new TypedApp(I,A),new TypedApp(I,A2));
                     break;
 
                 default:

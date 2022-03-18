@@ -156,8 +156,8 @@
                         leibnizMouse(id,id);
                     }
                     else if (total_expression && window.getSelection().type === 'Range') {
-                        isStartInside = total_expression.find(range.startContainer).length;
-                        isEndInside = total_expression.find(range.endContainer).length;
+                        let isStartInside = total_expression.find(range.startContainer).length;
+                        let isEndInside = total_expression.find(range.endContainer).length;
                         if (isStartInside && !isEndInside) {
                             var lastChild = total_expression[0].lastChild;
                             while ( lastChild.hasChildNodes() ) {
