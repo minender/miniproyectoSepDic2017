@@ -10,7 +10,8 @@
    		${labelName}
  	</div>
  	<div class="card-body d-flex align-items-center justify-content-center">
-       \({${prefixMathJax} \FormInput{${rootId}}}\)
+            <!-- \({${prefixMathJax} ${initialInput}}\) -->
+        \({${prefixMathJax} \FormInput{${rootId}}}\)
     </div>
 </div>
 

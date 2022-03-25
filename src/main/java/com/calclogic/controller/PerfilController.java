@@ -751,6 +751,43 @@ public class PerfilController {
                 return "agregarTeorema";
             }
     }
+    
+    
+    @RequestMapping(value="/{username}/editarteo/{idTeo:.+}", method=RequestMethod.GET)
+    public String editarTeoView(@PathVariable String username, @PathVariable String idTeo, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        int teoId = Integer.parseInt(idTeo);
+        Teorema teorema = teoremaManager.getTeorema(teoId);
+        
+        map.addAttribute("usuario",usr);
+        map.addAttribute("agregarTeorema",new AgregarTeorema());
+        map.addAttribute("modificar",new Integer(0));
+        map.addAttribute("editar", true);
+        //map.addAttribute("teorema", "\\\\FormInput{1} \\\\Sigma \\\\FormInput{2}");
+        map.addAttribute("teorema", teorema.getEnunciado());
+        map.addAttribute("categoria",categoriaManager.getAllCategorias());
+        map.addAttribute("numeroTeorema","");
+        map.addAttribute("mensaje", "");
+        map.addAttribute("admin","AdminTeoremas");
+        map.addAttribute("agregarTeoremaMenu","active");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        
+        return "agregarTeorema";
+    }
         
         
     /**

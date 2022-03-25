@@ -19,6 +19,7 @@
         <tiles:insertDefinition name="style" />
     </head>--%>
     <body>
+        
         <tiles:insertDefinition name="nav" />
         <div class="row justify-content-center">
             <h1>Enter the theorem that you want to save</h1>
@@ -41,6 +42,7 @@
                     <c:set var="rootId" value="teoremaSymbolsId" scope="request"/>  
                     <c:set var="labelName" value="Theorem:" scope="request"/>
                     <c:set var="inputForm" value="teorema" scope="request"/>
+                    <c:set var="initialInput" value="${teorema}" scope="request"/>
                     <tiles:insertDefinition name="jaxDiv" />
                     <div class="form-group row justify-content-center">
                         <button type="button" onclick="cleanJax('teoremaSymbolsId')" class="btn btn-default">Clean</button>
@@ -112,6 +114,17 @@
                 </c:choose>
             </c:otherwise>
         </c:choose>
+                            
+        <c:choose>
+        <c:when test="${initialInput != null && !initialInput.equals(\"\")}">
+            <script>
+                setTimeout(function() {
+                        insertAt(document.getElementById("teoremaSymbolsId_"), '${teorema}', 1, false);
+                }, 1500); 
+            </script>
+        </c:when>
+        </c:choose>
+                            
         <%--<tiles:insertDefinition name="footer" />--%>
     </body>
 </html>
