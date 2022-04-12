@@ -33,6 +33,16 @@ import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+// The following libraries are used to send a post request to an external server
+import org.json.simple.JSONObject;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
 /**
  *
  * @author francisco
@@ -583,7 +593,7 @@ public class InferResponse {
                  // InferController.isBaseMethod(((App)metodo).q)
                )
                 typedTerm = ((App)typedTerm).q;
-            generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
                              resuelveManager, disponeManager, s, clickeable, false);
         }
         else
@@ -631,7 +641,7 @@ public class InferResponse {
                ){
                 typedTerm = ((App)typedTerm).q;
             }
-            generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
                              resuelveManager, disponeManager, s, clickeable, false);
         }
         else{
@@ -754,6 +764,45 @@ public class InferResponse {
         else // clickeable.equals("n")
             return newTerm.toStringInf(s,"");
     }
+
+    /**
+      * Calls an external server so it transforms the LaTex code inside a strng to HTML.
+      *
+      * Source: https://mkyong.com/java/apache-httpclient-examples/
+      * (That source missed to add the corresponding setContentType in one of its examples)
+      *
+      * @param stringToEdit String in which the transformation will be made
+      * @return Nothing
+      */
+    private String transformLaTexToHTML(String stringToEdit){
+        // The url may change in the future
+        String url = "http://localhost:83/example";
+        JSONObject json = new JSONObject();
+
+        //It is important that if we are sending a Content-Type application/json, the entity has to receive a json 
+        json.put("formula", stringToEdit);
+
+        HttpPost post = new HttpPost(url);
+        try {
+            StringEntity entity = new StringEntity(json.toString());
+            //Setting the content type is very important
+            entity.setContentType("application/json; charset=UTF-8");
+            post.setEntity(entity);
+        }
+        catch(Exception e){
+            Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+             CloseableHttpResponse response = httpClient.execute(post)) {
+
+            stringToEdit = EntityUtils.toString(response.getEntity());
+        }
+        catch(Exception e){
+            Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return stringToEdit;
+    }
     
     
     /**
@@ -782,7 +831,7 @@ public class InferResponse {
         DisponeManager disponeManager, 
         SimboloManager s
     ) {
-        generarHistorial(
+        privateGenerarHistorial(
             user, 
             formula, 
             "",
@@ -797,6 +846,7 @@ public class InferResponse {
             "n",
             true
         );
+        historial = transformLaTexToHTML(historial);
     }
 
     /**
@@ -817,6 +867,56 @@ public class InferResponse {
      * @param isRootTeorem
      */
     public void generarHistorial(
+        String user, 
+        Term formula,
+        String header,
+        String nTeo, 
+        Term typedTerm,  
+        Boolean valida, 
+        Boolean labeled, 
+        Term metodo, 
+        ResuelveManager resuelveManager, 
+        DisponeManager disponeManager, 
+        SimboloManager s,
+        String clickeable,
+        Boolean isRootTeorem
+    ) { 
+        privateGenerarHistorial(
+            user, 
+            formula, 
+            header,
+            nTeo, 
+            typedTerm, 
+            valida, 
+            labeled, 
+            metodo, 
+            resuelveManager, 
+            disponeManager, 
+            s, 
+            clickeable,
+            isRootTeorem
+        );
+        historial = transformLaTexToHTML(historial);
+    }
+
+    /**
+     * Prints all the demonstration made at the moment. Note that if a new step will be added,
+     * all the proof from the beginning will be printed again.
+     * @param user
+     * @param formula
+     * @param header
+     * @param nTeo
+     * @param typedTerm
+     * @param valida
+     * @param labeled
+     * @param metodo
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @param clickeable
+     * @param isRootTeorem
+     */
+    private void privateGenerarHistorial(
         String user, 
         Term formula,
         String header,
@@ -1054,47 +1154,47 @@ public class InferResponse {
                 return;
             }
             header+="By Conjunction by parts method:<br>Statement 1:<br>"+statement+"Sub Proof:<br>";
-            if (metodo instanceof Const) 
-            {
+            if (metodo instanceof Const){
                historial = header;
             }
             else if ( ((App)metodo).p instanceof Const  ) {
-               generarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
-                                 resuelveManager, disponeManager, s, clickeable, false);
-               if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))) 
-                   cambiarMetodo = "0";
-               else {
-                   if (!clickeable.equals("n"))
-                       cambiarMetodo = "0"; 
-                   newFormula = ((App)((App)formula).p).q;
-                   try {
-                     statement = "<center>$" + clickeableST(newFormula, clickeable, new Const("AI"), false, s) 
+                privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+                                        resuelveManager, disponeManager, s, clickeable, false);
+                if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
+                    cambiarMetodo = "0";
+                }
+                else {
+                    if (!clickeable.equals("n"))
+                        cambiarMetodo = "0"; 
+                    newFormula = ((App)((App)formula).p).q;
+                    try {
+                        statement = "<center>$" + clickeableST(newFormula, clickeable, new Const("AI"), false, s) 
                                        + "$</center>";
-                   }catch (Exception e) {
-                      lado = "0";
-                      return;
-                   }
-                   historial += "Statement 2:<br>"+statement+"Sub Proof:<br>";
-               }
+                    }catch (Exception e) {
+                        lado = "0";
+                        return;
+                    }
+                    historial += "Statement 2:<br>"+statement+"Sub Proof:<br>";
+                }
             }
             else{
-               generarHistorial(user, newFormula, header, nTeo,
+                privateGenerarHistorial(user, newFormula, header, nTeo,
                                 (InferController.isAIProof2Started(metodo)?((App)typedTerm).q:typedTerm), 
                                  valida, labeled, ((App)((App)metodo).p).q, resuelveManager, disponeManager, 
                                  s, clickeable, false);
-               newFormula = ((App)((App)formula).p).q;
-               try {
-                     statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                newFormula = ((App)((App)formula).p).q;
+                try {
+                    statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
                                        + "$</center>";
-                   }catch (Exception e) {
-                      lado = "0";
-                      return;
-                   }
-               header = historial + "Statement 2:<br>"+statement+"Sub Proof:<br>";
-               historial = "";
-               Term newTypedTerm = null;
-               newTypedTerm = InferController.getSubProof(typedTerm, metodo);
-               generarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)metodo).q, 
+                }catch (Exception e) {
+                    lado = "0";
+                    return;
+                }
+                header = historial + "Statement 2:<br>"+statement+"Sub Proof:<br>";
+                historial = "";
+                Term newTypedTerm = null;
+                newTypedTerm = InferController.getSubProof(typedTerm, metodo);
+                privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)metodo).q, 
                                  resuelveManager, disponeManager, s, clickeable, false);
             }
         } else if (naturalDirect)
