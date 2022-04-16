@@ -749,25 +749,4 @@ function setCtoAliases(Cnotation, rootId){
 	}
 	
 	return result;
-	
-}
-
-/**
- * This functions creates and later deletes a MathJax FormInput, this is neccesary to 
- * take care of a bug that MathJax has
- * @param rootId
- * @returns nothing
- */
-function preSet(rootId){
-	cleanParserString
-	var id = rootId + "MathJaxDiv";
-	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div
-	
-	// Render the new text, also set the new input box attributes
-	MathJax.Hub.Queue(["Text",math,"{\\FormInput{" + rootId + "0}}"]);
-	
-	setTimeout(function() {
-		MathJax.Hub.Queue(["Text",math,"{}"]);
-	}, 100);
-	
 }
