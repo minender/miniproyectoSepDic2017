@@ -5,6 +5,7 @@
  */
 package com.calclogic.forms;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
+
 import com.calclogic.controller.InferController;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.PlantillaTeorema;
@@ -25,23 +26,12 @@ import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.service.PlantillaTeoremaManager;
+import com.calclogic.microservices.MicroServices;
+
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-// The following libraries are used to send a post request to an external server
-import org.json.simple.JSONObject;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 /**
  *
@@ -264,7 +254,7 @@ public class InferResponse {
     }
     
     /**
-     * This functions checks if the given Term represents a modus ponens hint
+     * This function checks if the given Term represents a modus ponens hint
      * @param root root node of the hint 
      * @param s
      * @return "Nomodus" if is not modus ponens, another string depending on the case
@@ -559,7 +549,6 @@ public class InferResponse {
      * when the demonstration method is counter reciprocal
      * @param user 
      * @param typedTerm
-     * @param solved
      * @param resuelveManager
      * @param disponeManager
      * @param s
@@ -572,7 +561,7 @@ public class InferResponse {
      * @param nTeo
      * @return Nothing.
      */
-    private void setCounterRecipProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, 
+    private void setCounterRecipProof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
         SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
         Term antec = ((App)formula).q;
         Term consec = ((App)((App)formula).p).q;
@@ -605,7 +594,6 @@ public class InferResponse {
      * when the demonstration method is contradiction
      * @param user 
      * @param typedTerm
-     * @param solved
      * @param resuelveManager
      * @param disponeManager
      * @param s
@@ -618,7 +606,7 @@ public class InferResponse {
      * @param nTeo
      * @return Nothing.
      */
-    private void setContradictionProof(String user, Term typedTerm, boolean solved, ResuelveManager resuelveManager, DisponeManager disponeManager, 
+    private void setContradictionProof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
         SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
         // This is saying: ¬formula => false, but the notation must be prefix and the first operand goes to the right.
         // So, here what is really expressed is: (=> false) (¬formula).
@@ -646,6 +634,82 @@ public class InferResponse {
         }
         else{
             this.setHistorial(header);
+        }
+    }
+
+    /**
+     * This function adds a proof of just one step into a bigger proof, 
+     * when the demonstration method is "And Introduction" (Conjunction by parts)
+     * @param user 
+     * @param typedTerm
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @param header
+     * @param clickeable
+     * @param metodo
+     * @param valida
+     * @param labeled
+     * @param formula
+     * @param nTeo
+     * @return Nothing.
+     */
+    private void setAIProof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
+        SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
+
+        String statement = "";
+        Term newFormula = ((App)formula).q;
+        try {
+           statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                                   + "$</center>";
+        }
+        catch (Exception e) {
+            lado = "0";
+            return;
+        }
+        header+="By Conjunction by parts method:<br>Statement 1:<br>"+statement+"Sub Proof:<br>";
+        if (metodo instanceof Const){
+           historial = header;
+        }
+        else if ( ((App)metodo).p instanceof Const  ) {
+            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+                                    resuelveManager, disponeManager, s, clickeable, false);
+            if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
+                cambiarMetodo = "0";
+            }
+            else {
+                if (!clickeable.equals("n"))
+                    cambiarMetodo = "0"; 
+                newFormula = ((App)((App)formula).p).q;
+                try {
+                    statement = "<center>$" + clickeableST(newFormula, clickeable, new Const("AI"), false, s) 
+                                   + "$</center>";
+                }catch (Exception e) {
+                    lado = "0";
+                    return;
+                }
+                historial += "Statement 2:<br>"+statement+"Sub Proof:<br>";
+            }
+        }
+        else{
+            privateGenerarHistorial(user, newFormula, header, nTeo,
+                            (InferController.isAIProof2Started(metodo)?((App)typedTerm).q:typedTerm), 
+                             valida, labeled, ((App)((App)metodo).p).q, resuelveManager, disponeManager, 
+                             s, clickeable, false);
+            newFormula = ((App)((App)formula).p).q;
+            try {
+                statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                                   + "$</center>";
+            }catch (Exception e) {
+                lado = "0";
+                return;
+            }
+            header = historial + "Statement 2:<br>"+statement+"Sub Proof:<br>";
+            historial = "";
+            Term newTypedTerm = null;
+            newTypedTerm = InferController.getSubProof(typedTerm, metodo);
+            privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)metodo).q, 
+                             resuelveManager, disponeManager, s, clickeable, false);
         }
     }
 
@@ -764,46 +828,6 @@ public class InferResponse {
         else // clickeable.equals("n")
             return newTerm.toStringInf(s,"");
     }
-
-    /**
-      * Calls an external server so it transforms the LaTex code inside a strng to HTML.
-      *
-      * Source: https://mkyong.com/java/apache-httpclient-examples/
-      * (That source missed to add the corresponding setContentType in one of its examples)
-      *
-      * @param stringToEdit String in which the transformation will be made
-      * @return Nothing
-      */
-    private String transformLaTexToHTML(String stringToEdit){
-        // The url may change in the future
-        String url = "http://localhost:83/example";
-        JSONObject json = new JSONObject();
-
-        //It is important that if we are sending a Content-Type application/json, the entity has to receive a json 
-        json.put("formula", stringToEdit);
-
-        HttpPost post = new HttpPost(url);
-        try {
-            StringEntity entity = new StringEntity(json.toString());
-            //Setting the content type is very important
-            entity.setContentType("application/json; charset=UTF-8");
-            post.setEntity(entity);
-        }
-        catch(Exception e){
-            Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
-        }
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-             CloseableHttpResponse response = httpClient.execute(post)) {
-
-            stringToEdit = EntityUtils.toString(response.getEntity());
-        }
-        catch(Exception e){
-            Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
-        }
-        return stringToEdit;
-    }
-    
     
     /**
      * Calls function generarHistorial assuming that it is always a root theorem
@@ -846,7 +870,7 @@ public class InferResponse {
             "n",
             true
         );
-        historial = transformLaTexToHTML(historial);
+        historial = MicroServices.transformLaTexToHTML(historial);
     }
 
     /**
@@ -896,7 +920,7 @@ public class InferResponse {
             clickeable,
             isRootTeorem
         );
-        historial = transformLaTexToHTML(historial);
+        historial = MicroServices.transformLaTexToHTML(historial);
     }
 
     /**
@@ -941,7 +965,7 @@ public class InferResponse {
         else if(isRootTeorem)
             cambiarMetodo ="0";
         
-        // If we're printing a root teorem, print it as a teorem.
+        // If we're printing a root teorem, print it as a theorem.
         if (isRootTeorem) {
             this.setHistorial("");
             try {
@@ -995,7 +1019,7 @@ public class InferResponse {
             return;
         }
         if (typedTerm!=null && type == null && !valida && !recursive){
-            this.setHistorial(this.getHistorial()+header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$$\\text{No valid inference}$$");
+            this.setHistorial(this.getHistorial()+header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$\\text{No valid inference}$");
             solved = false;
             return;
         }
@@ -1136,67 +1160,13 @@ public class InferResponse {
             setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);
 
         else if (counterRecip) {
-            setCounterRecipProof(user, typedTerm, solved, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
+            setCounterRecipProof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
         }
         else if (contradiction) {
-            setContradictionProof(user, typedTerm, solved, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
+            setContradictionProof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
         }
         else if (andIntroduction) {
-            //setAIProof(user, formula, nTeo, typedTerm, valida, labeled, metodo, resuelveManager, disponeManager, s);
-            String statement = "";
-            Term newFormula = ((App)formula).q;
-            try {
-               statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
-                                       + "$</center>";
-            }
-            catch (Exception e) {
-                lado = "0";
-                return;
-            }
-            header+="By Conjunction by parts method:<br>Statement 1:<br>"+statement+"Sub Proof:<br>";
-            if (metodo instanceof Const){
-               historial = header;
-            }
-            else if ( ((App)metodo).p instanceof Const  ) {
-                privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
-                                        resuelveManager, disponeManager, s, clickeable, false);
-                if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
-                    cambiarMetodo = "0";
-                }
-                else {
-                    if (!clickeable.equals("n"))
-                        cambiarMetodo = "0"; 
-                    newFormula = ((App)((App)formula).p).q;
-                    try {
-                        statement = "<center>$" + clickeableST(newFormula, clickeable, new Const("AI"), false, s) 
-                                       + "$</center>";
-                    }catch (Exception e) {
-                        lado = "0";
-                        return;
-                    }
-                    historial += "Statement 2:<br>"+statement+"Sub Proof:<br>";
-                }
-            }
-            else{
-                privateGenerarHistorial(user, newFormula, header, nTeo,
-                                (InferController.isAIProof2Started(metodo)?((App)typedTerm).q:typedTerm), 
-                                 valida, labeled, ((App)((App)metodo).p).q, resuelveManager, disponeManager, 
-                                 s, clickeable, false);
-                newFormula = ((App)((App)formula).p).q;
-                try {
-                    statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
-                                       + "$</center>";
-                }catch (Exception e) {
-                    lado = "0";
-                    return;
-                }
-                header = historial + "Statement 2:<br>"+statement+"Sub Proof:<br>";
-                historial = "";
-                Term newTypedTerm = null;
-                newTypedTerm = InferController.getSubProof(typedTerm, metodo);
-                privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)metodo).q, 
-                                 resuelveManager, disponeManager, s, clickeable, false);
-            }
+            setAIProof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
         } else if (naturalDirect)
             ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
         else if (naturalSide)
@@ -1412,7 +1382,7 @@ public class InferResponse {
         if (/*!andIntroduction &&*/ !recursive) {
             historial = header+"<center>$" +historial+"</center>";
             if (!valida) 
-            historial = historial+"$$\\text{No valid inference}$$";
+            historial = historial+"$\\text{No valid inference}$";
         }
         else if (/*!andIntroduction &&*/ recursive)
             ;
