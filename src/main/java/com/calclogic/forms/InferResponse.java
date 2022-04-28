@@ -26,7 +26,7 @@ import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.service.PlantillaTeoremaManager;
-import com.calclogic.microservices.MicroServices;
+import com.calclogic.externalservices.MicroServices;
 
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
@@ -42,6 +42,9 @@ public class InferResponse {
     // Has all the proof made at this point, written in LaTeX.
     private String historial; 
 
+    // Indicates if the proof there was an error in the "generarHistorial" function,
+    private Boolean errorParser1 = false;
+
     private String errorParser2;
     private String errorParser3;
 
@@ -55,9 +58,8 @@ public class InferResponse {
     // despite that they are made by different users. "nSol" is that unique value.
     private String nSol; 
 
-    // Indicates if the proof there was an error in the "generarHistorial" function,
-    // in which case its value is '0', and also when the proof method is starting from one side
-    // it indicates the side: 'd' for the right one (derecho) and 'i' for the left one (izquierdo).
+    // When the proof method is starting from one side, this indicates the side: 
+    // 'd' for the right one (derecho) and 'i' for the left one (izquierdo).
     private String lado;
 
     // Determines if the proof was solved so a congratulatory message should be displayed
@@ -127,6 +129,14 @@ public class InferResponse {
 
     public void setHistorial(String formula) {
         this.historial = formula;
+    }
+
+    public Boolean getErrorParser1() {
+        return errorParser1;
+    }
+
+    public void setErrorParser1(Boolean errorParser1) {
+        this.errorParser1 = errorParser1;
     }
 
     public String getErrorParser2() {
@@ -573,7 +583,7 @@ public class InferResponse {
                               + "$</center>";
         }
         catch (Exception e) {
-            lado = "0";
+            this.setErrorParser1(true);
             return;
         }
         header+="By counter-reciprocal method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
@@ -618,7 +628,7 @@ public class InferResponse {
         }
         catch (Exception e) {
             Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
-            lado = "0";
+            this.setErrorParser1(true);
             return;
         }
         
@@ -664,7 +674,7 @@ public class InferResponse {
                                    + "$</center>";
         }
         catch (Exception e) {
-            lado = "0";
+            this.setErrorParser1(true);
             return;
         }
         header+="By Conjunction by parts method:<br>Statement 1:<br>"+statement+"Sub Proof:<br>";
@@ -685,7 +695,7 @@ public class InferResponse {
                     statement = "<center>$" + clickeableST(newFormula, clickeable, new Const("AI"), false, s) 
                                    + "$</center>";
                 }catch (Exception e) {
-                    lado = "0";
+                    this.setErrorParser1(true);
                     return;
                 }
                 historial += "Statement 2:<br>"+statement+"Sub Proof:<br>";
@@ -701,7 +711,7 @@ public class InferResponse {
                 statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
                                    + "$</center>";
             }catch (Exception e) {
-                lado = "0";
+                this.setErrorParser1(true);
                 return;
             }
             header = historial + "Statement 2:<br>"+statement+"Sub Proof:<br>";
@@ -729,8 +739,7 @@ public class InferResponse {
         int i = 0;
         int firstOpInf = InferController.wsFirstOpInferIndex(iter);
         
-        while (iter!=ultInf)
-        {
+        while (iter!=ultInf){
             // iter is of the form TT with transitivity
             if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t') {
                ultInf = ((TypedApp)iter).q;
@@ -969,12 +978,12 @@ public class InferResponse {
         if (isRootTeorem) {
             this.setHistorial("");
             try {
-            header = "Theorem " + nTeo + ":<br> <center>$" + 
-                     clickeableST(formula, clickeable, metodo, isRootTeorem, s) + "$</center>" +
-                     "Proof:<br>";
+                header = "Theorem " + nTeo + ":<br> <center>$" + 
+                         clickeableST(formula, clickeable, metodo, isRootTeorem, s) + "$</center>" +
+                         "Proof:<br>";
             }
             catch (Exception e) {
-                lado = "0";
+                this.setErrorParser1(true);
                 return ;
             }
         }

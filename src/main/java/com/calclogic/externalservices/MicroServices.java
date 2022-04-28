@@ -1,4 +1,4 @@
-package com.calclogic.microservices;
+package com.calclogic.externalservices;
 
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;

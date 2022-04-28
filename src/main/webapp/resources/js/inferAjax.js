@@ -50,7 +50,7 @@ var urlTermination = {
     TR: "/iniStatementT",    // Transitivity method
     CO: "/iniStatementCO",   // Contradiction method
     CR: "/iniStatementCR",   // Counter-reciprocal method
-    AI: "/iniAndI",          // And introduction method
+    AI: "/teoremaInicialAndIntroduction", // And introduction method
 
     showInstantiation: "inst", // When we want to show the instantiation of the hint theorem
     setAutomaticSubst: "auto", // When we want the substitution to be made automatically
@@ -86,7 +86,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
         dataType: 'json',
         data,
         success: function(newData) {
-            if(newData.lado === "0"){ // Remember that "lado" is also used to indicate errors
+            if(newData.errorParser1){ // Remember that "lado" is also used to indicate errors
                 alert("The selected method does not apply to the current theorem");
                 $("#metodosDiv").show();
                 completeSuccess = false;

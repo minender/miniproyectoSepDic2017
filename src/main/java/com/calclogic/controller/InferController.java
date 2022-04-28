@@ -1980,43 +1980,6 @@ public class InferController {
     }
     
     /**
-     * This method return the sub Term of typedTerm that represent the derivation tree 
-     * of only the current sub proof and the father tree of this subproof.
-     *  
-     * @param typedTerm: Term that represent all the current proof.
-     * @param method: Term that represent the current state of the proof method. This
-     *                term had the information about what is the current sub proof.
-     * @return List with sub Term of typedTerm that represent the derivation tree 
-     *         of only the current sub proof and the father of this sub proof.
-     */
-    public static List<Term> getFatherAndSubProof(Term typedTerm, Term method, List<Term> li) {
-        Term auxMethod = method;
-        while (auxMethod instanceof App) {
-            if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
-                    !isProofStarted(((App)auxMethod).q)
-                    ){
-                li.add(0,typedTerm);
-                return li;
-            }
-            else if (isAIProof2Started(auxMethod) && isAIOneLineProof(typedTerm)){
-                li.add(0, typedTerm);
-                li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t);
-                return li;
-            }
-            else if (isAIProof2Started(auxMethod) && !isAIOneLineProof(typedTerm)){
-                li.add(0, typedTerm);
-                return getFatherAndSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,li);
-            }
-            else{
-                auxMethod = ((App)auxMethod).q;
-            }
-        }
-        li.add(0, typedTerm);
-        return li;
-    }
-    
-    /**
      * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
      * Object with the the proof, in latex format, after an one step inference. 
      *
@@ -2467,20 +2430,20 @@ public class InferController {
                if(nuevoMetodo.equals("Natural Deduction,one-sided")) {
                        String impl = ((Const)((App)((App)term).p).p).getCon();
                        if(!impl.equals("c_{2}")) { // If is not an implication its wrong
-                               response.setLado("0");
+                               response.setErrorParser1(true);
                     return response;
                        }
                        term = ((App)((App)term).p).q;
                }
                equiv = ((Const)((App)((App)term).p).p).getCon();
         }catch (Exception e) {
-               response.setLado("0");
+               response.setErrorParser1(true);
             return response;
                }
         */
 
         /*if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{20}")){ 
-            response.setLado("0");                                    
+            response.setErrorParser1(true);                                    
             return response;
         }
         else*/
@@ -2555,7 +2518,7 @@ public class InferController {
                
                // If not of the form H => Q its wrong
                if( !(formulaAnterior instanceof App && ((App)formulaAnterior).p instanceof App && ((App)((App)formulaAnterior).p).p.toString().equals("c_{2}"))){
-                       response.setLado("0");
+                       response.setErrorParser1(true);
                 return response;
                }
                
@@ -2890,7 +2853,7 @@ public class InferController {
             formulaTerm = ((App)formulaTerm).q;
         }
         else{
-            response.setLado("0");
+            response.setErrorParser1(true);
         }
         
         if (nSol.equals("new")) {
@@ -2927,7 +2890,7 @@ public class InferController {
     /**
      * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
      * Object with the proof, in latex format, with only the consequent of the current statement 
-     * in the first line of the current sub proof.
+     * in the first line of the current sub proof when the strenghtening method is used
      *
      * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
      * @param username: login of the user that make the request. It is in the URL also
@@ -2973,7 +2936,7 @@ public class InferController {
             formulaTerm = ((App)((App)formulaTerm).p).q;
         }
         else{
-            response.setLado("0");
+            response.setErrorParser1(true);
         }
         
         if (nSol.equals("new")) {
@@ -3054,7 +3017,7 @@ public class InferController {
             formulaTerm = ((App)formulaTerm).q;
         }
         else{
-            response.setLado("0");
+            response.setErrorParser1(true);
         }
         
         if (nSol.equals("new")) {
@@ -3147,7 +3110,7 @@ public class InferController {
             if (nSol.equals("new")){
                 // Determines if the prove can by made bu counter-reciprocal method
                 if (((Const)((App)((App)formulaAnterior).p).p).getId() != 2) {
-                    response.setLado("0");
+                    response.setErrorParser1(true);
                     return response;
                 }
                 metodoTerm = new Const(nuevoMetodo);
@@ -3159,7 +3122,7 @@ public class InferController {
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
                 metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
                 if (((Const)((App)((App)initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
-                   response.setLado("0");
+                   response.setErrorParser1(true);
                    return response;
                 }
                 nuevoMetodo = metodoTerm.toStringFinal();
@@ -3167,7 +3130,7 @@ public class InferController {
                 solucionManager.updateSolucion(solucion);
             }
         } catch (ClassCastException e) {
-            response.setLado("0");
+            response.setErrorParser1(true);
             return response;
         }
         response.generarHistorial(username,formulaAnterior, nTeo,solucion.getTypedTerm(),true,false,metodoTerm,
@@ -3180,14 +3143,14 @@ public class InferController {
     }
     
     /**
-     * Init a proof for Conjunction by parts method.
+     * Inits a proof for Conjunction by parts method.
      * @param nSol Number of the solution.
      * @param username Name of the user that is making the proof.
      * @param nTeo Number of theorem to be proved.
      * @return
      */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniAndI", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse iniAndI(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialAndIntroduction", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse teoremaInicialAndIntroduction(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {
         // revisa la recursion de este metodo si no hace falta un initStatement o getSubProof
         String nuevoMetodo = "AI";
@@ -3199,11 +3162,11 @@ public class InferController {
         try {
             //String formula = "";
             if (((Const)((App)((App)formulaAnterior).p).p).getId() != 5) {
-               response.setLado("0");
+               response.setErrorParser1(true);
                return response;
             }
         } catch (ClassCastException e) {
-            response.setLado("0");
+            response.setErrorParser1(true);
             return response;
         }
         
