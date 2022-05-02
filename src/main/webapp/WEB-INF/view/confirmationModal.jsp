@@ -110,6 +110,7 @@
         to alternate between confirmation and just information modal.
     */
     function switchToOkButtons() {
+        console.log("Entrando en closeModal");
         document.getElementById('modal-header').innerHTML = 'Information';
         $('#ok-buttons').removeClass('d-none');
         $('#accept-cancel-buttons').addClass('d-none');
@@ -171,7 +172,7 @@
         let success = await proofMethodAjax(method);
 
         if (success && (message!=null)){ // Case in which we must put a message
-            setModalBody(message);
+            await setModalBody(message);
             switchToOkButtons();
         }
         else {
@@ -186,7 +187,7 @@
 
     // Closes modal and adds formula inputs for proof by cases
     function okButton() {
-        if( this.selectedMethod === "7"){
+        if( this.selectedMethod === "CA"){
             $("#formulaInput").removeClass('d-none');
             $("#formula").addClass('d-none');
         }

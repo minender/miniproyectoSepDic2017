@@ -51,6 +51,7 @@ var urlTermination = {
     CO: "/iniStatementCO",   // Contradiction method
     CR: "/iniStatementCR",   // Counter-reciprocal method
     AI: "/teoremaInicialAndIntroduction", // And introduction method
+    CA: "/teoremaInicialCaseAnalysis", // Case analysis method
 
     showInstantiation: "inst", // When we want to show the instantiation of the hint theorem
     setAutomaticSubst: "auto", // When we want the substitution to be made automatically
@@ -76,6 +77,7 @@ var instantiationDict = {
  * @return -> boolean that is only true when the AJAX was send successfully and the method can be applied to the theorem
  */
 async function proofMethodAjax(method, teoid=null, lado=null){
+    alert("Entrando en proofMethodAjax");
     var data = {teoid, lado};
     var form = $('#inferForm');
     var completeSuccess = true;
@@ -86,6 +88,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
         dataType: 'json',
         data,
         success: function(newData) {
+            alert("Entrando en success function(newData)");
             if(newData.errorParser1){ // Remember that "lado" is also used to indicate errors
                 alert("The selected method does not apply to the current theorem");
                 $("#metodosDiv").show();
@@ -112,6 +115,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
                             break;
 
                         case "AI": // And introduction method
+                        case "CA": // Case analysis method
                             $("#metodosDiv").show(); // This overrides what was set in "setForms"
                         
                         default:

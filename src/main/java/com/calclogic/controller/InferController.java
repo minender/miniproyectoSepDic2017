@@ -273,33 +273,35 @@ public class InferController {
                 simboloManager
             );
 
-            Boolean hasInnerMethodSelected = !solucion.getMetodo().equals("");;
+            Boolean hasInnerMethodSelected = !solucion.getMetodo().equals("");
+
 
             // If it is an And Introduction proof
-            if (solucion.getMetodo().startsWith("And Introduction(")) {
-                String[] methodAndPath = solucion.getMetodo().split("-");
-                String[] methods = methodAndPath[0].substring(
-                                       17,
-                                       methodAndPath[0].length() - 1
-                                   ).split(";");
-                String currentMethod;
-                String path = methodAndPath[1];
+            //if (solucion.getMetodo().startsWith("And Introduction(")) {
+            // if (solucion.getMetodo().startsWith("AI")) {
+            //     String[] methodAndPath = solucion.getMetodo().split("-");
+            //     String[] methods = methodAndPath[0].substring(
+            //                            17,
+            //                            methodAndPath[0].length() - 1
+            //                        ).split(";");
+            //     String currentMethod;
+            //     String path = methodAndPath[1];
     
-                // TODO: we have to create a parser to identify the recursive
-                // case.
-                if (path.equals("p")) {
-                    currentMethod = methods[0];
-                } else {
-                    currentMethod = methods[1];
-                }
+            //     // TODO: we have to create a parser to identify the recursive
+            //     // case.
+            //     if (path.equals("p")) {
+            //         currentMethod = methods[0];
+            //     } else {
+            //         currentMethod = methods[1];
+            //     }
 
-                // If no method has been selected, we should show the method 
-                // selector 
-                if (currentMethod.equals("null")) {
-                    hasInnerMethodSelected = false;
-                }
+            //     // If no method has been selected, we should show the method 
+            //     // selector 
+            //     if (currentMethod.equals("null")) {
+            //         hasInnerMethodSelected = false;
+            //     }
 
-            }
+            // }
 /*
             if (typedTerm == null && !hasInnerMethodSelected) 
                 map.addAttribute("elegirMetodo","1");
@@ -1978,6 +1980,43 @@ public class InferController {
         }
         return typedTerm;
     }
+
+    /**
+     * This method returns the sub Term of typedTerm that represent the derivation tree 
+     * of only the current sub proof and the father tree of this subproof.
+     *  
+     * @param typedTerm: Term that represent all the current proof.
+     * @param method: Term that represent the current state of the proof method. This
+     *                term had the information about what is the current sub proof.
+     * @return List with sub Term of typedTerm that represent the derivation tree 
+     *         of only the current sub proof and the father of this sub proof.
+     */
+    public static List<Term> getFatherAndSubProof(Term typedTerm, Term method, List<Term> li) {
+        Term auxMethod = method;
+        while (auxMethod instanceof App) {
+            if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
+                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
+                    !isProofStarted(((App)auxMethod).q)
+                    ){
+                li.add(0,typedTerm);
+                return li;
+            }
+            else if (isAIProof2Started(auxMethod) && isAIOneLineProof(typedTerm)){
+                li.add(0, typedTerm);
+                li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t);
+                return li;
+            }
+            else if (isAIProof2Started(auxMethod) && !isAIOneLineProof(typedTerm)){
+                li.add(0, typedTerm);
+                return getFatherAndSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,li);
+            }
+            else{
+                auxMethod = ((App)auxMethod).q;
+            }
+        }
+        li.add(0, typedTerm);
+        return li;
+    }
     
     /**
      * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
@@ -3259,8 +3298,123 @@ public class InferController {
 */
     }
 
-    public void setUsuarioManager(UsuarioManager usuarioManager) 
+    /**
+     * Inits a proof for Case analysis method.
+     * @param nSol Number of the solution.
+     * @param username Name of the user that is making the proof.
+     * @param nTeo Number of theorem to be proved.
+     * @return
+     */
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialCaseAnalysis", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse teoremaInicialCaseAnalysis(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {
+        // revisa la recursion de este metodo si no hace falta un initStatement o getSubProof
+        String nuevoMetodo = "CA";
+        InferResponse response = new InferResponse();
+        
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        
+        try {
+            //String formula = "";
+            if (((Const)((App)((App)formulaAnterior).p).p).getId() != 5) {
+               response.setErrorParser1(true);
+               return response;
+            }
+        } catch (ClassCastException e) {
+            response.setErrorParser1(true);
+            return response;
+        }
+        
+        Term metodoTerm = null;
+        Term typedTerm = null;
+        
+        if (nSol.equals("new")){
+            metodoTerm = new Const(nuevoMetodo);
+            Solucion solucion = new Solucion(resuelve,false,null, nuevoMetodo);
+            solucionManager.addSolucion(solucion);
+            response.setnSol(solucion.getId()+"");
+        } else {
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
+            nuevoMetodo = metodoTerm.toStringFinal();
+            typedTerm = solucion.getTypedTerm();
+            solucion.setMetodo(nuevoMetodo);
+            solucionManager.updateSolucion(solucion);
+        }
+        
+        response.generarHistorial(username,formulaAnterior, nTeo,typedTerm,true,false,metodoTerm,
+                                      resuelveManager,disponeManager,simboloManager);
+        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
+        response.setHistorial(historial);  */
+        response.setCambiarMetodo("2");
+
+        return response;
+/*        
+        // Mnuel y Juan
+        InferResponse response = new InferResponse();
+
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+
+        // If we're starting a new proof.
+        if (nSol.equals("new"))
+        {
+            // Get the cases of the proof.
+            Term casepTerm = ((App)formulaAnterior).q;
+            Term caseqTerm = ((App)(((App)formulaAnterior).p)).q;
+
+            // Creates a new tree for the proof of the form:
+            //          .
+            //         / \
+            //        .   qTerm
+            //       / \
+            // TypedU   pTerm
+            //
+            try {
+                Term formulaTerm = new TypedApp(
+                    new TypedApp(
+                        new TypedU(), 
+                        casepTerm
+                    ), 
+                    caseqTerm
+                );
+
+                // Saves the empty solution to the database.
+                Solucion solucion = new Solucion(
+                    resuelve,
+                    false,
+                    formulaTerm,
+                    "And Introduction(null;null)-p"
+                );
+                solucionManager.addSolucion(solucion);
+
+                // Stores the number of the solution to the reponse.
+                response.setnSol(Integer.toString(solucion.getId()));
+            } catch (TypeVerificationException e) {
+                return response;
+            }
+           
+            // Get's the expression of the first case (pTerm) to print it to
+            // the user.
+            String expression1 = casepTerm.toStringInf(simboloManager,"");
+            String historial = "Theorem " + nTeo + ":<br> <center>$" + 
+                               formulaAnterior.toStringInf(simboloManager,"") +
+                               "$</center> Proof:<br><br>";
+            historial += "Proof of $" + expression1 + "$:<br><br>Proof: ";
+            response.setHistorial(historial);  
+        }
+        // If we're taking over a new proof.
+        else {
+            // TODO: review this clause.
+            // Case you have a solution already started.
+            String expression2 = ((App)((App)formulaAnterior).p).q.toStringInf(simboloManager,"");
+        }
+        
+        return response;
+*/
+    }
+    public void setUsuarioManager(UsuarioManager usuarioManager) {
         this.usuarioManager = usuarioManager;
     }
     
