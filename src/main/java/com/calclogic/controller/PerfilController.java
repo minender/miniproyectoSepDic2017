@@ -523,7 +523,7 @@ public class PerfilController {
           typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),A3);
         }
         catch (TypeVerificationException e){
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, null, e);
         }
         
         response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"), resuelveManager, disponeManager, simboloManager);

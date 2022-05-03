@@ -4,16 +4,13 @@
  * and open the template in the editor.
  */
 package com.calclogic.forms;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.IntSequenceGenerator;
 
 import com.calclogic.controller.InferController;
+import com.calclogic.proof.ProofBoolean;
 import com.calclogic.entity.Resuelve;
-import com.calclogic.entity.PlantillaTeorema;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
-import com.calclogic.lambdacalculo.Corrida;
-import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
@@ -27,8 +24,9 @@ import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.service.PlantillaTeoremaManager;
 import com.calclogic.externalservices.MicroServices;
+import com.calclogic.proof.CrudOperations;
+import com.calclogic.proof.InferenceIndex;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -225,42 +223,31 @@ public class InferResponse {
         
         Term leftSide = ((App)root).p.type();
         
-        if( ((App)root).q instanceof TypedA &&
-            ((App)root).p instanceof App &&
-            ((App)((App)root).p).p instanceof TypedI &&
-            ((App)((App)root).p).q instanceof TypedA &&
-                                                     
-            leftSide instanceof App && ((App)leftSide).p instanceof App &&
-            (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") && 
-            ((App)leftSide).q.equals(((App)root).q.type())
-            
-        ) return true;
-        
-        return false;
-        
+        return ((App)root).q instanceof TypedA &&
+                ((App)root).p instanceof App &&
+                ((App)((App)root).p).p instanceof TypedI &&
+                ((App)((App)root).p).q instanceof TypedA &&
+                
+                leftSide instanceof App && ((App)leftSide).p instanceof App &&
+                (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") &&
+                ((App)leftSide).q.equals(((App)root).q.type());    
     }
     
     public boolean isIAIA(Term root, SimboloManager s) {
-        
         if(!(root instanceof App)) return false;
         
         Term leftSide = ((App)root).p.type();
         
-        if( ((App)root).q instanceof App &&
-            ((App)((App)root).q).p instanceof TypedI &&
-            ((App)((App)root).q).q instanceof TypedA &&
-            ((App)root).p instanceof App &&
-            ((App)((App)root).p).p instanceof TypedI &&
-            ((App)((App)root).p).q instanceof TypedA &&
-            
-            leftSide instanceof App && ((App)leftSide).p instanceof App &&
-            (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") && 
-            ((App)leftSide).q.equals(((App)root).q.type())
-            
-        ) return true;
-        
-        return false;       
-        
+        return ((App)root).q instanceof App &&
+                ((App)((App)root).q).p instanceof TypedI &&
+                ((App)((App)root).q).q instanceof TypedA &&
+                ((App)root).p instanceof App &&
+                ((App)((App)root).p).p instanceof TypedI &&
+                ((App)((App)root).p).q instanceof TypedA &&
+                
+                leftSide instanceof App && ((App)leftSide).p instanceof App &&
+                (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") &&
+                ((App)leftSide).q.equals(((App)root).q.type());         
     }
     
     /**
@@ -299,84 +286,84 @@ public class InferResponse {
      * @return The new step of the demonstration as a string
      */
     private String hintOneSide(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
-            String teo = "";
-            String leib = "";
-            String inst = "";
-            String hint = "";
-            // if the inference is a modus pones that simulates natural deduction is true this
-            boolean naturalInfer=typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m';
-            Term ultInf = (naturalInfer?((TypedApp)typedTerm).p:typedTerm);
-            
-            if (ultInf instanceof App){
-                if (((App)ultInf).q instanceof App){
-                    if (((App)((App)ultInf).q).q instanceof App){
-                        //  Term aux = ((App)ultInf.type()).q;
-                        // primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                        teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
-                        inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s,"");
-                        inst = "~\\text{with}~" + inst;
-                        leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                        leib = "~\\text{and}~" + leib;
-                    }
-                    else {
-                        //Term aux = ((App)ultInf.type()).q;
-                        //primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                        teo = ((App)((App)ultInf).q).q.type().toStringFinal();
-                        if (((App)ultInf).p instanceof TypedS){
-                            if (((App)((App)ultInf).q).p instanceof TypedI){
-                                inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                                inst = "~\\text{with}~" + inst;
-                            }
-                            else {
-                                leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                                leib = "~\\text{and}~" + leib;
-                            }
-                        } else {
+        String teo = "";
+        String leib = "";
+        String inst = "";
+        String hint = "";
+        // if the inference is a modus pones that simulates natural deduction is true this
+        boolean naturalInfer=typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m';
+        Term ultInf = (naturalInfer?((TypedApp)typedTerm).p:typedTerm);
+
+        if (ultInf instanceof App){
+            if (((App)ultInf).q instanceof App){
+                if (((App)((App)ultInf).q).q instanceof App){
+                    //  Term aux = ((App)ultInf.type()).q;
+                    // primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
+                    teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
+                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s,"");
+                    inst = "~\\text{with}~" + inst;
+                    leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
+                    leib = "~\\text{and}~" + leib;
+                }
+                else {
+                    //Term aux = ((App)ultInf.type()).q;
+                    //primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
+                    teo = ((App)((App)ultInf).q).q.type().toStringFinal();
+                    if (((App)ultInf).p instanceof TypedS){
+                        if (((App)((App)ultInf).q).p instanceof TypedI){
                             inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
                             inst = "~\\text{with}~" + inst;
-                            leib = ((App)ultInf).p.type().toStringInf(s,"");
+                        }
+                        else {
+                            leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
                             leib = "~\\text{and}~" + leib;
                         }
-                    }
-                } else {
-                    Term pType = ((App)ultInf).p.type();
-                    if (((App)ultInf).p instanceof TypedI){
-                        inst = pType.toStringInf(s,"");
+                    } else {
+                        inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
                         inst = "~\\text{with}~" + inst;
+                        leib = ((App)ultInf).p.type().toStringInf(s,"");
+                        leib = "~\\text{and}~" + leib;
                     }
-                    else if (((App)ultInf).p instanceof TypedL){
-                        leib = "~\\text{and}~" + pType.toStringInf(s,"");
-                    }
-                    // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
-                    teo = ((App)ultInf).q.type().toStringFinal();
                 }
             } else {
-                Term aux = ultInf.type();
-                teo = aux.toStringFinal();
-                //  primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-            } 
-          
-            int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 
-                                    :((Const)((App)((App)ultInf.type()).p).p).getId());
-            String op = s.getSimbolo(conId).getNotacion_latex();
-
-            Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
-            Boolean entry = true;
-            if (theo == null){
-                theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo);
-
-                if (theo == null){
-                    teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
-                    hint = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
-                    entry = false;
+                Term pType = ((App)ultInf).p.type();
+                if (((App)ultInf).p instanceof TypedI){
+                    inst = pType.toStringInf(s,"");
+                    inst = "~\\text{with}~" + inst;
                 }
+                else if (((App)ultInf).p instanceof TypedL){
+                    leib = "~\\text{and}~" + pType.toStringInf(s,"");
+                }
+                // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
+                teo = ((App)ultInf).q.type().toStringFinal();
             }
+        } else {
+            Term aux = ultInf.type();
+            teo = aux.toStringFinal();
+            //  primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
+        } 
 
-            if (entry){
-                teo = theo.getNumeroteorema();
-                hint = op+"~~~~~~\\langle \\text{st}~("+teo+")"+inst+leib+"\\rangle";         
+        int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 
+                                :((Const)((App)((App)ultInf.type()).p).p).getId());
+        String op = s.getSimbolo(conId).getNotacion_latex();
+
+        Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
+        Boolean entry = true;
+        if (theo == null){
+            theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo);
+
+            if (theo == null){
+                teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
+                hint = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
+                entry = false;
             }
-            return hint;
+        }
+
+        if (entry){
+            teo = theo.getNumeroteorema();
+            hint = op+"~~~~~~\\langle \\text{st}~("+teo+")"+inst+leib+"\\rangle";         
+        }
+        return hint;
     }
 
     /**
@@ -703,7 +690,7 @@ public class InferResponse {
         }
         else{
             privateGenerarHistorial(user, newFormula, header, nTeo,
-                            (InferController.isAIProof2Started(metodo)?((App)typedTerm).q:typedTerm), 
+                            (ProofBoolean.isAIProof2Started(metodo)?((App)typedTerm).q:typedTerm), 
                              valida, labeled, ((App)((App)metodo).p).q, resuelveManager, disponeManager, 
                              s, clickeable, false);
             newFormula = ((App)((App)formula).p).q;
@@ -717,7 +704,7 @@ public class InferResponse {
             header = historial + "Statement 2:<br>"+statement+"Sub Proof:<br>";
             historial = "";
             Term newTypedTerm = null;
-            newTypedTerm = InferController.getSubProof(typedTerm, metodo);
+            newTypedTerm = CrudOperations.getSubProof(typedTerm, metodo);
             privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)metodo).q, 
                              resuelveManager, disponeManager, s, clickeable, false);
         }
@@ -730,14 +717,14 @@ public class InferResponse {
         String hint;
         //Term t;
         boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
-                      InferController.isInverseImpl(((TypedApp)typedTerm).q.type(),typedTerm.type());
+                      ProofBoolean.isInverseImpl(((TypedApp)typedTerm).q.type(),typedTerm.type());
         Term iter = (reversed?((TypedApp)typedTerm).q:typedTerm);
         boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
                       ((TypedApp)iter).q.type().toStringFinal().equals("c_{8}");
         iter = (lastEquan?((TypedApp)iter).p:iter);
         Term ultInf = null;
         int i = 0;
-        int firstOpInf = InferController.wsFirstOpInferIndex(iter);
+        int firstOpInf = InferenceIndex.wsFirstOpInferIndex(iter);
         
         while (iter!=ultInf){
             // iter is of the form TT with transitivity
@@ -969,7 +956,7 @@ public class InferResponse {
         // un metodo binario
         if (isRootTeorem && metodo == null)
             cambiarMetodo = "1";
-        else if (isRootTeorem && InferController.isWaitingMethod(metodo)) 
+        else if (isRootTeorem && ProofBoolean.isWaitingMethod(metodo)) 
             cambiarMetodo = "2";
         else if(isRootTeorem)
             cambiarMetodo ="0";
@@ -1160,11 +1147,9 @@ public class InferResponse {
         if (direct) {       
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, false);
         }
-
         else if (oneSide){
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);
         }
-
         else if (weakening || strengthening || transitivity)
             setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);
 
@@ -1176,7 +1161,8 @@ public class InferResponse {
         }
         else if (andIntroduction) {
             setAIProof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
-        } else if (naturalDirect)
+        } 
+        else if (naturalDirect)
             ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
         else if (naturalSide)
             ; //setDirectProof(user, translateToOneSide(typedTerm), resuelveManager, disponeManager, s, true);
@@ -1402,4 +1388,3 @@ public class InferResponse {
     }
     
 }
-

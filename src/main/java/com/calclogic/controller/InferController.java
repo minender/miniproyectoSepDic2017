@@ -25,37 +25,28 @@ import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
-import com.calclogic.lambdacalculo.TypedI;
-import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.lambdacalculo.TypedS;
-import com.calclogic.lambdacalculo.TypedU;
-import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermUtilities;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SolucionManager;
-import com.calclogic.service.TerminoManager;
 import com.calclogic.service.UsuarioManager;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.MetateoremaManager;
-import com.calclogic.service.TeoremaManager;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
-import com.calclogic.service.PlantillaTeoremaManager;
 import com.calclogic.service.SimboloManager;
+import com.calclogic.proof.FinishedProofMethod;
+import com.calclogic.proof.CrudOperations;
+import com.calclogic.proof.ProofBoolean;
+import com.calclogic.proof.InferenceIndex;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.lang3.text.StrSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -82,11 +73,7 @@ public class InferController {
     @Autowired
     private SolucionManager solucionManager;
     @Autowired
-    private PlantillaTeoremaManager plantillaTeoremaManager;
-    @Autowired
     private MetateoremaManager metateoremaManager;
-    @Autowired
-    private TeoremaManager teoremaManager;
     @Autowired
     private ResuelveManager resuelveManager;
     @Autowired
@@ -127,7 +114,7 @@ public class InferController {
         }
         Usuario usr = usuarioManager.getUsuario(username);
         InfersForm infersForm = new InfersForm();
-        List <Categoria> showCategorias = new LinkedList<Categoria>();
+        List <Categoria> showCategorias = new LinkedList<>();
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
         for (int i = 0; i < mostrarCategoria.size(); i++ ){// se puede evitar este for si se mandan
                                                            // los MostrarCategorias al jsp en lugar 
@@ -208,8 +195,7 @@ public class InferController {
             solId ="" + resuel.getDemopendiente();
         
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,nTeo); // Maybe: getAllResuelveByUserOrAdminResuelto
-        for (Resuelve r: resuelves)
-        {
+        for (Resuelve r: resuelves){
             Teorema t = r.getTeorema();
             Term term = t.getTeoTerm();
             if(r.isResuelto()==true){ // || r.getNumeroteorema().equals(nTeo)){
@@ -235,8 +221,7 @@ public class InferController {
                     t.setTeoTerm(term);
                 }
                 t.setMetateoTerm(new App(new App(new Const("{\\equiv}}",false,1,1),new Const("true ")), term));*/
-            }
-            
+            }    
         }
         Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("usuario", usr);
@@ -273,7 +258,7 @@ public class InferController {
                 simboloManager
             );
 
-            Boolean hasInnerMethodSelected = !solucion.getMetodo().equals("");
+            //Boolean hasInnerMethodSelected = !solucion.getMetodo().equals("");
 
 
             // If it is an And Introduction proof
@@ -333,7 +318,7 @@ public class InferController {
             // else
             //    map.addAttribute("teoInicial", "");
         }
-        List <Categoria> showCategorias = new LinkedList<Categoria>();
+        List <Categoria> showCategorias = new LinkedList<>();
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
@@ -404,21 +389,22 @@ public class InferController {
             String tipoTeo = nStatement.substring(0, 2);
             String numeroTeo = nStatement.substring(3, nStatement.length());
         
-            if (tipoTeo.equals("ST")){
-                Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
-                // Case when the user could only see the theorem but had not a Resuelve object associated to it
-                if (resuelve == null) {
-                    resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                }
-                statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
-            }
-            else if(tipoTeo.equals("MT")){
-                Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
-            }
-            else {    
-                response.setError("statement format error");
-                return response;
+            switch (tipoTeo) {
+                case "ST":
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                    // Case when the user could only see the theorem but had not a Resuelve object associated to it
+                    if (resuelve == null) {
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                    }
+                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
+                    break;
+                case "MT":
+                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
+                    break;
+                default:
+                    response.setError("statement format error");
+                    return response;
             }
             if (statementTerm == null) {
                 response.setError("The statement doesn't exist");
@@ -501,22 +487,23 @@ public class InferController {
             // FIND THE THEOREM BEING USED IN THE HINT
             String tipoTeo = nStatement.substring(0, 2);
             String numeroTeo = nStatement.substring(3, nStatement.length());
-        
-            if (tipoTeo.equals("ST")){
-                Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
-                // Case when the user could only see the theorem but had not a Resuelve object associated to it
-                if (resuelve == null) {
-                    resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                }
-                statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
-            }
-            else if(tipoTeo.equals("MT")){
-                Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
-            }
-            else {    
-                response.setError("statement format error");
-                return response;
+            
+            switch (tipoTeo) {
+                case "ST":
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                    // Case when the user could only see the theorem but had not a Resuelve object associated to it
+                    if (resuelve == null) {
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                    }
+                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
+                    break;
+                case "MT":
+                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
+                    break;
+                default:
+                    response.setError("statement format error");
+                    return response;
             }
             if (statementTerm == null) {
                 response.setError("The statement doesn't exist");
@@ -535,15 +522,15 @@ public class InferController {
 
             String metodo = solucion.getMetodo();
             Term methodTerm = ProofMethodUtilities.getTerm(metodo);
-            Term typedTerm = getSubProof(solucion.getTypedTerm(),methodTerm,true);
+            Term typedTerm = CrudOperations.getSubProof(solucion.getTypedTerm(),methodTerm,true);
 
             Term lastLine = typedTerm.type();
             if (lastLine == null)
                 lastLine = typedTerm;
             else {
-                metodo = currentMethod(methodTerm).toStringFinal();
+                metodo = CrudOperations.currentMethod(methodTerm).toStringFinal();
                 if (metodo.equals("WE") || metodo.equals("ST") || metodo.equals("TR")) {
-                    int index = wsFirstOpInferIndex1(typedTerm);
+                    int index = InferenceIndex.wsFirstOpInferIndex1(typedTerm);
                     if (index == 0 || index == 1)
                         lastLine = ((App)((App)typedTerm.type()).p).q;
                     else
@@ -603,1420 +590,6 @@ public class InferController {
         response.setSustLatex(null);
         return response;
     }
-
-    /**
-     * This function checks if a base demonstration has finished depending on the method used.
-     * If it determines it has not finished, it returns the same proof tree given as argument.
-     * 
-     * @param theoremBeingProved: The theorem the user is trying to prove
-     * @param proof: The proof tree so far
-     * @param username: name of the user doing the prove
-     * @param teoNum: id that identifies the theorem that the user is trying to prove
-     * @param method: method used in the demonstration
-     * @return new proof if finished, else return the same proof
-     */
-    private Term finishedBaseMethodProof(Term theoremBeingProved, Term proof, String username, String method) {
-        Term expr = proof.type(); 
-        Term initialExpr = ((App)expr).q; // The expression (could be a theorem) from which the user started the demonstration
-        Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
-
-        try{
-            switch (method){
-
-                // Direct method --> assume we have a proof that so far has proved A == ... == F
-                case "DM":
-                    // Case when we started from the theorem being proved
-                    if(theoremBeingProved.equals(initialExpr)) {
-                        // List of theorems solved by the user. We examine them to check if the current proof already reached one 
-                        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminResuelto(username);
-                        Term theorem, mt;
-                        Term equanimityExpr = null; // Expression with which equanimity will be applied
-
-                        for(Resuelve resu: resuelves){ 
-                            theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
-                            mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem); // theorem == true
-
-                            // If the current theorem or theorem==true matches the final expression (and this theorem is not the one being proved) 
-                            if (!theorem.equals(theoremBeingProved) && (theorem.equals(finalExpr) || mt.equals(finalExpr))){
-                                equanimityExpr = new TypedA(finalExpr);
-                            } 
-                            else {
-                                // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
-                                // >>> It would not work if we did it backwards: (finalExpr, theorem)
-                                Equation eq = new Equation(theorem, finalExpr);
-                                Sust sust = eq.mgu(simboloManager);
-
-                                // Case when last line is an instantiation of the compared theorem
-                                if (sust != null){
-                                    // The equanimity is applied with the instantiated theorem, not with the last line instantiated
-                                    equanimityExpr = new TypedApp(new TypedI(sust), new TypedA(theorem)); 
-                                }   
-                            }
-                            if (equanimityExpr != null){
-                                return new TypedApp(new TypedApp(new TypedS(proof.type()), proof), equanimityExpr);
-                            }
-                        }
-                    }
-                    // Case when we started from another theorem
-                    else if(finalExpr.equals(theoremBeingProved)) {
-                        return new TypedApp(proof, new TypedA(initialExpr));
-                    }
-                    break;
-
-                // Starting from one side --> assume we have a proof that so far has proved A == ... == F
-                case "SS":
-                    // If the theorem the user is trying to prove is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
-                    if(initialExpr.equals(((App)((App)theoremBeingProved).p).q) && finalExpr.equals(((App)theoremBeingProved).q)){
-                        return new TypedApp(new TypedS(proof.type()), proof);
-                    }
-                    break;
-
-                // Transitivity method --> assume we have a proof that so far has proved A == ... == F
-                case "TR":
-                    // if at least one opInference was made and reaches the goal
-                    if(wsFirstOpInferIndex(proof)!=0 && ((App)((App)expr).p).q.equals(theoremBeingProved) ){ 
-                        return new TypedApp(proof,new TypedA(new Const("c_{8}"))); // true
-                    }
-                    break;
-
-                // Weakening or strengthening method ---> do the last equanimity and symmetry of => steps to finish
-                case "WE":
-                case "ST":
-                    String arrow = ((App)((App)theoremBeingProved).p).p.toStringFinal();
-                    Boolean rightArrow = arrow.equals("c_{2}"); // =>
-                    Boolean leftArrow = arrow.equals("c_{3}"); // <=
-
-                    // If we are weakening and the statement is A=>B or we are strengthening and the statement is A<=B
-                    if (((method == "WE") && rightArrow) || ((method == "ST") && leftArrow)){
-                        return finishedBaseMethodProof(theoremBeingProved, proof, username, "TR");
-                    }
-                    /* If we are weakening and the statement is A<=B or we are strengthening and the statement is A=>B,
-                       and at least one inference was made.
-                       >>>> NOTE: if the app forces to start from the left side, this case may be impossible (not sure) */
-                    if ((((method == "WE") && leftArrow) || ((method == "ST") && rightArrow)) && (wsFirstOpInferIndex(proof)!=0)){
-                        // Axiom: (q => p) == (p <= q)
-                        TypedA axiom = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
-                        TypedI instantiation;
-
-                        if (isInverseImpl(expr,theoremBeingProved)){
-                            if (method == "WE"){
-                                instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]"));
-                            }
-                            else {
-                                instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]"));
-                            }
-                            return new TypedApp(new TypedApp(instantiation,axiom),proof);
-                        }
-                        if (isInverseImpl(((App)((App)expr).p).q,theoremBeingProved)){
-                            Term aux;
-                            if (method == "WE"){
-                                instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]"));
-                                aux = new TypedApp(instantiation,axiom);
-
-                                return new TypedApp(new TypedApp(new TypedS(aux.type()),aux),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
-                            }
-                            else {
-                                instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]"));
-                                aux = new TypedApp(instantiation,axiom);
-
-                                return new TypedApp(aux,new TypedApp(proof,new TypedA(new Const("c_{8}"))));
-                            }
-                        }
-                    }
-                    break;
-
-                // Starting from one side method with natural deduction ---> assume we have a proof that so far has proved  H /\ Bi == ... == H /\ Bn
-                case "Natural Deduction,one-sided":
-                    initialExpr = ((App)((App)initialExpr).p).q;
-                    finalExpr = ((App)((App)finalExpr).p).q;
-                    
-                    Term b1 = ((App)((App)((App)theoremBeingProved).p).q).q;
-                    Term bf = ((App)((App)((App)((App)theoremBeingProved).p).q).p).q;
-
-                    Boolean startedFromRight = initialExpr.equals(bf) && finalExpr.equals(b1);
-
-                    // If here then finished
-                    if( (initialExpr.equals(b1) && finalExpr.equals(bf)) || startedFromRight){
-                        Term H = ((App)theoremBeingProved).q;
-                        TypedApp newProof = (TypedApp)proof;
-                        
-                        if (startedFromRight) {
-                            newProof = new TypedApp(new TypedS(proof.type()),proof);
-                        }
-                        
-                        // (p => (q == r)) == p /\ q == p /\ r
-                        TypedA A = new TypedA(new App(new App(new Const("c_{1}"), 
-                                new App( new App(new Const("c_{1}"),new App(new App(new Const("c_{5}"),new Var('r')),new Var('p'))),new App(new App(new Const("c_{5}"),new Var('q')),new Var('p')))),
-                                new App(new App(new Const("c_{2}"),new App(new App(new Const("c_{1}"),new Var('r')),new Var('q'))), new Var('p'))));
-                        
-                        // Parallel substitution [p, q, r := H, B1, Bn]
-                        List<Var> vars = new ArrayList<Var>();
-                        List<Term> terms = new ArrayList<Term>();
-
-                        Collections.addAll(vars, new Var('p'), new Var('q'), new Var('r'));
-                        Collections.addAll(terms, H, b1, bf);           
-                        Sust instantiation = new Sust(vars, terms);
-                        TypedI I = new TypedI(instantiation);
-                        
-                        TypedApp left = new TypedApp(I, A);
-                        left = new TypedApp(new TypedS(left.type()),left);
-                        
-                        return new TypedApp(left, newProof);
-                    }
-                    break;
-
-                // Direct method with natural deduction ---> assume we have a proof that so far has proved (H == H /\ B1) == ... == (H == H /\ Bn)
-                case "Natural Deduction,direct":
-                    // Take away H == H /\
-                    finalExpr = ((App)((App)((App)((App)finalExpr).p).q).p).q;
-                    Term H = ((App)theoremBeingProved).q; 
-
-                    // Take away H from H => B
-                    theoremBeingProved = ((App)((App)theoremBeingProved).p).q;
-                    
-                    // Case when we started from another theorem (c_{8} is "true") and the proof has finished
-                    if (initialExpr.equals(new Const("c_{8}")) && finalExpr.equals(theoremBeingProved)) {           
-                        
-                        // Parallel substitution [p, q := H, B] 
-                        List<Var> vars = new ArrayList<Var>();
-                        List<Term> terms = new ArrayList<Term>();
-
-                        Collections.addAll(vars, new Var('p'), new Var('q'));
-                        Collections.addAll(terms, H, finalExpr);  
-                        Sust instantiation = new Sust(vars, terms);
-                        TypedI I = new TypedI(instantiation);
-                        
-                        // p => q == (p == p /\ q)                
-                        TypedA A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"),new Var('q')),new Var('p'))), new Var('p'))),
-                                new App(new App(new Const("c_{2}"), new Var('q')), new Var('p'))));
-                        
-                        // HINT (H => B) == (H == H /\ B) 
-                        TypedApp hint = new TypedApp(I, A);
-                        hint = new TypedApp(new TypedS(hint.type()), hint);
-                        
-                        TypedApp newProof = new TypedApp(proof, hint);
-                        
-                        // Need to add equanimity since proved true == H => B
-                        return new TypedApp(newProof, new TypedA(new Const("c_{8}")));                             
-                        
-                    }
-                    // Case when we started from the theorem being proved
-                    else { 
-                        
-                        // List of theorems solved by the user. We examine them to check if the current proof already reached one 
-                        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminResuelto(username);
-                        Term theorem, mt;
-                        
-                        for(Resuelve resu: resuelves){
-                            theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
-                            mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem); // theorem == true
-                            
-                            // If the current theorem or theorem==true matches the final expression (and this theorem is not the one being proved) 
-                            if(!theorem.equals(theoremBeingProved) && (theorem.equals(finalExpr) || mt.equals(finalExpr))) {
-                                // ----- HINT 1 -----
-                                
-                                // H = H ^ z
-                                Bracket leib = new Bracket(new Var('z'), new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), H)), H));
-                                TypedL L = new TypedL(leib);
-                                TypedApp metaTheorem= metaTheorem(theorem); // Create theorem == true
-                                TypedApp hint1 = new TypedApp(L, metaTheorem);
-                                
-                                // ----- HINT 2 -----
-                                
-                                // H == z
-                                leib = new Bracket(new Var('z'), new App(new App(new Const("c_{1}"), new Var('z')), H));
-                                L = new TypedL(leib);
-                                
-                                // Parallel substitution [p := H] 
-                                ArrayList<Var> vars = new ArrayList<Var>();
-                                ArrayList<Term> terms = new ArrayList<Term>();
-                                vars.add(new Var('p'));   
-                                terms.add(H);
-                                Sust instantiation = new Sust(vars, terms);
-                                TypedI I = new TypedI(instantiation);
-                                
-                                // p /\ true == p
-                                TypedA A = new TypedA(new App( new App( new Const("c_{1}") ,new Var('p')), new App(new App(new Const("c_{5}"), new Const("c_{8}")), new Var('p'))));
-                                
-                                TypedApp hint2 = new TypedApp(I, A);
-                                hint2 = new TypedApp(L, hint2);
-                                
-                                // ----- HINT 3 -----
-                                
-                                // needs  true == (q == q) gotta prove it with associativity and true == q == q
-                                
-                                // true == (q == q)
-                                A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new Var('q')),new Var('q'))),new Const("c_{8}")));
-                                
-                                // Parallel substitution [q := H] 
-                                vars = new ArrayList<Var>();
-                                vars.add(new Var('q'));   
-                                instantiation = new Sust(vars, terms);
-                                I = new TypedI(instantiation);
-                                
-                                TypedApp hint3 = new TypedApp(I,A);
-                                TypedS S = new TypedS(hint3.type());
-                                hint3 = new TypedApp(S, hint3);
-                                
-                                // ----- BUILD THE NEW PROOF -----
-                                TypedApp newProof = new TypedApp(proof, hint1);
-                                newProof = new TypedApp(newProof, hint2);
-                                newProof = new TypedApp(newProof, hint3);          
-                                
-                                // Needs to add equanimity since proved H => B == true
-                                return new TypedApp(new TypedApp(new TypedS(newProof.type()), newProof),new TypedA(new Const("c_{8}")));
-                            }   
-                        }
-                    
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        catch (TypeVerificationException e)  {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
-        } 
-
-        // If the proof hasn't finished
-        return proof;
-    }
-    
-    /**
-     * Check if the two arguments are of the form p op q and q op^{-1} p
-     * 
-     * @param t1: Term that represent a formula
-     * @param t2: Term that represent a formula
-     * @return true if and only if t1 and t2 are of the form p op q and q op^{-1} p respectively
-     */    
-    public static boolean isInverseImpl(Term t1, Term t2) {
-        if ( !(t1 instanceof App) || !(((App)t1).p instanceof App)) {
-            return false;
-        }
-        String op1 = ((App)((App)t1).p).p.toStringFinal();
-        return (op1.equals("c_{2}") || op1.equals("c_{3}")) && 
-                t2 instanceof App && ((App)t2).p instanceof App &&
-                ((App)t1).q.equals(((App)((App)t2).p).q) && 
-               ((App)((App)t1).p).q.equals(((App)t2).q) && 
-               ((App)((App)t2).p).p.toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
-    }  
-
-    /**
-     * This function will only be correct if called when using a compound method
-     * It will return a new proof tree in case it finds out that the last inference
-     * caused the whole proof to be correct under the sub-proof method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * @param theoremBeingProved: The theorem that user is trying to prove 
-     * @param proof: The proof tree so far
-     * @param method: method used in the demonstration
-     * @return proof of theoremBeingProved if finished, else return the same proof
-     */
-    private Term finishedCompoundMethodProof(Term theoremBeingProved, Term proof, String method) {
-        try {
-            // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
-            List<Var> vars = new ArrayList<Var>();
-            List<Term> terms = new ArrayList<Term>();
-
-            Term axiomTree = null;
-            Sust sus = null;
-            TypedI I = null;
-            TypedA A = null;
-            TypedA A2 = null;
-            String str = null;
-            String str2 = null;
-            Term st = null;
-            Term st2 = null;
-
-            switch (method){
-                // Counter-reciprocal
-                case "CR": 
-                    // This string says: p => q == ¬q => ¬p
-                    str = "c_{1} (c_{2} (c_{7} x_{112}) (c_{7} x_{113})) (c_{2} x_{113} x_{112})";
-                    st = CombUtilities.getTerm(str);
-
-                    // We make that formula to be treated as an axiom
-                    A = new TypedA(st); 
-            
-                    // Substitution [p,q := ...]
-                    vars.add(0, new Var(112)); // Letter 'p'
-                    vars.add(0, new Var(113)); // Letter 'q'
-                    terms.add(0, ((App)theoremBeingProved).q);
-                    terms.add(0, ((App)((App)theoremBeingProved).p).q);
-                    sus = new Sust(vars, terms);
-                    
-                    // We give the instantiation format to the substitution above
-                    I = new TypedI(sus);
-
-                    axiomTree = new TypedApp(new TypedS(),new TypedApp(I,A));
-                    break;
-
-                // Contradiction
-                case "CO":
-                    // This string says: ¬p => false == ¬(¬p)
-                    str = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
-                    st = CombUtilities.getTerm(str);
-
-                    // This string says: ¬(¬p) == p
-                    str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
-                    st2 = CombUtilities.getTerm(str2);
-
-                    // We make the two formulas above to be treated as axioms
-                    A = new TypedA(st);
-                    A2 = new TypedA(st2);
-
-                    // Substitution [p := teoremProved]
-                    vars.add(0, new Var(112)); // Letter'p'
-                    terms.add(0, theoremBeingProved);
-                    sus = new Sust(vars, terms);
-
-                    // We give the instantiation format to the substitution above
-                    I = new TypedI(sus);
-
-                    axiomTree = new TypedApp(new TypedApp(I,A),new TypedApp(I,A2));
-                    break;
-
-                default:
-                    break;
-            }
-            return new TypedApp(axiomTree, proof);
-             
-        }catch (TypeVerificationException e)  {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
-        }
-        return proof;
-    }
-    
-    /**
-     * This function will only be correct if called when using And Introduction method
-     * This function will return a new prove tree that connect in one proof of P/\Q, 
-     * two independent sub proofs of P and Q.
-     * 
-     * @param originalTerm: The current proof  
-     * @param finalProof: The proof of second sub proof
-     * @return proof of conjunction of two sub proofs
-     */
-    public static Term finishedAI2Proof(Term originalTerm, Term finalProof) {
-        Map<String,String> values = new HashMap<String, String>();
-        values.put("T1",finalProof.toStringFinal());
-        String aux = finalProof.toStringFinal();
-        values.put("T1Type", finalProof.type().toStringFinal());
-        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
-        String metaTheo = "S (I^{[x_{113} := %(T1Type)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (%(T1))";
-        String theo = sub.replace(metaTheo);
-        Term theoTerm = CombUtilities.getTerm(theo);
-        Term firstProof = ((App)originalTerm).q;
-        Term firstStAndTrue = ((App)((App)originalTerm).p).p;
-        Term leibniz = ((App)((App)((App)originalTerm).p).q).p;
-        try {
-            Term newProof = new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,theoTerm)),firstProof);
-            return newProof;
-        }
-        catch (TypeVerificationException e) {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-            return originalTerm;
-        }
-    }
-
-    /**
-     * This function will create a hint for the current base method given the hint's elements.
-     * In case the elements don't make sense it will return null.
-     * @param theoremHint: theorem used on the hint
-     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
-     * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents Leibniz on the hint
-     * @param leibnizString: string that was used to parse Leibniz
-     * @param theoremBeingProved: theorem that we are proving using this hint
-     * @param method: method used in the demonstration
-     * @return a hint for the direct method
-     */
-    private Term createBaseMethodInfer(Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
-            Bracket leibniz, String leibnizString, Term theoremBeingProved, String method) 
-            throws TypeVerificationException{
-
-        Term infer = null;
-        TypedI I = null;
-        TypedA A = new TypedA(theoremHint);
-        TypedL L = new TypedL(leibniz);
-        Boolean noInstantiation = instantiationString.equals("");
-        Boolean noLeibniz = leibnizString.equals("");
-        String groupMethod = (method=="DM" || method=="SS") ? "D" : ((method=="TR" || method=="WE" || method=="ST") ? "T" : "N");
-
-        switch(groupMethod){
-
-            // Direct, starting from one side, transitivity, weakening or strengthening method
-            case "D":
-            case "T":
-                Term C;       
-                if (noInstantiation && noLeibniz){
-                    infer = A;
-                }
-                else if (noInstantiation){
-                    if ((groupMethod=="T") && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                         (C=((App)(((App)theoremHint).p)).p) != null && C instanceof Const &&
-                         (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
-
-                        infer = parityLeibniz(leibniz, A);
-                    }else {
-                        infer = new TypedApp(L,A);
-                    } 
-                }
-                else{
-
-                    I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-                    if (noLeibniz){
-                        infer = new TypedApp(I,A);
-                    }
-                    else if ((groupMethod=="T") && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                            (C=((App)((App)theoremHint).p).p) != null && C instanceof Const &&
-                            (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
-
-                        infer = parityLeibniz(leibniz,new TypedApp(I,A));
-                    } else {
-                        L = new TypedL((Bracket)leibniz);
-                        infer = new TypedApp(L,new TypedApp(I,A));
-                    }
-                }
-                break;
-
-            // Natural deduction
-            case "N":
-                // First must check if we are dealing with a special modus ponens hint 
-                // If its not a special hint (it's not an implication) just return the same we would do with the direct method
-                if(!((App)((App)theoremHint).p).p.toStringInf(simboloManager, "").equals("\\Rightarrow")){
-                    
-                    if(!noLeibniz) { // If there is a leibniz add H to it 
-                        if (method=="Natural Deduction,one-sided"){
-                            leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), leibniz.t), ((App)theoremBeingProved).q));
-                        }else { // Direct method
-                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), leibniz.t), ((App)theoremBeingProved).q)) ,((App)theoremBeingProved).q));
-                        }
-                    }else {
-                        // Use a leibniz that represents H /\ z
-                        if (method=="Natural Deduction,one-sided"){
-                            leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), new Var('z')), ((App)theoremBeingProved).q));
-                        } else { // Direct method
-                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), ((App)theoremBeingProved).q)) ,((App)theoremBeingProved).q));
-                        }
-                        leibnizString = "69";
-                    }
-                    infer = createBaseMethodInfer(theoremHint, instantiation, instantiationString, leibniz, leibnizString, theoremBeingProved, "DM");
-                }
-                else { // IF REACHED HERE WE NEED A MODUS PONENS HINT
-                    String e = "\\Phi_{}"; // by default use empty phi which represents leibniz z
-                    Term iaRightTerm = A;
-                    
-                    // Example of left IA
-                    // I^{[A,B,C,E := \equiv true q,\equiv q q,\equiv true true, \Phi_{cb} true \equiv]}A^{\Rightarrow (\equiv (\wedge (E C) A) (\wedge (E B) A)) (\Rightarrow (\equiv C B) A)}
-                    
-                    // A,B and C are in the hint being used 
-                    Term cTerm = ((App)((App)((App)((App)theoremHint).p).q).p).q;
-                    Term bTerm = ((App)((App)((App)theoremHint).p).q).q;
-                    Term aTerm = ((App)theoremHint).q;
-                
-                    // If there is instantiation change a,b and c properly
-                    if(!noInstantiation) {
-                        I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-                        cTerm = (new TypedApp(I, new TypedA(cTerm))).type();
-                        bTerm = (new TypedApp(I, new TypedA(bTerm))).type();
-                        aTerm = (new TypedApp(I, new TypedA(aTerm))).type();
-                        // Need to add I to the right side
-                        iaRightTerm = new TypedApp(I, iaRightTerm);
-                    }
-                    
-                    // If there is leibniz change e properly
-                    if(!leibnizString.equals("")) {
-                        Term phiLeibniz = leibniz.traducBD();
-                        e = phiLeibniz.toStringFinal();
-                    }
-
-                    String c = cTerm.toStringFinal();
-                    String b = bTerm.toStringFinal();
-                    String a = aTerm.toStringFinal();
-                    
-                    // Here is the left IA side of the modus ponens hint 
-                    String iaLeftString;
-                    if (method=="Natural Deduction,one-sided"){
-                        iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
-                    } else { // Direct method
-                        iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) x_{65}) (c_{1}  (c_{5} (x_{69} x_{66}) x_{65}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
-                    }
-                    Term iaLeftTerm = CombUtilities.getTerm(iaLeftString);
-                    
-                    //throw new TypeVerificationException();
-                    infer = new TypedApp(iaLeftTerm, iaRightTerm);
-                }
-                break;
-
-            default:
-                break;
-        }
-        return infer;
-    }
-    
-    /**
-     * This method will return the typedTerm that represents the metaTheorem teo == true
-     * @param teo: theorem to be turned into teo == true
-     * @return new Theorem for the given template meta theorem, null if the argument isn't valid
-     */
-    public static TypedApp metaTheorem(Term teo) {
-        Term A1 = new TypedA( new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"),new Var(112)),new Var(113)) ), new App(new App(new Const("c_{1}"),new Var(113)),new Var(112))) );
-        Term A2 = new TypedA( new App(new App(new Const("c_{1}"),new Var(113)),
-                                     new App(new App(new Const("c_{1}"),new Var(113)),
-                                                               new Const("c_{8}"))));
-        Term A3 = new TypedA(teo);
-        List<Var> list1 = new ArrayList<Var>();
-        list1.add(new Var(112));
-        list1.add(new Var(113));
-        List<Term> list2 = new ArrayList<Term>();
-        list2.add(teo);
-        list2.add(new Const("c_{8}"));
-        Term I1 = new TypedI(new Sust(list1,list2));
-        
-        List<Var> lis1 = new ArrayList<Var>();
-        lis1.add(new Var(113));
-        List<Term> lis2 = new ArrayList<Term>();
-        lis2.add(teo);
-        Term I2 = new TypedI(new Sust(lis1,lis2));
-        
-        TypedApp typedTerm = null;
-        try {
-          typedTerm = new TypedApp(new TypedApp(I1,A1), new TypedApp(I2,A2));
-          typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),A3);
-          return typedTerm;
-        }
-        catch (TypeVerificationException e){
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-            return null;
-        }
-    }
-    
-    /**
-     * This method will return the typedTerm that represents the metaTheorem true == teo. 
-     * This method use the proof of teo instead the statement of teo.
-     * 
-     * @param proof: proof of theorem teo to be turned into true == teo 
-     * @return new theorem for the given meta theorem template, null if the argument isn't valid
-     */
-    public static TypedApp metaTheoTrueLeft(Term proof) {
-    
-        Term A2 = new TypedA( new App(new App(new Const("c_{1}"),new Var(113)),
-                                     new App(new App(new Const("c_{1}"),new Var(113)),
-                                                               new Const("c_{8}"))));
-        
-        List<Var> lis1 = new ArrayList<Var>();
-        lis1.add(new Var(113));
-        List<Term> lis2 = new ArrayList<Term>();
-        lis2.add(proof.type());
-        Term I2 = new TypedI(new Sust(lis1,lis2));
-        
-        TypedApp typedTerm = null;
-        try {
-          typedTerm = new TypedApp(I2,A2);
-          typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),proof);
-          return typedTerm;
-        }
-        catch (TypeVerificationException e){
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-            return null;
-        }
-    }
-    
-    /**
-     * This method return a derivation tree of the form: 
-     *
-     *     Gamma |- (x op y) == (!x op' !y)
-     *     -------------------------------- I [x,y:=p,q]
-     *     Gamma |- (p op q) == (!p op' !q)
-     * 
-     * where op' is ==> when op is <== and op' is <== when op is ==>
-     * 
-     * @param p: formula to be substituted in the tree
-     * @param q: formula to be substituted in the tree
-     * @param op: Constant that can be ==> or <==
-     * @return typed term that represent the derivation tree before
-     */
-    private Term neg(Term p, Term q, Const op) {
-        
-        String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
-        String neg = "I^{[x_{112}, x_{113} := "+P+", "+Q+"]}A^{c_{1} ("+op2+" (c_{7} x_{113}) (c_{7} x_{112})) ("+op+" x_{113} x_{112})}";
-        
-        return CombUtilities.getTerm(neg);
-    }
-    
-    /**
-     * This method return a derivation tree of the form: 
-     *
-     *     Gamma |- (x op y) ==> ((x op1 z) op (y op1 z))
-     *     ---------------------------------------------- I [x,y,z:=p,q,r]
-     *     Gamma |- (p op q) ==> ((p op1 r) op (q op1 r))
-     * 
-     * where op' is ==> when op is <== and op' is <== when op is ==> 
-     * and op1 can be /\, \/, or <==
-     * 
-     * @param p: formula to be substituted in the tree
-     * @param q: formula to be substituted in the tree
-     * @param op: Constant that can be ==> or <==
-     * @param r: formula to be substituted in the tree
-     * @param op1: Constant that can be /\, \/, or <==
-     * @return typed term that represent the derivation tree before
-     */
-    private Term wsl1(Term p, Term q, Const op, Term r, Const op1) {
-        
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
-        String R = r.toStringFinal();
-        String wsl1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{114} x_{113}) ("+op1+" x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
-        
-        return CombUtilities.getTerm(wsl1);
-    }
-    
-    /**
-     * This method return a derivation tree of the form: 
-     *
-     *     Gamma |- (x op y) ==> ((x ==> z) op' (y ==> z))
-     *     ---------------------------------------------- I [x,y,z:=p,q,r]
-     *     Gamma |- (p op q) ==> ((p ==> r) op' (q ==> r))
-     * 
-     * where op' is ==> when op is <== and op' is <== when op is ==> 
-     * and op1 can be /\, \/, or <==
-     * 
-     * @param p: formula to be substituted in the tree
-     * @param q: formula to be substituted in the tree
-     * @param op: Constant that can be ==> or <==
-     * @param r: formula to be substituted in the tree
-     * @return typed term that represent the derivation tree before
-     */
-    private Term wsl2(Term p, Term q, Const op, Term r) {
-        
-        String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
-        String R = r.toStringFinal();
-        String wsl2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{2} x_{114} x_{113}) (c_{2} x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
-        
-        return CombUtilities.getTerm(wsl2);
-    }
-    
-    /**
-     * This method return a derivation tree of the form: 
-     *
-     *     Gamma |- (x op y) ==> ((z op1 x) op (z op1 y))
-     *     ---------------------------------------------- I [x,y,z:=p,q,r]
-     *     Gamma |- (p op q) ==> ((r op1 p) op (r op1 q))
-     * 
-     * where op is ==> or <== and op1 can be /\, \/, or ==>
-     * 
-     * @param p: formula to be substituted in the tree
-     * @param q: formula to be substituted in the tree
-     * @param op: Constant that can be ==> or <==
-     * @param r: formula to be substituted in the tree
-     * @param op1: Constant that can be /\, \/, or ==>
-     * @return typed term that represent the derivation tree before
-     */
-    private Term wsr1(Term p, Term q, Const op, Term r, Const op1) {
-        
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
-        String R = r.toStringFinal();
-        String wsr1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{113} x_{114}) ("+op1+" x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
-        
-        return CombUtilities.getTerm(wsr1);
-    }
-    
-    /**
-     * This method return a derivation tree of the form: 
-     *
-     *     Gamma |- (x op y) ==> ((z <== x) op' (z <== y))
-     *     ----------------------------------------------- I [x,y,z:=p,q,r]
-     *     Gamma |- (p op q) ==> ((r <== p) op' (r <== q))
-     * 
-     * where where op' is ==> when op is <== and op' is <== when op is ==> 
-     * 
-     * @param p: formula to be substituted in the tree
-     * @param q: formula to be substituted in the tree
-     * @param op: Constant that can be ==> or <==
-     * @param r: formula to be substituted in the tree
-     * @return typed term that represent the derivation tree before
-     */
-    private Term wsr2(Term p, Term q, Const op, Term r) {
-        
-        String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
-        String R = r.toStringFinal();
-        String wsr2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{3} x_{113} x_{114}) (c_{3} x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
-        
-        return CombUtilities.getTerm(wsr2);
-    }
-    
-    /**
-     * This method will return the typedTerm that represents the sub derivation
-     * tree that infer de use on Leibniz in weakening/strengthening 
-     * @param leibniz: Term that represent de Leibniz expression 
-     * @param nabla: derivation with root P op Q. The root is to be use as argument 
-     *             for Leibniz rule with op in {Rightarrow,Leftarrow}
-     * @return new TypedTerm that represent a derivation with root 
-     *         (lambda z.E)P op_2 (lambda z.E)Q with op_2 in {Rightarrow,Leftarrow}
-     */
-    private Term parityLeibniz(Term leibniz, Term nabla) throws TypeVerificationException {
-        
-        Term t = leibniz.traducBD();
-        
-        while (t instanceof App) {
-            Term nabla2 = nabla; // si no entra en ninguna guardia aborta el TApp(nabla,nabla)
-            if (((App)t).q instanceof Const && ((Const)((App)t).q).getId() == 7 ) {
-                Term root = nabla.type();
-                nabla2 = neg(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p);
-                t = ((App)t).p;
-            }
-            else if (((App)t).q instanceof App && ((App)((App)t).q).p instanceof Const) {
-                if (((Const)((App)((App)t).q).p).getId() == 2 ) {
-                    Term root = nabla.type();
-                    nabla2 = wsl2(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p, ((App)((App)t).q).q);
-                }
-                else if ( (((Const)((App)((App)t).q).p).getId() != 1 ) ) {
-                    Term root = nabla.type();
-                    nabla2 = wsl1(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p, ((App)((App)t).q).q,
-                                             (Const)((App)((App)t).q).p);
-                }
-                t = ((App)t).p;
-            }
-            else if (((App)t).q instanceof Const && ((App)t).p instanceof App) {
-                if ( ((Const)((App)t).q).getId()==3 ) {
-                    Term root = nabla.type();
-                    nabla2 = wsr2(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p, ((App)((App)t).p).q);
-                }
-                else if (((Const)((App)t).q).getId() != 1) {
-                    Term root = nabla.type();
-                    nabla2 = wsr1(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p, ((App)((App)t).p).q,
-                                             (Const)((App)t).q);
-                }
-                t = ((App)((App)t).p).p;
-            }
-            nabla = new TypedApp(nabla2,nabla);
-        }
-        
-        return nabla;
-    }
-    
-    /**
-     * return the index of the first inference that is not a 
-     * equiv or = in a Transitivity method
-     * 
-     * @param typedTerm derivation tree that code a Transitivity proof
-     * @return index of the first no =inference
-     */
-    public static int wsFirstOpInferIndex1(Term typedTerm) {
-        Term iter;
-        iter = typedTerm;
-        Term ultInf = null;
-        int i = 0;
-        int firstOpInf = 0;
-        while (iter!=ultInf)
-        {
-            if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t') {// TT
-               ultInf = ((TypedApp)iter).q;
-               iter = ((TypedApp)iter).p;   
-            }
-            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='m' &&
-                     ((TypedApp)iter).p instanceof TypedApp && 
-                     ((TypedApp)((TypedApp)iter).p).inferType=='m' && 
-                     ((TypedApp)((TypedApp)iter).p).p instanceof TypedApp &&
-                     ((TypedApp)((TypedApp)((TypedApp)iter).p).p).inferType=='i'
-                    ) { // ((IA)T)T
-               ultInf = ((TypedApp)iter).q;
-               iter = ((TypedApp)((TypedApp)iter).p).q;
-            }
-            else { // first inference
-                if ( iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
-                     ((TypedApp)iter).p instanceof TypedApp && 
-                     ((TypedApp)((TypedApp)iter).p).inferType=='s'
-                   ) 
-                    iter = ((TypedApp)iter).q;
-                ultInf = iter;
-            }
-            i++;
-            Term ultInfType = ultInf.type();
-            if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
-                   !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{20}")
-                    )
-               )
-                firstOpInf = i;
-        }
-        if (firstOpInf != 0)
-            firstOpInf = i+1-firstOpInf;
-        return firstOpInf;
-    }
-    
-    /**
-     * return the index (counting in reverse) of the first inference that is not a 
-     * equiv or = in a Transitivity method
-     * 
-     * @param typedTerm derivation tree that code a Transitivity proof
-     * @return index of the first no =inference
-     */
-    public static int wsFirstOpInferIndex(Term typedTerm) {
-        Term iter;
-        iter = typedTerm;
-        Term ultInf = null;
-        int i = 0;
-        int firstOpInf = 0;
-        while (iter!=ultInf)
-        {
-            if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t') {// TT
-               ultInf = ((TypedApp)iter).q;
-               iter = ((TypedApp)iter).p;   
-            }
-            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='m' &&
-                     ((TypedApp)iter).p instanceof TypedApp && 
-                     ((TypedApp)((TypedApp)iter).p).inferType=='m' && 
-                     ((TypedApp)((TypedApp)iter).p).p instanceof TypedApp &&
-                     ((TypedApp)((TypedApp)((TypedApp)iter).p).p).inferType=='i'
-                    ) { // ((IA)T)T
-               ultInf = ((TypedApp)iter).q;
-               iter = ((TypedApp)((TypedApp)iter).p).q;
-            }
-            else { // first inference
-                if ( iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
-                     ((TypedApp)iter).p instanceof TypedApp && 
-                     ((TypedApp)((TypedApp)iter).p).inferType=='s'
-                   ) 
-                    iter = ((TypedApp)iter).q;
-                ultInf = iter;
-            }
-            i++;
-            Term ultInfType = ultInf.type();
-            if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
-                   !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{20}")
-                    )
-               )
-                firstOpInf = i;
-        }
-        return firstOpInf;
-    }
-    
-    /**
-     * This method constructs a new derivation tree adding an one step infer to a proof.
-     * This is not a pure function; it may change the the values of its given params in an external context.
-     * 
-     * @param proof: Term that represents a proof
-     * @param infer: Term that represents one step infer
-     * @param method: method used in the demonstration
-     * @return new TypedTerm that represents a new derivation tree that 
-     *         adds in the last line of proof the infer
-     */
-    private Term addInferToProof(Term proof, Term infer, String method) throws TypeVerificationException {
-        if (method.equals("WE") || method.equals("ST") || method.equals("TR")) {
-            Term type = proof.type();
-            Term typeInf = infer.type();
-            String op;
-            String opInf;
-            try {
-                op = ((App)((App)type).p).p.toStringFinal();
-                opInf = ((App)((App)typeInf).p).p.toStringFinal();
-            }
-            catch (ClassCastException e) {
-                throw new TypeVerificationException();
-            }
-            if ( !op.equals("c_{1}") && !op.equals("c_{20}") ) {
-                proof = metaTheoTrueLeft(proof);
-                type = proof.type();
-            }
-            int index = wsFirstOpInferIndex(proof);
-            boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{20}");
-            if ( index == 0 && eqInf) {
-                return new TypedApp(proof, infer);
-            }
-            else if (index == 0 && !eqInf) {
-                String eq = op;
-                String st = "c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
-                String deriv = "";
-                try {
-                    String E = "\\Phi_{b} ("+ ((App)infer.type()).p+")";
-                    deriv = "I^{[x_{101}, x_{102}, x_{69} := "+((App)type).q+", "+((App)((App)type).p).q+", "+E+"]} A^{"+st+"}";
-                }
-                catch (ClassCastException e) {
-                    throw new TypeVerificationException();
-                }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
-            }
-            else if (index != 0 && !eqInf) {
-                String st = "c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8})";
-                String deriv = "";
-                try {
-                    Term aux = (App)((App)((App)type).p).q;
-                    deriv = "I^{[x_{112}, x_{113}, x_{114} := "+((App)aux).q+", "+((App)((App)aux).p).q+", "+((App)((App)typeInf).p).q+"]} A^{"+st+"}";
-                }catch (ClassCastException e) {
-                    throw new TypeVerificationException();
-                }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
-            }
-            else {
-                if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l' ) {
-                    Term aux = ((App)((App)type).p).q;
-                    Term oldLeib = ((Bracket)((TypedApp)infer).p.type()).t;
-                    Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,oldLeib),((App)aux).q));
-                    infer = new TypedApp(new TypedL(leibniz),((TypedApp)infer).q);
-                    return new TypedApp(proof, infer);
-                }
-                else {
-                    Term aux = ((App)((App)type).p).q;
-                    Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,new Var('z')),((App)aux).q));
-                    infer = new TypedApp(new TypedL(leibniz),infer);
-                    return new TypedApp(proof, infer);
-                }
-            }
-        } else {
-            return new TypedApp(proof, infer);
-        }
-    }
-    
-    /**
-     * This method return true if and only if method is an incomplete non atomic proof method
-     *  
-     * @param method: Term that represent the current state of the proof method
-     * @return true if and only if method is waiting the selection of 
-     * another proof method to start de proof
-     */
-    public static boolean isWaitingMethod(Term method) {
-        
-        Term m1, m2 = null;
-        if (method instanceof Const && 
-            (
-             ((Const)method).getCon().equals("DM") ||
-             ((Const)method).getCon().equals("SS") ||   
-             ((Const)method).getCon().equals("TR") ||
-             ((Const)method).getCon().equals("WE") ||
-             ((Const)method).getCon().equals("ST")    
-            )
-           ) 
-        {
-           return false;    
-        }
-        else if (method instanceof Const && 
-                 (
-                  ((Const)method).getCon().equals("ND") ||
-                  ((Const)method).getCon().equals("CO") ||   
-                  ((Const)method).getCon().equals("CR") ||
-                  ((Const)method).getCon().equals("AI") ||
-                  ((Const)method).getCon().equals("CA") ||
-                  ((Const)method).getCon().equals("WI")
-                 )
-                ) 
-        {
-            return true;
-        }
-        else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
-                 (
-                  ((Const)m1).getCon().equals("ND") || 
-                  ((Const)m1).getCon().equals("CO") || 
-                  ((Const)m1).getCon().equals("CR") 
-                 )
-                ) 
-        {
-            return isWaitingMethod(((App)method).q);
-        }
-        else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
-                 (
-                  ((Const)m1).getCon().equals("AI") || 
-                  ((Const)m1).getCon().equals("CA") 
-                 )
-                )
-        {
-            return true;
-        }
-        else if ( method instanceof App && (m1 = ((App)method).p) instanceof App &&
-                  (m2 = ((App)m1).p) instanceof Const &&
-                  (
-                   ((Const)m2).getCon().equals("AI") || 
-                   ((Const)m2).getCon().equals("CA") 
-                  )
-                )
-        {
-            return isWaitingMethod(((App)method).q);
-        }
-        else
-            return true;
-    }    
-    /**
-     * This method add a proof method for currentMethod to get a new compose method. 
-     * If currentMethod is of the form ...M1 (M2 (M3...Mn)), then the method return  
-     * ...M1 (M2 (M3...(Mn newMethod))). If currentMethod is of the from 
-     * ...AI (M2 (M3...Mn)) where (M2 (M3...Mn)) is not waiting method then the method 
-     * return ...((AI (M2 (M3...Mn))) newMethod). If currentMethod is of the from 
-     * ...((AI (M2 (M3...Mn))) (N1 (N2 (N3...Nm)))) where (N1 (N2 (N3...Nm))) is 
-     * waiting method, then the method return 
-     * ...((AI (M2 (M3...Mn))) (N1 (N2 (N3...(Nm newMethod)))))
-     *  
-     * @param currentMethod: Term that represent the current state of the proof method
-     * @param newMethod: new no compose Method 
-     * @return Term that represent a new proof method compose by currentMethod and newMethod.
-     */
-    private Term updateMethod(String currentMethod, String newMethod) {
-        
-        if (currentMethod.equals(""))
-            return new Const(newMethod);
-        else {
-            Term methodTerm = ProofMethodUtilities.getTerm(currentMethod);
-            Term t = methodTerm;
-            Term aux = null;
-            Term father = methodTerm;
-            
-            if (t instanceof App)
-               aux = ((App)t).q;  
-            while (aux != null && !(aux instanceof Const) && isWaitingMethod(aux)) {
-               father = t;
-               t = aux;
-               aux = ((App)aux).q;
-            }
-            if (aux == null)
-               methodTerm = new App(methodTerm, new Const(newMethod));
-            else if (aux instanceof Const && isWaitingMethod(aux)) 
-               ((App)t).q = new App(aux, new Const(newMethod));
-            else { 
-                /*if (father == methodTerm && isWaitingMethod(t))
-                  methodTerm = new App(methodTerm, new Const("DM"));
-                else */
-                if (father == t)
-                    methodTerm = new App(methodTerm, new Const(newMethod));
-                else
-                    ((App)father).q = new App(t, new Const(newMethod));
-            }
-                  
-            return methodTerm;
-            
-        }
-    }
-    
-    /**
-     * This method erase one basic proof method for currentMethod. 
-     * If currentMethod is of the form ...M1 (M2 (M3...(Mn M))), then the method return  
-     * ...M1 (M2 (M3...Mn)). If currentMethod is of the from 
-     * ...(AI (M2 (M3...Mn)) M) then the method  return ...(AI (M2 (M3...Mn))). 
-     * If currentMethod is of the from ...((AI (M2 (M3...Mn))) (N1 (N2 (N3...(Nm M))))) is 
-     * then the method return ...((AI (M2 (M3...Mn))) (N1 (N2 (N3...Nm))))
-     *  
-     * @param currentMethod: String that encode the current state of the proof method
-     * @return Term that represent a new proof method exactly as currentMethod but without the 
-     *         last proof method. If currentMethod encode an Atomic method return null.
-     */
-    private Term eraseMethod(String currentMethod) {
-        // revisa en las llamadas a este metodo si se ahorra algo al recibir String 
-        // en lugar de Term
-        if (currentMethod.length() <= 3)
-            return null;
-        else {
-            Term currMethodTerm = ProofMethodUtilities.getTerm(currentMethod);
-            Term father = currMethodTerm;
-            Term q = ((App)father).q;
-            Term aux = null;
-            if ( q instanceof Const)
-               return ((App)father).p;
-            else {
-              aux = q;
-              q = ((App)q).q;
-            }
-            while ( q instanceof App) {
-                father = aux;
-                aux = ((App)father).q;
-                q = ((App)aux).q;
-            }
-            ((App)father).q = ((App)aux).p;
-            
-            return currMethodTerm;
-        }
-    }
-    
-    private Term currentMethod(Term method) {
-        if (method instanceof App) {
-            while (method instanceof App) {
-                method = ((App)method).q;
-            }
-            return method;
-        }
-        else
-            return method;
-    }
-    
-    /**
-     * Return true if and only if method is a base method, i.e. a method 
-     * that can't compose with another proof method. The base methods are 
-     * Direct Method, Starting From One Side Method, Transitivity Method, 
-     * Weakening Method, Strengthening Method
-     *  
-     * @param method: Term that represent the current state of the proof method
-     * @return true if and only if method is a base method.
-     */
-    public static boolean isBaseMethod(Term method) {
-        if (method instanceof App)
-            return false;
-        else if (((Const)method).getCon().equals("DM") || 
-                 ((Const)method).getCon().equals("SS") ||
-                 ((Const)method).getCon().equals("TR") ||
-                 ((Const)method).getCon().equals("WE") ||
-                 ((Const)method).getCon().equals("ST")
-                )
-            return true;
-        else
-            return false;
-    }
-    
-    /**
-     * The statement that it's needed to prove change inside a sub proof. This method 
-     * calculate the statement within all the sub proofs a return the one in the 
-     * current sub proof
-     *  
-     * @param beginFormula: general statement to be proved, is the base to calculate 
-     *                      al de sub statement in the sub proofs
-     * @param method: Term that represent the current state of the proof method. This
-     *                term had the information about what is the current sub proof
-     * @return Term that represent the statement to be proved in the current sub proof.
-     */
-    public static Term initStatement(Term beginFormula, Term method) {
-        if (method.toString().equals("AI")){
-            return ((App)beginFormula).q;           
-        }
-        else if (method instanceof Const){
-            return beginFormula;
-        }
-        else if ( ((App)method).p.toStringFinal().equals("CR") ) {
-            Term antec = ((App)beginFormula).q;
-            antec = new App(new Const(7 ,"c_{7}"), antec);
-            Term consec = ((App)((App)beginFormula).p).q;
-            consec = new App(new Const(7,"c_{7}"),consec);
-            beginFormula = new App(new App(new Const(2,"c_{2}"),antec), consec);
-            
-            return initStatement(beginFormula, ((App)method).q);
-        }
-        else if ( ((App)method).p.toStringFinal().equals("CO") ) {
-            beginFormula = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),beginFormula));
-            return initStatement(beginFormula, ((App)method).q);
-        }
-        // hay que poner else if para los otros metodos recursivos unarios
-        else if ( ((App)method).p.toStringFinal().substring(0, 2).equals("AI") ) {
-            if ( ((App)method).p instanceof Const ) {
-               beginFormula = ((App)beginFormula).q;
-               return initStatement(beginFormula, ((App)method).q);
-            } else {
-               beginFormula = ((App)((App)beginFormula).p).q;
-               return initStatement(beginFormula, ((App)method).q); 
-            }
-        }
-        // hay que poner else if para el metodo CA
-        return null;
-    }
-   
-    /**
-     * This method add 'formula' in one line sub proof for the current sub proof in 
-     * (typedTerm, method).
-     *  
-     * @param formula: first line to add for the current sub proof
-     * @param typedTerm: term that represent the current proof
-     * @param method: Term that represent the current state of the proof method. This
-     *                term had the information about what is the current sub proof
-     * @return Term that represent the statement to be proved in the current sub proof.
-     */
-    private Term addFirstLineSubProof(Term formula, Term typedTerm, Term method) {
-        Term auxMethod = method;
-        while (auxMethod instanceof App) {
-            if (isAIProof2Started(auxMethod) && isAIProof2Started(((App)auxMethod).q)){
-                Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
-                                                                                    ((App)auxMethod).q);
-                return finishedAI2Proof(typedTerm,aux);
-            }
-            // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
-            else if (isAIProof2Started(auxMethod)) {
-                Map<String,String> values1 = new HashMap<String, String>();
-                values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
-                String aux = typedTerm.toStringFinal();
-                values1.put("ST2", formula.toStringFinal());
-                StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
-                String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
-                String metaTheo = sub1.replace(metaTheoT);
-                Map<String,String> values2 = new HashMap<String, String>();
-                values2.put("MT", metaTheo);
-                values2.put("T1Type", typedTerm.type().toStringFinal());
-                aux = typedTerm.toStringFinal();
-                values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
-                StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
-                String template = "S (I^{[x_{112}:=%(T1Type)]} A^{c_{1} x_{112} (c_{5} c_{8} x_{112})}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";
-                String proof = sub2.replace(template);
-                Term proofTerm = null;
-                try {
-                    proofTerm = new TypedApp(CombUtilities.getTerm(proof),typedTerm);
-                }
-                catch (TypeVerificationException e) {
-                    Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
-                }
-                return proofTerm;
-            }else{
-                auxMethod = ((App)auxMethod).q;
-            }
-        }
-        return formula;
-    }
-    
-    /**
-     * True if and only if exists sub proof that is already started. This information 
-     * can infer from only the method term.
-     *  
-     * @param method: Term that represent the current state of the proof method. This
-     *                term had the information about what is the current sub proof
-     * @return True if and only if exists sub proof that is already started.
-     */
-    public static boolean isProofStarted(Term method) {
-        Term aux = method;
-        while (aux instanceof App) {
-            if (((App)aux).p instanceof App)
-                return true;
-            else 
-               aux = ((App)aux).q;
-        }
-        return aux instanceof Const && 
-                       (((Const)aux).getCon().equals("DM") ||
-                        ((Const)aux).getCon().equals("SS") ||   
-                        ((Const)aux).getCon().equals("TR") ||
-                        ((Const)aux).getCon().equals("WE") ||
-                        ((Const)aux).getCon().equals("ST")
-                       );
-    }
-    
-    /**
-     * True if and only if method is an And Introduction proof and in the second sub proof 
-     * exists sub proof (can be the same second sub proof) that is already started.
-     * 
-     * @param method: Term that represent the current state of the proof method. This
-     *                term had the information about what is the current sub proof
-     * @return True if and only if method is an And Introduction proof and in the second sub proof 
-     * exists sub proof (can be the same second sub proof) that is already started.
-     */
-    public static boolean isAIProof2Started(Term method) {
-        return method instanceof App && ((App)method).p instanceof App && 
-               ((App)((App)method).p).p.toStringFinal().equals("AI") && 
-               isProofStarted(((App)method).q);
-    }
-    
-    /**
-     * True if and only if the proof that represent typedTerm is an And Introduction 
-     * proof with only one line in the second proof.
-     *  
-     * @param typedTerm: Term that represent the proof.
-     * @return True if and only if the proof that represent typedTerm is an And Introduction 
-     *         proof with only one line in the second proof.
-     */
-    public static boolean isAIOneLineProof(Term typedTerm) {
-        return typedTerm instanceof App && ((App)typedTerm).p instanceof App &&
-                                    ((App)((App)typedTerm).p).q instanceof App && 
-                                   ((App)((App)((App)typedTerm).p).q).q instanceof App &&
-                       ((App)((App)((App)((App)typedTerm).p).q).q).q instanceof App &&
-                    ((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p instanceof TypedL &&
-    !(((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t.occur(new Var(122)));
-    }
-    
-    /**
-     * This method return the sub Term of typedTerm that represent the derivation tree 
-     * of only the current sub proof of the first And Introduction method searched in 
-     * method parameter.
-     *  
-     * @param typedTerm: Term that represent all the current proof.
-     * @param method: Term that represent the current state of the proof method. This
-     *                term had the information about what is the current sub proof
-     * @return sub Term of typedTerm that represent the derivation tree 
-     *         of only the current sub proof of the first And Introduction method searched 
-     *         in method parameter.
-     */
-    public static Term getSubProof(Term typedTerm, Term method) {
-       return getSubProof(typedTerm, method, false);
-    }
-    
-    /**
-     * This method return the sub Term of typedTerm that represent the derivation tree 
-     * of only the current sub proof if isRecursive parameter is true. If isRecursive 
-     * is false this method return the sub Term of typedTerm that represent the derivation tree 
-     * of only the current sub proof of the first And Introduction method searched in 
-     * method parameter.
-     *  
-     * @param typedTerm: Term that represent all the current proof.
-     * @param method: Term that represent the current state of the proof method. This
-     *                term had the information about what is the current sub proof.
-     * @param isRecursive: if the value is true, the search of the sub proof call this 
-     *                     method recursively.
-     * @return sub Term of typedTerm that represent the derivation tree 
-     *         of only the current sub proof. The deep of the sub proof depend on the 
-     *         value of isRecursive
-     */
-    public static Term getSubProof(Term typedTerm, Term method, boolean isRecursive) {
-        Term auxMethod = method;
-        while (auxMethod instanceof App) {
-            if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
-                    !isAIProof2Started(auxMethod)
-                    ){
-                return null;
-            }
-            else if (isAIProof2Started(auxMethod) && isAIOneLineProof(typedTerm)){
-                return ((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t;
-            }
-            else if (isAIProof2Started(auxMethod) && !isAIOneLineProof(typedTerm)){
-                if (isRecursive){
-                    return getSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,true);
-                }
-                else{
-                    return ((App)((App)((App)((App)typedTerm).p).q).q).q;
-                }
-            } else{
-                auxMethod = ((App)auxMethod).q;
-            }
-        }
-        return typedTerm;
-    }
-
-    /**
-     * This method returns the sub Term of typedTerm that represent the derivation tree 
-     * of only the current sub proof and the father tree of this subproof.
-     *  
-     * @param typedTerm: Term that represent all the current proof.
-     * @param method: Term that represent the current state of the proof method. This
-     *                term had the information about what is the current sub proof.
-     * @return List with sub Term of typedTerm that represent the derivation tree 
-     *         of only the current sub proof and the father of this sub proof.
-     */
-    public static List<Term> getFatherAndSubProof(Term typedTerm, Term method, List<Term> li) {
-        Term auxMethod = method;
-        while (auxMethod instanceof App) {
-            if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
-                    !isProofStarted(((App)auxMethod).q)
-                    ){
-                li.add(0,typedTerm);
-                return li;
-            }
-            else if (isAIProof2Started(auxMethod) && isAIOneLineProof(typedTerm)){
-                li.add(0, typedTerm);
-                li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t);
-                return li;
-            }
-            else if (isAIProof2Started(auxMethod) && !isAIOneLineProof(typedTerm)){
-                li.add(0, typedTerm);
-                return getFatherAndSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,li);
-            }
-            else{
-                auxMethod = ((App)auxMethod).q;
-            }
-        }
-        li.add(0, typedTerm);
-        return li;
-    }
     
     /**
      * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
@@ -2055,21 +628,22 @@ public class InferController {
             String tipoTeo = nStatement.substring(0, 2);
             String numeroTeo = nStatement.substring(3, nStatement.length());
         
-            if (tipoTeo.equals("ST")){
-                Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
-                // Case when the user could only see the theorem but had not a Resuelve object associated to it
-                if (resuelve == null) {
-                    resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                }
-                statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
-            }
-            else if(tipoTeo.equals("MT")){
-                Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
-            }
-            else {
-                response.setErrorParser2("statement format error");
-                return response;
+            switch (tipoTeo) {
+                case "ST":
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                    // Case when the user could only see the theorem but had not a Resuelve object associated to it
+                    if (resuelve == null) {
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                    }
+                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
+                    break;
+                case "MT":
+                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
+                    break;
+                default:
+                    response.setErrorParser2("statement format error");
+                    return response;
             }
             if (statementTerm == null) {
                 response.setErrorParser2("The statement doesn't exist");
@@ -2144,23 +718,23 @@ public class InferController {
         Term methodTerm = ProofMethodUtilities.getTerm(metodo);
         Term methodTermIter = methodTerm;
         
-        Stack<Term> methodStk = new Stack<Term>();
-        Stack<Term> fatherProofs = new Stack<Term>();
-        Stack<Term> formulasToProof = new Stack<Term>();
+        Stack<Term> methodStk = new Stack<>();
+        Stack<Term> fatherProofs = new Stack<>();
+        Stack<Term> formulasToProof = new Stack<>();
         formulasToProof.push(formula);
         Term initSt = formula;
 
         while (!(methodTermIter instanceof Const)) {
             methodStk.push(((App)methodTermIter).p);
-            initSt = initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
+            initSt = CrudOperations.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
             formulasToProof.push(initSt);
             if (((App)methodTermIter).p instanceof App && 
                  ((App)((App)methodTermIter).p).p.toStringFinal().equals("AI")
                )
             {
-              if (isAIProof2Started(methodTermIter)) {
+              if (ProofBoolean.isAIProof2Started(methodTermIter)) {
                  fatherProofs.push(typedTerm);
-                 typedTerm = getSubProof(typedTerm, methodTermIter);
+                 typedTerm = CrudOperations.getSubProof(typedTerm, methodTermIter);
               }
             }
             methodTermIter = ((App)methodTermIter).q;
@@ -2172,7 +746,7 @@ public class InferController {
         String strMethodTermIter = methodTermIter.toStringFinal();
         
         try {
-            infer = createBaseMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm(), strMethodTermIter);
+            infer = CrudOperations.createBaseMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm(), strMethodTermIter);
         } 
         catch(TypeVerificationException e) { // If something went wrong building the new hint
             response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
@@ -2202,9 +776,9 @@ public class InferController {
                 if (i == 1 && j == 0){
                     infer = new TypedApp(new TypedS(infer.type()), infer);
                 }
-                // If addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
+                // If CrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
-                newProof = addInferToProof(currentProof, infer, strMethodTermIter);
+                newProof = CrudOperations.addInferToProof(currentProof, infer, strMethodTermIter);
                 if (onlyOneLine){
                     // If the proof only has one line with expression P for the user, then at this point it is interally P == P
                     // as explained previously. But since we don't need the first P and the new inference "infer" consists of 
@@ -2235,8 +809,7 @@ public class InferController {
         response.setResuelto("0");
         
         // CHECK IF THE PROOF FINISHED
-        Term finalProof = newProof;
-        finalProof = finishedBaseMethodProof(theoremBeingProved, newProof, username, strMethodTermIter);
+        Term finalProof = FinishedProofMethod.finishedBaseMethodProof(theoremBeingProved, newProof, username, strMethodTermIter);
         
         /* Jean
         newProof = finishedDeductionDirectProve(theoremBeingProved, proof, username);
@@ -2253,7 +826,7 @@ public class InferController {
                 switch (strMethodTermAux){
                     case "CR":
                     case "CO":
-                        finalProof = finishedCompoundMethodProof(formulasToProof.pop(), finalProof, strMethodTermAux);
+                        finalProof = FinishedProofMethod.finishedWaitingMethodProof(formulasToProof.pop(), finalProof, strMethodTermAux);
                         break;
                     case "AI":
                         isFinalSolution = false;
@@ -2265,7 +838,7 @@ public class InferController {
             }
             // This ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App && ((App)methodTermAux).p.toStringFinal().equals("AI")) {
-                finalProof = finishedAI2Proof(fatherProofs.pop(), finalProof);
+                finalProof = FinishedProofMethod.finishedAI2Proof(fatherProofs.pop(), finalProof);
             }
         }
 
@@ -2328,8 +901,8 @@ public class InferController {
         }
         else{
             method = (solucion.getMetodo().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMetodo()));
-            Term currentMethod = currentMethod(method);
-            boolean isWaitingMethod = !isBaseMethod(currentMethod);
+            Term currentMethod = CrudOperations.currentMethod(method);
+            boolean isWaitingMethod = !ProofBoolean.isBaseMethod(currentMethod);
             if (!solucion.getMetodo().equals("") && isWaitingMethod)
             /*if (solucion.getDemostracion().equals("") && !solucion.getMetodo().equals("")) */
                 respRetroceder = 0;
@@ -2337,7 +910,7 @@ public class InferController {
                 respRetroceder = solucion.retrocederPaso(method,currentMethod.toStringFinal());
             }
             if (respRetroceder == 0) {
-               method = eraseMethod(solucion.getMetodo());
+               method = CrudOperations.eraseMethod(solucion.getMetodo());
                solucion.setMetodo((method == null?"":method.toStringFinal()));
             }
             //else
@@ -2703,13 +1276,13 @@ public class InferController {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
             String method = solucion.getMetodo();
             
-            metodoTerm = updateMethod(method, nuevoMetodo);
+            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
             if (teoid.substring(3,teoid.length()).equals(nTeo)) {
-               formulaTerm = initStatement(formulaTerm, metodoTerm);
-               typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+               formulaTerm = CrudOperations.initStatement(formulaTerm, metodoTerm);
+               typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
                solucion.setTypedTerm(typedTerm);
             } else {
-               typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+               typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
                solucion.setTypedTerm(typedTerm);
             }
             nuevoMetodo = metodoTerm.toStringFinal();
@@ -2790,8 +1363,8 @@ public class InferController {
         else{
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
-            metodoTerm = updateMethod(method, nuevoMetodo);
-            formulaTerm = initStatement(formulaTerm,metodoTerm);
+            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
+            formulaTerm = CrudOperations.initStatement(formulaTerm,metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
@@ -2814,7 +1387,7 @@ public class InferController {
             response.setnSol(solucion.getId()+"");
         }
         else {
-            typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -2876,23 +1449,25 @@ public class InferController {
         else{
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
-            metodoTerm = updateMethod(method, nuevoMetodo);
-            formulaTerm = initStatement(formulaTerm, metodoTerm);
+            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
+            formulaTerm = CrudOperations.initStatement(formulaTerm, metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
         
         String operador = ((Const)((App)((App)formulaTerm).p).p).getCon();
-        if(operador.equals("c_{3}")){
-            response.setLado("d");
-            formulaTerm = ((App)((App)formulaTerm).p).q;
-        }
-        else if(operador.equals("c_{2}")){
-            response.setLado("i");
-            formulaTerm = ((App)formulaTerm).q;
-        }
-        else{
-            response.setErrorParser1(true);
+        switch (operador) {
+            case "c_{3}":
+                response.setLado("d");
+                formulaTerm = ((App)((App)formulaTerm).p).q;
+                break;
+            case "c_{2}":
+                response.setLado("i");
+                formulaTerm = ((App)formulaTerm).q;
+                break;
+            default:
+                response.setErrorParser1(true);
+                break;
         }
         
         if (nSol.equals("new")) {
@@ -2901,7 +1476,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -2959,23 +1534,25 @@ public class InferController {
         else{
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
-            metodoTerm = updateMethod(method, nuevoMetodo);
-            formulaTerm = initStatement(formulaTerm, metodoTerm);
+            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
+            formulaTerm = CrudOperations.initStatement(formulaTerm, metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
         
         String operador = ((Const)((App)((App)formulaTerm).p).p).getCon();
-        if(operador.equals("c_{3}")){
-            response.setLado("i");
-            formulaTerm = ((App)formulaTerm).q;
-        }
-        else if(operador.equals("c_{2}")){
-            response.setLado("d");
-            formulaTerm = ((App)((App)formulaTerm).p).q;
-        }
-        else{
-            response.setErrorParser1(true);
+        switch (operador) {
+            case "c_{3}":
+                response.setLado("i");
+                formulaTerm = ((App)formulaTerm).q;
+                break;
+            case "c_{2}":
+                response.setLado("d");
+                formulaTerm = ((App)((App)formulaTerm).p).q;
+                break;
+            default:
+                response.setErrorParser1(true);
+                break;
         }
         
         if (nSol.equals("new")) {
@@ -2984,7 +1561,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -3043,8 +1620,8 @@ public class InferController {
         {
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
-            metodoTerm = updateMethod(method, nuevoMetodo);
-            formulaTerm = initStatement(formulaTerm,metodoTerm);
+            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
+            formulaTerm = CrudOperations.initStatement(formulaTerm,metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
@@ -3065,7 +1642,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            typedTerm = addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -3117,7 +1694,7 @@ public class InferController {
         }
         else{   
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
+            metodoTerm = CrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
@@ -3159,8 +1736,8 @@ public class InferController {
             }
             else {   
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-                metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
-                if (((Const)((App)((App)initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
+                metodoTerm = CrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
+                if (((Const)((App)((App)CrudOperations.initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
                    response.setErrorParser1(true);
                    return response;
                 }
@@ -3219,7 +1796,7 @@ public class InferController {
             response.setnSol(solucion.getId()+"");
         } else {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
+            metodoTerm = CrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
             typedTerm = solucion.getTypedTerm();
             solucion.setMetodo(nuevoMetodo);
@@ -3336,7 +1913,7 @@ public class InferController {
             response.setnSol(solucion.getId()+"");
         } else {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = updateMethod(solucion.getMetodo(), nuevoMetodo);
+            metodoTerm = CrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
             typedTerm = solucion.getTypedTerm();
             solucion.setMetodo(nuevoMetodo);
@@ -3414,13 +1991,4 @@ public class InferController {
         return response;
 */
     }
-    public void setUsuarioManager(UsuarioManager usuarioManager) {
-        this.usuarioManager = usuarioManager;
-    }
-    
-/*    public void setTerminoManager(TerminoManager terminoManager) 
-    {
-        this.terminoManager = terminoManager;
-    }
-*/
 }

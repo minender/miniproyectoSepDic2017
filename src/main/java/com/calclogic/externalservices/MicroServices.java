@@ -15,7 +15,7 @@ import org.apache.http.util.EntityUtils;
 
 /**
  *
- * @author Ronald
+ * @author ronald
  */
 public class MicroServices {
     
@@ -67,4 +67,3 @@ public class MicroServices {
     	return StringToStringThroughJson(latexFormula, URL_LATEX_TO_HTML, "formula");
     }
 }
-
