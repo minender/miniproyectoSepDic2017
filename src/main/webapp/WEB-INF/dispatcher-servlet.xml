@@ -135,6 +135,8 @@
     </bean>
     <bean id="plantillaTeoremaDAO" class="com.calclogic.dao.PlantillaTeoremaDaoImpl"></bean>
     <bean id="plantillaTeoremaManager" class="com.calclogic.service.PlantillaTeoremaManagerImpl"></bean>
+    <bean id="finishedProofMethod" class="com.calclogic.proof.FinishedProofMethodImpl"></bean>
+    <bean id="proofCrudOperations" class="com.calclogic.proof.CrudOperationsImpl"></bean>
  
     <tx:annotation-driven />
     <bean id="transactionManager"

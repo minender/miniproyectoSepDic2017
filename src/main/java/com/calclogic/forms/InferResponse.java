@@ -27,7 +27,7 @@ import com.calclogic.externalservices.MicroServices;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.InferenceIndex;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,6 +70,9 @@ public class InferResponse {
     private boolean endCase = false;
 
     private PlantillaTeoremaManager plantillaTeoremaManager;
+
+    @Autowired
+    private CrudOperations proofCrudOperations;
 
     public InferResponse() {}
 
@@ -704,7 +707,7 @@ public class InferResponse {
             header = historial + "Statement 2:<br>"+statement+"Sub Proof:<br>";
             historial = "";
             Term newTypedTerm = null;
-            newTypedTerm = CrudOperations.getSubProof(typedTerm, metodo);
+            newTypedTerm = proofCrudOperations.getSubProof(typedTerm, metodo);
             privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)metodo).q, 
                              resuelveManager, disponeManager, s, clickeable, false);
         }
@@ -1015,7 +1018,7 @@ public class InferResponse {
             return;
         }
         if (typedTerm!=null && type == null && !valida && !recursive){
-            this.setHistorial(this.getHistorial()+header+"<center>$"+typedTerm.toStringInfLabeled(s)+"$\\text{No valid inference}$");
+            this.setHistorial(this.getHistorial()+header+"<center>$"+typedTerm.toStringInfLabeled(s)+MicroServices.transformLaTexToHTML("$\\text{No valid inference}$"));
             solved = false;
             return;
         }
@@ -1377,7 +1380,7 @@ public class InferResponse {
         if (/*!andIntroduction &&*/ !recursive) {
             historial = header+"<center>$" +historial+"</center>";
             if (!valida) 
-            historial = historial+"$\\text{No valid inference}$";
+            historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
         }
         else if (/*!andIntroduction &&*/ recursive)
             ;

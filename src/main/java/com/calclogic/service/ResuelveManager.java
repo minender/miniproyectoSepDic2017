@@ -25,7 +25,7 @@ public interface ResuelveManager {
      * @param resuelve Is the Resuelve object to be updated.
      * @return Nothing.
      */
-	 public void updateResuelve(Resuelve resuelve);
+    public void updateResuelve(Resuelve resuelve);
 
     /**
      * Deletes one of the Resuelve objects of the table.
@@ -116,5 +116,4 @@ public interface ResuelveManager {
      * @param teoNum Is the number of the theorem used to filter the search.
      */
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum);
-    
 }

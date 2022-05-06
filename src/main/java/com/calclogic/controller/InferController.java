@@ -84,10 +84,10 @@ public class InferController {
     private DisponeManager disponeManager;
     @Autowired
     private MostrarCategoriaManager mostrarCategoriaManager;
-    //@Autowired
-    //private CombUtilities combUtilities;
-    //@Autowired
-    //private TermUtilities termUtilities;
+    @Autowired
+    private FinishedProofMethod finishedProofMethod;
+    @Autowired
+    private CrudOperations proofCrudOperations;
     
     /**
      * Controller that respond to HTTP GET request and return the selection statement
@@ -522,13 +522,13 @@ public class InferController {
 
             String metodo = solucion.getMetodo();
             Term methodTerm = ProofMethodUtilities.getTerm(metodo);
-            Term typedTerm = CrudOperations.getSubProof(solucion.getTypedTerm(),methodTerm,true);
+            Term typedTerm = proofCrudOperations.getSubProof(solucion.getTypedTerm(),methodTerm,true);
 
             Term lastLine = typedTerm.type();
             if (lastLine == null)
                 lastLine = typedTerm;
             else {
-                metodo = CrudOperations.currentMethod(methodTerm).toStringFinal();
+                metodo = proofCrudOperations.currentMethod(methodTerm).toStringFinal();
                 if (metodo.equals("WE") || metodo.equals("ST") || metodo.equals("TR")) {
                     int index = InferenceIndex.wsFirstOpInferIndex1(typedTerm);
                     if (index == 0 || index == 1)
@@ -726,7 +726,7 @@ public class InferController {
 
         while (!(methodTermIter instanceof Const)) {
             methodStk.push(((App)methodTermIter).p);
-            initSt = CrudOperations.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
+            initSt = proofCrudOperations.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
             formulasToProof.push(initSt);
             if (((App)methodTermIter).p instanceof App && 
                  ((App)((App)methodTermIter).p).p.toStringFinal().equals("AI")
@@ -734,7 +734,7 @@ public class InferController {
             {
               if (ProofBoolean.isAIProof2Started(methodTermIter)) {
                  fatherProofs.push(typedTerm);
-                 typedTerm = CrudOperations.getSubProof(typedTerm, methodTermIter);
+                 typedTerm = proofCrudOperations.getSubProof(typedTerm, methodTermIter);
               }
             }
             methodTermIter = ((App)methodTermIter).q;
@@ -746,7 +746,7 @@ public class InferController {
         String strMethodTermIter = methodTermIter.toStringFinal();
         
         try {
-            infer = CrudOperations.createBaseMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm(), strMethodTermIter);
+            infer = proofCrudOperations.createBaseMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm(), strMethodTermIter);
         } 
         catch(TypeVerificationException e) { // If something went wrong building the new hint
             response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
@@ -756,7 +756,7 @@ public class InferController {
         // CREATE THE NEW PROOF TREE BY ADDING THE NEW INFER
         Term newProof =null;
         
-        boolean onlyOneLine = typedTerm.type() == null;
+        boolean onlyOneLine = ProofBoolean.isOneLineProof(typedTerm);
         Term currentProof;
         if (onlyOneLine){
             // If the proof only has one line so far, it may not be a boolean expression yet, because it could only 
@@ -776,9 +776,9 @@ public class InferController {
                 if (i == 1 && j == 0){
                     infer = new TypedApp(new TypedS(infer.type()), infer);
                 }
-                // If CrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
+                // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
-                newProof = CrudOperations.addInferToProof(currentProof, infer, strMethodTermIter);
+                newProof = proofCrudOperations.addInferToProof(currentProof, infer, strMethodTermIter);
                 if (onlyOneLine){
                     // If the proof only has one line with expression P for the user, then at this point it is interally P == P
                     // as explained previously. But since we don't need the first P and the new inference "infer" consists of 
@@ -809,7 +809,7 @@ public class InferController {
         response.setResuelto("0");
         
         // CHECK IF THE PROOF FINISHED
-        Term finalProof = FinishedProofMethod.finishedBaseMethodProof(theoremBeingProved, newProof, username, strMethodTermIter);
+        Term finalProof = finishedProofMethod.finishedBaseMethodProof(theoremBeingProved, newProof, username, strMethodTermIter);
         
         /* Jean
         newProof = finishedDeductionDirectProve(theoremBeingProved, proof, username);
@@ -826,7 +826,7 @@ public class InferController {
                 switch (strMethodTermAux){
                     case "CR":
                     case "CO":
-                        finalProof = FinishedProofMethod.finishedWaitingMethodProof(formulasToProof.pop(), finalProof, strMethodTermAux);
+                        finalProof = finishedProofMethod.finishedWaitingMethodProof(formulasToProof.pop(), finalProof, strMethodTermAux);
                         break;
                     case "AI":
                         isFinalSolution = false;
@@ -838,7 +838,7 @@ public class InferController {
             }
             // This ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App && ((App)methodTermAux).p.toStringFinal().equals("AI")) {
-                finalProof = FinishedProofMethod.finishedAI2Proof(fatherProofs.pop(), finalProof);
+                finalProof = finishedProofMethod.finishedAI2Proof(fatherProofs.pop(), finalProof);
             }
         }
 
@@ -901,7 +901,7 @@ public class InferController {
         }
         else{
             method = (solucion.getMetodo().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMetodo()));
-            Term currentMethod = CrudOperations.currentMethod(method);
+            Term currentMethod = proofCrudOperations.currentMethod(method);
             boolean isWaitingMethod = !ProofBoolean.isBaseMethod(currentMethod);
             if (!solucion.getMetodo().equals("") && isWaitingMethod)
             /*if (solucion.getDemostracion().equals("") && !solucion.getMetodo().equals("")) */
@@ -910,7 +910,7 @@ public class InferController {
                 respRetroceder = solucion.retrocederPaso(method,currentMethod.toStringFinal());
             }
             if (respRetroceder == 0) {
-               method = CrudOperations.eraseMethod(solucion.getMetodo());
+               method = proofCrudOperations.eraseMethod(solucion.getMetodo());
                solucion.setMetodo((method == null?"":method.toStringFinal()));
             }
             //else
@@ -1276,13 +1276,13 @@ public class InferController {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
             String method = solucion.getMetodo();
             
-            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
+            metodoTerm = proofCrudOperations.updateMethod(method, nuevoMetodo);
             if (teoid.substring(3,teoid.length()).equals(nTeo)) {
-               formulaTerm = CrudOperations.initStatement(formulaTerm, metodoTerm);
-               typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+               formulaTerm = proofCrudOperations.initStatement(formulaTerm, metodoTerm);
+               typedTerm = proofCrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
                solucion.setTypedTerm(typedTerm);
             } else {
-               typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+               typedTerm = proofCrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
                solucion.setTypedTerm(typedTerm);
             }
             nuevoMetodo = metodoTerm.toStringFinal();
@@ -1363,8 +1363,8 @@ public class InferController {
         else{
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
-            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
-            formulaTerm = CrudOperations.initStatement(formulaTerm,metodoTerm);
+            metodoTerm = proofCrudOperations.updateMethod(method, nuevoMetodo);
+            formulaTerm = proofCrudOperations.initStatement(formulaTerm,metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
@@ -1387,7 +1387,7 @@ public class InferController {
             response.setnSol(solucion.getId()+"");
         }
         else {
-            typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = proofCrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -1449,8 +1449,8 @@ public class InferController {
         else{
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
-            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
-            formulaTerm = CrudOperations.initStatement(formulaTerm, metodoTerm);
+            metodoTerm = proofCrudOperations.updateMethod(method, nuevoMetodo);
+            formulaTerm = proofCrudOperations.initStatement(formulaTerm, metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
@@ -1476,7 +1476,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = proofCrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -1534,8 +1534,8 @@ public class InferController {
         else{
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
-            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
-            formulaTerm = CrudOperations.initStatement(formulaTerm, metodoTerm);
+            metodoTerm = proofCrudOperations.updateMethod(method, nuevoMetodo);
+            formulaTerm = proofCrudOperations.initStatement(formulaTerm, metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
@@ -1561,7 +1561,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = proofCrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -1620,8 +1620,8 @@ public class InferController {
         {
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
             String method = solucion.getMetodo();
-            metodoTerm = CrudOperations.updateMethod(method, nuevoMetodo);
-            formulaTerm = CrudOperations.initStatement(formulaTerm,metodoTerm);
+            metodoTerm = proofCrudOperations.updateMethod(method, nuevoMetodo);
+            formulaTerm = proofCrudOperations.initStatement(formulaTerm,metodoTerm);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
@@ -1642,7 +1642,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            typedTerm = CrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = proofCrudOperations.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -1694,7 +1694,7 @@ public class InferController {
         }
         else{   
             solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = CrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
+            metodoTerm = proofCrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
             solucionManager.updateSolucion(solucion);
@@ -1736,8 +1736,8 @@ public class InferController {
             }
             else {   
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-                metodoTerm = CrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
-                if (((Const)((App)((App)CrudOperations.initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
+                metodoTerm = proofCrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
+                if (((Const)((App)((App)proofCrudOperations.initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
                    response.setErrorParser1(true);
                    return response;
                 }
@@ -1796,7 +1796,7 @@ public class InferController {
             response.setnSol(solucion.getId()+"");
         } else {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = CrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
+            metodoTerm = proofCrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
             typedTerm = solucion.getTypedTerm();
             solucion.setMetodo(nuevoMetodo);
@@ -1913,7 +1913,7 @@ public class InferController {
             response.setnSol(solucion.getId()+"");
         } else {
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = CrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
+            metodoTerm = proofCrudOperations.updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
             typedTerm = solucion.getTypedTerm();
             solucion.setMetodo(nuevoMetodo);

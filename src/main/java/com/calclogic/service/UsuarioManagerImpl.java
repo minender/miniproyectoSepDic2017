@@ -5,12 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.calclogic.dao.ResuelveDAO;
 import com.calclogic.dao.UsuarioDAO;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Usuario;
-import java.util.Iterator;
 
 /**
  * This class has the implementation of "UsuarioManager" queries.
@@ -146,6 +144,4 @@ public class UsuarioManagerImpl implements UsuarioManager {
 //    public void modificarTeorema(Usuario usuario, Teorema teorema) {
 //        
 //    }
-    
-    
 }
