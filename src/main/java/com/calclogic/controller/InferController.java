@@ -656,7 +656,7 @@ public class InferController {
                         }
                     }
                     // Case when we started from another theorem
-                    if(finalExpr.equals(theoremBeingProved)) {
+                    else if(finalExpr.equals(theoremBeingProved)) {
                         return new TypedApp(proof, new TypedA(initialExpr));
                     }
                     break;

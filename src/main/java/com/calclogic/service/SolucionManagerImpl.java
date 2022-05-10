@@ -42,7 +42,7 @@ public class SolucionManagerImpl implements SolucionManager {
         List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(sol.getResuelve().getId());
         boolean allResuelto = true;
         for (Solucion otherSol: sols) {
-            allResuelto = allResuelto && otherSol.getResuelto();
+            allResuelto = otherSol.getResuelto();
             if (!allResuelto)
                 break;
         }

@@ -6,11 +6,14 @@
    and replaces the input box where the user was holding its mouse with the recently clicked
    operator
  * @param text string that represents the notation of symbol associated to the button that was clicked
+ *        if the notation of the simbol in the server is %(a2) %(op) %(a1) and op is \neq, then 
+ *        text is \FormInput{2} \neq \FormInput{1}, also if the notation is %(aa2) %(op) %(aa1), etc
  * @param simboloId int that is the id of the symbol of the button that was clicked
  * @param isAlias boolean that tells us if is an alias what we need to insert 
  * @returns nothing
  */
 function insertAtMathjaxDiv(text,simboloId, isAlias){
+
 	var input = document.activeElement; // get the input box where the cursor was
 	
 	// if the cursor was not on any element, or the element wasn't a Math_Jax 
@@ -27,7 +30,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	var simboloDic = window[rootId + 'simboloDic'];
 	
 	// Request jax elements
-	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div
+	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax element from the div
 	var originalMathJax = math.originalText; // get the old mathjax text
 
 	// Util data 
@@ -198,19 +201,19 @@ function setMathJaxFormAttributes(form, maxlength, rootId) {
    and saves the content of all forms in there in a 
    dictionary
  * @param divId id of the jax div
- * @returns dinctionary with key the id of the input form and value its content
+ * @returns dictionary with key the id of the input form and value its content
  */
 function saveMathJaxFormContent(divId){
-	// Get all input boxes from the div
-	var inputs = $('#' + divId + ' .MathJax_Input').toArray();
+    // Get all input boxes from the div
+    var inputs=$('#' + divId + ' input.MathJax_Input:not(.MJX_Assistive_MathML .MathJax_Input)').toArray();
 
-	// This dictionary will save that content
-	var dictionary ={}
+    // This dictionary will save that content
+    var dictionary ={};
 	
-	// Key will be the id of the form, the value its content
-	inputs.forEach(element => dictionary[element.id] = element.value);
+    // Key will be the id of the form, the value its content
+    inputs.forEach(element => dictionary[element.id] = element.value);
 	
-	return dictionary;
+    return dictionary;
 }
 
 
@@ -223,7 +226,9 @@ function saveMathJaxFormContent(divId){
  */
 function loadMathJaxFormContent(divId, dictionarySave){
 	// Get the new input boxes
-	var inputs = $('#' + divId.replace(/(\.)/g, "\\.") + ' .MathJax_Input').toArray();
+        // the replace(/(\.)/g, "\\.") is not necesary, I think
+	var inputs = $('#' + divId.replace(/(\.)/g, "\\.") + 
+                       ' input.MathJax_Input:not(.MJX_Assistive_MathML .MathJax_Input)').toArray();
 	// Set the value of each new input box to its old value
 	inputs.forEach(function(element){
 		if(dictionarySave.hasOwnProperty(element.id)){
@@ -556,7 +561,7 @@ function cleanJax(rootId){
  */
 function cleanMathJax(rootId){
 	var jaxDivId = rootId + "MathJaxDiv";
-	var math = MathJax.Hub.getAllJax(jaxDivId)[0]; // get the jax alement from the div
+	var math = MathJax.Hub.getAllJax(jaxDivId)[0]; // get the jax element from the div
 	var startText = "{" + window[rootId + 'prefixMathJax'] + "\\FormInput{" + rootId + "}}";
 	MathJax.Hub.Queue(["Text",math,startText]);
 	return startText;

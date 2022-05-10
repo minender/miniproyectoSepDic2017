@@ -144,7 +144,7 @@ public class InfersForm {
         return true;
     }
 
-        public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, List<PasoInferencia> inferencias, SimboloManager s){
+ /*       public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, List<PasoInferencia> inferencias, SimboloManager s){
         
         
         this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
@@ -182,5 +182,5 @@ public class InfersForm {
         
         this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");
     }
-
+*/
 }
