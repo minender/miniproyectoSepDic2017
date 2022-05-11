@@ -242,6 +242,7 @@ public class Solucion implements java.io.Serializable {
     }*/
 
     public int retrocederPaso(Term methodTerm, String currentMethod){
+        System.out.println("proofCrudOperations = "+proofCrudOperations);
         /*int tam = this.arregloInferencias.size();
         this.deserialize();
         if(tam>0){

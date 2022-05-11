@@ -77,7 +77,6 @@ var instantiationDict = {
  * @return -> boolean that is only true when the AJAX was send successfully and the method can be applied to the theorem
  */
 async function proofMethodAjax(method, teoid=null, lado=null){
-    alert("Entrando en proofMethodAjax");
     var data = {teoid, lado};
     var form = $('#inferForm');
     var completeSuccess = true;
@@ -88,7 +87,6 @@ async function proofMethodAjax(method, teoid=null, lado=null){
         dataType: 'json',
         data,
         success: function(newData) {
-            alert("Entrando en success function(newData)");
             if(newData.errorParser1){ // Remember that "lado" is also used to indicate errors
                 alert("The selected method does not apply to the current theorem");
                 $("#metodosDiv").show();

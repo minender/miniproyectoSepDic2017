@@ -110,7 +110,6 @@
         to alternate between confirmation and just information modal.
     */
     function switchToOkButtons() {
-        console.log("Entrando en closeModal");
         document.getElementById('modal-header').innerHTML = 'Information';
         $('#ok-buttons').removeClass('d-none');
         $('#accept-cancel-buttons').addClass('d-none');

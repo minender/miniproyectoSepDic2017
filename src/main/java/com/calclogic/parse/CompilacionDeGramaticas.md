@@ -13,7 +13,7 @@ el siguiente comando:
 $ java -cp <path_to_antlr4_jar>:. org.antlr.v4.Tool <path_to_g4_file>
 ```
 
-El ejecutable `.jar` de *ANTLR4* se encuentra en la carptea del parser, y es 
+El ejecutable `.jar` de *ANTLR4* se encuentra en la carpeta del parser, y es 
 llamado `antlr-4.8-complete.jar`. En el comando anterior debe ajustar la 
 referencia correcta a su ubicación o tener la herramienta instalada localmente
 con la versión especificada (4.8).
