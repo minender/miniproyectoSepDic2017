@@ -44,9 +44,7 @@ public class Solucion implements java.io.Serializable {
     private boolean resuelto;
     private String demostracion;
     private String metodo;
-    @Autowired
     private FinishedProofMethod finishedProofMethod;
-    @Autowired
     private CrudOperations proofCrudOperations;
 
     /*public String getNteoinicial() {
@@ -95,12 +93,15 @@ public class Solucion implements java.io.Serializable {
         this.typedTerm = typeTerm;
     }
     
-    public Solucion(Resuelve resuelve, boolean resuelto, Term typeTerm, String metodo) {
+    public Solucion(Resuelve resuelve, boolean resuelto, Term typeTerm, String metodo,
+                    FinishedProofMethod finishedProofMethod, CrudOperations proofCrudOperations) {
         this.resuelve = resuelve;
         this.resuelto = resuelto;
         this.typedTerm = typeTerm;
         this.demostracion = (typeTerm != null?typeTerm.toStringFinal():"");
         this.metodo = metodo;
+        this.finishedProofMethod = finishedProofMethod;
+        this.proofCrudOperations = proofCrudOperations;
     }
 
    /* public Solucion(PasoInferencia paso) {
@@ -150,6 +151,14 @@ public class Solucion implements java.io.Serializable {
     
     public void setDemostracion(String demostracion) {
     	this.demostracion = demostracion;
+    }
+    
+    public void setFinishedProofMethod(FinishedProofMethod finishedProofMethod) {
+        this.finishedProofMethod = finishedProofMethod;
+    }
+    
+    public void setProofCrudOperations(CrudOperations proofCrudOperations) {
+        this.proofCrudOperations = proofCrudOperations;
     }
 
     public int getId() {

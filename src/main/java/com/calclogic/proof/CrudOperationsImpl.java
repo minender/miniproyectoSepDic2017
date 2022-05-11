@@ -37,7 +37,7 @@ public class CrudOperationsImpl implements CrudOperations {
     @Autowired
     private SimboloManager simboloManager;
     @Autowired
-    private FinishedProofMethod finishedProofMethod;
+    private FinishedProofMethod finiPMeth;
     
     /**
      * This function will create a hint for the current base method given the hint's elements.In case the elements don't make sense it will return null.
@@ -486,7 +486,7 @@ public class CrudOperationsImpl implements CrudOperations {
             if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIProof2Started(((App)auxMethod).q)){
                 Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
                                                                                     ((App)auxMethod).q);
-                return finishedProofMethod.finishedAI2Proof(typedTerm,aux);
+                return finiPMeth.finishedAI2Proof(typedTerm,aux);
             }
             // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
             else if (ProofBoolean.isAIProof2Started(auxMethod)) {

@@ -69,16 +69,9 @@ public class InferResponse {
     // Represents if the solution is ending a case.
     private boolean endCase = false;
 
-    private PlantillaTeoremaManager plantillaTeoremaManager;
-
-    @Autowired
     private CrudOperations proofCrudOperations;
 
-    public InferResponse() {}
-
-    public InferResponse(PlantillaTeoremaManager plantillaTeoremaManager) {
-        this.plantillaTeoremaManager = plantillaTeoremaManager;
-    }
+    public InferResponse(CrudOperations proofCrudOperations) {}
 
     public void setEndCase(boolean endCase) {
         this.endCase = endCase;
