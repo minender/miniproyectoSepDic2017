@@ -63,6 +63,7 @@ import com.calclogic.parse.IsNotInDBException;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
+import com.calclogic.proof.CrudOperations;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.MateriaManager;
@@ -117,8 +118,6 @@ public class PerfilController {
     @Autowired
     private SolucionManager solucionManager;
     @Autowired
-    private PlantillaTeoremaManager plantillaTeoremaManager;
-    @Autowired
     private HttpSession session;
     @Autowired
     private MateriaManager materiaManager;
@@ -126,6 +125,8 @@ public class PerfilController {
     private TeoriaManager teoriaManager;
     @Autowired
     private MostrarCategoriaManager mostrarCategoriaManager;
+    @Autowired
+    private CrudOperations crudOp;
     //@Autowired
     //private CombUtilities combUtilities;
     
@@ -473,7 +474,7 @@ public class PerfilController {
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
         // validar que el usuario este en sesion
-        InferResponse response = new InferResponse(plantillaTeoremaManager);
+        InferResponse response = new InferResponse(crudOp);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teorema = resuelve.getTeorema().getTeoTerm();
         String nTeo = resuelve.getNumeroteorema();
@@ -489,7 +490,7 @@ public class PerfilController {
     @RequestMapping(value="/{username}/misTeoremas/buscarMetaFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarMetaFormula(@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {
-        InferResponse response = new InferResponse();
+        InferResponse response = new InferResponse(crudOp);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
         Simbolo s = simboloManager.getSimbolo(1);

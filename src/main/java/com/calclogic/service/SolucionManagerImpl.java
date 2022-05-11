@@ -7,6 +7,8 @@ import com.calclogic.entity.Usuario;
 import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.parse.CombUtilities;
+import com.calclogic.proof.CrudOperations;
+import com.calclogic.proof.FinishedProofMethod;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,10 @@ public class SolucionManagerImpl implements SolucionManager {
        
     @Autowired
     private SolucionDAO solucionDAO;
+    @Autowired
+    private FinishedProofMethod finiPMeth;
+    @Autowired
+    private CrudOperations crudOp;
     
     //@Autowired
     //private CombUtilities combUtilities;
@@ -113,8 +119,11 @@ public class SolucionManagerImpl implements SolucionManager {
     @Transactional
     public Solucion getSolucion(int id){
         Solucion solucion = solucionDAO.getSolucion(id);
-        if (!solucion.getDemostracion().equals(""))
+        if (!solucion.getDemostracion().equals("")) {
             solucion.setTypedTerm(CombUtilities.getTerm(solucion.getDemostracion()));
+            solucion.setFinishedProofMethod(finiPMeth);
+            solucion.setProofCrudOperations(crudOp);
+        }
         else // case when all the proof was erased by the go back button
             solucion.setTypedTerm(null);
         return solucion;
