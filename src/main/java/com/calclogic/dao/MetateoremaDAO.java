@@ -4,7 +4,7 @@ import com.calclogic.entity.Metateorema;
 import java.util.List;
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Metateorema". 
  *
  * >>> Unused for the moment.

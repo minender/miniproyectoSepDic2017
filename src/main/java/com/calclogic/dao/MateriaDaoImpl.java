@@ -54,7 +54,7 @@ public class MateriaDaoImpl implements MateriaDAO{
     
     /**
      * Method to get a list of all the entries of the table (all the subjects).
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */
     @Override
     public List<Materia> getAllMaterias(){

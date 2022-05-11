@@ -38,16 +38,16 @@
       </div>
     </div>--%>
     <div class="main-center">
-          <div class="row justify-content-center">
-            <h1 class="span6">${usuario.login.substring(0,1).toUpperCase()}${usuario.login.substring(1)}'s Profile</h1>
-          </div>
-          <div class="container">
-           <div class="row justify-content-center" >
-           <table>
-             <tr><td>Name:</td><td>${usuario.getNombre()}</td></tr>
-             <tr><td>Last Name:</td><td>${usuario.getApellido()}</td></tr>
-             <tr><td>Mail:</td><td>${usuario.getCorreo()}</td></tr>
-             <tr><td>&nbsp;</td><td><a href="editar"><button type="button" class="btn btn-default">Edit Profile</button></a></td></tr>
-            </table>
-            </div>
-           </div>
+      <div class="row justify-content-center">
+        <h1 class="span6">${usuario.login.substring(0,1).toUpperCase()}${usuario.login.substring(1)}'s Profile</h1>
+      </div>
+      <div class="container">
+        <div class="row justify-content-center" >
+          <table>
+            <tr><td>Name:</td><td>${usuario.getNombre()}</td></tr>
+            <tr><td>Last Name:</td><td>${usuario.getApellido()}</td></tr>
+            <tr><td>Mail:</td><td>${usuario.getCorreo()}</td></tr>
+            <tr><td>&nbsp;</td><td><a href="editar"><button type="button" class="btn btn-default">Edit Profile</button></a></td></tr>
+          </table>
+        </div>
+      </div>

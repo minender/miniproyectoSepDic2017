@@ -11,6 +11,12 @@ package com.calclogic.lambdacalculo;
  */
 public class TypedApp extends App implements TypedTerm{
 
+    /** Determines the kind of inference that is being applied. Can have the following values:
+     * "t" -> transitivity.
+     * "e" -> equanimity.
+     * "l" -> the left term is a Leinbiz application.
+     * "i" -> the left term is an instantiation.
+     */
     public char inferType;
     
     public TypedApp(Term t1, Term t2)  throws TypeVerificationException
@@ -23,14 +29,12 @@ public class TypedApp extends App implements TypedTerm{
             inferType = 'i';
         else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
         {
-            try
-            {
-              String op = ((Const)((App)((App)t2Type).p).p).getCon().trim();
-              if (!op.equals("c_{1}") && !op.equals("c_{20}"))
-                  throw new TypeVerificationException();
+            try{
+                String op = ((Const)((App)((App)t2Type).p).p).getCon().trim();
+                if (!op.equals("c_{1}") && !op.equals("c_{20}"))
+                    throw new TypeVerificationException();
             }
-            catch (ClassCastException e)
-            {
+            catch (ClassCastException e){
                 throw new TypeVerificationException();
             }
             inferType = 'l';
@@ -40,34 +44,34 @@ public class TypedApp extends App implements TypedTerm{
             Term t1Izq = ((App)t1Type).q;
             try
             {
-              String op1 = ((Const)((App)((App)t1Type).p).p).getCon().trim();
-              if (!op1.equals("c_{1}") && !op1.equals("c_{20}") && !op1.equals("c_{2}") && !op1.equals("c_{3}"))
-                  throw new TypeVerificationException();
-              if ((!op1.equals("c_{1}") && !op1.equals("c_{2}")) || !t1Izq.equals(t2Type)) 
-              {
-                Term t1Der = ((App)((App)t1Type).p).q;
-                Term t2Izq = ((App)t2Type).q;
-                String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
-        
-                boolean eq = op1.equals("c_{20}") && op2.equals("c_{20}");
-                boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
-//                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
-//                        || op2.equals("c_{3}") || op2.equals("c_{2}"));
-//                boolean leftAndOp = op1.equals("c_{3}") && 
-//                        (op2.equals("c_{3}") || op2.equals("c_{1}"));
-//                boolean rightAndOp = op1.equals("c_{2}") && 
-//                        (op2.equals("c_{2}") || op2.equals("c_{1}"));
-                if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq)))
-                  throw new TypeVerificationException();
+                String op1 = ((Const)((App)((App)t1Type).p).p).getCon().trim();
+                if (!op1.equals("c_{1}") && !op1.equals("c_{20}") && !op1.equals("c_{2}") && !op1.equals("c_{3}")){
+                    throw new TypeVerificationException();
+                }    
+                if ((!op1.equals("c_{1}") && !op1.equals("c_{2}")) || !t1Izq.equals(t2Type)) 
+                {
+                    Term t1Der = ((App)((App)t1Type).p).q;
+                    Term t2Izq = ((App)t2Type).q;
+                    String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
+            
+                    boolean eq = op1.equals("c_{20}") && op2.equals("c_{20}");
+                    boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
+    //                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
+    //                        || op2.equals("c_{3}") || op2.equals("c_{2}"));
+    //                boolean leftAndOp = op1.equals("c_{3}") && 
+    //                        (op2.equals("c_{3}") || op2.equals("c_{1}"));
+    //                boolean rightAndOp = op1.equals("c_{2}") && 
+    //                        (op2.equals("c_{2}") || op2.equals("c_{1}"));
+                    if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq))){
+                        throw new TypeVerificationException();
+                    }
+                    else
+                        inferType = 't';
+                }
                 else
-                inferType = 't';
-              }
-              else
-                inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));
+                    inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));
             }
-            catch (ClassCastException e)
-            {
-                e.printStackTrace();
+            catch (ClassCastException e){
                 throw new TypeVerificationException();
             }
         }
@@ -81,7 +85,7 @@ public class TypedApp extends App implements TypedTerm{
                 Const op = (Const)leftChild.p;
 
                 // check if it's deducting an equivalence or not
-                if (!op.getCon().trim().equals("c_{1}"))
+                if (!(op.getCon().trim().equals("c_{1}") || op.getCon().trim().equals("c_{20}")))
                     throw new TypeVerificationException();
 
                 Term r1 = leftChild.q;
@@ -102,13 +106,11 @@ public class TypedApp extends App implements TypedTerm{
                 throw new TypeVerificationException();
             }
         }
-        else if (t1 instanceof TypedU || (t1Type instanceof Const && t1Type.toString().equals("U"))){
+        /*else if (t1 instanceof TypedU || (t1Type instanceof Const && t1Type.toString().equals("U"))){
             ;
-        }
+        }*/
         else
-        {
             throw new TypeVerificationException();
-        }
     }
     
     public Term type()
@@ -124,27 +126,27 @@ public class TypedApp extends App implements TypedTerm{
             Term op2 = ((App)((App)qType).p).p; // incluir paridad aqui
             return new App(new App(op2, t2),t1);
         }
-        else if (pType.toString().equals("U") || pType.toString().equals("U"))
+        /*else if (pType.toString().equals("U") || pType.toString().equals("U"))
         {
             return new Const("U");
-        }
+        }*/
         else
         {
-           Term pIzq = ((App)pType).q; //((App)((App)pType).p).q;
-           if (pIzq.equals(qType))
-               return ((App)((App)pType).p).q;
-           Term qDer = ((App)((App)qType).p).q;
-           Const op1 = (Const)((App)((App)pType).p).p;
-           Const op2 = (Const)((App)((App)qType).p).p;
+            Term pIzq = ((App)pType).q; //((App)((App)pType).p).q;
+            if (pIzq.equals(qType))
+                return ((App)((App)pType).p).q;
+            Term qDer = ((App)((App)qType).p).q;
+            Const op1 = (Const)((App)((App)pType).p).p;
+            Const op2 = (Const)((App)((App)qType).p).p;
            
-           // incesario luego que se elminaron reglas de inferencias
-           if (op1.equals(op2))
-               return new App(new App(op1, qDer), pIzq);
-           else if (op1.getCon().trim().equals("c_{1}"))
-               return new App(new App(op2, qDer), pIzq);
-           else
-               return new App(new App(op1, qDer), pIzq);
-           // verificar si compartir terminos no trae problemas con reducir
+            // incesario luego que se elminaron reglas de inferencias
+            if (op1.equals(op2))
+                return new App(new App(op1, qDer), pIzq);
+            else if (op1.getCon().trim().equals("c_{1}"))
+                return new App(new App(op2, qDer), pIzq);
+            else
+                return new App(new App(op1, qDer), pIzq);
+            // verificar si compartir terminos no trae problemas con reducir
         }
     }
 }

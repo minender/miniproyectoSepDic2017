@@ -96,7 +96,6 @@
     <bean id="usuarioDAO" class="com.calclogic.dao.UsuarioDaoImpl"></bean>
     <bean id="usuarioManager" class="com.calclogic.service.UsuarioManagerImpl"></bean>
     <bean id="terminoDAO" class="com.calclogic.dao.TerminoDaoImpl"></bean>
-    <bean id="PublicacionDAO" class="com.calclogic.dao.PublicacionDaoImpl"></bean>
     <bean id="terminoManager" class="com.calclogic.service.TerminoManagerImpl"></bean>
     <bean id="predicadoDAO" class="com.calclogic.dao.PredicadoDaoImpl"></bean>
     <bean id="predicadoManager" class="com.calclogic.service.PredicadoManagerImpl">
@@ -136,10 +135,8 @@
     </bean>
     <bean id="plantillaTeoremaDAO" class="com.calclogic.dao.PlantillaTeoremaDaoImpl"></bean>
     <bean id="plantillaTeoremaManager" class="com.calclogic.service.PlantillaTeoremaManagerImpl"></bean>
-    <bean id="combUtilities" class="com.calclogic.parse.CombUtilities">
-    </bean>
-    <bean id="termUtilities" class="com.calclogic.parse.TermUtilities">
-    </bean>
+    <bean id="finiPMeth" class="com.calclogic.proof.FinishedProofMethodImpl"></bean>
+    <bean id="crudOp" class="com.calclogic.proof.CrudOperationsImpl"></bean>
  
     <tx:annotation-driven />
     <bean id="transactionManager"

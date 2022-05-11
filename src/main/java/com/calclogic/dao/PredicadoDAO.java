@@ -5,7 +5,7 @@ import com.calclogic.entity.PredicadoId;
 import java.util.List;
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Predicado". 
  *
  * That table has the abbreviations that each user has added.

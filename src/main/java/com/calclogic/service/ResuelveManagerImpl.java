@@ -8,6 +8,8 @@ import com.calclogic.entity.Teorema;
 import com.calclogic.parse.CombUtilities;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +28,8 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Autowired
     private SolucionDAO solucionDAO;
     
-    @Autowired
-    private CombUtilities combUtilities;
+    //@Autowired
+    //private CombUtilities combUtilities;
     
     /** 
      * Adds a new object entry to the table only if an equivalent one has not been added yet,
@@ -98,6 +100,11 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelves;
     }
     
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user, and also
+	 * establishes for each one if it is an axiom or not.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     */
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUserWithSol(String userLogin){
@@ -125,14 +132,82 @@ public class ResuelveManagerImpl implements ResuelveManager {
                 }
                 
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return resuelves;
     }
+
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminWithSol(String userLogin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdmin(userLogin);
+
+        // ----------------- Remove duplicates ----------------------
+        List<Resuelve> toRemove = new ArrayList(); // List of rows to remove
+
+        // Copy of the original list that we sort according to theorems' ids in order that duplicates appear contiguous
+        List<Resuelve> resuelvesCopy = new ArrayList<>(resuelves); 
+        Collections.sort(resuelvesCopy, Resuelve.CompareByTheoremId);
+
+        Teorema prevTeo = null;
+        Resuelve prevResuelve = null;
+
+        for (Resuelve r: resuelvesCopy) {
+            Teorema t = r.getTeorema();
+            if (prevTeo == t) {
+                if (r.getUsuario().getLogin().equals(userLogin)){
+                    toRemove.add(prevResuelve);
+                } else {
+                    toRemove.add(r);
+                }
+                continue;
+            }
+            prevTeo = t;
+            prevResuelve = r;
+        }
+        resuelves.removeAll(toRemove);
+
+        // --------------------- Here we get the theorems parsed -------------------------
+        try {
+            for (Resuelve resuelve : resuelves) {
+                List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelve.getId());
+                resuelve.setDemopendiente(-1);                
+                int numeroDeSols = 0;
+                for (Solucion sol: sols)
+                {
+                   if (!sol.isResuelto()){
+                      resuelve.setDemopendiente(sol.getId());
+                   }
+                   numeroDeSols ++;
+                }
+                
+                if(resuelve.isResuelto() && numeroDeSols == 0){
+                    resuelve.setEsAxioma(true);
+                }
+                else{
+                    resuelve.setEsAxioma(false);               
+                }
+                
+                Teorema teo = resuelve.getTeorema();
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return resuelves;
+    }
     
+    /**
+     * Method to get a list of all the theorems of a specific user that are axioms
+     * or that were demonstrated without the use of the theorem that is passed as
+     * an argument.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teoNum Is the number of the theorem, used to filter the search.
+     */
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin,String teoNum){
@@ -160,7 +235,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                 }
                 
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -168,6 +243,73 @@ public class ResuelveManagerImpl implements ResuelveManager {
         return resuelves;
     }
     
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminWithSolWithoutAxiom(String userLogin,String teoNum){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdminWithoutAxiom(userLogin,teoNum);//getAllResuelveByUser(userLogin);
+
+        // ----------------- Remove duplicates ----------------------
+        List<Resuelve> toRemove = new ArrayList(); // List of rows to remove
+
+        // Copy of the original list that we sort according to theorems' ids in order that duplicates appear contiguous
+        List<Resuelve> resuelvesCopy = new ArrayList<>(resuelves); 
+        Collections.sort(resuelvesCopy, Resuelve.CompareByTheoremId);
+
+        Teorema prevTeo = null;
+        Resuelve prevResuelve = null;
+
+        for (Resuelve r: resuelvesCopy) {
+            Teorema t = r.getTeorema();
+            if (prevTeo == t) {
+                if (r.getUsuario().getLogin().equals(userLogin)){
+                    toRemove.add(prevResuelve);
+                } else {
+                    toRemove.add(r);
+                }
+                continue;
+            }
+            prevTeo = t;
+            prevResuelve = r;
+        }
+        resuelves.removeAll(toRemove);
+
+        // --------------------- Here we get the theorems parsed -------------------------
+        try {
+            for (Resuelve resuelve : resuelves) {
+                List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelve.getId());
+                resuelve.setDemopendiente(-1);                
+                int numeroDeSols = 0;
+                for (Solucion sol: sols)
+                {
+                   if (!sol.isResuelto()){
+                      resuelve.setDemopendiente(sol.getId());
+                   }
+                   numeroDeSols ++;
+                }
+                
+                if(resuelve.isResuelto() && numeroDeSols == 0){
+                    resuelve.setEsAxioma(true);
+                }
+                else{
+                    resuelve.setEsAxioma(false);
+                    
+                }
+                
+                Teorema teo = resuelve.getTeorema();
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return resuelves;
+    }
+    
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user
+     * having solved the demonstration of a theorem.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     */
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUserResuelto(String userLogin){
@@ -175,7 +317,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
         try {
             for (Resuelve resuelve : resuelves) {
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -185,27 +327,95 @@ public class ResuelveManagerImpl implements ResuelveManager {
     
     @Override
     @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminResuelto(String userLogin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdminResuelto(userLogin);
+
+        // ----------------- Remove duplicates ----------------------
+        List<Resuelve> toRemove = new ArrayList(); // List of rows to remove
+
+        // Copy of the original list that we sort according to theorems' ids in order that duplicates appear contiguous
+        List<Resuelve> resuelvesCopy = new ArrayList<>(resuelves); 
+        Collections.sort(resuelvesCopy, Resuelve.CompareByTheoremId);
+
+        Teorema prevTeo = null;
+        Resuelve prevResuelve = null;
+
+        for (Resuelve r: resuelvesCopy) {
+            Teorema t = r.getTeorema();
+            if (prevTeo == t) {
+                if (r.getUsuario().getLogin().equals(userLogin)){
+                    toRemove.add(prevResuelve);
+                } else {
+                    toRemove.add(r);
+                }
+                continue;
+            }
+            prevTeo = t;
+            prevResuelve = r;
+        }
+        resuelves.removeAll(toRemove);
+
+        // --------------------- Here we get the theorems parsed -------------------------
+        try {
+            for (Resuelve resuelve : resuelves) {
+                Teorema teo = resuelve.getTeorema();
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return resuelves;
+    }
+    
+    /**
+     * Method to get a list of all the entries of the table that correspond 
+     * to a specific theorem (Teorema object).
+     * @param teoremaID Is the principal key of the theorem used to filter the search.
+     */
+    @Override
+    @Transactional
     public List<Resuelve> getResuelveByTeorema(int teoremaID){
         return resuelveDAO.getResuelveByTeorema(teoremaID);
     }
-
+    
+    /**
+     * Method to get an entry that relates a user with a theorem, 
+     * using the statement of the theorem.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teo Is the statement of the theorem used to filter the search.
+     */
+    @Override
+    @Transactional
+    public Resuelve getResuelveByUserAndTeorema(String userLogin,String teo){
+		return resuelveDAO.getResuelveByUserAndTeorema(userLogin, teo);
+    }
+	
+    /**
+     * Method to get an entry that relates a user with a theorem, 
+     * using the identifier of the theorem.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teoremaID Is the principal key of the theorem used to filter the search.
+     */
     @Override
     @Transactional
     public Resuelve getResuelveByUserAndTeorema(String userLogin,int teoremaID){
         Resuelve resuel = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID);
         if (resuel != null) {
             Teorema teo = resuel.getTeorema();
-            teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+            teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             resuel.setTeorema(teo);
         }
         return resuel;
     }
-    
-    @Override
-    @Transactional
-    public Resuelve getResuelveByUserAndTeorema(String userLogin,String teo){
-            return resuelveDAO.getResuelveByUserAndTeorema(userLogin, teo);
-    }
+	
+    /**
+     * Method to get an entry that relates a user with a theorem, 
+     * using the number of the theorem.
+	 * If it exists, it parses the string associated with the object.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teoNum Is the number of the theorem used to filter the search.
+     */
     @Override
     @Transactional
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum){
@@ -219,7 +429,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                     resuel.setDemopendiente(sol.getId());
             }
             Teorema teo = resuel.getTeorema();
-            teo.setTeoTerm(combUtilities.getTerm(teo.getEnunciado()));
+            teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
             resuel.setTeorema(teo);
         }
         return resuel;

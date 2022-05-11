@@ -1,14 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.calclogic.service;
 
 import com.calclogic.dao.SolucionDAO;
 import com.calclogic.entity.Solucion;
+import com.calclogic.entity.Resuelve;
+import com.calclogic.entity.Usuario;
 import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.parse.CombUtilities;
+import com.calclogic.proof.CrudOperations;
+import com.calclogic.proof.FinishedProofMethod;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.SerializationUtils;
 
 /**
+ * This class has the implementation of "SolucionManager" queries.
  *
  * @author miguel
  */
@@ -26,11 +27,21 @@ public class SolucionManagerImpl implements SolucionManager {
        
     @Autowired
     private SolucionDAO solucionDAO;
-    
     @Autowired
-    private CombUtilities combUtilities;
+    private FinishedProofMethod finiPMeth;
+    @Autowired
+    private CrudOperations crudOp;
     
+    //@Autowired
+    //private CombUtilities combUtilities;
     
+    /** 
+     * Adds a new Solucion object to the table, but it is only if all previous ones
+	 * for the same theorem where already completed. It is not possible to work in new solutions
+     * if there is an incomplete one.
+     * @param sol The new Solucion object to be added.
+     * @return Nothing.
+     */
     @Override
     @Transactional
     public void addSolucion(Solucion sol){        
@@ -45,8 +56,6 @@ public class SolucionManagerImpl implements SolucionManager {
             solucionDAO.addSolucion(sol);
     }
     
-    
-    
     /*@Override
     @Transactional
     public void addPaso(int solucionId, PasoInferencia paso){
@@ -55,6 +64,13 @@ public class SolucionManagerImpl implements SolucionManager {
         solucionDAO.updateSolucion(sol);
     }*/
     
+    /**
+     * Updates one of the Solucion objects of the table, and makes that the new part
+	 * has the structure established in this application.
+     * @param solucionId Is the principal key of the Solucion object to be updated
+	 * @param typedTerm Is the Term object that will be added to the demonstration.
+     * @return Nothing.
+     */   
     @Override
     @Transactional
     public void updateSolucion(int solucionId, Term typedTerm){
@@ -63,44 +79,79 @@ public class SolucionManagerImpl implements SolucionManager {
         solucionDAO.updateSolucion(sol);
     }
     
+    /**
+     * Updates one of the Solucion objects of the table.
+     * @param sol Is the Solucion object to be updated.
+     * @return Nothing.
+     */   
     @Override
     @Transactional
     public void updateSolucion(Solucion sol){
         solucionDAO.updateSolucion(sol);
     }
     
+    /**
+     * Deletes one of the Solucion objects of the table.
+     * @param id Is the principal key of the Solucion object to delete.
+     * @return Nothing.
+     */ 
     @Override
     @Transactional
-    public void deleteSolucion(int id){
-        solucionDAO.deleteSolucion(id);
+    public boolean deleteSolucion(int id, String username){
+        Solucion solucion = solucionDAO.getSolucion(id);
+        if (solucion == null) {
+            return false;
+        }
+        Resuelve resuelve = solucion.getResuelve();
+        Usuario user = resuelve.getUsuario();
+        if (user.getLogin().equals(username)) {
+            solucionDAO.deleteSolucion(id);
+            return true;   
+        }
+        return false;
     }
     
-    
+    /**
+     * Method to get a Solucion object by its principal key.
+     * @param id Is the principal key of the Solucion object.
+     */ 
     @Override
     @Transactional
     public Solucion getSolucion(int id){
         Solucion solucion = solucionDAO.getSolucion(id);
-        if (!solucion.getDemostracion().equals(""))
-            solucion.setTypedTerm(combUtilities.getTerm(solucion.getDemostracion()));
+        if (!solucion.getDemostracion().equals("")) {
+            solucion.setTypedTerm(CombUtilities.getTerm(solucion.getDemostracion()));
+            solucion.setFinishedProofMethod(finiPMeth);
+            solucion.setProofCrudOperations(crudOp);
+        }
         else // case when all the proof was erased by the go back button
             solucion.setTypedTerm(null);
         return solucion;
     }
     
-    
+    /**
+     * Method to get a list of all the entries of the table that correspond 
+     * to a specific Resuelve object.
+     * @param resuelveId Is the identifier of the Resuelve object used to filter the search.
+     */
     @Override
     @Transactional
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId){
         List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelveId);
         for (Solucion sol: sols)
             if (!sol.getDemostracion().equals(""))
-                sol.setTypedTerm(combUtilities.getTerm(sol.getDemostracion()));
+                sol.setTypedTerm(CombUtilities.getTerm(sol.getDemostracion()));
             else
                 sol.setTypedTerm(null);
         return sols;
     }
     
-    
+    /**
+     * Method to get a list of the identifiers of all the entries of the table 
+     * that correspond to a specific Resuelve object, including the incomplete solutions.
+     * @param resuelveId Is the identifier of the Resuelve object used to filter the search.
+	 * @return listaSoluciones A HashMap that relates the solutions names with their id's.
+     */
     @Override
     @Transactional
     public HashMap<String,Integer> getAllSolucionesIdByResuelve(int resuelveId){

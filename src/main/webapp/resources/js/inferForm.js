@@ -117,27 +117,28 @@ $(function() {
 });
 
 function hasNumericClass(element){
-                    let clases = $(element).attr("class");
-                    isNumeric = false;
-                    if (clases){
-                        clases = clases.split(" ");
-                        for (let i = 0; i<clases.length;i++){
-                            if ($.isNumeric(clases[i])){
-                                isNumeric = true
-                            }
-                        }
-                    }
-                    return isNumeric
-                    
-                }
+    let clases = $(element).attr("class");
+    isNumeric = false;
+    if (clases){
+        clases = clases.split(" ");
+        for (let i = 0; i<clases.length;i++){
+            if ($.isNumeric(clases[i])){
+                isNumeric = true
+            }
+        }
+    }
+    return isNumeric
+    
+}
 
 function leibnizMouse(p1,p2){
 
     if (p1===p2) {
-       $('#leibniz_id').val(inferRecoverC(leibniz[p1-0], leibnizLatex[p1-0],'leibnizSymbolsId_'));
-       if (window['auto'])
-        automaticSubst();
-       return;
+        $('#leibniz_id').val(inferRecoverC(leibniz[p1-0], leibnizLatex[p1-0],'leibnizSymbolsId_'));
+        if (window['auto']){
+            instantiationAjax("automaticSubst");
+        }
+        return;
     }
 
     /*var resp;

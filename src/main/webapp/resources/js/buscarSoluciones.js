@@ -1,4 +1,4 @@
-
+// Used by "misTeoremas.jsp"
 function buscarSoluciones(idTeo){
     var url = window.location.href + "/listaSolucion";
     var data = {};
@@ -21,7 +21,9 @@ function buscarSoluciones(idTeo){
                     key = "(Incomplete) Proof "+i;
                 var link = "<a href='javascript:buscarFormula("+ data.soluciones[key] +","+ data.idTeo +");'> ";
                 link = link + key + "</a>";//"Proof " + i + "</a>";
-                $('#listaSoluciones').append("<li>" + link +  " </li>");
+                var basurita = "<a href='javascript:delSol(" + data.soluciones[key] + ");'><i class=\"fa fa-trash\"></i></a>";
+                link = link + " " + basurita;
+                $('#listaSoluciones').append("<li>" + link + " </li>");
 
             }
             if(len != 0){
@@ -32,12 +34,11 @@ function buscarSoluciones(idTeo){
                 alert("The selected theorem has no saved proofs.");
                 $("#panelSoluciones").removeClass("d-none");
             }
-        }
-        
-        
+        }  
     });
 }
 
+// Used by "misTeoremas.jsp"
 function buscarMetaSoluciones(idTeo){
     $('#listaSoluciones').html("");
     var link = "<a href='javascript:buscarMetaFormula("+idTeo+");'> ";
@@ -82,6 +83,43 @@ function buscarMetaFormula(idTeo){
             $("#modalLoading").css('display','none');
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
+        }
+    });
+}
+
+function delSol(idSol){
+    
+    var data = {};
+    var url = window.location.href + "/deleteSol/" + idSol;
+    $("#modalLoading").css('display','inline-block');
+    $.ajax({
+        type:'POST',
+        url: url,
+        data:data,
+        success: function(data){
+            $("#modalLoading").css('display','none');
+            alert(data);
+            location.reload();
+            //MathJax.Hub.Typeset();
+        }
+    });
+}
+
+function delTeo(idTeo){
+    
+    var data = {};
+    var url = window.location.href + "/deleteTeo/" + idTeo;
+    console.log(url);
+    $("#modalLoading").css('display','inline-block');
+    $.ajax({
+        type:'POST',
+        url: url,
+        data:data,
+        success: function(data){
+            $("#modalLoading").css('display','none');
+            alert(data);
+            location.reload();
+            //MathJax.Hub.Typeset();
         }
     });
 }

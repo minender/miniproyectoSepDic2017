@@ -15,7 +15,7 @@ import org.springframework.util.SerializationUtils;
  * This class has the implementation of the database queries that 
  * have to do with the table "Teoria".
  *
- * That entries of that table group Simbolo, Teorema and Metateorema
+ * The entries of that table group Simbolo, Teorema and Metateorema
  * objects.
  *
  * @author jt
@@ -79,7 +79,7 @@ public class TeoriaDaoImpl implements TeoriaDAO {
     
     /**
      * Method to get a list of all the entries of the table (all the theories).
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */  
     @Override
     @Transactional

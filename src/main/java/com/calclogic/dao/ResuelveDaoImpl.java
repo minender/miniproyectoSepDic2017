@@ -79,7 +79,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     
     /**
      * Method to get a list of all the entries of the table.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */  
     @Override
     @Transactional
@@ -89,7 +89,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      */
     @Override
@@ -99,11 +99,17 @@ public class ResuelveDaoImpl implements ResuelveDAO {
 
     }
     
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdmin(String userLogin){
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE usuario.login = :userLogin OR usuario.login = 'AdminTeoremas' order by char_length(numeroteorema), numeroteorema").setParameter("userLogin",userLogin).list();
+    }
+    
     /**
      * Method to get a list of all the theorems of a specific user that are axioms
      * or that were demonstrated without the use of the theorem that is passed as
      * an argument.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoNum Is the number of the theorem, used to filter the search.
      */
@@ -116,10 +122,19 @@ public class ResuelveDaoImpl implements ResuelveDAO {
               // la lista el teorema teoNum
     }
     
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminWithoutAxiom(String userLogin, String teoNum){
+        return this.sessionFactory.getCurrentSession()
+                .createQuery("FROM Resuelve r WHERE (r.usuario.login = :userLogin OR r.usuario.login = 'AdminTeoremas') AND ((NOT EXISTS (SELECT s FROM Solucion s WHERE r.id = s.resuelve.id)) OR EXISTS (SELECT s FROM Solucion s, Resuelve e, Teorema t WHERE e.numeroteorema = :teoNum AND t.id = e.teorema.id AND r.id = s.resuelve.id AND NOT (s.demostracion LIKE '%A^{' || t.enunciado || '}%'))) ORDER BY char_length(r.numeroteorema), r.numeroteorema").setParameter("userLogin",userLogin).setParameter("teoNum",teoNum).list();
+              // TODO: revisa si este query se puede simplificar en caso en que no haga falta eobtener en 
+              // la lista el teorema teoNum
+    }
+    
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user
      * having solved the demonstration of a theorem.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      */
     @Override
@@ -128,10 +143,16 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE usuario.login = :userLogin AND resuelto = true").setParameter("userLogin",userLogin).list();
     }
     
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUserOrAdminResuelto(String userLogin){
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE (usuario.login = :userLogin OR usuario.login = 'AdminTeoremas') AND resuelto = true").setParameter("userLogin",userLogin).list();
+    }
+    
     /**
      * Method to get a list of all the entries of the table that correspond 
      * to a specific theorem (Teorema object).
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param teoremaID Is the principal key of the theorem used to filter the search.
      */
     @Override
@@ -143,7 +164,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     /**
      * Method to get an entry that relates a user with a theorem, 
      * using the identifier of the theorem.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoremaID Is the principal key of the theorem used to filter the search.
      */
@@ -164,7 +185,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     /**
      * Method to get an entry that relates a user with a theorem, 
      * using the statement of the theorem.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teo Is the statement of the theorem used to filter the search.
      */
@@ -184,7 +205,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     /**
      * Method to get an entry that relates a user with a theorem, 
      * using the number of the theorem.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoNum Is the number of the theorem used to filter the search.
      */
@@ -204,7 +225,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     /**
      * Method to get a list of all the entries of the table that correspond to a
      * specific category (Categoria object),
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param categoriaId Is the principal key of the category used to filter the search.
      */
     @Override

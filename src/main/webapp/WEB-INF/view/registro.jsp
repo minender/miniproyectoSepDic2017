@@ -11,14 +11,7 @@
  <c:when test="${isRegistro=='1'}">
   <!DOCTYPE html>
    <html>
-    <head>
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
-        <%--<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >--%>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>CalcLogic</title>
-    </head>
+    <tiles:insertDefinition name="header" />
     <body>
         <div class="container-fluid" >
         <nav class="row navbar navbar-expand-lg navbar-dark bg-blue">

@@ -75,7 +75,7 @@ public class PredicadoDaoImpl implements PredicadoDAO{
     /**
      * Method to get a Predicado object that corresponds to
      * a specific user and that have a specific string.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param username Is the string with which the user logs in, and that we use to filter the search.
      * @param comb Represents the predicate with which we filter the search.
      */
@@ -92,7 +92,7 @@ public class PredicadoDaoImpl implements PredicadoDAO{
     
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      */
     @Override

@@ -7,11 +7,11 @@ import java.util.List;
 
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Termino". 
  *
  * That table has all the terms that have been added to the
- * application.
+ * application, indicating their respective owner users.
  *
  * @author federico
  */

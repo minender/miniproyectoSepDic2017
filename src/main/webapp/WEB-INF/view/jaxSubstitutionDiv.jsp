@@ -18,16 +18,8 @@
 
 <script src="${pageContext.request.contextPath}/static/js/mathjaxAndSymbols.js"></script>
 <script src="${pageContext.request.contextPath}/static/js/mathjaxSubstitutionSymbols.js"></script>
-<!--<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>-->
+
 <script>
-	//This allows the use of forminput mathjax extension in this view
-	MathJax.Hub.Config({
-		   extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
-		   jax: ["input/TeX","output/HTML-CSS"],
-		   tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]},
-		   TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}        	   
-	});
-	
 	
 	//SET INPUT BOX ASSOCIATED TO THIS VIEW, HERE WE'LL SEND THE DATA	
 	window['${rootId}_InputForm'] = '${inputForm}';

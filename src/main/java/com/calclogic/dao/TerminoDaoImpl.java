@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
  * have to do with the table "Termino".
  *
  * That table has all the terms that have been added to the
- * application.
+ * application, indicating their respective owner users.
  *
  * @author federico
  */
@@ -61,7 +61,7 @@ public class TerminoDaoImpl implements TerminoDAO{
 
     /**
      * Method to get a list of all the entries of the table (all the terms).
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -71,7 +71,7 @@ public class TerminoDaoImpl implements TerminoDAO{
 
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param username Is the string with which the user logs in, and that we use to filter the search.
      */
     @SuppressWarnings("unchecked")
@@ -84,7 +84,7 @@ public class TerminoDaoImpl implements TerminoDAO{
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user,
      * and that have a specific "combinador" attribute.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param username Is the string with which the user logs in, and that we use to filter the search.
      * @param comb Is the "combinador" attribute used to filter the search.
      */
@@ -102,7 +102,7 @@ public class TerminoDaoImpl implements TerminoDAO{
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user,
      * and in which that user has made public the term.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param username Is the string with which the user logs in, and that we use to filter the search.
      */     
     @SuppressWarnings("unchecked")

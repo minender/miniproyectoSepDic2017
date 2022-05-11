@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.calclogic.service;
 
 import com.calclogic.entity.Dispone;
@@ -9,7 +5,7 @@ import java.util.List;
 
 /**
  * This interface is the use of the "DisponeDAO" 
- * api in this application.
+ * API in this application.
  * 
  * @author miguel
  */

@@ -77,7 +77,7 @@ public class SolucionDaoImpl implements SolucionDAO{
     /**
      * Method to get a list of all the entries of the table that correspond 
      * to solutions of demonstrations using axioms.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param resuelveId Is the identifier of the Resuelve object used to filter the search.
      */
     @Override
@@ -90,7 +90,7 @@ public class SolucionDaoImpl implements SolucionDAO{
     /**
      * Method to get a list of all the entries of the table that correspond 
      * to a specific Resuelve object.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param resuelveId Is the identifier of the Resuelve object used to filter the search.
      */
     @Override
@@ -102,7 +102,7 @@ public class SolucionDaoImpl implements SolucionDAO{
     /**
      * Method to get a list of the identifiers of all the entries of the table 
      * that correspond to a specific Resuelve object.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param resuelveId Is the identifier of the Resuelve object used to filter the search.
      */
     @Override
@@ -114,7 +114,7 @@ public class SolucionDaoImpl implements SolucionDAO{
     /**
      * Method to get a list of the identifiers of all the entries of the table 
      * that correspond to a specific Resuelve object, and that refer to an incomplete solution.
-     * This query is made using classic SQL.
+     * This query is made using HQL (Hibernate Query Language).
      * @param resuelveId Is the identifier of the Resuelve object used to filter the search.
      */  
     @Override

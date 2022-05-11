@@ -3,7 +3,7 @@ import com.calclogic.entity.Simbolo;
 import java.util.List;
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Simbolo". 
  *
  * That table has all the operators and constants along with 
@@ -21,9 +21,9 @@ public interface SimboloDAO {
     public void addSimbolo(Simbolo Simbolo);
     
     /**
-     * This method let us Update the entry that corresponds to a symbol
-     * already stored. For example, to update the code that creates it.
-     * @param Simbolo Is the Predicado object to be updated.
+     * This method let us update the entry that corresponds to an already 
+     * stored symbol. For example, to update the code that creates it.
+     * @param Simbolo Is the Simbolo object to be updated.
      * @return Nothing.
      */ 
     public void updateSimbolo(Simbolo Simbolo);
@@ -36,8 +36,8 @@ public interface SimboloDAO {
     public void deleteSimbolo(int id);
     
     /**
-     * Method to get a Symbol object by its principal key.
-     * @param id Is the principal key of the Symbol object.
+     * Method to get a Simbolo object by its principal key.
+     * @param id Is the principal key of the Simbolo object.
      */ 
     public Simbolo getSimbolo(int id);
     
@@ -45,6 +45,4 @@ public interface SimboloDAO {
      * Method to get a list of all the entries of the table.
      */
     public List<Simbolo> getAllSimbolo();
-    
-
 }

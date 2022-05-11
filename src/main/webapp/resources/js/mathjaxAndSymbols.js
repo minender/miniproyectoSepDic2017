@@ -1,20 +1,18 @@
 // Author Jean 22/05/2020
 
-
 /**
    This function takes the id of a div (that must have a mathjax jax element) and some text (latex formated)
    and replaces the input box where the user was holding its mouse with the recently clicked
    operator
  * @param text string that represents the notation of symbol associated to the button that was clicked
- * @param simboloId int that is the id of the symbol of the button that as clicked
+ * @param simboloId int that is the id of the symbol of the button that was clicked
  * @param isAlias boolean that tells us if is an alias what we need to insert 
  * @returns nothing
  */
 function insertAtMathjaxDiv(text,simboloId, isAlias){
-	
 	var input = document.activeElement; // get the input box where the cursor was
 	
-	// if the cursor was not on any element, or the element wasnt a Math_Jax 
+	// if the cursor was not on any element, or the element wasn't a Math_Jax 
 	// input field, return
 	if(!input || !(input.classList.contains("MathJax_Input"))){
 		return 
@@ -139,19 +137,19 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	}
 	
 	// Rule 2
-	if(simboloId == parentSimboloId && variableName.match(/^aa(1|2)$/)){
+	else if(simboloId == parentSimboloId && variableName.match(/^aa(1|2)$/)){
 		leftPar = '';
 		rightPar = '';
 	}
 	
 	// Rule 3
-	if(arguments == 0){
+	else if(arguments == 0){
 		leftPar = '';
 		rightPar = '';
 	}
 	
 	// Rule 4
-	if((variableName.match(/^na(1|2)$/))){
+	else if((variableName.match(/^na(1|2)$/))){
 		leftPar = '';
 		rightPar = '';
 	}
@@ -159,20 +157,21 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	
 	var newMathJax = originalMathJax.replace(parentBox, "\\ {" + leftPar + newNotation + rightPar + "}\\ " );// Finally we replace the old box with the whole new notation 
 	
-	MathJax.Hub.Queue(["Text",math,newMathJax]);// refresh the mathjax div
-	
-	// LOAD THE OLD INPUT IN THE RESPECTIVE BOXES 
-	loadMathJaxFormContent(id, saveDictionary);
-		
-	// Set in the global dictionary which symbol id is 
-	// associated to the new created inputs and also extra information
-	createdChilds.forEach(element => jaxInputDictionary[element[0]]=element[1]);
+	// refresh the mathjax div
+	MathJax.Hub.Queue(["Text",math,newMathJax], function(){
+		// LOAD THE OLD INPUT IN THE RESPECTIVE BOXES
+		loadMathJaxFormContent(id, saveDictionary);
+			
+		// Set in the global dictionary which symbol id is 
+		// associated to the new created inputs and also extra information
+		createdChilds.forEach(element => jaxInputDictionary[element[0]]=element[1]);	
+	});
 	
 };
 
 
 /**
- * This function set the mathjax form 
+ * This function sets the mathjax form 
    to the correct attributes
  * @param form mathjax form to set attributes of
  * @param maxlength how many characters to allow in the input box
@@ -180,8 +179,6 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
  * @returns nothing
  */
 function setMathJaxFormAttributes(form, maxlength, rootId) {
-
-	
 	form.maxLength = maxlength;
 	form.setAttribute('data-rootId', rootId);
 	form.onkeydown = function() {
@@ -189,10 +186,8 @@ function setMathJaxFormAttributes(form, maxlength, rootId) {
 
 	    // If the user presses del and the input box was empty we must delete this operator 
 	    // in the mathjax div
-	    if( (key == 8 || key == 46) && this.value == "" ) {
-	    	
-	    	deleteOperator(this.id, rootId);
-	    		
+	    if( (key == 8 || key == 46) && this.value == "" ) {	
+	    	deleteOperator(this.id, rootId);		
 	    }    
 	}
 }
@@ -206,9 +201,8 @@ function setMathJaxFormAttributes(form, maxlength, rootId) {
  * @returns dinctionary with key the id of the input form and value its content
  */
 function saveMathJaxFormContent(divId){
-	
 	// Get all input boxes from the div
-	var inputs = $('#' + divId + ' .MathJax_Input').toArray();
+	var inputs=$('#' + divId + ' input.MathJax_Input:not(.MJX_Assistive_MathML .MathJax_Input)').toArray();
 
 	// This dictionary will save that content
 	var dictionary ={}
@@ -228,9 +222,9 @@ function saveMathJaxFormContent(divId){
  * @returns nothing
  */
 function loadMathJaxFormContent(divId, dictionarySave){
-	
 	// Get the new input boxes
-	var inputs = $('#' + divId.replace(/(\.)/g, "\\.") + ' .MathJax_Input').toArray();
+	var inputs = $('#' + divId.replace(/(\.)/g, "\\.") +
+                       ' input.MathJax_Input:not(.MJX_Assistive_MathML .MathJax_Input)').toArray();
 	// Set the value of each new input box to its old value
 	inputs.forEach(function(element){
 		if(dictionarySave.hasOwnProperty(element.id)){
@@ -251,7 +245,6 @@ function loadMathJaxFormContent(divId, dictionarySave){
  * @returns new string for jax to display 
  */
 function deleteOperator(FormId, rootId){
-	
 	var id = rootId + "MathJaxDiv";
 	var input = document.getElementById(FormId); // get the input box
 	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div
@@ -382,14 +375,12 @@ function deleteOperator(FormId, rootId){
 	}
 	
 	// Render the new text, also set the new input box attributes
-	MathJax.Hub.Queue(["Text",math,result]);
+	MathJax.Hub.Queue(["Text",math,result], function(){
+		//LOAD OLD INPUT BOXES CONTENT
+	    loadMathJaxFormContent(id, saveDictionary);
+	});
 	
-	
-	//LOAD OLD INPUT BOXES CONTENT
-    loadMathJaxFormContent(id, saveDictionary);
-    	
-    return result;
-    	   	
+    return result;	   	
 }
 
 /**
@@ -399,7 +390,6 @@ function deleteOperator(FormId, rootId){
  * @returns nothing
  */
 function deleteOperatorParserString(formId, rootId){
-	
 	var oldParentId = formId.substring(0, formId.length - 1);// the id the new input box will have
 	
 	var lastChar = formId[formId.length-1];// the last char of the id tells us if is right or left child
@@ -516,7 +506,6 @@ function deleteOperatorParserString(formId, rootId){
  * @returns
  */
 function setInputValueOnParser(rootId){
-	
 	rootId += '_';
 	
 	var textareaId = window[rootId + '_InputForm'];
@@ -548,7 +537,6 @@ function setInputValueOnParser(rootId){
  * @returns nothing
  */
 function cleanJax(rootId){
-	
 	
 	rootId += '_';
 	 
@@ -601,9 +589,9 @@ function stringToIntString(string){
  * This function takes a C notation with the information neccesary to set
  * the jaxInputDictionary for the given notation, sets the dictionary, turns the 
  * notation into the proper C notation and sets the parseString 
- * This function is meant to be used when the user generates a leibnz by using 
+ * This function is meant to be used when the user generates a leibniz by using 
  * the mouse. This function also sets the new latex notation in mathjax
- * An example of what this method takes as argument is ambda z.C1(Input{q,leibnizSymbolsId_2,phatherOpId1},Input{z,leibnizSymbolsId_1,phatherOpId1})
+ * An example of what this method takes as argument is lambda z.C1(Input{q,leibnizSymbolsId_2,phatherOpId1},Input{z,leibnizSymbolsId_1,phatherOpId1})
  * @param cNotation C notation to recover from
  * @param latexNotation latex notation to display
  * @returns
@@ -694,11 +682,12 @@ function inferRecoverC(cNotation, latexNotation, rootId){
     
     // Update the jax expression
     var math = MathJax.Hub.getAllJax(rootId + 'MathJaxDiv')[0];
-    MathJax.Hub.Queue(["Text",  math, "{" +latexNotation + "}"]);
-    
-    // Load the variables on the input boxes
 
-    loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);
+    MathJax.Hub.Queue(["Text",  math, "{" +latexNotation + "}"], function(){
+	    // Load the variables on the input boxes
+	    loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);
+    });
+
     return newParserString;
 	
 }
@@ -740,7 +729,7 @@ function setAliasesToC(Cnotation, rootId){
  * @returns result : String updated notation 
  */
 function setCtoAliases(Cnotation, rootId){
-var simboloDic = window[rootId + 'simboloDic'];
+	var simboloDic = window[rootId + 'simboloDic'];
 	
 	var result = Cnotation;
 	
@@ -760,27 +749,4 @@ var simboloDic = window[rootId + 'simboloDic'];
 	}
 	
 	return result;
-	
 }
-
-/**
- * This functions creates and later deletes a MathJax FormInput, this is neccesary to 
- * take care of a bug that MathJax has
- * @param rootId
- * @returns nothing
- */
-function preSet(rootId){
-	
-	var id = rootId + "MathJaxDiv";
-	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div
-	
-	// Render the new text, also set the new input box attributes
-	MathJax.Hub.Queue(["Text",math,"{\\FormInput{" + rootId + "0}}"]);
-	
-	setTimeout(function() {
-		MathJax.Hub.Queue(["Text",math,"{}"]);
-	}, 100);
-	
-}
-
-

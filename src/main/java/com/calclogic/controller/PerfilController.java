@@ -63,6 +63,7 @@ import com.calclogic.parse.IsNotInDBException;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
+import com.calclogic.proof.CrudOperations;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.MateriaManager;
@@ -117,8 +118,6 @@ public class PerfilController {
     @Autowired
     private SolucionManager solucionManager;
     @Autowired
-    private PlantillaTeoremaManager plantillaTeoremaManager;
-    @Autowired
     private HttpSession session;
     @Autowired
     private MateriaManager materiaManager;
@@ -127,7 +126,9 @@ public class PerfilController {
     @Autowired
     private MostrarCategoriaManager mostrarCategoriaManager;
     @Autowired
-    private CombUtilities combUtilities;
+    private CrudOperations crudOp;
+    //@Autowired
+    //private CombUtilities combUtilities;
     
     
     @RequestMapping(value="/{username}/close", method=RequestMethod.GET)
@@ -345,9 +346,8 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
-        for (Resuelve r: resuelves)
-        {
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
+        for (Resuelve r: resuelves){
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
@@ -366,6 +366,8 @@ public class PerfilController {
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
+        //List<Resuelve> resuelvesAdmin = resuelveManager.getAllResuelveByUser(currentUser.getLogin());
+        //List<Teorema> teoremasAdmin = teoremaManager.getTeoremaByResuelveList(resuelvesAdmin);
         map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
         map.addAttribute("usuario", usr);
         map.addAttribute("guardarMenu","");
@@ -396,7 +398,7 @@ public class PerfilController {
             response.addProperty("error", "Debes estar logueado en el sistema");
             return response.toString();
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
@@ -472,7 +474,7 @@ public class PerfilController {
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
         // validar que el usuario este en sesion
-        InferResponse response = new InferResponse(plantillaTeoremaManager);
+        InferResponse response = new InferResponse(crudOp);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teorema = resuelve.getTeorema().getTeoTerm();
         String nTeo = resuelve.getNumeroteorema();
@@ -488,7 +490,7 @@ public class PerfilController {
     @RequestMapping(value="/{username}/misTeoremas/buscarMetaFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarMetaFormula(@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {
-        InferResponse response = new InferResponse();
+        InferResponse response = new InferResponse(crudOp);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teo = resuelve.getTeorema().getTeoTerm();
         Simbolo s = simboloManager.getSimbolo(1);
@@ -522,7 +524,7 @@ public class PerfilController {
           typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),A3);
         }
         catch (TypeVerificationException e){
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, null, e);
         }
         
         response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"), resuelveManager, disponeManager, simboloManager);
@@ -1111,7 +1113,7 @@ public class PerfilController {
         Predicado p=predicadoManager.getPredicado(id);
         Tokenizar tk = new Tokenizar();
         tk.tokenArgs(p.getArgumentos());
-        Term aux = combUtilities.getTerm(p.getPredicado());
+        Term aux = CombUtilities.getTerm(p.getPredicado());
         for (String var : tk.getVars()) 
             aux=new App(aux,new Var(var.charAt(0)));
         aux = aux.evaluar();
@@ -1383,7 +1385,7 @@ public class PerfilController {
         
         return "listar";
     }
-    
+/*    
     @RequestMapping(value="/{username}/mispublic", method=RequestMethod.GET)
     public String misPublicacionesView(@PathVariable String username, ModelMap map, @RequestParam("comb") String comb) 
     {
@@ -1419,7 +1421,8 @@ public class PerfilController {
         
         return "listar";
     }
-    
+*/
+
     @RequestMapping(value="/{username}/listarocult", method=RequestMethod.GET)
     public String listarOcultEdicionView(@PathVariable String username, ModelMap map, @RequestParam("comb") String comb) 
     {
@@ -1555,7 +1558,7 @@ public class PerfilController {
         predicadoManager.deletePredicado(id);
         return "redirect:../../perfil/"+username+"/listar?comb=n";
     }
-    
+/*    
     @RequestMapping(value="/{username}/eliminarpubl", 
             method=RequestMethod.GET)
     public String eliminarPublicacion(@PathVariable String username, ModelMap map, @RequestParam("alias") String alias)
@@ -1568,7 +1571,8 @@ public class PerfilController {
         terminoManager.deletePublicacion(id);
         return "redirect:../../perfil/"+username+"/mispublic?comb=n";
     }
-    
+*/
+/*  
     @RequestMapping(value="/{username}/publicar", method=RequestMethod.GET)
     public String publicarTermino(@PathVariable String username, ModelMap map, @RequestParam("alias") String alias)
     {
@@ -1661,7 +1665,8 @@ public class PerfilController {
         
         return "perfil";
     }
-    
+*/
+
     @RequestMapping(value="/{username}/ingresar", method=RequestMethod.GET)
     public String insertarEvaluarView(@PathVariable String username, ModelMap map)
     {
@@ -1818,5 +1823,43 @@ public class PerfilController {
         {
             alias=ali;
         }
-    }   
+    }
+    
+    @RequestMapping(value="/{username}/misTeoremas/deleteSol/{idSol:.+}", method=RequestMethod.POST)
+    @ResponseBody
+    public String deleteSolucion(@PathVariable String username, @PathVariable String idSol, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null 
+              || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) {
+            return "Error deleting proof";
+        }
+        try {
+            int idSolInt = Integer.parseInt(idSol);
+            if (this.solucionManager.deleteSolucion(idSolInt, username)) {
+                return "Proof deleted";
+            }
+            return "Error deleting proof";
+        }
+        catch (NumberFormatException e) {
+            return "Error deleting proof";
+        }
+    }
+    
+    @RequestMapping(value="/{username}/misTeoremas/deleteTeo/{idTeo:.+}", method=RequestMethod.POST)
+    @ResponseBody
+    public String deleteTeoremaOrResuelve(@PathVariable String username, @PathVariable String idTeo, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null 
+              || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) {
+            return "error";
+        }
+        try {
+            int idTeoInt = Integer.parseInt(idTeo);
+            if (this.teoremaManager.deleteTeorema(idTeoInt, username)) {
+                return "ok";
+            }
+            return "error";
+        }
+        catch (NumberFormatException e) {
+            return "error";
+        }
+    }
 }

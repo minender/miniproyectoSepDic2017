@@ -10,10 +10,11 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <!DOCTYPE html>
 <html>
+    <!--OJO: Hay que revisar si importar esto está bien porque se vuelve a importar más abajo en body, y además algunos
+        script del header contradicen lo que se importa aquí en head (se usan otras versiones) -->
+    <tiles:insertDefinition name="header" /> 
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
         <script type="text/javascript">
             function limpiar()
             {
@@ -26,14 +27,11 @@
             }
         </script>
         <base href="/Miniproyecto/perfil/${usuario.login}/"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
         <tiles:insertDefinition name="style" />
         <title>Miniproyecto</title>
     </head>
     <body>
-        <tiles:insertDefinition name="header" />
         <h1>Inserte su predicado a computar</h1>
     <center>
     <sf:form action="/Miniproyecto/eval/${usuario.getLogin()}" method="POST" modelAttribute="insertarEvaluar">

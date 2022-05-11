@@ -4,7 +4,7 @@ import java.util.List;
 import com.calclogic.entity.Usuario;
 
 /**
- * This interface is the api of the database queries that 
+ * This interface is the API of the database queries that 
  * have to do with the table "Usuario". 
  *
  * That table has all the users who have registered in the system,
@@ -15,7 +15,7 @@ public interface UsuarioDAO {
 
     /** 
      * Adds a new user to the table.
-     * @param usuario The new usuario to be added.
+     * @param usuario The new user to be added.
      * @return Nothing.
      */
     public void addUsuario(Usuario usuario);

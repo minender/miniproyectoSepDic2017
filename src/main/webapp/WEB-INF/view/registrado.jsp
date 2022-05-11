@@ -7,14 +7,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
+    <tiles:insertDefinition name="header" />
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>CalcLogic</title>
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
         <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.slim.min.js"></script>
-        <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
     </head>
     <body>
         <div class="container-fluid" >
