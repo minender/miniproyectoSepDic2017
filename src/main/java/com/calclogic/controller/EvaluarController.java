@@ -50,8 +50,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *
  * @author federico
  */
-@Controller
-@RequestMapping(value = "/eval")
+//@Controller
+//@RequestMapping(value = "/eval")
 public class EvaluarController {
 
 
