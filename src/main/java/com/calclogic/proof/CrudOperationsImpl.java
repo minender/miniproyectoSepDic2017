@@ -179,14 +179,14 @@ public class CrudOperationsImpl implements CrudOperations {
 
     /**
      * The statement that is needed to prove changes inside a sub proof. This method 
-     * calculates the statement within all the sub proofs a return the one in the 
+     * calculates the statement within all the sub proofs and returns the one in the 
      * current sub proof
      *  
      * @param beginFormula: general statement to be proved, is the base to calculate 
-     *                      al de sub statement in the sub proofs
-     * @param method: Term that represent the current state of the proof method. This
-     *                term had the information about what is the current sub proof
-     * @return Term that represent the statement to be proved in the current sub proof.
+     *                      al the sub statements in the sub proofs
+     * @param method: Term that represents the current state of the proof method. This
+     *                term had the information about what the current sub proof is.
+     * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
     @Transactional
@@ -220,6 +220,68 @@ public class CrudOperationsImpl implements CrudOperations {
                return initStatement(beginFormula, ((App)method).q); 
             }
         }
+        // hay que poner else if para el metodo CA
+        return null;
+    }
+
+    // @Override
+    // @Transactional
+    // public Term initStatement(Term beginFormula, Term method) {
+    //     if (method.toString().equals("AI")){
+    //         return noRecursiveInitSt(beginFormula, "AI");          
+    //     }
+    //     else if (method instanceof Const){
+    //         return beginFormula;
+    //     }
+    //     else if ( ((App)method).p.toStringFinal().equals("CR") ) {
+    //         beginFormula = noRecursiveInitSt(beginFormula, "CR");
+    //         return initStatement(beginFormula, ((App)method).q);
+    //     }
+    //     else if ( ((App)method).p.toStringFinal().equals("CO") ) {
+    //         beginFormula = noRecursiveInitSt(beginFormula, "CO");
+    //         return initStatement(beginFormula, ((App)method).q);
+    //     }
+    //     // hay que poner else if para los otros metodos recursivos unarios
+    //     else if ( ((App)method).p.toStringFinal().substring(0, 2).equals("AI") ) {
+    //         if ( ((App)method).p instanceof Const ) {
+    //            beginFormula = noRecursiveInitSt(beginFormula, "AI"); 
+    //            return initStatement(beginFormula, ((App)method).q);
+    //         } else {
+    //            beginFormula = ((App)((App)beginFormula).p).q;
+    //            return initStatement(beginFormula, ((App)method).q); 
+    //         }
+    //     }
+    //     // hay que poner else if para el metodo CA
+    //     return null;
+    // }
+
+    /**
+     * The statement that is needed to prove changes inside a sub proof.
+     *  
+     * @param beginFormula: general statement to be proved, is the base to calculate 
+     *                      al de sub statement in the sub proofs.
+     * @param method: String that represents the current method.
+     * @return Term that represents the statement to be proved in the current sub proof.
+     */
+    @Override
+    @Transactional
+    public Term noRecursiveInitSt(Term beginFormula, String method) {
+        if (method.equals("AI")){
+            return ((App)beginFormula).q;           
+        }
+        else if (method.equals("CR") ) {
+            Term antec = ((App)beginFormula).q;
+            antec = new App(new Const(7 ,"c_{7}"), antec);
+            Term consec = ((App)((App)beginFormula).p).q;
+            consec = new App(new Const(7,"c_{7}"),consec);
+            return new App(new App(new Const(2,"c_{2}"),antec), consec);
+        }
+        else if (method.equals("CO")) {
+            // This is saying: ¬formula => false, but the notation must be prefix and the first operand goes to the right.
+            // So, here what is really expressed is: (=> false) (¬formula).
+            return new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),beginFormula));
+        }
+
         // hay que poner else if para el metodo CA
         return null;
     }

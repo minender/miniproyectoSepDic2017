@@ -42,6 +42,16 @@ public interface CrudOperations {
      */
     public Term initStatement(Term beginFormula, Term method);
 
+    /**
+     * The statement that is needed to prove changes inside a sub proof.
+     *  
+     * @param beginFormula: general statement to be proved, is the base to calculate 
+     *                      al de sub statement in the sub proofs.
+     * @param method: String that represents the current method.
+     * @return Term that represents the statement to be proved in the current sub proof.
+     */
+    public Term noRecursiveInitSt(Term beginFormula, String method);
+
     public Term currentMethod(Term method);
 
     /**
