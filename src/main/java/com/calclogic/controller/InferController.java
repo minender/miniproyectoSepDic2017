@@ -828,6 +828,7 @@ public class InferController {
                     case "CO":
                         finalProof = finiPMeth.finishedWaitingMethodProof(formulasToProof.pop(), finalProof, strMethodTermAux);
                         break;
+                    case "CA":
                     case "AI":
                         isFinalSolution = false;
                         response.setEndCase(true);
@@ -836,10 +837,12 @@ public class InferController {
                         break;
                 }
             }
+            String m=null;
             // This ensures that after each one-step inference the tree for the second proof is updated
-            if (methodTermAux instanceof App && ((App)methodTermAux).p.toStringFinal().equals("AI")) {
-                finalProof = finiPMeth.finishedAI2Proof(fatherProofs.pop(), finalProof);
-            }
+            if (methodTermAux instanceof App && 
+                    ( (m=((App)methodTermAux).p.toStringFinal()).equals("AI") || m.equals("CA") )
+               )
+               finalProof = finiPMeth.finishedAI2Proof(fatherProofs.pop(), finalProof);
         }
 
         // newProve might or might not be different than pasoPostTerm
@@ -1883,8 +1886,8 @@ public class InferController {
      * @param nTeo Number of theorem to be proved.
      * @return
      */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialCaseAnalysis", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialCaseAnalysis(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementCA", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse initCaseAnalysis(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
     {
         // revisa la recursion de este metodo si no hace falta un initStatement o getSubProof
         String nuevoMetodo = "CA";
@@ -1892,17 +1895,6 @@ public class InferController {
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        
-        try {
-            //String formula = "";
-            if (((Const)((App)((App)formulaAnterior).p).p).getId() != 5) {
-               response.setErrorParser1(true);
-               return response;
-            }
-        } catch (ClassCastException e) {
-            response.setErrorParser1(true);
-            return response;
-        }
         
         Term metodoTerm = null;
         Term typedTerm = null;

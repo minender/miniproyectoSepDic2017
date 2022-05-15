@@ -3,6 +3,7 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <!DOCTYPE html>
 <html>
+  <tiles:insertDefinition name="header" />
   <body>
       <style>
           html,body{

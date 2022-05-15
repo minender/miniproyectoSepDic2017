@@ -51,7 +51,7 @@ var urlTermination = {
     CO: "/iniStatementCO",   // Contradiction method
     CR: "/iniStatementCR",   // Counter-reciprocal method
     AI: "/teoremaInicialAndIntroduction", // And introduction method
-    CA: "/teoremaInicialCaseAnalysis", // Case analysis method
+    CA: "/iniStatementCA", // Case analysis method
 
     showInstantiation: "inst", // When we want to show the instantiation of the hint theorem
     setAutomaticSubst: "auto", // When we want the substitution to be made automatically

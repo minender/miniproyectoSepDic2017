@@ -268,8 +268,10 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
                 theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
                 mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem); // theorem == true
 
+                if (theorem.equals(theoremBeingProved))
+                    ;
                 // If the current theorem or theorem==true matches the final expression (and this theorem is not the one being proved) 
-                if (!theorem.equals(theoremBeingProved) && (theorem.equals(finalExpr) || mt.equals(finalExpr))){
+                else if (theorem.equals(finalExpr) || mt.equals(finalExpr)){
                     equanimityExpr = new TypedA(finalExpr);
                 } 
                 else {
@@ -278,8 +280,9 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
                     Equation eq = new Equation(theorem, finalExpr);
                     Sust sust = eq.mgu(simboloManager);
 
-                    // Case when last line is an instantiation of the compared theorem
+                    // Case whe lanst line is an instantiation of the compared theorem
                     if (sust != null){
+                        //System.out.println("Por el sust != null");
                         // The equanimity is applied with the instantiated theorem, not with the last line instantiated
                         equanimityExpr = new TypedApp(new TypedI(sust), new TypedA(theorem)); 
                     }   
