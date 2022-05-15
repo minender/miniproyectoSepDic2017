@@ -282,8 +282,9 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
                     Equation eq = new Equation(theorem, finalExpr);
                     Sust sust = eq.mgu(simboloManager);
 
-                    // Case when last line is an instantiation of the compared theorem
+                    // Case whe lanst line is an instantiation of the compared theorem
                     if (sust != null){
+                        //System.out.println("Por el sust != null");
                         // The equanimity is applied with the instantiated theorem, not with the last line instantiated
                         equanimityExpr = new TypedApp(new TypedI(sust), new TypedA(theorem)); 
                     }   

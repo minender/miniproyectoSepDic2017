@@ -220,7 +220,16 @@ public class CrudOperationsImpl implements CrudOperations {
                return initStatement(beginFormula, ((App)method).q); 
             }
         }
-        // hay que poner else if para el metodo CA
+        else if (((App)method).p.toStringFinal().substring(0, 2).equals("CA")) {
+            beginFormula = new App(new App(new Const(5,"c_{5}"),new App(new App(new Const(2,"c_{2}"),beginFormula),new App(new Const(7,"c_{7}"),new Const(8,"c_{8}")))) ,new App(new App(new Const(2,"c_{2}"), beginFormula),new Const(8,"c_{8}")));
+            if ( ((App)method).p instanceof Const ) {
+               beginFormula = ((App)beginFormula).q;
+               return initStatement(beginFormula, ((App)method).q);
+            } else {
+               beginFormula = ((App)((App)beginFormula).p).q;
+               return initStatement(beginFormula, ((App)method).q); 
+            }
+        }
         return null;
     }
 

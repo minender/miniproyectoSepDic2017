@@ -71,7 +71,9 @@ public class InferResponse {
 
     private CrudOperations proofCrudOperations;
 
-    public InferResponse(CrudOperations proofCrudOperations) {}
+    public InferResponse(CrudOperations proofCrudOperations) {
+        this.proofCrudOperations = proofCrudOperations;
+    }
 
     public void setEndCase(boolean endCase) {
         this.endCase = endCase;
@@ -648,6 +650,9 @@ public class InferResponse {
         SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
 
         String statement = "";
+        boolean isAI = metodo.toStringFinal().substring(0, 2).equals("AI");
+        String stOrCase = (isAI?"Statement":"Case");
+        String methodName = (isAI?"Conjunction by parts":"Case Analysis");
         Term newFormula = ((App)formula).q;
         try {
            statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
@@ -657,7 +662,7 @@ public class InferResponse {
             this.setErrorParser1(true);
             return;
         }
-        header+="By Conjunction by parts method:<br>Statement 1:<br>"+statement+"Sub Proof:<br>";
+        header+="By "+methodName+" method:<br>"+stOrCase+" 1:<br>"+statement+"Sub Proof:<br>";
         if (metodo instanceof Const){
            historial = header;
         }
@@ -678,7 +683,7 @@ public class InferResponse {
                     this.setErrorParser1(true);
                     return;
                 }
-                historial += "Statement 2:<br>"+statement+"Sub Proof:<br>";
+                historial += stOrCase+" 2:<br>"+statement+"Sub Proof:<br>";
             }
         }
         else{
@@ -694,7 +699,7 @@ public class InferResponse {
                 this.setErrorParser1(true);
                 return;
             }
-            header = historial + "Statement 2:<br>"+statement+"Sub Proof:<br>";
+            header = historial + stOrCase+" 2:<br>"+statement+"Sub Proof:<br>";
             historial = "";
             Term newTypedTerm = null;
             newTypedTerm = proofCrudOperations.getSubProof(typedTerm, metodo);
@@ -983,9 +988,10 @@ public class InferResponse {
         boolean strengthening   = strMethod.equals("ST");
         boolean transitivity    = strMethod.equals("TR");
         boolean andIntroduction = strMethod.substring(0, 2).equals("AI");
+        boolean caseAnalysis = strMethod.substring(0, 2).equals("CA");
 
         boolean recursive = false;
-        if (counterRecip || contradiction || andIntroduction) 
+        if (counterRecip || contradiction || andIntroduction || caseAnalysis)
             recursive = true;
         else if (direct) 
             header += "By direct method<br>";
@@ -1154,7 +1160,11 @@ public class InferResponse {
         }
         else if (andIntroduction) {
             setAIProof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
-        } 
+        }
+        else if (caseAnalysis){
+            Term newFormula = new App(new App(new Const(5,"c_{5}"),new App(new App(new Const(2,"c_{2}"),formula),new App(new Const(7,"c_{7}"),new Const(8,"c_{8}")))) ,new App(new App(new Const(2,"c_{2}"), formula),new Const(8,"c_{8}")));
+            setAIProof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, newFormula, nTeo);
+        }
         else if (naturalDirect)
             ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
         else if (naturalSide)
