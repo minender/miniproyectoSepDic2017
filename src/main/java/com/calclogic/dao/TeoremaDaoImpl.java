@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -36,6 +37,18 @@ public class TeoremaDaoImpl implements TeoremaDAO {
         this.sessionFactory.getCurrentSession().save(teorema);
 
     }
+    
+    /**
+     * Updates one of the Teorema objects of the table.
+     * This query is made using standard Hibernate library functions.
+     * @param teorema Is the Teorema object to be updated.
+     * @return Nothing.
+     */   
+    @Override   
+    @Transactional
+    public void updateTeorema(Teorema teorema){
+        this.sessionFactory.getCurrentSession().update(teorema);
+    }
 
     /**
      * Deletes one of the theorems of the table.
@@ -44,6 +57,7 @@ public class TeoremaDaoImpl implements TeoremaDAO {
      * @return Nothing.
      */ 
     @Override
+    @Transactional
     public void deleteTeorema(int id) {
         Teorema teorema = (Teorema) sessionFactory.getCurrentSession().load(
                 Teorema.class, id);

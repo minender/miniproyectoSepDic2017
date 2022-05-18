@@ -12,8 +12,9 @@
 <html>
     <tiles:insertDefinition name="header" />
     <head>
-        <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
-        <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
+        <base href="${pageContext.request.contextPath}/perfil/${usuario.login}/"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
         <c:choose>
             <c:when test="${showCategorias.size() == 0}">
                 <script>
@@ -21,6 +22,8 @@
                 </script>
             </c:when>
         </c:choose>
+        <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
+        <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferForm.js"></script>
         <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript">
             
@@ -56,7 +59,6 @@
                     </c:otherwise>
                 </c:choose>--%>
                     
-                    
                 $("#metodosDemostracion").change(function(){
                     let commonPrefix = "Are you sure you want to use the";
                     let commonSufix = "method?";
@@ -71,76 +73,15 @@
                 });
                 
                 $('#formula').on('click','#teoremaMD',function(event){
-                    /*var data = {};
-                    data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-                    var form = $('#inferForm');*/
                     var selectTeoInicial = $("#selectTeoInicial").val();
                     if (selectTeoInicial==="1"){
-                        teoremaInicialMD("ST-${nTeo}");
+                        proofMethodAjax("DM", "ST-${nTeo}");  
                     }
                 });
                 
                 $('#formula').on('click','.teoremaClick',function(event){
-                    var data = {};
-                    //data["nuevoMetodo"] = $('#nuevoMetodo_id').val();
-                    var form = $('#inferForm');
-                    //var teoSol = $("#nSolucion").val();
-                    //var teoId = $("#nTeorema").val();
-                    //data["teoSol"] = teoSol;
-                    if(this.id==='d'){
-                        data["lado"] = "d";
-                        $.ajax({
-                            type: 'POST',
-                            url: $(form).attr('action')+"/teoremaInicialPL",
-                            dataType: 'json',
-                            data: data,
-                            success: function(data) {
-                                $('#formula').html(data.historial);
-                                MathJax.Hub.Typeset();
-                                //$('#teoremaInicial').val("ST-"+teoId + "@d");
-                                $("#inferForm").show();
-                                //$("#nuevoMetodo").val("1");
-                                var nSol = $(form).attr('action').split('/').pop(); //$('#nSolucion').val();
-                                if(nSol==="new"){
-                                    //$('#nSolucion').val(data.nSol);
-                                    //nSol = $('#nSolucion').val();
-                                    var url = $(form).attr('action');
-                                    url = url.substring(0,url.length-3)+data.nSol;
-                                    $(form).attr('action',url);
-                                }
-                            },
-                            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                              alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-                            }
-                        }); 
-                    }
-                    else if(this.id==='i'){
-                        data["lado"] = "i";
-                        $.ajax({
-                            type: 'POST',
-                            url: $(form).attr('action')+"/teoremaInicialPL",
-                            dataType: 'json',
-                            data: data,
-                            success: function(data) {
-                                $('#formula').html(data.historial);
-                                MathJax.Hub.Typeset();
-                                //$('#teoremaInicial').val("ST-"+teoId + "@i");
-                                $("#inferForm").show();
-                                //$("#nuevoMetodo").val("1");
-                                var nSol = $(form).attr('action').split('/').pop();//$('#nSolucion').val();
-                                if(nSol==="new"){
-                                    //$('#nSolucion').val(data.nSol);
-                                    //nSol = $('#nSolucion').val();
-                                    var url = $(form).attr('action');
-                                    url = url.substring(0,url.length-3)+data.nSol;
-                                    $(form).attr('action',url);
-                                }
-                            },
-                            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                                alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-                            }
-                        });
-                    } 
+                    // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
+                    proofMethodAjax("SS", null, this.id);
                 });
                 
                 var p1=[];
@@ -215,8 +156,8 @@
                         leibnizMouse(id,id);
                     }
                     else if (total_expression && window.getSelection().type === 'Range') {
-                        isStartInside = total_expression.find(range.startContainer).length;
-                        isEndInside = total_expression.find(range.endContainer).length;
+                        let isStartInside = total_expression.find(range.startContainer).length;
+                        let isEndInside = total_expression.find(range.endContainer).length;
                         if (isStartInside && !isEndInside) {
                             var lastChild = total_expression[0].lastChild;
                             while ( lastChild.hasChildNodes() ) {
@@ -320,11 +261,6 @@
                 });
             })
         </script>
-        <base href="${pageContext.request.contextPath}/perfil/${usuario.login}/"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
         <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">-->
 
 

@@ -12,19 +12,19 @@
   </head>
 
   <body>
-        <div class="container-fluid" >
-        <nav class="row navbar navbar-expand-lg navbar-dark bg-blue">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#options">
-                <span class="navbar-toggler-icon"></span>    
-            </button>
-          <div class="collapse navbar-collapse" id="options">
+    <div class="container-fluid" >
+      <nav class="row navbar navbar-expand-lg navbar-dark bg-blue">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#options">
+          <span class="navbar-toggler-icon"></span>    
+        </button>
+        <div class="collapse navbar-collapse" id="options">
           <ul class="navbar-nav">
             <li class="nav-item" ><a href="index/help" class="nav-link">Help</a></li>
           </ul>
-          </div>
-        </nav>
-        <div class="main-center">
-
+        </div>
+      </nav>
+      
+      <div class="main-center">
         <div class="row justify-content-center">
           <h1>CalcLogic</h1>
         </div>
@@ -33,48 +33,48 @@
         </div>
         
         <sf:form method="POST" modelAttribute="usuariolog">
-         <div class="form-group row justify-content-center">
-           <label for="usuariolog_login" class="col-lg-1 col-form-label">Login:</label>
+          <div class="form-group row justify-content-center">
+            <label for="usuariolog_login" class="col-lg-1 col-form-label">Login:</label>
             <div class="col-lg-3">
-             <sf:input path="login" id="usuariolog_login" class="form-control"/>
+              <sf:input path="login" id="usuariolog_login" class="form-control"/>
             </div>
-         </div>
-         <div class="form-group row justify-content-center">
-           <label for="usuariolog_password" class="col-lg-1 col-form-label">Password:</label>
+          </div>
+          <div class="form-group row justify-content-center">
+            <label for="usuariolog_password" class="col-lg-1 col-form-label">Password:</label>
             <div class="col-lg-3">
-             <sf:password path="password" showPassword="true" id="usuariolog_password" class="form-control"/>
+              <sf:password path="password" showPassword="true" id="usuariolog_password" class="form-control"/>
             </div>
-         </div>
+          </div>
           <div class="row justify-content-center" >
-           <div class="offset-lg-1 col-lg-3">
+            <div class="offset-lg-1 col-lg-3">
               <button type="submit" class="btn btn-default">Log In</button>
-           </div>
+            </div>
           </div>
         </sf:form>
         <div class="row justify-content-center" >
-         <div class="offset-lg-1 col-lg-3">
-          <a href="registro?new">Check In</a>
-         </div>
+          <div class="offset-lg-1 col-lg-3">
+            <a href="registro?new">Check In</a>
+          </div>
         </div>
         <div class="row justify-content-center" >
-         <div class="offset-lg-1 col-lg-3">
-             <span class="error">${mensaje}</span>
-         </div>
+          <div class="offset-lg-1 col-lg-3">
+            <span class="error">${mensaje}</span>
+          </div>
         </div>
         <div class="description-index">
-         <div class="row">
-          <div class="col-lg-2">
+          <div class="row">
+            <div class="col-lg-2">
+            </div>
+            <div class="col-lg-9">
+              <p class="text-justify">CalcLogic is a web application to assist in an interactive way, proofs written in Dijkstra-Scholten calculational logic.</p>
+            </div>
+            <div class="col-lg-1">
+            </div>
           </div>
-          <div class="col-lg-9">
-           <p class="text-justify">CalcLogic is a web application to assist in an interactive way, proofs written in Dijkstra-Scholten calculational logic.</p>
-          </div>
-          <div class="col-lg-1">
-          </div>
-         </div>
         </div>
-        </div>
-        </div>
-    </body>
+      </div>
+    </div>
+  </body>
   <%--<body>
     <div class="row-fluid" style="margin-left: 50px; height:552px; width: 1100px; overflow: hidden;">
       <h1>Bienvenido a David</h1>

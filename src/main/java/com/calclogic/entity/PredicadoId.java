@@ -53,8 +53,4 @@ public class PredicadoId  implements java.io.Serializable {
          result = 37 * result + ( getLogin() == null ? 0 : this.getLogin().hashCode() );
          return result;
    }   
-
-
 }
-
-

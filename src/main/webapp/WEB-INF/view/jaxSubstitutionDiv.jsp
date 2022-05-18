@@ -19,7 +19,6 @@
 <script src="${pageContext.request.contextPath}/static/js/mathjaxAndSymbols.js"></script>
 <script src="${pageContext.request.contextPath}/static/js/mathjaxSubstitutionSymbols.js"></script>
 
-<tiles:insertDefinition name="header" />
 <script>
 	
 	//SET INPUT BOX ASSOCIATED TO THIS VIEW, HERE WE'LL SEND THE DATA	

@@ -16,7 +16,6 @@
 </div>
 
 
-<tiles:insertDefinition name="header" />
 <script src="${pageContext.request.contextPath}/static/js/mathjaxAndSymbols.js"></script>
 <script>
 	
@@ -33,15 +32,6 @@
 	window['${rootId}' + 'prefixCnotation'] = '${prefixCnotation}';
 	//SET INPUT BOX ASSOCIATED TO THIS VIEW, HERE WE'LL SEND THE DATA	
 	window['${rootId}_InputForm'] = '${inputForm}';
-	
-	// IMPORTANT: there is some weird bug in mathjax forms were the first time you create a form 
-	// it gets deleted and duplicated by mathjax, so you cant work with the first instance, because 
-	// all you do with it will get deleted and overwritten by a new fresh FormInput
-	// THIS takes cares of it, in case the bug appears again
-	setTimeout(function() {
-		setMathJaxFormAttributes(document.getElementById('${rootId}'), 1, '${rootId}');
-		//preSet('${rootId}');
-	}, 10000); 
 	
 	// If a new MathJax input gets added this sets its attributes
 	document.getElementById('${rootId}' + "MathJaxDiv").addEventListener('DOMNodeInserted', function( event ) {

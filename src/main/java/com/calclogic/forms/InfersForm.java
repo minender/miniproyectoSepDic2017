@@ -9,8 +9,14 @@ import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.service.SimboloManager;
+// import com.google.gson.JsonObject;
+// import com.google.gson.JsonParser;
 import java.util.List;
+import java.util.HashMap;
 import org.hibernate.validator.constraints.NotEmpty;
+//import org.apache.http.impl.client.HttpClientBuilder;
+//import org.json.simple.JSONObject;
+
 
 /**
  *
@@ -118,8 +124,6 @@ public class InfersForm {
         return hash;
     }
 
-
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -143,44 +147,4 @@ public class InfersForm {
         }
         return true;
     }
-
-        public void generarHistorial(String formula, String nTeo,String pasoPost, Boolean valida, List<PasoInferencia> inferencias, SimboloManager s){
-        
-        
-        this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
-        
-        String ultimaExp = "";
-        for (PasoInferencia x: inferencias) {
-            this.setHistorial(this.getHistorial()+ "$$" +
-                                    x.getExpresion().toStringInf(s,"")+" $$" + " $$ \\equiv< " + 
-                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf(s,"") + 
-                                    " - " + x.getLeibniz().toStringInf(s,"") + 
-                                    " - " + x.getInstancia().toString()+" > $$");
-            ultimaExp = x.getResult().toStringInf(s,"");
-        }
-        if(valida) {
-            this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");
-        } else {
-            this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$" + "$$" + pasoPost + "$$");
-        }
-        
-    }
-    
-    public void generarHistorial(String formula, String nTeo, List<PasoInferencia> inferencias,SimboloManager s){
-        
-        
-        this.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula+"$</center> Proof:");  
-        String ultimaExp = "";
-        for (PasoInferencia x: inferencias) {
-            this.setHistorial(this.getHistorial()+ "$$" +
-                                    x.getExpresion().toStringInf(s,"")+" $$" + " $$ \\equiv< " + 
-                                    new App(new App(new Const("\\equiv "),x.getTeoDer()), x.getTeoIzq()).toStringInf(s,"") + 
-                                    " - " + x.getLeibniz().toStringInf(s,"") + 
-                                    " - " + x.getInstancia()+" > $$");
-                ultimaExp = x.getResult().toStringInf(s,"");
-        }
-        
-        this.setHistorial(this.getHistorial()+ "$$" +ultimaExp + "$$");
-    }
-
 }

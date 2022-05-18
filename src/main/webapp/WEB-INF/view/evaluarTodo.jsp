@@ -8,7 +8,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
-  <tiles:insertDefinition name="header" />
 
   <body >
     <h1>Evaluando</h1>

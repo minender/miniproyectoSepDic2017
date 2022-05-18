@@ -13,6 +13,7 @@
     <link rel="shortcut icon" href="${pageContext.request.contextPath}/static/img/bluemarine_favicon.ico" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap.min.css" >
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/style.css" >
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/mathJax2_7_9.css">
     <script src="${pageContext.request.contextPath}/static/js/popper.min.js"></script>
     <script src="${pageContext.request.contextPath}/static/js/jquery-3.2.1.min.js"></script>
     <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
@@ -23,16 +24,17 @@
         <c:when test='${!perfilMenu.equals("active")}'> <!-- Here we exclude the views which we don't want to import these configurations-->
             <script type="text/x-mathjax-config">
                 MathJax.Hub.Config({
-                    //extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"],
-                    extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"],
+                    //extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"], // For version 2.3
+                    extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"], // For version 2.7.7
                     jax: ["input/TeX","output/HTML-CSS"],
                     tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true,},
                     TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}
                 });
             </script>
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML"></script>
-            <!--<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>-->
+           <!--  <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
+            <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferAjax.js"></script>
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/limpiar.js"></script>
         </c:when>
     </c:choose>
@@ -50,5 +52,5 @@
             <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font-awesome.min.css">
         </c:when>
     </c:choose>
-    <%--<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >--%>
+    <!--<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-responsive.css" >-->
 </head>

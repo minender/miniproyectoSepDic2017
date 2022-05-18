@@ -116,7 +116,7 @@
         </c:choose>
                             
         <c:choose>
-        <c:when test="${teoremaInputs != null && teoremaInputs != null}">
+        <c:when test="${teoremaInputs != null && teoremaC != null}">
             <script>
                 setTimeout(function() {
                         //insertAt(document.getElementById("teoremaSymbolsId_"), '\\FormInput{2} \\equiv \\FormInput{1}', 1, false);
