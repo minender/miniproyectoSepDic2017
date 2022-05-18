@@ -767,13 +767,18 @@ public class PerfilController {
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
         int teoId = Integer.parseInt(idTeo);
         Teorema teorema = teoremaManager.getTeorema(teoId);
+        Term teoTerm = teorema.getTeoTerm();
+        String teoC = teoTerm.toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
+        String teoInputs = teoTerm.toStringWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         
         map.addAttribute("usuario",usr);
         map.addAttribute("agregarTeorema",new AgregarTeorema());
         map.addAttribute("modificar",new Integer(0));
         map.addAttribute("editar", true);
         //map.addAttribute("teorema", "\\\\FormInput{1} \\\\Sigma \\\\FormInput{2}");
-        map.addAttribute("teorema", teorema.getEnunciado());
+        map.addAttribute("teorema", "");
+        map.addAttribute("teoremaC", teoC);
+        map.addAttribute("teoremaInputs", teoInputs);
         map.addAttribute("categoria",categoriaManager.getAllCategorias());
         map.addAttribute("numeroTeorema","");
         map.addAttribute("mensaje", "");

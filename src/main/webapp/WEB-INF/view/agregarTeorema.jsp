@@ -116,10 +116,14 @@
         </c:choose>
                             
         <c:choose>
-        <c:when test="${initialInput != null && !initialInput.equals(\"\")}">
+        <c:when test="${teoremaInputs != null && teoremaInputs != null}">
             <script>
                 setTimeout(function() {
-                        insertAt(document.getElementById("teoremaSymbolsId_"), '${teorema}', 1, false);
+                        //insertAt(document.getElementById("teoremaSymbolsId_"), '\\FormInput{2} \\equiv \\FormInput{1}', 1, false);
+                        console.log('${teoremaInputs}');
+                        console.log('${teoremaC}');
+                        inferRecoverC("${teoremaC}", "${teoremaInputs}", "teoremaSymbolsId_");
+                        //alert("perro");
                 }, 1500); 
             </script>
         </c:when>
