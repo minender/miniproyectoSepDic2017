@@ -38,144 +38,6 @@ public class CrudOperationsImpl implements CrudOperations {
     private SimboloManager simboloManager;
     @Autowired
     private FinishedProofMethod finiPMeth;
-    
-    /**
-     * This function will create a hint for the current base method given the hint's elements.In case the elements don't make sense it will return null.
-     * @param theoremHint: theorem used on the hint
-     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
-     * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents Leibniz on the hint
-     * @param leibnizString: string that was used to parse Leibniz
-     * @param theoremBeingProved: theorem that we are proving using this hint
-     * @param method: method used in the demonstration
-     * @return a hint for the direct method
-     * @throws com.calclogic.lambdacalculo.TypeVerificationException
-     */
-    @Override
-    @Transactional
-    public Term createBaseMethodInfer(Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
-            Bracket leibniz, String leibnizString, Term theoremBeingProved, String method) 
-            throws TypeVerificationException{
-
-        Term infer = null;
-        TypedI I = null;
-        TypedA A = new TypedA(theoremHint);
-        TypedL L = new TypedL(leibniz);
-        Boolean noInstantiation = instantiationString.equals("");
-        Boolean noLeibniz = leibnizString.equals("");
-        String groupMethod = ("DM".equals(method) || "SS".equals(method)) ? "D" : (("TR".equals(method) || "WE".equals(method) || "ST".equals(method)) ? "T" : "N");
-
-        switch(groupMethod){
-
-            // Direct, starting from one side, transitivity, weakening or strengthening method
-            case "D":
-            case "T":
-                Term C;       
-                if (noInstantiation && noLeibniz){
-                    infer = A;
-                }
-                else if (noInstantiation){
-                    if (("T".equals(groupMethod)) && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                         (C=((App)(((App)theoremHint).p)).p) != null && C instanceof Const &&
-                         (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
-
-                        infer = Parity.parityLeibniz(leibniz, A);
-                    }else {
-                        infer = new TypedApp(L,A);
-                    } 
-                }
-                else{
-
-                    I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-                    if (noLeibniz){
-                        infer = new TypedApp(I,A);
-                    }
-                    else if (("T".equals(groupMethod)) && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                            (C=((App)((App)theoremHint).p).p) != null && C instanceof Const &&
-                            (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
-
-                        infer = Parity.parityLeibniz(leibniz,new TypedApp(I,A));
-                    } else {
-                        L = new TypedL((Bracket)leibniz);
-                        infer = new TypedApp(L,new TypedApp(I,A));
-                    }
-                }
-                break;
-
-            // Natural deduction
-            case "N":
-                // First must check if we are dealing with a special modus ponens hint 
-                // If its not a special hint (it's not an implication) just return the same we would do with the direct method
-                if(!((App)((App)theoremHint).p).p.toStringInf(simboloManager, "").equals("\\Rightarrow")){
-                    
-                    if(!noLeibniz) { // If there is a leibniz add H to it 
-                        if ("Natural Deduction,one-sided".equals(method)){
-                            leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), leibniz.t), ((App)theoremBeingProved).q));
-                        }else { // Direct method
-                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), leibniz.t), ((App)theoremBeingProved).q)) ,((App)theoremBeingProved).q));
-                        }
-                    }else {
-                        // Use a leibniz that represents H /\ z
-                        if ("Natural Deduction,one-sided".equals(method)){
-                            leibniz = new Bracket(new Var('z'), new App(new App(new Const("c_{5}"), new Var('z')), ((App)theoremBeingProved).q));
-                        } else { // Direct method
-                            leibniz = new Bracket(new Var('z'),new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), ((App)theoremBeingProved).q)) ,((App)theoremBeingProved).q));
-                        }
-                        leibnizString = "69";
-                    }
-                    infer = createBaseMethodInfer(theoremHint, instantiation, instantiationString, leibniz, leibnizString, theoremBeingProved, "DM");
-                }
-                else { // IF REACHED HERE WE NEED A MODUS PONENS HINT
-                    String e = "\\Phi_{}"; // by default use empty phi which represents leibniz z
-                    Term iaRightTerm = A;
-                    
-                    // Example of left IA
-                    // I^{[A,B,C,E := \equiv true q,\equiv q q,\equiv true true, \Phi_{cb} true \equiv]}A^{\Rightarrow (\equiv (\wedge (E C) A) (\wedge (E B) A)) (\Rightarrow (\equiv C B) A)}
-                    
-                    // A,B and C are in the hint being used 
-                    Term cTerm = ((App)((App)((App)((App)theoremHint).p).q).p).q;
-                    Term bTerm = ((App)((App)((App)theoremHint).p).q).q;
-                    Term aTerm = ((App)theoremHint).q;
-                
-                    // If there is instantiation change a,b and c properly
-                    if(!noInstantiation) {
-                        I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-                        cTerm = (new TypedApp(I, new TypedA(cTerm))).type();
-                        bTerm = (new TypedApp(I, new TypedA(bTerm))).type();
-                        aTerm = (new TypedApp(I, new TypedA(aTerm))).type();
-                        // Need to add I to the right side
-                        iaRightTerm = new TypedApp(I, iaRightTerm);
-                    }
-                    
-                    // If there is leibniz change e properly
-                    if(!leibnizString.equals("")) {
-                        Term phiLeibniz = leibniz.traducBD();
-                        e = phiLeibniz.toStringFinal();
-                    }
-
-                    String c = cTerm.toStringFinal();
-                    String b = bTerm.toStringFinal();
-                    String a = aTerm.toStringFinal();
-                    
-                    // Here is the left IA side of the modus ponens hint 
-                    String iaLeftString;
-                    if ("Natural Deduction,one-sided".equals(method)){
-                        iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) (c_{5} (x_{69} x_{66}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
-                    } else { // Direct method
-                        iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) x_{65}) (c_{1}  (c_{5} (x_{69} x_{66}) x_{65}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
-                    }
-                    Term iaLeftTerm = CombUtilities.getTerm(iaLeftString);
-                    
-                    //throw new TypeVerificationException();
-                    infer = new TypedApp(iaLeftTerm, iaRightTerm);
-                }
-                break;
-
-            default:
-                break;
-        }
-        return infer;
-    }
 
     /**
      * The statement that is needed to prove changes inside a sub proof. This method 
@@ -191,107 +53,40 @@ public class CrudOperationsImpl implements CrudOperations {
     @Override
     @Transactional
     public Term initStatement(Term beginFormula, Term method) {
-        if (method.toString().equals("AI")){
-            return ((App)beginFormula).q;           
+        if (method.toString().equals("AI") || method.toString().equals("CA")){
+            return new AndIntroductionMethod().initFormula(beginFormula);          
         }
         else if (method instanceof Const){
             return beginFormula;
         }
         else if ( ((App)method).p.toStringFinal().equals("CR") ) {
-            Term antec = ((App)beginFormula).q;
-            antec = new App(new Const(7 ,"c_{7}"), antec);
-            Term consec = ((App)((App)beginFormula).p).q;
-            consec = new App(new Const(7,"c_{7}"),consec);
-            beginFormula = new App(new App(new Const(2,"c_{2}"),antec), consec);
-            
+            beginFormula = new CounterReciprocalMethod().initFormula(beginFormula);
             return initStatement(beginFormula, ((App)method).q);
         }
         else if ( ((App)method).p.toStringFinal().equals("CO") ) {
-            beginFormula = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),beginFormula));
+            beginFormula = new ContradictionMethod().initFormula(beginFormula);
             return initStatement(beginFormula, ((App)method).q);
         }
         // hay que poner else if para los otros metodos recursivos unarios
         else if ( ((App)method).p.toStringFinal().substring(0, 2).equals("AI") ) {
             if ( ((App)method).p instanceof Const ) {
-               beginFormula = ((App)beginFormula).q;
-               return initStatement(beginFormula, ((App)method).q);
+                beginFormula = new AndIntroductionMethod().initFormula(beginFormula);
+                return initStatement(beginFormula, ((App)method).q);
             } else {
-               beginFormula = ((App)((App)beginFormula).p).q;
-               return initStatement(beginFormula, ((App)method).q); 
+                beginFormula = ((App)((App)beginFormula).p).q;
+                return initStatement(beginFormula, ((App)method).q); 
             }
         }
         else if (((App)method).p.toStringFinal().substring(0, 2).equals("CA")) {
             beginFormula = new App(new App(new Const(5,"c_{5}"),new App(new App(new Const(2,"c_{2}"),beginFormula),new App(new Const(7,"c_{7}"),new Const(8,"c_{8}")))) ,new App(new App(new Const(2,"c_{2}"), beginFormula),new Const(8,"c_{8}")));
             if ( ((App)method).p instanceof Const ) {
-               beginFormula = ((App)beginFormula).q;
-               return initStatement(beginFormula, ((App)method).q);
+                beginFormula = new CaseAnalysisMethod().initFormula(beginFormula);
+                return initStatement(beginFormula, ((App)method).q);
             } else {
-               beginFormula = ((App)((App)beginFormula).p).q;
-               return initStatement(beginFormula, ((App)method).q); 
+                beginFormula = ((App)((App)beginFormula).p).q;
+                return initStatement(beginFormula, ((App)method).q); 
             }
         }
-        return null;
-    }
-
-    // @Override
-    // @Transactional
-    // public Term initStatement(Term beginFormula, Term method) {
-    //     if (method.toString().equals("AI")){
-    //         return noRecursiveInitSt(beginFormula, "AI");          
-    //     }
-    //     else if (method instanceof Const){
-    //         return beginFormula;
-    //     }
-    //     else if ( ((App)method).p.toStringFinal().equals("CR") ) {
-    //         beginFormula = noRecursiveInitSt(beginFormula, "CR");
-    //         return initStatement(beginFormula, ((App)method).q);
-    //     }
-    //     else if ( ((App)method).p.toStringFinal().equals("CO") ) {
-    //         beginFormula = noRecursiveInitSt(beginFormula, "CO");
-    //         return initStatement(beginFormula, ((App)method).q);
-    //     }
-    //     // hay que poner else if para los otros metodos recursivos unarios
-    //     else if ( ((App)method).p.toStringFinal().substring(0, 2).equals("AI") ) {
-    //         if ( ((App)method).p instanceof Const ) {
-    //            beginFormula = noRecursiveInitSt(beginFormula, "AI"); 
-    //            return initStatement(beginFormula, ((App)method).q);
-    //         } else {
-    //            beginFormula = ((App)((App)beginFormula).p).q;
-    //            return initStatement(beginFormula, ((App)method).q); 
-    //         }
-    //     }
-    //     // hay que poner else if para el metodo CA
-    //     return null;
-    // }
-
-    /**
-     * The statement that is needed to prove changes inside a sub proof.
-     *  
-     * @param beginFormula: general statement to be proved, is the base to calculate 
-     *                      al de sub statement in the sub proofs.
-     * @param method: String that represents the current method.
-     * @return Term that represents the statement to be proved in the current sub proof.
-     */
-    @Override
-    @Transactional
-    public Term noRecursiveInitSt(Term beginFormula, String method) {
-        if (method.equals("AI")){
-            return ((App)beginFormula).q;           
-        }
-        else if (method.equals("CR") ) {
-            Term antec = ((App)beginFormula).q;
-            antec = new App(new Const(7 ,"c_{7}"), antec);
-            Term consec = ((App)((App)beginFormula).p).q;
-            consec = new App(new Const(7,"c_{7}"),consec);
-            return new App(new App(new Const(2,"c_{2}"),antec), consec);
-        }
-        else if (method.equals("CO")) {
-            // This is saying: ¬formula => false, but the notation must be prefix and the first operand goes to the right.
-            // So, here what is really expressed is: (=> false) (¬formula).
-            return new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),beginFormula));
-        }
-
-        // hay que poner else if para el metodo CA
         return null;
     }
 

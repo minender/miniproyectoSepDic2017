@@ -12,22 +12,6 @@ import java.util.List;
  * @author ronald
  */
 public interface CrudOperations {
-    
-    /**
-     * This function will create a hint for the current base method given the hint's elements.In case the elements don't make sense it will return null.
-     * @param theoremHint: theorem used on the hint
-     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
-     * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents Leibniz on the hint
-     * @param leibnizString: string that was used to parse Leibniz
-     * @param theoremBeingProved: theorem that we are proving using this hint
-     * @param method: method used in the demonstration
-     * @return a hint for the direct method
-     * @throws com.calclogic.lambdacalculo.TypeVerificationException
-     */
-    public Term createBaseMethodInfer(Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
-            Bracket leibniz, String leibnizString, Term theoremBeingProved, String method) 
-            throws TypeVerificationException;
 
     /**
      * The statement that is needed to prove changes inside a sub proof. This method 
@@ -41,16 +25,6 @@ public interface CrudOperations {
      * @return Term that represent the statement to be proved in the current sub proof.
      */
     public Term initStatement(Term beginFormula, Term method);
-
-    /**
-     * The statement that is needed to prove changes inside a sub proof.
-     *  
-     * @param beginFormula: general statement to be proved, is the base to calculate 
-     *                      al de sub statement in the sub proofs.
-     * @param method: String that represents the current method.
-     * @return Term that represents the statement to be proved in the current sub proof.
-     */
-    public Term noRecursiveInitSt(Term beginFormula, String method);
 
     public Term currentMethod(Term method);
 

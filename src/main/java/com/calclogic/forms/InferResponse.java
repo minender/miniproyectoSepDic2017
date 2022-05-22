@@ -215,64 +215,6 @@ public class InferResponse {
         }
     }*/
     
-    public boolean isIAA(Term root, SimboloManager s) {
-        
-        if(!(root instanceof App)) return false;
-        
-        Term leftSide = ((App)root).p.type();
-        
-        return ((App)root).q instanceof TypedA &&
-                ((App)root).p instanceof App &&
-                ((App)((App)root).p).p instanceof TypedI &&
-                ((App)((App)root).p).q instanceof TypedA &&
-                
-                leftSide instanceof App && ((App)leftSide).p instanceof App &&
-                (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") &&
-                ((App)leftSide).q.equals(((App)root).q.type());    
-    }
-    
-    public boolean isIAIA(Term root, SimboloManager s) {
-        if(!(root instanceof App)) return false;
-        
-        Term leftSide = ((App)root).p.type();
-        
-        return ((App)root).q instanceof App &&
-                ((App)((App)root).q).p instanceof TypedI &&
-                ((App)((App)root).q).q instanceof TypedA &&
-                ((App)root).p instanceof App &&
-                ((App)((App)root).p).p instanceof TypedI &&
-                ((App)((App)root).p).q instanceof TypedA &&
-                
-                leftSide instanceof App && ((App)leftSide).p instanceof App &&
-                (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") &&
-                ((App)leftSide).q.equals(((App)root).q.type());         
-    }
-    
-    /**
-     * This function checks if the given Term represents a modus ponens hint
-     * @param root root node of the hint 
-     * @param s
-     * @return "Nomodus" if is not modus ponens, another string depending on the case
-     */
-    public String isModusPonens(Term root, SimboloManager s) {
-        
-        if(!(root instanceof App)) return "NoModus";
-        
-        // Case 1: IAA
-        if(isIAA(root, s)) return "IAA";
-        
-        // Case 2: IAIA
-        if(isIAIA(root, s)) return "IAIA";
-        
-        // Case 3: S(IAIA)
-        if( ((App)root).p instanceof TypedS && isIAIA(((App)root).q, s)) return "S(IAIA)";
-        
-        // Case 4: S(IAA)
-        if( ((App)root).p instanceof TypedS && isIAA(((App)root).q, s)) return "S(IAA)";
-        
-        return "NoModus";
-    }
-    
     /**
      * This function generates a step in the demonstration of a theorem when the method is to
      * start from one side. Note that this not only generates the hint, but the complete step.
@@ -603,6 +545,7 @@ public class InferResponse {
         SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
 
         Term newFormula = proofCrudOperations.noRecursiveInitSt(formula, "CO");
+        System.out.println("newFormula = "+newFormula);
         String statement = "";
         try {
            statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
