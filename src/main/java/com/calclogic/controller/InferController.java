@@ -530,7 +530,7 @@ public class InferController {
             else {
                 metodo = crudOp.currentMethod(methodTerm).toStringFinal();
                 if (metodo.equals("WE") || metodo.equals("ST") || metodo.equals("TR")) {
-                    int index = InferenceIndex.wsFirstOpInferIndex1(typedTerm);
+                    int index = InferenceIndex.wsFirstOpInferIndex(typedTerm);
                     if (index == 0 || index == 1)
                         lastLine = ((App)((App)typedTerm.type()).p).q;
                     else

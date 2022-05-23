@@ -8,7 +8,7 @@ import javax.persistence.SequenceGenerator;
 /**
  * Class to map theorem_template entity.
  */
-public class PlantillaTeorema implements java.io.Serializable {
+public class ProofTemplate implements java.io.Serializable {
    
     // table fields
     private int id;
@@ -46,6 +46,6 @@ public class PlantillaTeorema implements java.io.Serializable {
         this.path_to_placeholders = path_to_placeholders;
     }
 
-    public PlantillaTeorema() {}
+    public ProofTemplate() {}
 
 }

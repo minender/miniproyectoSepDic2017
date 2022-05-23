@@ -21,6 +21,6 @@
     <mapping resource="com/calclogic/entity/Teoria.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Simbolo.hbm.xml"/>
     <mapping resource="com/calclogic/entity/MostrarCategoria.hbm.xml"/>
-    <mapping resource="com/calclogic/entity/PlantillaTeorema.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/ProofTemplate.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

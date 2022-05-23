@@ -16,7 +16,7 @@ import com.calclogic.entity.Simbolo;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Teoria;
-import com.calclogic.entity.PlantillaTeorema;
+import com.calclogic.entity.ProofTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -45,6 +45,7 @@ import com.calclogic.forms.UsuarioGuardar;
 import com.calclogic.forms.teoremasSolucion;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Brackear;
+import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Comprobacion;
 import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.Sust;
@@ -75,7 +76,6 @@ import com.calclogic.service.SimboloManager;
 import com.calclogic.service.SolucionManager;
 import com.calclogic.service.TeoremaManager;
 import com.calclogic.service.TeoriaManager;
-import com.calclogic.service.PlantillaTeoremaManager;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,6 +92,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import com.calclogic.service.ProofTemplateManager;
 
 @Controller
 @RequestMapping(value="/perfil")
@@ -620,8 +621,28 @@ public class PerfilController {
             Term teoTerm;
             try //si la sintanxis no es correcta ocurre una Exception
             {
-                teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
-//                teoTerm.setAlias(0);
+                teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+                String variables = teoTerm.freeVars();
+                if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
+                    ((App)((App)teoTerm).p).p instanceof Const && 
+                    ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
+                      ((Const)((App)((App)teoTerm).p).p).getId()==13
+                    )
+                   ) 
+                {
+                    Term arg1, arg2;
+                    arg1 = ((App)((App)teoTerm).p).q;
+                    arg2 = ((App)teoTerm).q;
+                    String[] vars = variables.split(",");
+                    for (int i=vars.length-1; 0<=i; i--) {
+                        arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
+                        arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
+                        teoTerm = new App(new App(new Const(0,"="),arg1),arg2);
+                    }
+                }
+                else {
+                    teoTerm = new App(new App(new Const(0,"="), new Const(-1,"T")), teoTerm);
+                }
                 Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());
                 if (null != test) {
                     throw new CategoriaException("ya existe uno igual en el "+test.getNumeroteorema());
@@ -641,7 +662,8 @@ public class PerfilController {
                  teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false,aliases)); 
                 else
                     teorema = teoremaAdd;
-                Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma(), categoria);
+                Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),
+                                                 agregarTeorema.isAxioma(), categoria, variables);
                 Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
                 
 

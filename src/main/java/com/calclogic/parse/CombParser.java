@@ -24,9 +24,9 @@ public class CombParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		CONSTANT_C=1, PHI=2, LAMBDA=3, PERIOD=4, K=5, CB=6, O_PAR=7, C_PAR=8, 
-		COMMA=9, C_BRACKET=10, O_BRACKET2=11, C_BRACKET2=12, ASSIGN=13, VARIABLE=14, 
-		A=15, I=16, L=17, S=18, U=19, Si=20, WHITESPACE=21;
+		CONSTANT_C=1, EQUAL=2, TRUE=3, PHI=4, LAMBDA=5, PERIOD=6, K=7, CB=8, O_PAR=9, 
+		C_PAR=10, COMMA=11, C_BRACKET=12, O_BRACKET2=13, C_BRACKET2=14, ASSIGN=15, 
+		VARIABLE=16, A=17, I=18, L=19, S=20, U=21, Si=22, WHITESPACE=23;
 	public static final int
 		RULE_start_rule = 0, RULE_expr = 1, RULE_term = 2, RULE_term_base = 3, 
 		RULE_term_tail = 4, RULE_variable_list = 5, RULE_variable_list_tail = 6, 
@@ -44,17 +44,17 @@ public class CombParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, null, "'\\Phi_{'", "'\\lambda'", "'.'", "'K'", null, "'('", "')'", 
-			"','", "'}'", "'['", "']'", "':='", null, "'A^{'", "'I^{'", "'L^{'", 
-			"'S^{'", "'U'", "'S'"
+			null, null, "'='", "'T'", "'\\Phi_{'", "'\\lambda'", "'.'", "'K'", null, 
+			"'('", "')'", "','", "'}'", "'['", "']'", "':='", null, "'A^{'", "'I^{'", 
+			"'L^{'", "'S^{'", "'U'", "'S'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "CONSTANT_C", "PHI", "LAMBDA", "PERIOD", "K", "CB", "O_PAR", "C_PAR", 
-			"COMMA", "C_BRACKET", "O_BRACKET2", "C_BRACKET2", "ASSIGN", "VARIABLE", 
-			"A", "I", "L", "S", "U", "Si", "WHITESPACE"
+			null, "CONSTANT_C", "EQUAL", "TRUE", "PHI", "LAMBDA", "PERIOD", "K", 
+			"CB", "O_PAR", "C_PAR", "COMMA", "C_BRACKET", "O_BRACKET2", "C_BRACKET2", 
+			"ASSIGN", "VARIABLE", "A", "I", "L", "S", "U", "Si", "WHITESPACE"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -199,6 +199,8 @@ public class CombParser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case CONSTANT_C:
+			case EQUAL:
+			case TRUE:
 			case PHI:
 			case O_PAR:
 			case VARIABLE:
@@ -376,6 +378,8 @@ public class CombParser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case CONSTANT_C:
+			case EQUAL:
+			case TRUE:
 			case PHI:
 			case A:
 			case I:
@@ -457,6 +461,8 @@ public class CombParser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case CONSTANT_C:
+			case EQUAL:
+			case TRUE:
 			case PHI:
 			case O_PAR:
 			case VARIABLE:
@@ -760,9 +766,13 @@ public class CombParser extends Parser {
 	public static class ConstantContext extends ParserRuleContext {
 		public Term value;
 		public Token CONSTANT_C;
+		public Token EQUAL;
+		public Token TRUE;
 		public Constant_phiContext constant_phi;
 		public Prove_baseContext prove_base;
 		public TerminalNode CONSTANT_C() { return getToken(CombParser.CONSTANT_C, 0); }
+		public TerminalNode EQUAL() { return getToken(CombParser.EQUAL, 0); }
+		public TerminalNode TRUE() { return getToken(CombParser.TRUE, 0); }
 		public Constant_phiContext constant_phi() {
 			return getRuleContext(Constant_phiContext.class,0);
 		}
@@ -787,7 +797,7 @@ public class CombParser extends Parser {
 		ConstantContext _localctx = new ConstantContext(_ctx, getState());
 		enterRule(_localctx, 20, RULE_constant);
 		try {
-			setState(110);
+			setState(114);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case CONSTANT_C:
@@ -801,10 +811,30 @@ public class CombParser extends Parser {
 					                
 				}
 				break;
-			case PHI:
+			case EQUAL:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(104);
+				((ConstantContext)_localctx).EQUAL = match(EQUAL);
+				 String cons = (((ConstantContext)_localctx).EQUAL!=null?((ConstantContext)_localctx).EQUAL.getText():null) ; // Take string format of the constant
+				                          ((ConstantContext)_localctx).value =  new Const(0 ,cons);
+				                        
+				}
+				break;
+			case TRUE:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(106);
+				((ConstantContext)_localctx).TRUE = match(TRUE);
+				 String cons = (((ConstantContext)_localctx).TRUE!=null?((ConstantContext)_localctx).TRUE.getText():null) ; // Take string format of the constant
+				                          ((ConstantContext)_localctx).value =  new Const(-1 ,cons);
+				                        
+				}
+				break;
+			case PHI:
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(108);
 				((ConstantContext)_localctx).constant_phi = constant_phi();
 				 ((ConstantContext)_localctx).value =  ((ConstantContext)_localctx).constant_phi.value; 
 				}
@@ -815,9 +845,9 @@ public class CombParser extends Parser {
 			case S:
 			case U:
 			case Si:
-				enterOuterAlt(_localctx, 3);
+				enterOuterAlt(_localctx, 5);
 				{
-				setState(107);
+				setState(111);
 				((ConstantContext)_localctx).prove_base = prove_base();
 				 ((ConstantContext)_localctx).value =  ((ConstantContext)_localctx).prove_base.value; 
 				}
@@ -864,9 +894,9 @@ public class CombParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(112);
+			setState(116);
 			match(PHI);
-			setState(113);
+			setState(117);
 			((Constant_phiContext)_localctx).phi_tail = phi_tail();
 			 ((Constant_phiContext)_localctx).value =  ((Constant_phiContext)_localctx).phi_tail.value; 
 			}
@@ -908,15 +938,15 @@ public class CombParser extends Parser {
 		Phi_tailContext _localctx = new Phi_tailContext(_ctx, getState());
 		enterRule(_localctx, 24, RULE_phi_tail);
 		try {
-			setState(123);
+			setState(127);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case K:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(116);
+				setState(120);
 				match(K);
-				setState(117);
+				setState(121);
 				match(C_BRACKET);
 				 ((Phi_tailContext)_localctx).value =  new Const("\\Phi_{K}"); 
 				}
@@ -926,9 +956,9 @@ public class CombParser extends Parser {
 			case C_BRACKET:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(119);
+				setState(123);
 				((Phi_tailContext)_localctx).comb_index = comb_index();
-				setState(120);
+				setState(124);
 				match(C_BRACKET);
 				 ((Phi_tailContext)_localctx).value =  new Phi(); ((Phi)_localctx.value).ind=((Phi_tailContext)_localctx).comb_index.value;
 				}
@@ -978,13 +1008,13 @@ public class CombParser extends Parser {
 		Comb_indexContext _localctx = new Comb_indexContext(_ctx, getState());
 		enterRule(_localctx, 26, RULE_comb_index);
 		try {
-			setState(133);
+			setState(137);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case O_PAR:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(125);
+				setState(129);
 				((Comb_indexContext)_localctx).cb_pair = cb_pair();
 				((Comb_indexContext)_localctx).value =  new ListaInd(((Comb_indexContext)_localctx).cb_pair.value);
 				}
@@ -992,9 +1022,9 @@ public class CombParser extends Parser {
 			case CB:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(128);
+				setState(132);
 				((Comb_indexContext)_localctx).CB = match(CB);
-				setState(129);
+				setState(133);
 				((Comb_indexContext)_localctx).c1 = comb_index();
 				((Comb_indexContext)_localctx).value =  ((Comb_indexContext)_localctx).c1.value;// Take the ListaInd from c1 
 							 ConstInd cb = new ConstInd((((Comb_indexContext)_localctx).CB!=null?((Comb_indexContext)_localctx).CB.getText():null));// Crete a new c/b const
@@ -1059,15 +1089,15 @@ public class CombParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(135);
-			match(O_PAR);
-			setState(136);
-			((Cb_pairContext)_localctx).c1 = comb_index();
-			setState(137);
-			match(COMMA);
-			setState(138);
-			((Cb_pairContext)_localctx).c2 = comb_index();
 			setState(139);
+			match(O_PAR);
+			setState(140);
+			((Cb_pairContext)_localctx).c1 = comb_index();
+			setState(141);
+			match(COMMA);
+			setState(142);
+			((Cb_pairContext)_localctx).c2 = comb_index();
+			setState(143);
 			match(C_PAR);
 			 ((Cb_pairContext)_localctx).value =  new ParInd(((Cb_pairContext)_localctx).c1.value,((Cb_pairContext)_localctx).c2.value);
 			}
@@ -1114,17 +1144,17 @@ public class CombParser extends Parser {
 		Prove_baseContext _localctx = new Prove_baseContext(_ctx, getState());
 		enterRule(_localctx, 30, RULE_prove_base);
 		try {
-			setState(166);
+			setState(170);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case I:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(142);
+				setState(146);
 				match(I);
-				setState(143);
+				setState(147);
 				((Prove_baseContext)_localctx).expr = expr();
-				setState(144);
+				setState(148);
 				match(C_BRACKET);
 				 ((Prove_baseContext)_localctx).value =  new TypedI((Sust) ((Prove_baseContext)_localctx).expr.value); 
 				}
@@ -1132,11 +1162,11 @@ public class CombParser extends Parser {
 			case L:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(147);
+				setState(151);
 				match(L);
-				setState(148);
+				setState(152);
 				((Prove_baseContext)_localctx).expr = expr();
-				setState(149);
+				setState(153);
 				match(C_BRACKET);
 				 ((Prove_baseContext)_localctx).value =  new TypedL((Bracket) ((Prove_baseContext)_localctx).expr.value); 
 				}
@@ -1144,11 +1174,11 @@ public class CombParser extends Parser {
 			case S:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(152);
+				setState(156);
 				match(S);
-				setState(153);
+				setState(157);
 				((Prove_baseContext)_localctx).expr = expr();
-				setState(154);
+				setState(158);
 				match(C_BRACKET);
 				 
 				                            try {
@@ -1163,7 +1193,7 @@ public class CombParser extends Parser {
 			case Si:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(157);
+				setState(161);
 				match(Si);
 
 				            try {
@@ -1178,7 +1208,7 @@ public class CombParser extends Parser {
 			case U:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(159);
+				setState(163);
 				match(U);
 				 ((Prove_baseContext)_localctx).value =  new TypedU(); 
 				}
@@ -1186,11 +1216,11 @@ public class CombParser extends Parser {
 			case A:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(161);
+				setState(165);
 				match(A);
-				setState(162);
+				setState(166);
 				((Prove_baseContext)_localctx).expr = expr();
-				setState(163);
+				setState(167);
 				match(C_BRACKET);
 				 ((Prove_baseContext)_localctx).value =  new TypedA(((Prove_baseContext)_localctx).expr.value); 
 				}
@@ -1211,53 +1241,55 @@ public class CombParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\27\u00ab\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\31\u00af\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\3\2\3\2"+
 		"\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5"+
 		"\3\66\n\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5"+
 		"\5\5G\n\5\3\6\3\6\3\6\3\6\3\6\5\6N\n\6\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b"+
 		"\3\b\5\bY\n\b\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\5\nd\n\n\3\13\3\13\3"+
-		"\13\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\5\fq\n\f\3\r\3\r\3\r\3\r\3\16\3\16"+
-		"\3\16\3\16\3\16\3\16\3\16\5\16~\n\16\3\17\3\17\3\17\3\17\3\17\3\17\3\17"+
-		"\3\17\5\17\u0088\n\17\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\21\3\21\3\21"+
-		"\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21"+
-		"\3\21\3\21\3\21\3\21\3\21\3\21\3\21\5\21\u00a9\n\21\3\21\2\2\22\2\4\6"+
-		"\b\n\f\16\20\22\24\26\30\32\34\36 \2\2\2\u00ab\2\"\3\2\2\2\4\65\3\2\2"+
-		"\2\6\67\3\2\2\2\bF\3\2\2\2\nM\3\2\2\2\fO\3\2\2\2\16X\3\2\2\2\20Z\3\2\2"+
-		"\2\22c\3\2\2\2\24e\3\2\2\2\26p\3\2\2\2\30r\3\2\2\2\32}\3\2\2\2\34\u0087"+
-		"\3\2\2\2\36\u0089\3\2\2\2 \u00a8\3\2\2\2\"#\5\4\3\2#$\b\2\1\2$\3\3\2\2"+
-		"\2%&\5\6\4\2&\'\b\3\1\2\'\66\3\2\2\2()\7\5\2\2)*\5\24\13\2*+\7\6\2\2+"+
-		",\5\4\3\2,-\b\3\1\2-\66\3\2\2\2./\7\r\2\2/\60\5\f\7\2\60\61\7\17\2\2\61"+
-		"\62\5\20\t\2\62\63\7\16\2\2\63\64\b\3\1\2\64\66\3\2\2\2\65%\3\2\2\2\65"+
-		"(\3\2\2\2\65.\3\2\2\2\66\5\3\2\2\2\678\5\b\5\289\5\n\6\29:\b\4\1\2:\7"+
-		"\3\2\2\2;<\5\26\f\2<=\b\5\1\2=G\3\2\2\2>?\5\24\13\2?@\b\5\1\2@G\3\2\2"+
-		"\2AB\7\t\2\2BC\5\6\4\2CD\7\n\2\2DE\b\5\1\2EG\3\2\2\2F;\3\2\2\2F>\3\2\2"+
-		"\2FA\3\2\2\2G\t\3\2\2\2HI\5\b\5\2IJ\5\n\6\2JK\b\6\1\2KN\3\2\2\2LN\b\6"+
-		"\1\2MH\3\2\2\2ML\3\2\2\2N\13\3\2\2\2OP\5\24\13\2PQ\5\16\b\2QR\b\7\1\2"+
-		"R\r\3\2\2\2ST\7\13\2\2TU\5\f\7\2UV\b\b\1\2VY\3\2\2\2WY\b\b\1\2XS\3\2\2"+
-		"\2XW\3\2\2\2Y\17\3\2\2\2Z[\5\6\4\2[\\\5\22\n\2\\]\b\t\1\2]\21\3\2\2\2"+
-		"^_\7\13\2\2_`\5\20\t\2`a\b\n\1\2ad\3\2\2\2bd\b\n\1\2c^\3\2\2\2cb\3\2\2"+
-		"\2d\23\3\2\2\2ef\7\20\2\2fg\b\13\1\2g\25\3\2\2\2hi\7\3\2\2iq\b\f\1\2j"+
-		"k\5\30\r\2kl\b\f\1\2lq\3\2\2\2mn\5 \21\2no\b\f\1\2oq\3\2\2\2ph\3\2\2\2"+
-		"pj\3\2\2\2pm\3\2\2\2q\27\3\2\2\2rs\7\4\2\2st\5\32\16\2tu\b\r\1\2u\31\3"+
-		"\2\2\2vw\7\7\2\2wx\7\f\2\2x~\b\16\1\2yz\5\34\17\2z{\7\f\2\2{|\b\16\1\2"+
-		"|~\3\2\2\2}v\3\2\2\2}y\3\2\2\2~\33\3\2\2\2\177\u0080\5\36\20\2\u0080\u0081"+
-		"\b\17\1\2\u0081\u0088\3\2\2\2\u0082\u0083\7\b\2\2\u0083\u0084\5\34\17"+
-		"\2\u0084\u0085\b\17\1\2\u0085\u0088\3\2\2\2\u0086\u0088\b\17\1\2\u0087"+
-		"\177\3\2\2\2\u0087\u0082\3\2\2\2\u0087\u0086\3\2\2\2\u0088\35\3\2\2\2"+
-		"\u0089\u008a\7\t\2\2\u008a\u008b\5\34\17\2\u008b\u008c\7\13\2\2\u008c"+
-		"\u008d\5\34\17\2\u008d\u008e\7\n\2\2\u008e\u008f\b\20\1\2\u008f\37\3\2"+
-		"\2\2\u0090\u0091\7\22\2\2\u0091\u0092\5\4\3\2\u0092\u0093\7\f\2\2\u0093"+
-		"\u0094\b\21\1\2\u0094\u00a9\3\2\2\2\u0095\u0096\7\23\2\2\u0096\u0097\5"+
-		"\4\3\2\u0097\u0098\7\f\2\2\u0098\u0099\b\21\1\2\u0099\u00a9\3\2\2\2\u009a"+
-		"\u009b\7\24\2\2\u009b\u009c\5\4\3\2\u009c\u009d\7\f\2\2\u009d\u009e\b"+
-		"\21\1\2\u009e\u00a9\3\2\2\2\u009f\u00a0\7\26\2\2\u00a0\u00a9\b\21\1\2"+
-		"\u00a1\u00a2\7\25\2\2\u00a2\u00a9\b\21\1\2\u00a3\u00a4\7\21\2\2\u00a4"+
-		"\u00a5\5\4\3\2\u00a5\u00a6\7\f\2\2\u00a6\u00a7\b\21\1\2\u00a7\u00a9\3"+
-		"\2\2\2\u00a8\u0090\3\2\2\2\u00a8\u0095\3\2\2\2\u00a8\u009a\3\2\2\2\u00a8"+
-		"\u009f\3\2\2\2\u00a8\u00a1\3\2\2\2\u00a8\u00a3\3\2\2\2\u00a9!\3\2\2\2"+
-		"\13\65FMXcp}\u0087\u00a8";
+		"\13\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\5\fu\n\f\3\r\3\r\3"+
+		"\r\3\r\3\16\3\16\3\16\3\16\3\16\3\16\3\16\5\16\u0082\n\16\3\17\3\17\3"+
+		"\17\3\17\3\17\3\17\3\17\3\17\5\17\u008c\n\17\3\20\3\20\3\20\3\20\3\20"+
+		"\3\20\3\20\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21"+
+		"\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\5\21\u00ad"+
+		"\n\21\3\21\2\2\22\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \2\2\2\u00b1"+
+		"\2\"\3\2\2\2\4\65\3\2\2\2\6\67\3\2\2\2\bF\3\2\2\2\nM\3\2\2\2\fO\3\2\2"+
+		"\2\16X\3\2\2\2\20Z\3\2\2\2\22c\3\2\2\2\24e\3\2\2\2\26t\3\2\2\2\30v\3\2"+
+		"\2\2\32\u0081\3\2\2\2\34\u008b\3\2\2\2\36\u008d\3\2\2\2 \u00ac\3\2\2\2"+
+		"\"#\5\4\3\2#$\b\2\1\2$\3\3\2\2\2%&\5\6\4\2&\'\b\3\1\2\'\66\3\2\2\2()\7"+
+		"\7\2\2)*\5\24\13\2*+\7\b\2\2+,\5\4\3\2,-\b\3\1\2-\66\3\2\2\2./\7\17\2"+
+		"\2/\60\5\f\7\2\60\61\7\21\2\2\61\62\5\20\t\2\62\63\7\20\2\2\63\64\b\3"+
+		"\1\2\64\66\3\2\2\2\65%\3\2\2\2\65(\3\2\2\2\65.\3\2\2\2\66\5\3\2\2\2\67"+
+		"8\5\b\5\289\5\n\6\29:\b\4\1\2:\7\3\2\2\2;<\5\26\f\2<=\b\5\1\2=G\3\2\2"+
+		"\2>?\5\24\13\2?@\b\5\1\2@G\3\2\2\2AB\7\13\2\2BC\5\6\4\2CD\7\f\2\2DE\b"+
+		"\5\1\2EG\3\2\2\2F;\3\2\2\2F>\3\2\2\2FA\3\2\2\2G\t\3\2\2\2HI\5\b\5\2IJ"+
+		"\5\n\6\2JK\b\6\1\2KN\3\2\2\2LN\b\6\1\2MH\3\2\2\2ML\3\2\2\2N\13\3\2\2\2"+
+		"OP\5\24\13\2PQ\5\16\b\2QR\b\7\1\2R\r\3\2\2\2ST\7\r\2\2TU\5\f\7\2UV\b\b"+
+		"\1\2VY\3\2\2\2WY\b\b\1\2XS\3\2\2\2XW\3\2\2\2Y\17\3\2\2\2Z[\5\6\4\2[\\"+
+		"\5\22\n\2\\]\b\t\1\2]\21\3\2\2\2^_\7\r\2\2_`\5\20\t\2`a\b\n\1\2ad\3\2"+
+		"\2\2bd\b\n\1\2c^\3\2\2\2cb\3\2\2\2d\23\3\2\2\2ef\7\22\2\2fg\b\13\1\2g"+
+		"\25\3\2\2\2hi\7\3\2\2iu\b\f\1\2jk\7\4\2\2ku\b\f\1\2lm\7\5\2\2mu\b\f\1"+
+		"\2no\5\30\r\2op\b\f\1\2pu\3\2\2\2qr\5 \21\2rs\b\f\1\2su\3\2\2\2th\3\2"+
+		"\2\2tj\3\2\2\2tl\3\2\2\2tn\3\2\2\2tq\3\2\2\2u\27\3\2\2\2vw\7\6\2\2wx\5"+
+		"\32\16\2xy\b\r\1\2y\31\3\2\2\2z{\7\t\2\2{|\7\16\2\2|\u0082\b\16\1\2}~"+
+		"\5\34\17\2~\177\7\16\2\2\177\u0080\b\16\1\2\u0080\u0082\3\2\2\2\u0081"+
+		"z\3\2\2\2\u0081}\3\2\2\2\u0082\33\3\2\2\2\u0083\u0084\5\36\20\2\u0084"+
+		"\u0085\b\17\1\2\u0085\u008c\3\2\2\2\u0086\u0087\7\n\2\2\u0087\u0088\5"+
+		"\34\17\2\u0088\u0089\b\17\1\2\u0089\u008c\3\2\2\2\u008a\u008c\b\17\1\2"+
+		"\u008b\u0083\3\2\2\2\u008b\u0086\3\2\2\2\u008b\u008a\3\2\2\2\u008c\35"+
+		"\3\2\2\2\u008d\u008e\7\13\2\2\u008e\u008f\5\34\17\2\u008f\u0090\7\r\2"+
+		"\2\u0090\u0091\5\34\17\2\u0091\u0092\7\f\2\2\u0092\u0093\b\20\1\2\u0093"+
+		"\37\3\2\2\2\u0094\u0095\7\24\2\2\u0095\u0096\5\4\3\2\u0096\u0097\7\16"+
+		"\2\2\u0097\u0098\b\21\1\2\u0098\u00ad\3\2\2\2\u0099\u009a\7\25\2\2\u009a"+
+		"\u009b\5\4\3\2\u009b\u009c\7\16\2\2\u009c\u009d\b\21\1\2\u009d\u00ad\3"+
+		"\2\2\2\u009e\u009f\7\26\2\2\u009f\u00a0\5\4\3\2\u00a0\u00a1\7\16\2\2\u00a1"+
+		"\u00a2\b\21\1\2\u00a2\u00ad\3\2\2\2\u00a3\u00a4\7\30\2\2\u00a4\u00ad\b"+
+		"\21\1\2\u00a5\u00a6\7\27\2\2\u00a6\u00ad\b\21\1\2\u00a7\u00a8\7\23\2\2"+
+		"\u00a8\u00a9\5\4\3\2\u00a9\u00aa\7\16\2\2\u00aa\u00ab\b\21\1\2\u00ab\u00ad"+
+		"\3\2\2\2\u00ac\u0094\3\2\2\2\u00ac\u0099\3\2\2\2\u00ac\u009e\3\2\2\2\u00ac"+
+		"\u00a3\3\2\2\2\u00ac\u00a5\3\2\2\2\u00ac\u00a7\3\2\2\2\u00ad!\3\2\2\2"+
+		"\13\65FMXct\u0081\u008b\u00ac";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -194,6 +194,10 @@ public class CrudOperationsImpl implements CrudOperations {
         if (method.toString().equals("AI")){
             return ((App)beginFormula).q;           
         }
+        else if (method.toString().equals("CA")) {
+            beginFormula = new App(new App(new Const(5,"c_{5}"),new App(new App(new Const(2,"c_{2}"),beginFormula),new App(new Const(7,"c_{7}"),new Const(8,"c_{8}")))) ,new App(new App(new Const(2,"c_{2}"), beginFormula),new Const(8,"c_{8}")));
+            return ((App)beginFormula).q;
+        }
         else if (method instanceof Const){
             return beginFormula;
         }
@@ -284,9 +288,10 @@ public class CrudOperationsImpl implements CrudOperations {
     @Transactional
     public Term getSubProof(Term typedTerm, Term method, boolean isRecursive) {
         Term auxMethod = method;
+        String m = null;
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
+                    ((m=((App)((App)auxMethod).p).p.toStringFinal()).equals("AI")||m.equals("CA")) && 
                     !ProofBoolean.isAIProof2Started(auxMethod)
                     ){
                 return null;
@@ -323,9 +328,10 @@ public class CrudOperationsImpl implements CrudOperations {
     @Transactional
     public List<Term> getFatherAndSubProof(Term typedTerm, Term method, List<Term> li) {
         Term auxMethod = method;
+        String m = null;
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
+                    ((m=((App)((App)auxMethod).p).p.toStringFinal()).equals("AI")||m.equals("CA")) && 
                     !ProofBoolean.isProofStarted(((App)auxMethod).q)
                     ){
                 li.add(0,typedTerm);

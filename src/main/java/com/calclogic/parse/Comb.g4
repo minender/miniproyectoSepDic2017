@@ -92,6 +92,12 @@ constant returns [Term value]
 			  int index = Integer.parseInt(cons.substring(3,cons.length()-1));// Take only the the index of the constant
 			  $value = new Const(index ,cons);
 	                }
+    | EQUAL             { String cons = $EQUAL.text ; // Take string format of the constant
+                          $value = new Const(0 ,cons);
+                        }
+    | TRUE              { String cons = $TRUE.text ; // Take string format of the constant
+                          $value = new Const(-1 ,cons);
+                        }
     | constant_phi 	{ $value = $constant_phi.value; }
     |   prove_base	{ $value = $prove_base.value; };
  
@@ -163,6 +169,8 @@ fragment X : ('X' | 'x' );
     
 // Constants of type c_{N} where N is a digit
 CONSTANT_C : C '_{' DIGITS '}' ; 
+EQUAL : '=' ;
+TRUE : 'T' ;
 
 // Neccesary for phi constant 
 PHI : '\\Phi_{' ;

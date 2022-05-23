@@ -1,5 +1,5 @@
 package com.calclogic.dao;
-import com.calclogic.entity.PlantillaTeorema;
+import com.calclogic.entity.ProofTemplate;
 import java.util.List;
 
 /**
@@ -8,11 +8,11 @@ import java.util.List;
  *
  * @author Manuel Faria and Juan Oropeza
  */
-public interface PlantillaTeoremaDAO {
+public interface ProofTemplateDAO {
     
     /**
      * Method to get a PlantillaTeorema object by its principal key.
      * @param id Is the principal key of the PlantillaTeorema object.
      */
-    public PlantillaTeorema getPlantillaTeoremaById(int id);
+    public ProofTemplate getProofTemplateById(int id);
 }

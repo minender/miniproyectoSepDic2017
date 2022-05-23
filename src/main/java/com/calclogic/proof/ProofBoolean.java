@@ -148,8 +148,9 @@ public class ProofBoolean {
      * exists sub proof (can be the same second sub proof) that is already started.
      */
     public static boolean isAIProof2Started(Term method) {
+        String m = null;
         return method instanceof App && ((App)method).p instanceof App && 
-               ((App)((App)method).p).p.toStringFinal().equals("AI") && 
+               ((m=((App)((App)method).p).p.toStringFinal()).equals("AI") || m.equals("CA")) && 
                isProofStarted(((App)method).q);
     }
     

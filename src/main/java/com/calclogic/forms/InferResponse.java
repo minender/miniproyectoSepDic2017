@@ -22,7 +22,6 @@ import com.calclogic.lambdacalculo.Var;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
-import com.calclogic.service.PlantillaTeoremaManager;
 import com.calclogic.externalservices.MicroServices;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.InferenceIndex;
@@ -30,6 +29,7 @@ import com.calclogic.proof.InferenceIndex;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.calclogic.service.ProofTemplateManager;
 
 /**
  *

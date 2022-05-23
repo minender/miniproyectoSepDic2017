@@ -133,8 +133,8 @@
     </bean>
     <bean id="mostrarCategoriaManager" class="com.calclogic.service.MostrarCategoriaManagerImpl">
     </bean>
-    <bean id="plantillaTeoremaDAO" class="com.calclogic.dao.PlantillaTeoremaDaoImpl"></bean>
-    <bean id="plantillaTeoremaManager" class="com.calclogic.service.PlantillaTeoremaManagerImpl"></bean>
+    <bean id="proofTemplateDAO" class="com.calclogic.dao.ProofTemplateDaoImpl"></bean>
+    <bean id="proofTemplateManager" class="com.calclogic.service.ProofTemplateManagerImpl"></bean>
     <bean id="finiPMeth" class="com.calclogic.proof.FinishedProofMethodImpl"></bean>
     <bean id="crudOp" class="com.calclogic.proof.CrudOperationsImpl"></bean>
  

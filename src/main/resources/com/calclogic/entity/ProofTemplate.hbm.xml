@@ -2,11 +2,11 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
-  <class name="com.calclogic.entity.PlantillaTeorema" table="plantilla_teorema">
+  <class name="com.calclogic.entity.ProofTemplate" table="proof_template">
     <id name="id" type="int">
       <column name="id"/>
       <generator class="sequence">
-        <param name="sequence">plantilla_teorema_id_seq</param>
+        <param name="sequence">proof_template_id_seq</param>
       </generator>
     </id>
     <property name="template" type="string">

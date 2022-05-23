@@ -1,11 +1,11 @@
 package com.calclogic.service;
 
-import com.calclogic.dao.PlantillaTeoremaDAO;
-import com.calclogic.entity.PlantillaTeorema;
+import com.calclogic.entity.ProofTemplate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.calclogic.dao.ProofTemplateDAO;
 
 /**
  * This class has the implementation of "PlantillaTeoremaManager" queries.
@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Manuel Faria and Juan Oropeza
  */
 @Service
-public class PlantillaTeoremaManagerImpl implements PlantillaTeoremaManager {
+public class ProofTemplateManagerImpl implements ProofTemplateManager {
 
     @Autowired
-    private PlantillaTeoremaDAO plantillaTeoremaDAO;
+    private ProofTemplateDAO proofTemplateDAO;
 
     /**
      * Method to get a PlantillaTeorema object by its principal key.
@@ -24,8 +24,8 @@ public class PlantillaTeoremaManagerImpl implements PlantillaTeoremaManager {
      */
     @Override
     @Transactional
-    public PlantillaTeorema getPlantillaTeoremaById(int id) {
-        return plantillaTeoremaDAO.getPlantillaTeoremaById(id);
+    public ProofTemplate getProofTemplateById(int id) {
+        return proofTemplateDAO.getProofTemplateById(id);
     };
     
 

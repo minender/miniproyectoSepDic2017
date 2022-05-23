@@ -1,6 +1,6 @@
 package com.calclogic.service;
 
-import com.calclogic.entity.PlantillaTeorema;
+import com.calclogic.entity.ProofTemplate;
 import java.util.List;
 
 /**
@@ -9,11 +9,11 @@ import java.util.List;
  *
  * @author Manuel Faria and Juan Oropeza
  */
-public interface PlantillaTeoremaManager {
+public interface ProofTemplateManager {
 
     /**
      * Method to get a PlantillaTeorema object by its principal key.
      * @param id Is the principal key of the MostrarCategoria object.
      */    
-    public PlantillaTeorema getPlantillaTeoremaById(int id);
+    public ProofTemplate getProofTemplateById(int id);
 }

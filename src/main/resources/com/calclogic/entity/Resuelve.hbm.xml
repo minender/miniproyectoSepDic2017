@@ -18,6 +18,9 @@
     <property name="nombreteorema" type="string">
       <column name="nombreteorema"/>
     </property>
+    <property name="variables" type="string">
+      <column name="variables"/>
+    </property>
     <property name="numeroteorema" type="string">
       <column name="numeroteorema" not-null="true"/>
     </property>

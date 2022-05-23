@@ -978,7 +978,6 @@ public class App extends Term{
     
     private IntXIntXString privateToStringInfAbr(ToString tStr, SimboloManager s, PredicadoManager pm,
                                                  String numTeo) {
-        
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
         Term aux = p;

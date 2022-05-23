@@ -2,7 +2,7 @@ package com.calclogic.dao;
 
 import com.calclogic.entity.Categoria;
 import com.calclogic.entity.MostrarCategoria;
-import com.calclogic.entity.PlantillaTeorema;
+import com.calclogic.entity.ProofTemplate;
 import com.calclogic.entity.Usuario;
 import java.util.List;
 import org.hibernate.SessionFactory;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Manuel Faria and Juan Oropeza
  */
 @Repository
-public class PlantillaTeoremaDaoImpl implements PlantillaTeoremaDAO {
+public class ProofTemplateDaoImpl implements ProofTemplateDAO {
     
     @Autowired
     private SessionFactory sessionFactory;
@@ -28,9 +28,9 @@ public class PlantillaTeoremaDaoImpl implements PlantillaTeoremaDAO {
      */
     @Override
     @Transactional
-    public PlantillaTeorema getPlantillaTeoremaById(int id) {
-        return (PlantillaTeorema)this.sessionFactory.getCurrentSession()
-                                     .get(PlantillaTeorema.class, id);           
+    public ProofTemplate getProofTemplateById(int id) {
+        return (ProofTemplate)this.sessionFactory.getCurrentSession()
+                                     .get(ProofTemplate.class, id);           
     };
 
 

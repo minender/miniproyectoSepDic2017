@@ -31,6 +31,9 @@ public class Resuelve  implements java.io.Serializable {
      private boolean resuelto;
      private boolean esAxioma;
      private Categoria categoria;
+     private String variables;
+     private int demopendiente;
+     private Set solucions = new HashSet(0);
 
     public Categoria getCategoria() {
         return categoria;
@@ -38,6 +41,14 @@ public class Resuelve  implements java.io.Serializable {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+    
+    public void setVariables(String variables) {
+        this.variables = variables;
+    }
+    
+    public String getVariables() {
+        return this.variables;
     }
 
     public boolean isEsAxioma() {
@@ -47,8 +58,6 @@ public class Resuelve  implements java.io.Serializable {
     public void setEsAxioma(boolean esAxioma) {
         this.esAxioma = esAxioma;
     }
-     private int demopendiente;
-     private Set solucions = new HashSet(0);
 
     public Resuelve() {
     }
@@ -61,7 +70,8 @@ public class Resuelve  implements java.io.Serializable {
         return this.demopendiente;
     }
 
-    public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, Categoria categoria) {
+    public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, 
+                    Categoria categoria, String variables) {
         this.usuario = usuario;
         this.teorema = teorema;
         this.nombreteorema = nombreteorema;
@@ -69,9 +79,11 @@ public class Resuelve  implements java.io.Serializable {
         this.resuelto = false;
         this.demopendiente = -1;
         this.categoria = categoria;
+        this.variables = variables;
     }
     
-    public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, boolean resuelto, Categoria categoria) {
+    public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, 
+                    boolean resuelto, Categoria categoria, String variables) {
         this.usuario = usuario;
         this.teorema = teorema;
         this.nombreteorema = nombreteorema;
@@ -79,6 +91,7 @@ public class Resuelve  implements java.io.Serializable {
         this.resuelto = resuelto;
         this.demopendiente = -1;
         this.categoria = categoria;
+        this.variables = variables;
     }
 
     public int getId() {

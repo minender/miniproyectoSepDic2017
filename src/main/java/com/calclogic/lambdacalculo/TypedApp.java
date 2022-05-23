@@ -14,7 +14,7 @@ public class TypedApp extends App implements TypedTerm{
     /** Determines the kind of inference that is being applied. Can have the following values:
      * "t" -> transitivity.
      * "e" -> equanimity.
-     * "l" -> the left term is a Leinbiz application.
+     * "l" -> the left term is a Leibniz application.
      * "i" -> the left term is an instantiation.
      */
     public char inferType;
