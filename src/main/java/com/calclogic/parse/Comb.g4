@@ -190,7 +190,7 @@ ASSIGN: ':=';
 VARIABLE: X '_{' DIGITS '}';
 
 
-// Neccesary for proves
+// Neccesary for proofs
 A : 'A^{';
 I : 'I^{';
 L : 'L^{';

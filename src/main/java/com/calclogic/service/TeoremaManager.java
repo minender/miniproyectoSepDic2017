@@ -18,6 +18,13 @@ public interface TeoremaManager {
      * @return Nothing.
      */
     public Teorema addTeorema(Teorema teorema);
+
+    /** 
+     * Updates theorem on the table.
+     * @param teorema The new theorem to be added.
+     * @return Nothing.
+     */    
+    public Teorema updateTeorema(int id, String username, String statement);
     
     /**
      * Deletes one of the theorems of the table.

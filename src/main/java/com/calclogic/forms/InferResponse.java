@@ -558,10 +558,8 @@ public class InferResponse {
      */
     private void setCounterRecipProof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
         SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
-        Term antec = ((App)formula).q;
-        Term consec = ((App)((App)formula).p).q;
-        Term newFormula = new App(new App(new Const(2, "c_{2}") , new App(new Const(7 ,"c_{7}"), antec)),
-                                                            new App(new Const(7,"c_{7}"),consec));
+        
+        Term newFormula = proofCrudOperations.noRecursiveInitSt(formula, "CR");
         String statement = "";
         try {
            statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
@@ -603,9 +601,8 @@ public class InferResponse {
      */
     private void setContradictionProof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
         SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
-        // This is saying: ¬formula => false, but the notation must be prefix and the first operand goes to the right.
-        // So, here what is really expressed is: (=> false) (¬formula).
-        Term newFormula = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),formula)); 
+
+        Term newFormula = proofCrudOperations.noRecursiveInitSt(formula, "CO");
         String statement = "";
         try {
            statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
