@@ -882,7 +882,7 @@ public class PerfilController {
                   if (null != test) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                   }
-                  teorema = teoremaManager.updateTeorema(intIdTeo, username, agregarTeorema.getTeorema());
+                  teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toStringFinal());
                   if (teorema == null) {
                       throw new CategoriaException("Couldn't edit theorem");
                   }

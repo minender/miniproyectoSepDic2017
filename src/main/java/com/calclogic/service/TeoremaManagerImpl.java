@@ -110,7 +110,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
     }
     
     public Teorema updateTeorema(int id, String username, String statement) {
-
+        System.out.println(statement);
         // Si solo hay 1 usuario usandolo, entonces aplica teoremaDAO.deleteTeorema(id)
         List <Resuelve> resuelves = resuelveDAO.getResuelveByTeorema(id);
         if (resuelves.size() == 1) {
@@ -129,7 +129,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
                 System.out.println("hola3");
                 //resuelveDAO.deleteResuelve((resuelve.getId()));
                 Teorema teorema = teoremaDAO.getTeorema(id);
-                Teorema teorema2 = this.getTeoremaByEnunciados(statement);
+                Teorema teorema2 = teoremaDAO.getTeoremaByEnunciados(statement);
                 if (teorema2 == null) {
                     System.out.println("hola4");
                     teorema.setEnunciado(statement);
