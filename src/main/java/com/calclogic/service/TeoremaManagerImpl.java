@@ -110,8 +110,15 @@ public class TeoremaManagerImpl implements TeoremaManager {
     }
     
     public Teorema updateTeorema(int id, String username, String statement) {
+        Teorema teorema = teoremaDAO.getTeorema(id);
+        
         System.out.println(statement);
-        // Si solo hay 1 usuario usandolo, entonces aplica teoremaDAO.deleteTeorema(id)
+        System.out.println(teorema.getEnunciado());
+        
+        if (teorema.getEnunciado().equals(statement)) {
+            System.out.println("hola0");
+            return teorema;
+        }
         List <Resuelve> resuelves = resuelveDAO.getResuelveByTeorema(id);
         if (resuelves.size() == 1) {
             Resuelve resuelve = resuelves.get(0);
@@ -128,7 +135,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
             if (resuelve.getUsuario().getLogin().equals(username)) {
                 System.out.println("hola3");
                 //resuelveDAO.deleteResuelve((resuelve.getId()));
-                Teorema teorema = teoremaDAO.getTeorema(id);
+                //Teorema teorema = teoremaDAO.getTeorema(id);
                 Teorema teorema2 = teoremaDAO.getTeoremaByEnunciados(statement);
                 if (teorema2 == null) {
                     System.out.println("hola4");
@@ -137,8 +144,8 @@ public class TeoremaManagerImpl implements TeoremaManager {
                     return teorema;
                 }
                 else {
-                    teoremaDAO.deleteTeorema(id);
                     System.out.println("hola5");
+                    teoremaDAO.deleteTeorema(id);
                     return teorema2;
                 }
             }
@@ -157,7 +164,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
             }
             if (resuelve.getTeorema().getId() == id && resuelve.getUsuario().getLogin().equals(username)) {
                 System.out.println("hola7");
-               Teorema teorema = teoremaDAO.getTeorema(id);
+               //Teorema teorema = teoremaDAO.getTeorema(id);
                Teorema teorema2 = this.getTeoremaByEnunciados(statement);
                if (teorema2 == null) {
                    System.out.println("hola8");

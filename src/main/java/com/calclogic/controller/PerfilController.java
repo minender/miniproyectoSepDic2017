@@ -772,6 +772,7 @@ public class PerfilController {
         String teoInputs = teoTerm.toStringWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId);
         
+        map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
         map.addAttribute("agregarTeorema",new AgregarTeorema());
         map.addAttribute("modificar",new Integer(0));
@@ -825,6 +826,7 @@ public class PerfilController {
             
             if(bindingResult.hasErrors())
             {
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -879,7 +881,7 @@ public class PerfilController {
                 Teorema teorema = teoremaManager.getTeorema(intIdTeo);
                 if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
                   Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());
-                  if (null != test) {
+                  if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                   }
                   teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toStringFinal());
@@ -911,7 +913,8 @@ public class PerfilController {
                 
                 Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
                 Dispone dispone = disponeManager.addDispone(disponeAdd);*/
-                     
+                
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("guardarMenu","");
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
@@ -930,6 +933,7 @@ public class PerfilController {
             catch(NullPointerException e)
             {
                 e.printStackTrace();
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -949,6 +953,7 @@ public class PerfilController {
             }
             catch(CategoriaException e)
             {
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario",usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -969,6 +974,7 @@ public class PerfilController {
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -990,6 +996,7 @@ public class PerfilController {
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("infer",new InfersForm());
                 map.addAttribute("mensaje", hdr+" "+msg);
