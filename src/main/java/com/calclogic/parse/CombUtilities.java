@@ -58,7 +58,7 @@ public class CombUtilities {
                   arg2 = arg2.evaluar();
                 }
                 if (arg1 instanceof Const && ((Const)arg1).getCon().equals("T"))
-                    t = ((App)t).q;
+                    t = arg2;
                 else
                     t = new App(new App(new Const(1,"c_{1}"),arg1),arg2);
 		return t;

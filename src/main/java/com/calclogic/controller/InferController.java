@@ -189,7 +189,7 @@ public class InferController {
             resuel.setResuelto(false);
             resuel = resuelveManager.addResuelve(resuel);
         }
-        Term formula = resuel.getTeorema().getTeoTerm();
+        Term formula = resuel.getTeorema().getTeoTerm().setToPrinting(resuel.getVariables());
         String solId = "new";
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
@@ -762,7 +762,8 @@ public class InferController {
             // If the proof only has one line so far, it may not be a boolean expression yet, because it could only 
             // be arithmetic, like 3 + 4. But since we always need it to be boolean, if the only line was P, we make 
             // the proof to be provisionally: P == P. Soon we will discard again the first P-
-            currentProof = new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),typedTerm),typedTerm));
+            Term noVarsTerm = typedTerm.abstractVars(typedTerm.freeVars());
+            currentProof = new TypedA(new App(new App(new Const(0,"="),noVarsTerm),noVarsTerm));
         }
         else{
             currentProof = typedTerm;
@@ -973,7 +974,7 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         
         Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm();
+        Term term = t.getTeoTerm().setToPrinting(resuelve.getVariables());
         
         Term metodoTerm = null;
         Term typedTerm = null;
@@ -1126,128 +1127,9 @@ public class InferController {
 
         // Jean response.setLado("1");
         Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm();
+        String variables = resuelveAnterior.getVariables();
+        Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().setToPrinting(variables);
         
-        /*
-        if(nuevoMetodo.equals("Natural Deduction,direct")) {
-               
-               // If not of the form H => Q its wrong
-               if( !(formulaAnterior instanceof App && ((App)formulaAnterior).p instanceof App && ((App)((App)formulaAnterior).p).p.toString().equals("c_{2}"))){
-                       response.setErrorParser1(true);
-                return response;
-               }
-               
-               String prefix = teoid.substring(0, 3);
-               teoid = teoid.substring(3,teoid.length());
-               Term theorem = null;
-               
-               if(teoid.equals("Q")) { // if started from consequent
-                       // HINT (H => Q) == (H == H /\ Q) 
-                       
-                       // p,q := H,Q
-                       ArrayList<Var> vars = new ArrayList<Var>();
-                       vars.add(new Var('p')); 
-                       vars.add(new Var('q'));   
-                       ArrayList<Term> terms = new ArrayList<Term>();
-                       terms.add(((App)formulaAnterior).q);
-                       terms.add(((App)((App)formulaAnterior).p).q);
-                       Sust instantiation = new Sust(vars, terms);
-                       TypedI I = new TypedI(instantiation);
-                       
-                       // p => q == (p == p /\ q)
-                       TypedA A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"),new Var('q')),new Var('p'))), new Var('p'))),
-                                       new App(new App(new Const("c_{2}"), new Var('q')), new Var('p'))));
-                       
-                       TypedApp formulaTerm = new TypedApp(I, A);
-        
-                       Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo);
-                solucionManager.addSolucion(solucion);
-                response.setnSol(solucion.getId()+"");
-                       
-                response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
-                        resuelveManager,disponeManager,simboloManager);
-                return response;
-               }else if(teoid.equals("H")) {
-                       theorem = ((App)formulaAnterior).q;
-               }else {
-                       
-                       if(prefix.equals("MT-")) {
-                               Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid);
-                    theorem = dispone.getMetateorema().getTeoTerm();
-                       }else {
-                               Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid);
-                       theorem = resuelve.getTeorema().getTeoTerm();
-                       }
-        
-               }
-               
-               // if here then starting form another theorem or H
-               
-               Term H = ((App)formulaAnterior).q;
-               
-               
-               // HINT 1
-                       
-                       // true == (q == q)
-                       TypedA A = new TypedA(new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"), new Var('q')),new Var('q'))),new Const("c_{8}")));
-                       
-                       // q := H
-                       ArrayList<Var> vars = new ArrayList<Var>();
-                       vars.add(new Var('q')); 
-                       ArrayList<Term> terms = new ArrayList<Term>();
-                       terms.add(H);
-                       Sust instantiation = new Sust(vars, terms);
-                       TypedI I = new TypedI(instantiation);
-                       
-                       TypedApp hint1 = new TypedApp(I,A);
-                       
-                       
-                       // HINT 2
-                       
-                       // H == z
-                       Bracket leib = new Bracket(new Var('z'), new App(new App(new Const("c_{1}"), new Var('z')), H));
-                       TypedL L = new TypedL(leib);
-                       
-                       // p := H
-                       vars = new ArrayList<Var>();
-                       vars.add(new Var('p'));  
-                       instantiation = new Sust(vars, terms);
-                       I = new TypedI(instantiation);
-                       
-                       // p /\ true == p
-                       A = new TypedA(new App( new App( new Const("c_{1}") ,new Var('p')), new App(new App(new Const("c_{5}"), new Const("c_{8}")), new Var('p'))));
-                       
-                       TypedApp hint2 = new TypedApp(I, A);
-                       hint2 = new TypedApp(L, hint2);
-                       hint2 = new TypedApp(new TypedS(hint2.type()), hint2);
-               
-               // HINT 3
-                       
-                       // H = H ^ z
-                       leib = new Bracket(new Var('z'), new App( new App(new Const("c_{1}"), new App(new App(new Const("c_{5}"), new Var('z')), H)), H));
-                       L = new TypedL(leib);
-                       // Create teorema == true
-                       TypedApp metaTheorem= metaTheorem(theorem);
-                       
-                       TypedApp hint3 = new TypedApp(L, metaTheorem);
-                       hint3 = new TypedApp(new TypedS(hint3.type()), hint3);
-               
-                       // BUILD THE NEW PROOF
-                       TypedApp formulaTerm = new TypedApp(hint1, hint2);
-                       formulaTerm = new TypedApp(formulaTerm, hint3);
-                       
-                       Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-               
-            response.generarHistorial(username,formulaAnterior, nTeo,formulaTerm,true,nuevoMetodo,
-                    resuelveManager,disponeManager,simboloManager);
-            return response;
-               
-               
-               
-        }
-        */
         //String formula = "";
         Term formulaTerm = null;
         if (teoid.substring(0, 3).equals("ST-")){
@@ -1256,7 +1138,7 @@ public class InferController {
                 resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()));
             }
             //String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
-            formulaTerm = resuelve.getTeorema().getTeoTerm();
+            formulaTerm = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
             //formula = formulaTerm.toStringInfLabeled();
         }
         else if (teoid.substring(0, 3).equals("MT-")){

@@ -296,7 +296,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
                 }
                 
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado()));
+                teo.setTeoTerm(CombUtilities.getTermForPrinting(teo.getEnunciado(),resuelve.getVariables()));
             }
         } catch (Exception e) {
             e.printStackTrace();

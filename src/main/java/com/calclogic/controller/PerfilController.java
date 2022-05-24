@@ -637,8 +637,8 @@ public class PerfilController {
                     for (int i=vars.length-1; 0<=i; i--) {
                         arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
                         arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
-                        teoTerm = new App(new App(new Const(0,"="),arg1),arg2);
                     }
+                    teoTerm = new App(new App(new Const(0,"="),arg1),arg2);
                 }
                 else {
                     teoTerm = new App(new App(new Const(0,"="), new Const(-1,"T")), teoTerm);

@@ -243,6 +243,36 @@ public abstract class Term implements Cloneable, Serializable{
         return hset.toString().replaceAll("[\\s\\[\\]]", "");
     }
     
+    public Term setToPrinting(String variables) {
+        Term arg1, arg2;
+        arg1 = ((App)((App)this).p).q;
+        arg2 = ((App)this).q;
+        if (!variables.equals("")) {// if no variables you don't need make any reduction
+            String[] vars = variables.split(",");
+            for (int i=0; i<vars.length; i++) {
+                arg1 = new App(arg1,new Var((int)vars[i].trim().charAt(0)));
+                arg2 = new App(arg2,new Var((int)vars[i].trim().charAt(0)));
+            }
+            arg1 = arg1.evaluar();
+            arg2 = arg2.evaluar();
+        }
+        Term t;
+        if (arg1 instanceof Const && ((Const)arg1).getCon().equals("T"))
+            t = arg2;
+        else
+            t = new App(new App(new Const(1,"c_{1}"),arg1),arg2);
+	return t;
+    }
+    
+    public Term abstractVars (String variables) {
+        Term arg1;
+        arg1 = this;
+        String[] vars = variables.split(",");
+        for (int i=vars.length-1; 0<=i; i--) 
+            arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
+        return arg1.traducBD();
+    }
+    
     /**
      * Executes toString method asuming that every node associates to left. 
      * @return String without unnecesary parenthesis 
