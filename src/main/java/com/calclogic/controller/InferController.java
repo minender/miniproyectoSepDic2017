@@ -90,7 +90,7 @@ public class InferController {
     private CrudOperations crudOp;
     
     /**
-     * Controller that respond to HTTP GET request and return the selection statement
+     * Controller that responds to HTTP GET request and returns the selection statement
      * page if there is a user session active. 
      * 
      * @param username: login of the user that make the request. It's is in the URL also
@@ -161,7 +161,7 @@ public class InferController {
     }
 
     /**
-     * Controller that respond to HTTP GET request. Return the proof environment 
+     * Controller that responds to HTTP GET request. Returns the proof environment 
      * page of the statement (if there is a user session active). 
      * 
      * @param username: login of the user that make the request. It is in the URL also

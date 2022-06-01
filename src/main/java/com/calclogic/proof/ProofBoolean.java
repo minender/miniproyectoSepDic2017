@@ -170,25 +170,6 @@ public class ProofBoolean {
     !(((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t.occur(new Var(122)));
     }
 
-    /**
-     * Checks if the two arguments are of the form p op q and q op^{-1} p
-     * 
-     * @param t1: Term that represent a formula
-     * @param t2: Term that represent a formula
-     * @return true if and only if t1 and t2 are of the form p op q and q op^{-1} p respectively
-     */    
-    public static boolean isInverseImpl(Term t1, Term t2) {
-        if ( !(t1 instanceof App) || !(((App)t1).p instanceof App)) {
-            return false;
-        }
-        String op1 = ((App)((App)t1).p).p.toStringFinal();
-        return (op1.equals("c_{2}") || op1.equals("c_{3}")) && 
-                t2 instanceof App && ((App)t2).p instanceof App &&
-                ((App)t1).q.equals(((App)((App)t2).p).q) && 
-               ((App)((App)t1).p).q.equals(((App)t2).q) && 
-               ((App)((App)t2).p).p.toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
-    } 
-
     public static boolean isIAA(Term root, SimboloManager s) {
         
         if(!(root instanceof App)) return false;
