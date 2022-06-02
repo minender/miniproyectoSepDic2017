@@ -4,19 +4,15 @@ import com.calclogic.controller.InferController;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
-import com.calclogic.lambdacalculo.Sust;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
-import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
-import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.service.SimboloManager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +36,40 @@ public class CrudOperationsImpl implements CrudOperations {
     private FinishedProofMethod finiPMeth;
 
     /**
+     * This function gives the corresponding class of the specified
+     * demonstration method
+     *
+     * @param method: Identifier of the method that will be created
+     * @return The object with all variables and functions related to the method
+     */
+    @Override
+    @Transactional
+    public GenericProofMethod createProofMethodObject(String method) {
+        switch (method){
+            case "DM":
+                return new DirectMethod();
+            case "SS":
+                return new StartingOneSideMethod();
+            case "TR":
+                return new TransitivityMethod();
+            case "WE":
+                return new WeakeningMethod();
+            case "ST":
+                return new StrengtheningMethod();
+            case "CR":
+                return new CounterReciprocalMethod();
+            case "CO":
+                return new ContradictionMethod();
+            case "AI":
+                return new AndIntroductionMethod();
+            case "CA":
+                return new CaseAnalysisMethod();
+            default:
+                return null;
+        }
+    }
+
+    /**
      * The statement that is needed to prove changes inside a sub proof. This method 
      * calculates the statement within all the sub proofs and returns the one in the 
      * current sub proof
@@ -54,40 +84,39 @@ public class CrudOperationsImpl implements CrudOperations {
     @Transactional
     public Term initStatement(Term beginFormula, Term method) {
         if (method.toString().equals("AI") || method.toString().equals("CA")){
-            return new AndIntroductionMethod().initFormula(beginFormula);          
+            return ((App)beginFormula).q;         
         }
+        // Base methods
         else if (method instanceof Const){
             return beginFormula;
         }
-        else if ( ((App)method).p.toStringFinal().equals("CR") ) {
-            beginFormula = new CounterReciprocalMethod().initFormula(beginFormula);
+        // The only remaining possibilities are recursive methods with other nested ones
+        else{
+            String strMethod = ((App)method).p.toStringFinal().substring(0, 2);
+            switch (strMethod){
+                case "CR":
+                    beginFormula = new CounterReciprocalMethod().initFormula(beginFormula);
+                    break;
+                case "CO":
+                    beginFormula = new ContradictionMethod().initFormula(beginFormula);
+                    break;
+                case "AI":
+                case "CA":
+                    if (strMethod == "CA"){
+                        beginFormula = new CaseAnalysisMethod().initFormula(beginFormula);
+                    }
+                    if ( ((App)method).p instanceof Const ) {
+                        beginFormula = ((App)beginFormula).q;
+                    } else {
+                        beginFormula = ((App)((App)beginFormula).p).q;
+                    }
+                    break;
+                default:
+                    // Case when no possibility matched
+                    return null;
+            }
             return initStatement(beginFormula, ((App)method).q);
         }
-        else if ( ((App)method).p.toStringFinal().equals("CO") ) {
-            beginFormula = new ContradictionMethod().initFormula(beginFormula);
-            return initStatement(beginFormula, ((App)method).q);
-        }
-        // hay que poner else if para los otros metodos recursivos unarios
-        else if ( ((App)method).p.toStringFinal().substring(0, 2).equals("AI") ) {
-            if ( ((App)method).p instanceof Const ) {
-                beginFormula = new AndIntroductionMethod().initFormula(beginFormula);
-                return initStatement(beginFormula, ((App)method).q);
-            } else {
-                beginFormula = ((App)((App)beginFormula).p).q;
-                return initStatement(beginFormula, ((App)method).q); 
-            }
-        }
-        else if (((App)method).p.toStringFinal().substring(0, 2).equals("CA")) {
-            beginFormula = new App(new App(new Const(5,"c_{5}"),new App(new App(new Const(2,"c_{2}"),beginFormula),new App(new Const(7,"c_{7}"),new Const(8,"c_{8}")))) ,new App(new App(new Const(2,"c_{2}"), beginFormula),new Const(8,"c_{8}")));
-            if ( ((App)method).p instanceof Const ) {
-                beginFormula = new CaseAnalysisMethod().initFormula(beginFormula);
-                return initStatement(beginFormula, ((App)method).q);
-            } else {
-                beginFormula = ((App)((App)beginFormula).p).q;
-                return initStatement(beginFormula, ((App)method).q); 
-            }
-        }
-        return null;
     }
 
     @Override

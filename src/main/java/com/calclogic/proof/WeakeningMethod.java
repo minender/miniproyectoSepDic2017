@@ -1,36 +1,17 @@
 package com.calclogic.proof;
 
-import com.calclogic.entity.Resuelve;
-import com.calclogic.controller.InferController;
 import com.calclogic.lambdacalculo.App;
-import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
-import com.calclogic.lambdacalculo.Equation;
 import com.calclogic.lambdacalculo.Sust;
-import com.calclogic.lambdacalculo.Var;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
-import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.parse.CombUtilities;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang3.text.StrSubstitutor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -44,20 +25,23 @@ public class WeakeningMethod extends TransitivityMethod {
 
     /**
      * Auxiliar method for "finishedBaseMethodProof" that implements the corresponding
-     * logic according to the weakening or strengthening method.
+     * logic according to the weakening or strengthening method.It assumes we have a proof that so far has proved A == ...== F
      * 
-     * It assumes we have a proof that so far has proved A == ... == F
      * 
      * @param theoremBeingProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
+     * @param resuelveManager
+     * @param simboloManager
      * @param expr: The root of the proof tree, which is the last line
      * @param initialExpr: The expression (could be a theorem) from which the user started the demonstration
      * @param finalExpr: The last line in the demonstration that the user has made
      * @return new proof if finished, else returns the same proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username, 
+    @Override
+    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username,
+                ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         String arrow = ((App)((App)theoremBeingProved).p).p.toStringFinal();
@@ -68,7 +52,7 @@ public class WeakeningMethod extends TransitivityMethod {
         if ((("WE".equals(this.methodStr)) && rightArrow) || (("ST".equals(this.methodStr)) && leftArrow)){
             // In this case we use the same finalization as in the transitivity method
             TransitivityMethod tr = new TransitivityMethod();
-            return tr.auxFinBaseMethodProof(theoremBeingProved,proof,username,expr,initialExpr,finalExpr);
+            return tr.auxFinBaseMethodProof(theoremBeingProved,proof,username,resuelveManager,simboloManager,expr,initialExpr,finalExpr);
         }
         /* If we are weakening and the statement is A<=B or we are strengthening and the statement is A=>B, 
            and at least one inference was made.

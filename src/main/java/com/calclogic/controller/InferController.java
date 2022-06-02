@@ -39,6 +39,7 @@ import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.proof.FinishedProofMethod;
 import com.calclogic.proof.CrudOperations;
+import com.calclogic.proof.GenericProofMethod;
 import com.calclogic.proof.ProofBoolean;
 import com.calclogic.proof.InferenceIndex;
 import java.util.ArrayList;
@@ -520,17 +521,19 @@ public class InferController {
             String[] freeVars = freeV.split(",");
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
 
-            String metodo = solucion.getMetodo();
-            Term methodTerm = ProofMethodUtilities.getTerm(metodo);
+            String method = solucion.getMetodo();
+            Term methodTerm = ProofMethodUtilities.getTerm(method);
             Term typedTerm = crudOp.getSubProof(solucion.getTypedTerm(),methodTerm,true);
 
             Term lastLine = typedTerm.type();
             if (lastLine == null)
                 lastLine = typedTerm;
             else {
-                metodo = crudOp.currentMethod(methodTerm).toStringFinal();
-                if (metodo.equals("WE") || metodo.equals("ST") || metodo.equals("TR")) {
-                    int index = InferenceIndex.wsFirstOpInferIndex1(typedTerm);
+                method = crudOp.currentMethod(methodTerm).toStringFinal();
+                GenericProofMethod objectMethod = crudOp.createProofMethodObject(method);
+
+                if (objectMethod.getGroupMethod().equals("T")){
+                    int index = objectMethod.transFirstOpInferIndex(typedTerm,false);
                     if (index == 0 || index == 1)
                         lastLine = ((App)((App)typedTerm.type()).p).q;
                     else

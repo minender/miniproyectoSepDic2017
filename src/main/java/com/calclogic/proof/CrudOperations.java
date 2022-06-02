@@ -1,10 +1,7 @@
 package com.calclogic.proof;
 
-import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +9,15 @@ import java.util.List;
  * @author ronald
  */
 public interface CrudOperations {
+
+    /**
+     * This function gives the corresponding class of the specified
+     * demonstration method
+     *
+     * @param method: Identifier of the method that will be created
+     * @return The object with all variables and functions related to the method
+     */
+    public GenericProofMethod createProofMethodObject(String method);
 
     /**
      * The statement that is needed to prove changes inside a sub proof. This method 

@@ -5,7 +5,6 @@ import com.calclogic.controller.InferController;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
-import com.calclogic.lambdacalculo.Equation;
 import com.calclogic.lambdacalculo.Sust;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.lambdacalculo.Term;
@@ -15,19 +14,13 @@ import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.lambdacalculo.TypedS;
+import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
-import com.calclogic.parse.CombUtilities;
-import com.calclogic.parse.ProofMethodUtilities;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  *
@@ -42,17 +35,8 @@ public class GenericProofMethod {
     // It will be "T" when methodStr is "TR", "WE" or "ST".
     protected String groupMethod = null;
 
-    // This represents the current state of the proof method.
-    // It has the information about what is the current sub proof.
-    protected Term methodTerm = null;
-
     // Determines if the method of the current class is basic or recursive
     protected Boolean recursiveMethod = false;
-
-    // VER LUEGO CÓMO SE IMPLEMENTA
-    //private ResuelveManager resuelveManager;
-    //private SimboloManager simboloManager;
-    //private DisponeManager disponeManager;
 
     /**
      * Establishes the necessary initial class variables according
@@ -63,7 +47,6 @@ public class GenericProofMethod {
     protected void setInitVariables(String method){
         setMethodStr(method);
         setGroupMethod(method);
-        setMethodTerm(method);
         setRecursiveMethod(method);
     }
 
@@ -86,14 +69,6 @@ public class GenericProofMethod {
 
     public String getGroupMethod(){
         return this.groupMethod;
-    }
-
-    private void setMethodTerm(String method){
-        this.methodTerm = ProofMethodUtilities.getTerm(method);
-    }
-
-    public Term getMethodTerm(){
-        return this.methodTerm;
     }
 
     private void setRecursiveMethod(String method){
@@ -138,7 +113,7 @@ public class GenericProofMethod {
             Bracket leibniz, String leibnizString, Term theoremBeingProved) throws TypeVerificationException
     {
         Term infer = null;
-        TypedI I = null;
+        TypedI I;
         TypedA A = new TypedA(theoremHint);
         TypedL L = new TypedL(leibniz);
         Boolean noInstantiation = instantiationString.equals("");
@@ -201,18 +176,6 @@ public class GenericProofMethod {
     }
 
     /**
-     * TO BE OVERWRITTEN
-     *
-     * This function adds a step of a proof into a bigger proof.
-     *
-     */
-    public String setBaseMethodProof(String historial, String user, Term typedTerm, boolean solved, 
-                ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s)
-    {
-        return historial;
-    }
-
-    /**
      * This generates a step in the demonstration of a theorem when the we already have a side 
      * of an equivalence and the next step is the other side. 
      * 
@@ -226,8 +189,9 @@ public class GenericProofMethod {
      * @param s
      * @return The new step of the demonstration as a string
      */
-    private String stepOneSideEq(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
+    protected String stepOneSideEq(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
         String teo, leib, inst, newStep;
+        teo = leib = inst = newStep = "";
 
         // if the inference is a modus pones that simulates natural deduction is true this
         boolean naturalInfer=typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m';
@@ -314,29 +278,35 @@ public class GenericProofMethod {
      * @param username: name of the user doing the proof
      * @return new proof if finished, else return the same proof
      */
-    public Term finishedMethodProof(Term theoremBeingProved, Term proof, String username) {
+    public Term finishedMethodProof(Term theoremBeingProved, Term proof, String username,
+            ResuelveManager resuelveManager, SimboloManager simboloManager) 
+    {
         if (this.recursiveMethod){
-            return finishedRecursiveMethodProof(theoremBeingProved, proof, username);
+            return finishedRecursiveMethodProof(theoremBeingProved, proof);
         }
-        return finishedBaseMethodProof(theoremBeingProved, proof, username);
+        return finishedBaseMethodProof(theoremBeingProved, proof, username, resuelveManager, simboloManager);
     }
 
     /**
-     * This function checks if a base demonstration has finished depending on the method used, if it is basic.
-     * If it determines it has not finished, it returns the same proof tree given as argument.
+     * This function checks if a base demonstration has finished depending on the method used, if it is basic.If it determines it has not finished, it returns the same proof tree given as argument.
      * 
      * @param theoremBeingProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
+     * @param resuelveManager
+     * @param simboloManager
      * @return new proof if finished, else return the same proof
      */
-    protected Term finishedBaseMethodProof(Term theoremBeingProved, Term proof, String username) {
+    protected Term finishedBaseMethodProof(Term theoremBeingProved, Term proof, String username, 
+        ResuelveManager resuelveManager, SimboloManager simboloManager)
+    {
         Term expr = proof.type(); // The root of the proof tree, which is the last line
         Term initialExpr = ((App)expr).q; // The expression (could be a theorem) from which the user started the demonstration
         Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
 
         try{
-            return auxFinBaseMethodProof(theoremBeingProved, proof, username, expr, initialExpr, finalExpr);
+            return auxFinBaseMethodProof(theoremBeingProved, proof, username, resuelveManager, simboloManager, 
+                                        expr, initialExpr, finalExpr);
         }
         catch (TypeVerificationException e)  {
             Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
@@ -353,13 +323,16 @@ public class GenericProofMethod {
      * @param theoremBeingProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
+     * @param resuelveManager
+     * @param simboloManager
      * @param expr: The root of the proof tree, which is the last line
      * @param initialExpr: The expression (could be a theorem) from which the user started the demonstration
      * @param finalExpr: The last line in the demonstration that the user has made
      * @return new proof if finished, else return the same proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username, 
+    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username,
+                ResuelveManager resuelveManager, SimboloManager simboloManager,
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         return proof;
@@ -400,6 +373,7 @@ public class GenericProofMethod {
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
      * @return axiom tree that will later be used to build the complete proof
+     * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException

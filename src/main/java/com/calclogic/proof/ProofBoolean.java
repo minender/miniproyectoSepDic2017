@@ -5,7 +5,11 @@ import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.lambdacalculo.Term;
+import com.calclogic.lambdacalculo.TypedA;
+import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
+import com.calclogic.lambdacalculo.TypedS;
+import com.calclogic.service.SimboloManager;
 
 /**
  *

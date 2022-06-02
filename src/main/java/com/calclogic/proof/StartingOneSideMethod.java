@@ -57,7 +57,8 @@ public class StartingOneSideMethod extends DirectMethod {
      * @return new proof if finished, else returns the same proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username, 
+    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username,
+                ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         // If the theorem the user is trying to prove is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)

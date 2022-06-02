@@ -1,36 +1,16 @@
 package com.calclogic.proof;
 
-import com.calclogic.entity.Resuelve;
 import com.calclogic.controller.InferController;
 import com.calclogic.lambdacalculo.App;
-import com.calclogic.lambdacalculo.Bracket;
-import com.calclogic.lambdacalculo.Const;
-import com.calclogic.lambdacalculo.Equation;
-import com.calclogic.lambdacalculo.Sust;
-import com.calclogic.lambdacalculo.Var;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
-import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
-import com.calclogic.lambdacalculo.TypedI;
-import com.calclogic.lambdacalculo.TypedL;
-import com.calclogic.lambdacalculo.TypedS;
-import com.calclogic.service.ResuelveManager;
-import com.calclogic.service.SimboloManager;
 import com.calclogic.parse.CombUtilities;
-
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.text.StrSubstitutor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -40,18 +20,6 @@ public class AndIntroductionMethod extends GenericProofMethod {
 
     public AndIntroductionMethod(){
         setInitVariables("AI");
-    }
-
-    /**
-     * The statement that is needed to prove may change inside a sub proof,
-     * so this function calculates which that new statement is.
-     *  
-     * @param beginFormula: general statement to be proved, is the base to calculate 
-     *                      al de sub statement in the sub proofs.
-     * @return Term that represents the statement to be proved in the current sub proof.
-     */
-    public Term initFormula(Term beginFormula){
-        return ((App)beginFormula).q;
     }
 
     /**
@@ -66,10 +34,11 @@ public class AndIntroductionMethod extends GenericProofMethod {
      * @param proof: The proof tree so far
      * @return proof of theoremBeingProved if finished, else returns the same proof
      */
+    @Override
     protected Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
         Map<String,String> values = new HashMap<>();
-        values.put("T1",finalProof.toStringFinal());
-        values.put("T1Type", finalProof.type().toStringFinal());
+        values.put("T1",proof.toStringFinal());
+        values.put("T1Type", proof.type().toStringFinal());
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
         String metaTheo = "S (I^{[x_{113} := %(T1Type)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (%(T1))";
         String theo = sub.replace(metaTheo);
