@@ -176,6 +176,24 @@ public class GenericProofMethod {
     }
 
     /**
+     * This function adds a step of a proof into a bigger proof.
+     *
+     * @param historial
+     * @param user
+     * @param typedTerm
+     * @param solved
+     * @param resuelveManager
+     * @param disponeManager
+     * @param s
+     * @return 
+     */
+    public String setBaseMethodProof(String historial, String user, Term typedTerm, boolean solved, 
+                ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s)
+    {
+        return historial;
+    }
+
+    /**
      * This generates a step in the demonstration of a theorem when the we already have a side 
      * of an equivalence and the next step is the other side. 
      * 
@@ -276,6 +294,8 @@ public class GenericProofMethod {
      * @param theoremBeingProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
+     * @param resuelveManager
+     * @param simboloManager
      * @return new proof if finished, else return the same proof
      */
     public Term finishedMethodProof(Term theoremBeingProved, Term proof, String username,
@@ -288,7 +308,8 @@ public class GenericProofMethod {
     }
 
     /**
-     * This function checks if a base demonstration has finished depending on the method used, if it is basic.If it determines it has not finished, it returns the same proof tree given as argument.
+     * This function checks if a base demonstration has finished depending on the method used, if it is basic.
+     * If it determines it has not finished, it returns the same proof tree given as argument.
      * 
      * @param theoremBeingProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
@@ -297,7 +318,7 @@ public class GenericProofMethod {
      * @param simboloManager
      * @return new proof if finished, else return the same proof
      */
-    protected Term finishedBaseMethodProof(Term theoremBeingProved, Term proof, String username, 
+    public Term finishedBaseMethodProof(Term theoremBeingProved, Term proof, String username, 
         ResuelveManager resuelveManager, SimboloManager simboloManager)
     {
         Term expr = proof.type(); // The root of the proof tree, which is the last line
@@ -348,7 +369,7 @@ public class GenericProofMethod {
      * @param proof: The proof tree so far
      * @return proof of theoremBeingProved if finished, else return the same proof
      */
-    protected Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
+    public Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
         try {
             // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
             List<Var> vars = new ArrayList<>();
@@ -380,4 +401,18 @@ public class GenericProofMethod {
     {
         return null;
     }
+
+    /**
+     * TO BE OVERWRITTEN
+     *
+     * Returns the index of the first inference that is not a 
+     * equiv or = in a Transitivity method
+     * 
+     * @param typedTerm Derivation tree that code a Transitivity proof
+     * @param reverse Determines if we want the index but counting in reverse
+     * @return index of the first no =inference
+     */
+    public int transFirstOpInferIndex(Term typedTerm, Boolean reverse) {
+        return -1;
+    } 
 }

@@ -444,6 +444,7 @@ public class TransitivityMethod extends GenericProofMethod {
      * @param reverse Determines if we want the index but counting in reverse
      * @return index of the first no =inference
      */
+    @Override
     public int transFirstOpInferIndex(Term typedTerm, Boolean reverse) {
         Term iter;
         iter = typedTerm;

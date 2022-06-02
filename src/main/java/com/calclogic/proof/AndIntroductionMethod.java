@@ -35,7 +35,7 @@ public class AndIntroductionMethod extends GenericProofMethod {
      * @return proof of theoremBeingProved if finished, else returns the same proof
      */
     @Override
-    protected Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
+    public Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
         Map<String,String> values = new HashMap<>();
         values.put("T1",proof.toStringFinal());
         values.put("T1Type", proof.type().toStringFinal());

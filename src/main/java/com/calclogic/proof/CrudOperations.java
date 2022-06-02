@@ -100,12 +100,12 @@ public interface CrudOperations {
      * 
      * @param proof: Term that represents a proof
      * @param infer: Term that represents one step infer
-     * @param method: method used in the demonstration
+     * @param objectMethod: object with all the functions related to a method
      * @return new TypedTerm that represents a new derivation tree that 
      *         adds in the last line of proof the infer
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    public Term addInferToProof(Term proof, Term infer, String method) throws TypeVerificationException;
+    public Term addInferToProof(Term proof, Term infer, GenericProofMethod objectMethod) throws TypeVerificationException;
 
     /**
      * This method add 'formula' in one line sub proof for the current sub proof in 

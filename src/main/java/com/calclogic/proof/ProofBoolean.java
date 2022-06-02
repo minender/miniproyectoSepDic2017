@@ -145,7 +145,9 @@ public class ProofBoolean {
     /**
      * True if and only if method is an And Introduction proof and in the second sub proof 
      * exists sub proof (can be the same second sub proof) that is already started.
-     * 
+     *
+     * ***************** THIS FUNCTION SHOULDN'T EXIST. EVERY PART THAT USES THIS SHOULD BE CHANGED OR ELIMINATED **************
+     *
      * @param method: Term that represents the current state of the proof method. This
      *                term had the information about what is the current sub proof
      * @return True if and only if method is an And Introduction proof and in the second sub proof 

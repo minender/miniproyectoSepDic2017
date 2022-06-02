@@ -11,7 +11,6 @@ import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
-import com.calclogic.service.SimboloManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,11 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class CrudOperationsImpl implements CrudOperations {
-
-    @Autowired
-    private SimboloManager simboloManager;
-    @Autowired
-    private FinishedProofMethod finiPMeth;
 
     /**
      * This function gives the corresponding class of the specified
@@ -102,9 +96,11 @@ public class CrudOperationsImpl implements CrudOperations {
                     break;
                 case "AI":
                 case "CA":
+                    // *********************** ESTE PRIMER IF ES SÓLO PARA MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA **********
                     if (strMethod == "CA"){
                         beginFormula = new CaseAnalysisMethod().initFormula(beginFormula);
                     }
+
                     if ( ((App)method).p instanceof Const ) {
                         beginFormula = ((App)beginFormula).q;
                     } else {
@@ -290,15 +286,16 @@ public class CrudOperationsImpl implements CrudOperations {
      * 
      * @param proof: Term that represents a proof
      * @param infer: Term that represents one step infer
-     * @param method: method used in the demonstration
+     * @param objectMethod: object with all the functions related to a method
      * @return new TypedTerm that represents a new derivation tree that 
      *         adds in the last line of proof the infer
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
     @Transactional
-    public Term addInferToProof(Term proof, Term infer, String method) throws TypeVerificationException {
-        if (method.equals("WE") || method.equals("ST") || method.equals("TR")) {
+    public Term addInferToProof(Term proof, Term infer, GenericProofMethod objectMethod) throws TypeVerificationException {
+        // In case the method is a transitive one
+        if (objectMethod.getGroupMethod().equals("T")){
             Term type = proof.type();
             Term typeInf = infer.type();
             String op;
@@ -314,7 +311,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 proof = MetaTheorem.metaTheoTrueLeft(proof);
                 type = proof.type();
             }
-            int index = InferenceIndex.wsFirstOpInferIndex(proof);
+            int index = objectMethod.transFirstOpInferIndex(proof,true);
             boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{20}");
             if ( index == 0 && eqInf) {
                 return new TypedApp(proof, infer);
@@ -378,10 +375,13 @@ public class CrudOperationsImpl implements CrudOperations {
     public Term addFirstLineSubProof(Term formula, Term typedTerm, Term method) {
         Term auxMethod = method;
         while (auxMethod instanceof App) {
+            // ************ THIS MUST BE DELETED OR CHANGED *********************
             if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIProof2Started(((App)auxMethod).q)){
                 Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
                                                                                     ((App)auxMethod).q);
-                return finiPMeth.finishedAI2Proof(typedTerm,aux);
+
+                GenericProofMethod objectMethod = createProofMethodObject("AI");
+                return objectMethod.finishedRecursiveMethodProof(typedTerm,aux);
             }
             // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
             else if (ProofBoolean.isAIProof2Started(auxMethod)) {

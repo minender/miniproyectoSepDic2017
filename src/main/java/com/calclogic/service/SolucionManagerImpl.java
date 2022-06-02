@@ -4,18 +4,15 @@ import com.calclogic.dao.SolucionDAO;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Usuario;
-import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.proof.CrudOperations;
-import com.calclogic.proof.FinishedProofMethod;
 
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.SerializationUtils;
 
 /**
  * This class has the implementation of "SolucionManager" queries.
@@ -27,8 +24,6 @@ public class SolucionManagerImpl implements SolucionManager {
        
     @Autowired
     private SolucionDAO solucionDAO;
-    @Autowired
-    private FinishedProofMethod finiPMeth;
     @Autowired
     private CrudOperations crudOp;
     
@@ -121,7 +116,6 @@ public class SolucionManagerImpl implements SolucionManager {
         Solucion solucion = solucionDAO.getSolucion(id);
         if (!solucion.getDemostracion().equals("")) {
             solucion.setTypedTerm(CombUtilities.getTerm(solucion.getDemostracion()));
-            solucion.setFinishedProofMethod(finiPMeth);
             solucion.setProofCrudOperations(crudOp);
         }
         else // case when all the proof was erased by the go back button

@@ -37,11 +37,9 @@ import com.calclogic.service.MetateoremaManager;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.SimboloManager;
-import com.calclogic.proof.FinishedProofMethod;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.GenericProofMethod;
 import com.calclogic.proof.ProofBoolean;
-import com.calclogic.proof.InferenceIndex;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -85,8 +83,6 @@ public class InferController {
     private DisponeManager disponeManager;
     @Autowired
     private MostrarCategoriaManager mostrarCategoriaManager;
-    @Autowired
-    private FinishedProofMethod finiPMeth;
     @Autowired
     private CrudOperations crudOp;
     
@@ -365,7 +361,7 @@ public class InferController {
     }
     
     /**
-     * Controller that respond for HTTP POST request with JSON encoded parameters. The request is
+     * Controller that responds for HTTP POST request with JSON encoded parameters. The request is
      * response by showing a instantiation of a statement of the user in the application. The 
      * response is encode with JSON.
      * 
@@ -381,7 +377,7 @@ public class InferController {
                            @RequestParam(value="instanciacion") String instanciacion, @PathVariable String username) 
     {
         InstResponse response = new InstResponse();
-        PredicadoId predicadoid=new PredicadoId();
+        PredicadoId predicadoid = new PredicadoId();
         predicadoid.setLogin(username);
         
         Term statementTerm = null;
@@ -431,7 +427,7 @@ public class InferController {
     }
 
     /**
-     * Controller that respond for HTTP POST request to set on/off the auto substitution 
+     * Controller that responds for HTTP POST request to set on/off the auto substitution 
      * functionality. The response is encode with JSON.
      * 
      * @param username: login of the user. It is in the URL also
@@ -543,7 +539,7 @@ public class InferController {
                     lastLine = ((App)((App)lastLine).p).q;
             }
 
-            Term leibnizTerm = null;
+            Term leibnizTerm;
             // CREATE THE INSTANTIATION
             Sust sust = null;
             Equation eq;
@@ -595,7 +591,7 @@ public class InferController {
     }
     
     /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
      * Object with the the proof, in latex format, after an one step inference. 
      *
      * @param nStatement: id used by user to identify the statement of the inference. It is an HTTP POST 
@@ -625,7 +621,7 @@ public class InferController {
 +       String tipoTeo = nStatement.substring(0, 2);
 +        String numeroTeo = nStatement.substring(3, nStatement.length());
         */
-        Term statementTerm = null;
+        Term statementTerm;
         if (nStatement.length() >= 4) {
             // FIND THE THEOREM BEING USED IN THE HINT
             String tipoTeo = nStatement.substring(0, 2);
@@ -735,10 +731,11 @@ public class InferController {
                  ((App)((App)methodTermIter).p).p.toStringFinal().equals("AI")
                )
             {
-              if (ProofBoolean.isAIProof2Started(methodTermIter)) {
-                 fatherProofs.push(typedTerm);
-                 typedTerm = crudOp.getSubProof(typedTerm, methodTermIter);
-              }
+                // THIS MUST BE CHANGED OR ELIMINATED. THIS ALSO APPLIES TO CASE ANALYSIS
+                if (ProofBoolean.isAIProof2Started(methodTermIter)) {
+                    fatherProofs.push(typedTerm);
+                    typedTerm = crudOp.getSubProof(typedTerm, methodTermIter);
+                }
             }
             methodTermIter = ((App)methodTermIter).q;
         }
@@ -747,11 +744,12 @@ public class InferController {
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROOF TYPE
         Term infer = null;
         String strMethodTermIter = methodTermIter.toStringFinal();
+        GenericProofMethod objectMethod = crudOp.createProofMethodObject(strMethodTermIter);
         
         try {
-            infer = crudOp.createBaseMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm(), strMethodTermIter);
+            infer = objectMethod.createBaseMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
         } 
-        catch(TypeVerificationException e) { // If something went wrong building the new hint
+        catch(TypeVerificationException e) { // If something went wrong building the new step of the proof
             response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
             return response;
         }
@@ -781,7 +779,7 @@ public class InferController {
                 }
                 // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
-                newProof = crudOp.addInferToProof(currentProof, infer, strMethodTermIter);
+                newProof = crudOp.addInferToProof(currentProof, infer, objectMethod);
                 if (onlyOneLine){
                     // If the proof only has one line with expression P for the user, then at this point it is interally P == P
                     // as explained previously. But since we don't need the first P and the new inference "infer" consists of 
@@ -792,7 +790,7 @@ public class InferController {
             }
             catch (TypeVerificationException e) {
                 if ((i == 1 && !onlyOneLine) || (i == 1 && j == 1)){
-                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
+                    response.generarHistorial(username,formula,nTeo,typedTerm,false,true,methodTerm,resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
                 if (onlyOneLine && j == 0) {
@@ -808,35 +806,34 @@ public class InferController {
             }
             i = (j == 1?i:i+1);
         }       
-        
         response.setResuelto("0");
         
         // CHECK IF THE PROOF FINISHED
-        Term finalProof = finiPMeth.finishedBaseMethodProof(theoremBeingProved, newProof, username, strMethodTermIter);
-        
-        /* Jean
-        newProof = finishedDeductionDirectProve(theoremBeingProved, proof, username);
-        */
+
+        // *************** Note: Try to include both cases (recursive and not recursive) in a single cycle.
+        // For example, like pushing the non-recursive method to the stack **************************
+        Term finalProof = newProof;
+
+        if (!objectMethod.getRecursiveMethod()){
+            finalProof = objectMethod.finishedBaseMethodProof(theoremBeingProved, newProof, username, resuelveManager, simboloManager);
+        }
         
         // Get the complete method in case it was not atomic
         Boolean isFinalSolution = theoremBeingProved.equals(finalProof.type());
-        while (!methodStk.isEmpty())
-        {
+        while (!methodStk.isEmpty()){
             Term methodTermAux = methodStk.pop();
             String strMethodTermAux = methodTermAux.toStringFinal();
+            objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
 
             if (isFinalSolution && methodTermAux instanceof Const) {
                 switch (strMethodTermAux){
-                    case "CR":
-                    case "CO":
-                        finalProof = finiPMeth.finishedWaitingMethodProof(formulasToProof.pop(), finalProof, strMethodTermAux);
-                        break;
                     case "CA":
                     case "AI":
                         isFinalSolution = false;
                         response.setEndCase(true);
                         break;
                     default:
+                        finalProof = objectMethod.finishedRecursiveMethodProof(formulasToProof.pop(), finalProof);
                         break;
                 }
             }
@@ -845,7 +842,8 @@ public class InferController {
             if (methodTermAux instanceof App && 
                     ( (m=((App)methodTermAux).p.toStringFinal()).equals("AI") || m.equals("CA") )
                )
-               finalProof = finiPMeth.finishedAI2Proof(fatherProofs.pop(), finalProof);
+                objectMethod = crudOp.createProofMethodObject("AI");
+                finalProof = objectMethod.finishedRecursiveMethodProof(fatherProofs.pop(), finalProof);
         }
 
         // newProve might or might not be different than pasoPostTerm
@@ -878,7 +876,7 @@ public class InferController {
     }
 
     /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
      * Object with the the proof, in latex format, without the last line. If delete the last 
      * line implies that you must select a new proof method, the InferResponse has the select 
      * method attribute on.
@@ -955,14 +953,14 @@ public class InferController {
     }
         
     /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
      * Object with the proof, in latex format, in witch the statement of the last sub proof is 
      * is clickeable
      *
      * @param username: login of the user that make the request. It is in the url also
      * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also
      * @param nTeo: code of statement that the user is proving. It is in the url also
-     * @return Return an InferResponse Object with the proof, in latex format, in witch the 
+     * @return Returns an InferResponse Object with the proof, in latex format, in witch the 
      *         statement of the last sub proof is clickeable
      */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeableMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
@@ -1017,14 +1015,14 @@ public class InferController {
     }
     
     /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
      * Object with the proof, in latex format, in witch the statement of the last sub proof is 
      * an equality (or equivalence) with both sides (left and right) clickeable 
      *
      * @param username: login of the user that make the request. It is in the url also
      * @param nTeo: code of statement that the user is proving. It is in the url also
      * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also
-     * @return Return an InferResponse Object with the proof, in latex format, in witch the 
+     * @return Returns an InferResponse Object with the proof, in latex format, in witch the 
      *         statement of the last sub proof is an equality (or equivalence) with both 
      *         sides (left and right) clickeable
      */
@@ -1106,7 +1104,7 @@ public class InferController {
     }
     
     /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
      * Object with the proof, in latex format, with only the statement selected for the 
      * user in the first line of the current sub proof.
      *
@@ -1272,8 +1270,7 @@ public class InferController {
         Term typedTerm = null;
         if (nSol.equals("new")){
             typedTerm = formulaTerm;
-            Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo, 
-                                             finiPMeth, crudOp);
+            Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo, crudOp);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
             metodoTerm = new Const(nuevoMetodo);
@@ -1317,7 +1314,7 @@ public class InferController {
     }
 
     /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
      * Object with the proof, in latex format, with only the expression selected (right or left 
      * side of the equation) for the user in the first line of the current sub proof.
      *
@@ -1364,7 +1361,7 @@ public class InferController {
         Term metodoTerm = null;
         Term typedTerm = null;
         if (nSol.equals("new")){
-            solucion = new Solucion(resuelve,false,null, nuevoMetodo,finiPMeth, crudOp);
+            solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
             metodoTerm = new Const(nuevoMetodo);
         }
         else{
@@ -1419,7 +1416,7 @@ public class InferController {
     }
     
     /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
      * Object with the proof, in latex format, with only the antecedent of the current statement 
      * in the first line of the current sub proof.
      *
@@ -1450,7 +1447,7 @@ public class InferController {
         Solucion solucion = null;
         Term typedTerm = null;
         if (nSol.equals("new")){
-            solucion = new Solucion(resuelve,false,null, nuevoMetodo,finiPMeth, crudOp);
+            solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
             metodoTerm = new Const(nuevoMetodo);
         }
         else{
@@ -1509,7 +1506,7 @@ public class InferController {
     }
     
     /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
      * Object with the proof, in latex format, with only the consequent of the current statement 
      * in the first line of the current sub proof when the strenghtening method is used
      *
@@ -1535,7 +1532,7 @@ public class InferController {
         Solucion solucion = null;
         Term typedTerm = null;
         if (nSol.equals("new")){
-            solucion = new Solucion(resuelve,false,null,nuevoMetodo,finiPMeth, crudOp);
+            solucion = new Solucion(resuelve,false,null,nuevoMetodo,crudOp);
             metodoTerm = new Const(nuevoMetodo);
         }
         else{
@@ -1594,7 +1591,7 @@ public class InferController {
     }
 
     /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
      * Object with the proof, in latex format, with only the antecedent of the current statement 
      * in the first line of the current sub proof.
      *
@@ -1620,7 +1617,7 @@ public class InferController {
         Term typedTerm = null;
         if (nSol.equals("new"))
         {
-            solucion = new Solucion(resuelve,false,null,nuevoMetodo,finiPMeth, crudOp);
+            solucion = new Solucion(resuelve,false,null,nuevoMetodo,crudOp);
             metodoTerm = new Const(nuevoMetodo);
         }
         else
@@ -1693,7 +1690,7 @@ public class InferController {
             metodoTerm = new Const(nuevoMetodo);
 
             // The arguments are: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, and 4) demonstration method
-            solucion = new Solucion(resuelve,false,null, nuevoMetodo,finiPMeth, crudOp);
+            solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
 
             // Here is where we add a new row to the "solucion" table
             solucionManager.addSolucion(solucion);
@@ -1737,7 +1734,7 @@ public class InferController {
                     return response;
                 }
                 metodoTerm = new Const(nuevoMetodo);
-                solucion = new Solucion(resuelve,false,null, nuevoMetodo,finiPMeth, crudOp);
+                solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
                 solucionManager.addSolucion(solucion);
                 response.setnSol(solucion.getId()+"");
             }
@@ -1798,7 +1795,7 @@ public class InferController {
         
         if (nSol.equals("new")){
             metodoTerm = new Const(nuevoMetodo);
-            Solucion solucion = new Solucion(resuelve,false,null, nuevoMetodo,finiPMeth, crudOp);
+            Solucion solucion = new Solucion(resuelve,false,null,nuevoMetodo,crudOp);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
@@ -1904,7 +1901,7 @@ public class InferController {
         
         if (nSol.equals("new")){
             metodoTerm = new Const(nuevoMetodo);
-            Solucion solucion = new Solucion(resuelve,false,null, nuevoMetodo,finiPMeth, crudOp);
+            Solucion solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {

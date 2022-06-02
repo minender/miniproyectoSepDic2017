@@ -58,7 +58,7 @@ public class WeakeningMethod extends TransitivityMethod {
            and at least one inference was made.
            >>>> NOTE: if the app forces to start from the left side, this case may be impossible (not sure)
         */
-        if (((("WE".equals(this.methodStr)) && leftArrow) || (("ST".equals(this.methodStr)) && rightArrow)) && (InferenceIndex.wsFirstOpInferIndex(proof)!=0)){
+        if (((("WE".equals(this.methodStr)) && leftArrow) || (("ST".equals(this.methodStr)) && rightArrow)) && (transFirstOpInferIndex(proof,true)!=0)){
             // Axiom: (q => p) == (p <= q)
             TypedA axiom = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
             TypedI instantiation;
