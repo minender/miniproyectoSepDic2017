@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -36,6 +37,18 @@ public class TeoremaDaoImpl implements TeoremaDAO {
         this.sessionFactory.getCurrentSession().save(teorema);
 
     }
+    
+    /**
+     * Updates one of the Teorema objects of the table.
+     * This query is made using standard Hibernate library functions.
+     * @param teorema Is the Teorema object to be updated.
+     * @return Nothing.
+     */   
+    @Override   
+    @Transactional
+    public void updateTeorema(Teorema teorema){
+        this.sessionFactory.getCurrentSession().update(teorema);
+    }
 
     /**
      * Deletes one of the theorems of the table.
@@ -44,6 +57,7 @@ public class TeoremaDaoImpl implements TeoremaDAO {
      * @return Nothing.
      */ 
     @Override
+    @Transactional
     public void deleteTeorema(int id) {
         Teorema teorema = (Teorema) sessionFactory.getCurrentSession().load(
                 Teorema.class, id);
@@ -58,6 +72,7 @@ public class TeoremaDaoImpl implements TeoremaDAO {
      * @param id Is the principal key of the theorem.
      */
     @Override
+    @Transactional
     public Teorema getTeorema(int id) {
         return (Teorema) this.sessionFactory.getCurrentSession().get(Teorema.class, id);
     }
@@ -78,6 +93,7 @@ public class TeoremaDaoImpl implements TeoremaDAO {
      * @param enunciado Is the statement used to filter the search.
      */
     @Override
+    @Transactional
     public Teorema getTeoremaByEnunciados(String enunciado) {
 
         String sql = "FROM Teorema WHERE enunciado = :enunciado";

@@ -1,8 +1,10 @@
 package com.calclogic.service;
 
+import com.calclogic.dao.ResuelveDAO;
 import com.calclogic.dao.SolucionDAO;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Resuelve;
+import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Usuario;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.parse.CombUtilities;
@@ -10,6 +12,7 @@ import com.calclogic.proof.CrudOperations;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,8 @@ public class SolucionManagerImpl implements SolucionManager {
     private SolucionDAO solucionDAO;
     @Autowired
     private CrudOperations crudOp;
+    @Autowired
+    private ResuelveDAO resuelveDAO;
     
     //@Autowired
     //private CombUtilities combUtilities;
@@ -99,10 +104,43 @@ public class SolucionManagerImpl implements SolucionManager {
         }
         Resuelve resuelve = solucion.getResuelve();
         Usuario user = resuelve.getUsuario();
+        Teorema teorema = resuelve.getTeorema();
         if (user.getLogin().equals(username)) {
-            solucionDAO.deleteSolucion(id);
+            Set<Solucion> li = resuelve.getSolucions();
+            int nSol = li.size();
+            if (nSol == 1) {
+                Resuelve resuelveAdmin = resuelveDAO.getResuelveByUserAndTeorema("AdminTeoremas", teorema.getId());
+                if (resuelveAdmin != null) {
+                    solucionDAO.deleteSolucion(id);
+                    resuelveDAO.deleteResuelve(resuelve.getId());
+                }
+                else {
+                    if (!solucionDAO.solutionsWithAxiom(teorema.getId()).isEmpty()){
+                        return false;
+                    }
+                    solucionDAO.deleteSolucion(id);
+                    resuelve.setResuelto(false);
+                    resuelveDAO.updateResuelve(resuelve);
+                }
+            }
+            else {
+                if (nSol == 2) {
+                    for (Solucion sol: li) {
+                        if (sol.getId() != id && !sol.getResuelto()) {
+                            if (!solucionDAO.solutionsWithAxiom(teorema.getId()).isEmpty()){
+                                return false;
+                            }
+                            solucionDAO.deleteSolucion(id);
+                            resuelve.setResuelto(false);
+                            resuelveDAO.updateResuelve(resuelve);
+                            break;
+                        }
+                    }
+                }
+            }
             return true;   
         }
+        
         return false;
     }
     

@@ -169,6 +169,11 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	
 };
 
+function insertAt(input, text,simboloId, isAlias){
+    input.focus();
+    insertAtMathjaxDiv(text,simboloId, isAlias);
+};
+
 
 /**
  * This function sets the mathjax form 

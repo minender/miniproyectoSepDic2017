@@ -108,7 +108,7 @@ public class SolucionDaoImpl implements SolucionDAO{
     @Override
     @Transactional
     public List<Integer> getAllSolucionesIdByResuelve(int resuelveId){
-        return this.sessionFactory.getCurrentSession().createQuery("Select id FROM Solucion WHERE resuelveid = :resuelveId and resuelto = 't' ").setParameter("resuelveId",resuelveId).list();
+        return this.sessionFactory.getCurrentSession().createQuery("Select id FROM Solucion WHERE resuelveid = :resuelveId and resuelto = 't' ORDER BY id").setParameter("resuelveId",resuelveId).list();
     }
     
     /**

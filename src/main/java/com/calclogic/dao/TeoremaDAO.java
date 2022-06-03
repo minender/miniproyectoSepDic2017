@@ -23,6 +23,14 @@ public interface TeoremaDAO {
     public void addTeorema(Teorema teorema);
     
     /**
+     * Updates one of the Teorema objects of the table.
+     * This query is made using standard Hibernate library functions.
+     * @param teorema Is the Teorema object to be updated.
+     * @return Nothing.
+     */   
+    public void updateTeorema(Teorema teorema);
+    
+    /**
      * Deletes one of the theorems of the table.
      * @param id Is the principal key of the theorem to delete.
      * @return Nothing.

@@ -19,6 +19,7 @@
         <tiles:insertDefinition name="style" />
     </head>--%>
     <body>
+        <c:set var="urlPrefix" value="${navUrlPrefix}" scope="request"/>
         <tiles:insertDefinition name="nav" />
         <div class="row justify-content-center">
             <h1>Enter the theorem that you want to save</h1>
@@ -41,6 +42,7 @@
                     <c:set var="rootId" value="teoremaSymbolsId" scope="request"/>  
                     <c:set var="labelName" value="Theorem:" scope="request"/>
                     <c:set var="inputForm" value="teorema" scope="request"/>
+                    <c:set var="initialInput" value="${teorema}" scope="request"/>
                     <tiles:insertDefinition name="jaxDiv" />
                     <div class="form-group row justify-content-center">
                         <button type="button" onclick="cleanJax('teoremaSymbolsId')" class="btn btn-default">Clean</button>
@@ -112,6 +114,21 @@
                 </c:choose>
             </c:otherwise>
         </c:choose>
+                            
+        <c:choose>
+        <c:when test="${teoremaInputs != null && teoremaC != null}">
+            <script>
+                setTimeout(function() {
+                        //insertAt(document.getElementById("teoremaSymbolsId_"), '\\FormInput{2} \\equiv \\FormInput{1}', 1, false);
+                        console.log('${teoremaInputs}');
+                        console.log('${teoremaC}');
+                        inferRecoverC("${teoremaC}", "${teoremaInputs}", "teoremaSymbolsId_");
+                        //alert("perro");
+                }, 1500); 
+            </script>
+        </c:when>
+        </c:choose>
+                            
         <%--<tiles:insertDefinition name="footer" />--%>
     </body>
 </html>
