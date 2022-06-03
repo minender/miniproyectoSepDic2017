@@ -814,7 +814,7 @@ public class InferController {
         // For example, like pushing the non-recursive method to the stack **************************
         Term finalProof = newProof;
 
-        if (!objectMethod.getRecursiveMethod()){
+        if (!objectMethod.getIsRecursiveMethod()){
             finalProof = objectMethod.finishedBaseMethodProof(theoremBeingProved, newProof, username, resuelveManager, simboloManager);
         }
         
@@ -827,13 +827,16 @@ public class InferController {
 
             if (isFinalSolution && methodTermAux instanceof Const) {
                 switch (strMethodTermAux){
+                    case "CR":
+                    case "CO":
+                        finalProof = objectMethod.finishedRecursiveMethodProof(formulasToProof.pop(), finalProof);
+                        break;
                     case "CA":
                     case "AI":
                         isFinalSolution = false;
                         response.setEndCase(true);
                         break;
                     default:
-                        finalProof = objectMethod.finishedRecursiveMethodProof(formulasToProof.pop(), finalProof);
                         break;
                 }
             }
@@ -842,8 +845,10 @@ public class InferController {
             if (methodTermAux instanceof App && 
                     ( (m=((App)methodTermAux).p.toStringFinal()).equals("AI") || m.equals("CA") )
                )
+            {
                 objectMethod = crudOp.createProofMethodObject("AI");
                 finalProof = objectMethod.finishedRecursiveMethodProof(fatherProofs.pop(), finalProof);
+            }
         }
 
         // newProve might or might not be different than pasoPostTerm

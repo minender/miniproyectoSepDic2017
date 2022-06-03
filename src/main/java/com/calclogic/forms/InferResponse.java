@@ -148,7 +148,7 @@ public class InferResponse {
      * @param s
      * @param header
      * @param clickeable
-     * @param metodo
+     * @param methodTerm
      * @param valida
      * @param labeled
      * @param formula
@@ -156,13 +156,13 @@ public class InferResponse {
      * @return Nothing.
      */
     private void setCounterRecipProof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
-        SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo, 
+        SimboloManager s, String header, String clickeable, Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo, 
         GenericProofMethod objectMethod) {
         
         Term newFormula = objectMethod.initFormula(formula);
         String statement;
         try {
-           statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+           statement = "<center>$" + clickeableST(newFormula, clickeable, methodTerm, false, s) 
                               + "$</center>";
         }
         catch (Exception e) {
@@ -170,12 +170,12 @@ public class InferResponse {
             return;
         }
         header+="By counter-reciprocal method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
-        if (metodo instanceof App) {
+        if (methodTerm instanceof App) {
             if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
-                 // InferController.isBaseMethod(((App)metodo).q)
+                 // InferController.isBaseMethod(((App)methodTerm).q)
                )
                 typedTerm = ((App)typedTerm).q;
-            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
                              resuelveManager, disponeManager, s, clickeable, false);
         }
         else
@@ -192,7 +192,7 @@ public class InferResponse {
      * @param s
      * @param header
      * @param clickeable
-     * @param metodo
+     * @param methodTerm
      * @param valida
      * @param labeled
      * @param formula
@@ -200,16 +200,13 @@ public class InferResponse {
      * @return Nothing.
      */
     private void setContradictionProof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
-        SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo,
+        SimboloManager s, String header, String clickeable, Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo,
         GenericProofMethod objectMethod) {
 
-        System.out.println("\n\nobjectMethod.getMethodStr() = "+objectMethod.getMethodStr());
-        System.out.println("objectMethod.initFormula(formula) = "+objectMethod.initFormula(formula));
         Term newFormula = objectMethod.initFormula(formula);
         String statement;
         try {
-            System.out.println("Voy a entrar en clickeableST");
-            statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+            statement = "<center>$" + clickeableST(newFormula, clickeable, methodTerm, false, s) 
                               + "$</center>";
         }
         catch (Exception e) {
@@ -219,25 +216,23 @@ public class InferResponse {
         }
         
         header+="By contradiction method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
-        if (metodo instanceof App) {
+        if (methodTerm instanceof App) {
             if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula) //&& 
-                 // InferController.isBaseMethod(((App)metodo).q)
+                 // InferController.isBaseMethod(((App)methodTerm).q)
                ){
                 typedTerm = ((App)typedTerm).q;
             }
-            System.out.println("Voy a entrar en privateGenerarHistorial");
-            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
                              resuelveManager, disponeManager, s, clickeable, false);
         }
         else{
-            System.out.println("Voy a la parte de this.setHistorial(header);");
             this.setHistorial(header);
         }
     }
 
     /**
      * This function adds a proof of just one step into a bigger proof, 
-     * when the demonstration method is "And Introduction" (Conjunction by parts)
+     * when the demonstration method is "And Introduction" (Conjunction by parts) or "Case Analysis"
      * @param user 
      * @param typedTerm
      * @param resuelveManager
@@ -245,23 +240,23 @@ public class InferResponse {
      * @param s
      * @param header
      * @param clickeable
-     * @param metodo
+     * @param methodTerm
      * @param valida
      * @param labeled
      * @param formula
      * @param nTeo
      * @return Nothing.
      */
-    private void setAIProof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
-        SimboloManager s, String header, String clickeable, Term metodo, Boolean valida, Boolean labeled, Term formula, String nTeo) {
+    private void set_AIorCA_Proof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
+        SimboloManager s, String header, String clickeable, Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo) {
 
         String statement;
-        boolean isAI = metodo.toStringFinal().substring(0, 2).equals("AI");
+        boolean isAI = methodTerm.toStringFinal().substring(0, 2).equals("AI");
         String stOrCase = (isAI?"Statement":"Case");
         String methodName = (isAI?"Conjunction by parts":"Case Analysis");
         Term newFormula = ((App)formula).q;
         try {
-           statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+           statement = "<center>$" + clickeableST(newFormula, clickeable, methodTerm, false, s) 
                                    + "$</center>";
         }
         catch (Exception e) {
@@ -269,11 +264,11 @@ public class InferResponse {
             return;
         }
         header+="By "+methodName+" method:<br>"+stOrCase+" 1:<br>"+statement+"Sub Proof:<br>";
-        if (metodo instanceof Const){
+        if (methodTerm instanceof Const){
            historial = header;
         }
-        else if ( ((App)metodo).p instanceof Const  ) {
-            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
+        else if ( ((App)methodTerm).p instanceof Const  ) {
+            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
                                     resuelveManager, disponeManager, s, clickeable, false);
             if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
                 cambiarMetodo = "0";
@@ -294,12 +289,12 @@ public class InferResponse {
         }
         else{
             privateGenerarHistorial(user, newFormula, header, nTeo,
-                            (ProofBoolean.isAIProof2Started(metodo)?((App)typedTerm).q:typedTerm), 
-                             valida, labeled, ((App)((App)metodo).p).q, resuelveManager, disponeManager, 
+                            (ProofBoolean.isAIProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
+                             valida, labeled, ((App)((App)methodTerm).p).q, resuelveManager, disponeManager, 
                              s, clickeable, false);
             newFormula = ((App)((App)formula).p).q;
             try {
-                statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                statement = "<center>$" + clickeableST(newFormula, clickeable, methodTerm, false, s) 
                                    + "$</center>";
             }catch (Exception e) {
                 this.setErrorParser1(true);
@@ -308,8 +303,8 @@ public class InferResponse {
             header = historial + stOrCase+" 2:<br>"+statement+"Sub Proof:<br>";
             historial = "";
             Term newTypedTerm;
-            newTypedTerm = proofCrudOperations.getSubProof(typedTerm, metodo);
-            privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)metodo).q, 
+            newTypedTerm = proofCrudOperations.getSubProof(typedTerm, methodTerm);
+            privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)methodTerm).q, 
                              resuelveManager, disponeManager, s, clickeable, false);
         }
     }
@@ -354,7 +349,7 @@ public class InferResponse {
      * @param typedTerm
      * @param valida
      * @param labeled
-     * @param metodo
+     * @param methodTerm
      * @param resuelveManager
      * @param disponeManager
      * @param s
@@ -366,7 +361,7 @@ public class InferResponse {
         Term typedTerm,  
         Boolean valida, 
         Boolean labeled, 
-        Term metodo, 
+        Term methodTerm, 
         ResuelveManager resuelveManager, 
         DisponeManager disponeManager, 
         SimboloManager s
@@ -379,7 +374,7 @@ public class InferResponse {
             typedTerm, 
             valida, 
             labeled, 
-            metodo, 
+            methodTerm, 
             resuelveManager, 
             disponeManager, 
             s, 
@@ -399,7 +394,7 @@ public class InferResponse {
      * @param typedTerm
      * @param valida
      * @param labeled
-     * @param metodo
+     * @param methodTerm
      * @param resuelveManager
      * @param disponeManager
      * @param s
@@ -414,7 +409,7 @@ public class InferResponse {
         Term typedTerm,  
         Boolean valida, 
         Boolean labeled, 
-        Term metodo, 
+        Term methodTerm, 
         ResuelveManager resuelveManager, 
         DisponeManager disponeManager, 
         SimboloManager s,
@@ -429,7 +424,7 @@ public class InferResponse {
             typedTerm, 
             valida, 
             labeled, 
-            metodo, 
+            methodTerm, 
             resuelveManager, 
             disponeManager, 
             s, 
@@ -449,7 +444,7 @@ public class InferResponse {
      * @param typedTerm
      * @param valida
      * @param labeled
-     * @param metodo
+     * @param methodTerm
      * @param resuelveManager
      * @param disponeManager
      * @param s
@@ -464,7 +459,7 @@ public class InferResponse {
         Term typedTerm,  
         Boolean valida, 
         Boolean labeled, 
-        Term metodo, 
+        Term methodTerm, 
         ResuelveManager resuelveManager, 
         DisponeManager disponeManager, 
         SimboloManager s,
@@ -474,9 +469,9 @@ public class InferResponse {
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
-        if (isRootTeorem && metodo == null)
+        if (isRootTeorem && methodTerm == null)
             cambiarMetodo = "1";
-        else if (isRootTeorem && ProofBoolean.isWaitingMethod(metodo)) 
+        else if (isRootTeorem && ProofBoolean.isWaitingMethod(methodTerm)) 
             cambiarMetodo = "2";
         else if(isRootTeorem)
             cambiarMetodo ="0";
@@ -486,7 +481,7 @@ public class InferResponse {
             this.setHistorial("");
             try {
                 header = "Theorem " + nTeo + ":<br> <center>$" + 
-                         clickeableST(formula, clickeable, metodo, isRootTeorem, s) + "$</center>" +
+                         clickeableST(formula, clickeable, methodTerm, isRootTeorem, s) + "$</center>" +
                          "Proof:<br>";
             }
             catch (Exception e) {
@@ -496,47 +491,47 @@ public class InferResponse {
         }
 
         String strMethod = "   "; // We need substring(0,2) can always be applied
-        if(metodo != null) {
+        if(methodTerm != null) {
             valid = valida;
-            strMethod = metodo.toStringFinal();
+            strMethod = methodTerm.toStringFinal();
         }
-        boolean naturalDirect   = strMethod.equals("ND DM");
-        boolean naturalSide     = strMethod.equals("ND SS");
-        boolean counterRecip    = strMethod.substring(0, 2).equals("CR");
-        boolean contradiction   = strMethod.substring(0, 2).equals("CO");
-        boolean oneSide         = strMethod.equals("SS");
-        boolean direct          = strMethod.equals("DM");
-        boolean weakening       = strMethod.equals("WE");
-        boolean strengthening   = strMethod.equals("ST");
-        boolean transitivity    = strMethod.equals("TR");
-        boolean andIntroduction = strMethod.substring(0, 2).equals("AI");
-        boolean caseAnalysis = strMethod.substring(0, 2).equals("CA");
 
+        strMethod = strMethod.substring(0, 2);
         GenericProofMethod objectMethod = proofCrudOperations.createProofMethodObject(strMethod);
+        boolean recursive = (null != objectMethod) ? objectMethod.getIsRecursiveMethod() : false;
 
-        boolean recursive = false;
-        if (counterRecip || contradiction || andIntroduction || caseAnalysis)
-            recursive = true;
-        else if (direct) 
-            header += "By direct method<br>";
-        else if (oneSide) 
-            header += "Starting from one side";
-        else if (weakening) 
-            header += "By weakening method<br>";
-        else if (strengthening) 
-            header += "By strengthening method<br>";
-        else if (transitivity) 
-            header += "By transitivity method<br>";
-        else if (andIntroduction) // este caso es imposible
-            header += "Proof of " + nTeo + ":<br><br>";
-        else
-            ;
-        // header += "Proof:<br>";
+        // PROVISIONAL <--- ESTO DEBE SER BORRADO
+        Boolean naturalSide, naturalDirect;
+        naturalSide = naturalDirect = false;
+        // ---- FIN DE LO QUE DEBE SER BORRADO
+
+        switch (strMethod){
+            case "DM":
+                header += "By direct method<br>";
+                break;
+            case "SS":
+                header += "Starting from one side";
+                break;
+            case "WE":
+                header += "By weakening method<br>";
+                break;
+            case "ST":
+                header += "By strengthening method<br>";
+                break;
+            case "TR":
+                header += "By transitivity method<br>";
+                break;
+            case "AI":
+            case "CA":
+                header += "Proof of " + nTeo + ":<br><br>";
+            default:
+                break;
+        }
         
         Term type = typedTerm==null?null:typedTerm.type();
 
         boolean solved;
-        if (typedTerm==null && metodo == null && !recursive){
+        if (typedTerm==null && methodTerm == null && !recursive){
             this.setHistorial(this.getHistorial()+header);
             return;
         }
@@ -560,48 +555,62 @@ public class InferResponse {
             solved = type.equals(formula);
         else
             solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a
-                           // si se pide labeled o no la ultima linea, aqui se cablea con solved = true
+                           // si se pide labeled o no la ultima linea- Aqui se cablea con solved = true
+                           // OJO: Recordar que ahora esos métodos se llaman "setProofMethod" y están
+                           // en la respectiva clase del método 
 
-        // Here is where we really generate the proof record accoding to the demonstration method
+        // -- Here is where we really generate the proof record accoding to the demonstration method ---
+
+        // Case when we are using a base method from the start
         if ((!recursive) && (null != objectMethod)){
             this.setHistorial(objectMethod.setBaseMethodProof(
                 this.getHistorial(), user, typedTerm, solved, resuelveManager, disponeManager, s
             ));
         }
-        else if (counterRecip) {
-            setCounterRecipProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
-                clickeable, metodo, valida, labeled, formula, nTeo, objectMethod);
-        }
-        else if (contradiction) {
-            setContradictionProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
-                clickeable, metodo, valida, labeled, formula, nTeo, objectMethod);
-        }
-        else if (andIntroduction) {
-            setAIProof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
-        }
-        else if (caseAnalysis){
-            // ESTE newFormula ES SÓLO PARA MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA
-            Term newFormula = objectMethod.initFormula(formula);
-            setAIProof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, newFormula, nTeo);
-        }
-        else if (naturalDirect)
-            ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
-        else if (naturalSide)
-            ; //setDirectProof(user, translateToOneSide(typedTerm), resuelveManager, disponeManager, s, true);
-        
-        // Add the hypothesis if we are doing natural deduction
-        if(naturalDirect || naturalSide) { 
-            header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
+
+        // Case when we are using a recursive method
+        else{
+            switch (strMethod){
+                case "CR":
+                    setCounterRecipProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
+                        clickeable, methodTerm, valida, labeled, formula, nTeo, objectMethod);
+                    break;
+                case "CO":
+                    setContradictionProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
+                        clickeable, methodTerm, valida, labeled, formula, nTeo, objectMethod);
+                    break;
+                case "AI":
+                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, methodTerm, 
+                        valida, labeled, formula, nTeo);
+                case "CA":
+                    // ESTE newFormula ES SÓLO PARA MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA
+                    Term newFormula = objectMethod.initFormula(formula);
+                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, methodTerm, 
+                        valida, labeled, newFormula, nTeo);
+                    break;
+                default:
+                    break;                                                                    
+            }
         }
 
-        if (/*!andIntroduction &&*/ !recursive) {
+        //else if (naturalDirect)
+        //    ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
+        //else if (naturalSide)
+        //    ; //setDirectProof(user, translateToOneSide(typedTerm), resuelveManager, disponeManager, s, true);
+        
+        // Add the hypothesis if we are doing natural deduction
+        // if(naturalDirect || naturalSide) { 
+        //     header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
+        // }
+
+        if (!recursive) { // <--- It had commented (!andIntroduction) as a condition
             historial = header+"<center>$" +historial+"</center>";
             if (!valida){
                 historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
             }
         }
-        else if (/*!andIntroduction &&*/ recursive)
-            ;
+        //else if (/*!andIntroduction &&*/ recursive)
+        //    ;
         //else 
         //    this.setHistorial(header +this.getHistorial());
         

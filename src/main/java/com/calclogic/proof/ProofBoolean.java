@@ -155,7 +155,11 @@ public class ProofBoolean {
      */
     public static boolean isAIProof2Started(Term method) {
         return method instanceof App && ((App)method).p instanceof App && 
-               ((App)((App)method).p).p.toStringFinal().equals("AI") && 
+               (
+                    ((App)((App)method).p).p.toStringFinal().equals("AI") || 
+                    ((App)((App)method).p).p.toStringFinal().equals("CA")
+                )
+                && 
                isProofStarted(((App)method).q);
     }
     

@@ -36,7 +36,7 @@ public class GenericProofMethod {
     protected String groupMethod = null;
 
     // Determines if the method of the current class is basic or recursive
-    protected Boolean recursiveMethod = false;
+    protected Boolean isRecursiveMethod = false;
 
     /**
      * Establishes the necessary initial class variables according
@@ -47,7 +47,7 @@ public class GenericProofMethod {
     protected void setInitVariables(String method){
         setMethodStr(method);
         setGroupMethod(method);
-        setRecursiveMethod(method);
+        setIsRecursiveMethod(method);
     }
 
     private void setMethodStr(String method){
@@ -71,14 +71,14 @@ public class GenericProofMethod {
         return this.groupMethod;
     }
 
-    private void setRecursiveMethod(String method){
+    private void setIsRecursiveMethod(String method){
         if (method.equals("CR") || method.equals("CO") || method.equals("AI") || method.equals("CA")){
-            this.recursiveMethod = true;
+            this.isRecursiveMethod = true;
         }
     }
 
-    public Boolean getRecursiveMethod(){
-        return this.recursiveMethod;
+    public Boolean getIsRecursiveMethod(){
+        return this.isRecursiveMethod;
     }
 
     /**
@@ -301,7 +301,7 @@ public class GenericProofMethod {
     public Term finishedMethodProof(Term theoremBeingProved, Term proof, String username,
             ResuelveManager resuelveManager, SimboloManager simboloManager) 
     {
-        if (this.recursiveMethod){
+        if (this.isRecursiveMethod){
             return finishedRecursiveMethodProof(theoremBeingProved, proof);
         }
         return finishedBaseMethodProof(theoremBeingProved, proof, username, resuelveManager, simboloManager);
