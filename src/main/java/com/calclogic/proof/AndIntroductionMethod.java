@@ -23,6 +23,18 @@ public class AndIntroductionMethod extends GenericProofMethod {
     }
 
     /**
+     * Indicates the header that a proof that starts with and introduction
+     * method must have.
+     *  
+     * @param nTeo: Number of the theorem to be proved, expressed in a string
+     * @return The header message to be added to the proof
+     */
+    @Override
+    public String header(String nTeo){
+        return "Proof of " + nTeo + ":<br><br>";
+    }
+
+    /**
      * This function will return a new proof tree in case it finds out that the last inference
      * caused the whole proof to be correct under the sub-proof method. In other case it will return 
      * the proof given as argument.

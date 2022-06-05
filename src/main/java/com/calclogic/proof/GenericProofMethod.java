@@ -97,6 +97,19 @@ public class GenericProofMethod {
     }
 
     /**
+     * TO BE OVERWRITTEN
+     * 
+     * Indicates the header that a proof that starts with the current demonstration
+     * method must have.
+     *  
+     * @param nTeo: Number of the theorem to be proved, expressed in a string
+     * @return The header message to be added to the proof
+     */
+    public String header(String nTeo){
+        return "";
+    }
+
+    /**
      * This function will create a hint for the current method if it is basic, given the hint's elements.
      * In case the elements don't make sense it will return null.
      * 
@@ -191,100 +204,6 @@ public class GenericProofMethod {
                 ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s)
     {
         return historial;
-    }
-
-    /**
-     * This generates a step in the demonstration of a theorem when the we already have a side 
-     * of an equivalence and the next step is the other side. 
-     * 
-     * At first this might seem exclusive to the starting from one side method, but it is also
-     * needed for transitive ones.
-     *
-     * @param user 
-     * @param typedTerm
-     * @param resuelveManager
-     * @param disponeManager
-     * @param s
-     * @return The new step of the demonstration as a string
-     */
-    protected String stepOneSideEq(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
-        String teo, leib, inst, newStep;
-        teo = leib = inst = newStep = "";
-
-        // if the inference is a modus pones that simulates natural deduction is true this
-        boolean naturalInfer=typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m';
-        Term ultInf = (naturalInfer?((TypedApp)typedTerm).p:typedTerm);
-
-        if (ultInf instanceof App){
-            if (((App)ultInf).q instanceof App){
-                if (((App)((App)ultInf).q).q instanceof App){
-                    //  Term aux = ((App)ultInf.type()).q;
-                    // primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                    teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
-                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s,"");
-                    inst = "~\\text{with}~" + inst;
-                    leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                    leib = "~\\text{and}~" + leib;
-                }
-                else {
-                    //Term aux = ((App)ultInf.type()).q;
-                    //primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                    teo = ((App)((App)ultInf).q).q.type().toStringFinal();
-                    if (((App)ultInf).p instanceof TypedS){
-                        if (((App)((App)ultInf).q).p instanceof TypedI){
-                            inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                            inst = "~\\text{with}~" + inst;
-                        }
-                        else {
-                            leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                            leib = "~\\text{and}~" + leib;
-                        }
-                    } else {
-                        inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
-                        inst = "~\\text{with}~" + inst;
-                        leib = ((App)ultInf).p.type().toStringInf(s,"");
-                        leib = "~\\text{and}~" + leib;
-                    }
-                }
-            } else {
-                Term pType = ((App)ultInf).p.type();
-                if (((App)ultInf).p instanceof TypedI){
-                    inst = pType.toStringInf(s,"");
-                    inst = "~\\text{with}~" + inst;
-                }
-                else if (((App)ultInf).p instanceof TypedL){
-                    leib = "~\\text{and}~" + pType.toStringInf(s,"");
-                }
-                // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
-                teo = ((App)ultInf).q.type().toStringFinal();
-            }
-        } else {
-            Term aux = ultInf.type();
-            teo = aux.toStringFinal();
-            //  primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-        } 
-
-        int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 
-                                :((Const)((App)((App)ultInf.type()).p).p).getId());
-        String op = s.getSimbolo(conId).getNotacion_latex();
-
-        Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
-        Boolean entry = true;
-        if (theo == null){
-            theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo);
-
-            if (theo == null){
-                teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
-                newStep = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
-                entry = false;
-            }
-        }
-
-        if (entry){
-            teo = theo.getNumeroteorema();
-            newStep = op+"~~~~~~\\langle \\text{st}~("+teo+")"+inst+leib+"\\rangle";         
-        }
-        return newStep;
     }
 
     /**

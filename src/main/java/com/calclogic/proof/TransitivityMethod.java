@@ -21,10 +21,21 @@ import java.util.logging.Logger;
  *
  * @author ronald
  */
-public class TransitivityMethod extends GenericProofMethod {
+public class TransitivityMethod extends StartingOneSideMethod {
 
     public TransitivityMethod(){
         setInitVariables("TR");
+    }
+
+    /**
+     * Indicates the header that a proof that starts with transitivity method must have.
+     *  
+     * @param nTeo: Number of the theorem to be proved, expressed in a string
+     * @return The header message to be added to the proof
+     */
+    @Override
+    public String header(String nTeo){
+        return "By transitivity method<br>";
     }
 
     /**
@@ -59,6 +70,7 @@ public class TransitivityMethod extends GenericProofMethod {
      * @param s
      * @return 
      */
+    @Override
     public String setBaseMethodProof(String historial, String user, Term typedTerm, boolean solved, 
                 ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s)
     {
@@ -411,13 +423,14 @@ public class TransitivityMethod extends GenericProofMethod {
 
     /**
      * Auxiliar method for "finishedBaseMethodProof" that implements the corresponding
-     * logic according to the transitivity method.
+     * logic according to the transitivity method.It assumes we have a proof that so far has proved A == ...== F
      * 
-     * It assumes we have a proof that so far has proved A == ... == F
      * 
      * @param theoremBeingProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
+     * @param resuelveManager
+     * @param simboloManager
      * @param expr: The root of the proof tree, which is the last line
      * @param initialExpr: The expression (could be a theorem) from which the user started the demonstration
      * @param finalExpr: The last line in the demonstration that the user has made

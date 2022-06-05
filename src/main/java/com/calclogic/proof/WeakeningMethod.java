@@ -24,6 +24,17 @@ public class WeakeningMethod extends TransitivityMethod {
     }
 
     /**
+     * Indicates the header that a proof that starts with weakening method must have.
+     *  
+     * @param nTeo: Number of the theorem to be proved, expressed in a string
+     * @return The header message to be added to the proof
+     */
+    @Override
+    public String header(String nTeo){
+        return "By weakening method<br>";
+    }
+
+    /**
      * Auxiliar method for "finishedBaseMethodProof" that implements the corresponding
      * logic according to the weakening or strengthening method.It assumes we have a proof that so far has proved A == ...== F
      * 

@@ -13,128 +13,39 @@ import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
-import com.calclogic.service.DisponeManager;
-
-
 import java.util.List;
 
 /**
  *
  * @author ronald
  */
-public class DirectMethod extends GenericProofMethod {
+public class DirectMethod extends StartingOneSideMethod {
 
     public DirectMethod(){
         setInitVariables("DM");
     }
 
     /**
-     * This function adds a step of a proof into a bigger proof, when the
-     * current method is the direct one or starting from one side.
-     *
-     * @param historial
-     * @param user
-     * @param typedTerm
-     * @param solved
-     * @param resuelveManager
-     * @param disponeManager
-     * @param s
-     * @return 
+     * Indicates the header that a proof that starts with direct method must have.
+     *  
+     * @param nTeo: Number of the theorem to be proved, expressed in a string
+     * @return The header message to be added to the proof
      */
-    public String setBaseMethodProof(String historial, String user, Term typedTerm, boolean solved, 
-                ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s)
-    {
-        String primExp;
-        String newStep; // New part of the proof that will be added
-        String lastline; // Plain string of the last line of the demonstration
-        Term iter; // Iterator over the lines of a demonstration
-
-        boolean equanimity = false; // Indicates ifequanimity was used
-        String equanimityHint = ""; // Text that indicates in which already proven theorem the current demonstration finalized (if any)
-        
-        /* If the demonstrarion method is starting from one side, or the typedTerm is not an inference
-           but just a functional application (an App) or is an equanimity inference */
-        if (this.methodStr.equals("SS") || !(typedTerm instanceof TypedApp) || ((TypedApp)typedTerm).inferType!='e') {
-            if (solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='s') 
-                iter = ((TypedApp)typedTerm).q;
-            else
-                iter = typedTerm;
-            Term aux = ((App)((App)iter.type()).p).q;
-            lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));
-        }
-        // Case when direct method is applied and we start from the expression to be proved
-        else { 
-            String eqSust = ""; // Indicates the instantiation (if any) that was necessary to apply to the already proven theorem
-
-            // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
-            if (((TypedApp)typedTerm).q instanceof TypedApp){
-                lastline = ((TypedApp)((TypedApp)typedTerm).q).q.type().toStringFinal();
-                eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringInf(s,"");
-            }
-            else {
-                // Note that here we have a less "q" respect of the previous case because in there 
-                // there was an additional tree representing the instantiation
-                lastline = ((TypedApp)typedTerm).q.type().toStringFinal();
-            }
-
-            // We get the Resuelve row associated to the demonstrated theorem in order that we can 
-            // later get its current number (established by the user) to indicate that it is what
-            // was used to end the demonstration
-            Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, lastline);
-
-            // Case when the user could only see the theorem but had not a Resuelve object associated to it
-            if (eqHintResuel == null){
-                eqHintResuel = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", lastline);
-            }
-
-            equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")"+eqSust;
-
-            if( ((TypedApp)typedTerm).p instanceof TypedApp && 
-                ((TypedApp)((TypedApp)typedTerm).p).inferType=='s' 
-               ) 
-            {
-                iter = ((TypedApp)((TypedApp)typedTerm).p).q;       
-                lastline = ((App)((App)iter.type()).p).q.toStringInf(s,"")+equanimityHint+"$";
-            }
-            else  {
-                iter = ((TypedApp)typedTerm).p;
-                equanimity = true;
-                lastline = ((App)((App)iter.type()).p).q.toStringInf(s,"")+"$";
-            }
-        }
-
-        Term ultInf = null;
-        while (iter!=ultInf){
-            if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t') {
-                ultInf = ((TypedApp)iter).q;
-                iter = ((TypedApp)iter).p;
-                Term ultInfType = ultInf.type();
-                primExp = ((App)ultInfType).q.toStringInf(s,""); 
-            }
-            else {
-                ultInf = iter;
-                Term ultInfType = ultInf.type();
-                primExp = ((App)ultInfType).q.toStringInf(s,"");
-                if (equanimity){
-                    primExp += equanimityHint;
-                }
-            } 
-            newStep = stepOneSideEq(user, ultInf, resuelveManager, disponeManager, s);
-            historial = "~~~~~~" + primExp + " \\\\" + newStep + "\\\\" + historial;
-            primExp = newStep = "";
-        }
-        return historial + "~~~~~~" + lastline;
+    @Override
+    public String header(String nTeo){
+        return "By direct method<br>";
     }
 
     /**
      * Auxiliar method for "finishedBaseMethodProof" that implements the corresponding
-     * logic according to the direct method.
+     * logic according to the direct method.It assumes we have a proof that so far has proved A == ...== F
      * 
-     * It assumes we have a proof that so far has proved A == ... == F
      * 
      * @param theoremBeingProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
+     * @param resuelveManager
+     * @param simboloManager
      * @param expr: The root of the proof tree, which is the last line
      * @param initialExpr: The expression (could be a theorem) from which the user started the demonstration
      * @param finalExpr: The last line in the demonstration that the user has made

@@ -244,7 +244,7 @@ public class Solucion implements java.io.Serializable {
 
     }*/
 
-    public int retrocederPaso(Term methodTerm, String currentMethod){
+    public int retrocederPaso(Term methodTerm, String currentGroupMethod){
         /*int tam = this.arregloInferencias.size();
         this.deserialize();
         if(tam>0){
@@ -263,17 +263,13 @@ public class Solucion implements java.io.Serializable {
             return 0;
         }
         if ( (
-              !currentMethod.equals("WE") && !currentMethod.equals("ST") &&
-              !currentMethod.equals("TR") &&
+              !currentGroupMethod.equals("T") &&
               auxTypedTerm instanceof App && ((App)auxTypedTerm).p.containTypedA()
              ) 
              ||
               // next line check if is a no one step proof 
              (
-               (currentMethod.equals("WE") || 
-                currentMethod.equals("ST") || 
-                currentMethod.equals("TR")
-               ) 
+                currentGroupMethod.equals("T")
                 &&
                (
                 (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t') ||
@@ -287,10 +283,7 @@ public class Solucion implements java.io.Serializable {
              )
            )
         {
-            if ((currentMethod.equals("WE") || 
-                 currentMethod.equals("ST") ||
-                 currentMethod.equals("TR")
-                ) 
+            if (currentGroupMethod.equals("T")
                 && 
                 !(auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t')    
                ) 
@@ -312,15 +305,11 @@ public class Solucion implements java.io.Serializable {
                 
             }
             demostracion = typedTerm.toStringFinal();
-        //           System.out.println(typedTerm.toStringInfFinal());
-        //           System.out.println("2");
             return 2;
         }
         else {
             typedTerm = mergeSubProofs(((App)auxTypedTerm.type()).q,li);
             demostracion = typedTerm.toStringFinal();
-        //           System.out.println(typedTerm.toStringInfFinal());
-        //           System.out.println("1");
             return 1;
         }
     }

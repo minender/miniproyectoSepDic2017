@@ -498,35 +498,14 @@ public class InferResponse {
 
         strMethod = strMethod.substring(0, 2);
         GenericProofMethod objectMethod = proofCrudOperations.createProofMethodObject(strMethod);
-        boolean recursive = (null != objectMethod) ? objectMethod.getIsRecursiveMethod() : false;
+
+        boolean recursive = objectMethod.getIsRecursiveMethod();
+        header += objectMethod.header(nTeo);
 
         // PROVISIONAL <--- ESTO DEBE SER BORRADO
         Boolean naturalSide, naturalDirect;
         naturalSide = naturalDirect = false;
         // ---- FIN DE LO QUE DEBE SER BORRADO
-
-        switch (strMethod){
-            case "DM":
-                header += "By direct method<br>";
-                break;
-            case "SS":
-                header += "Starting from one side";
-                break;
-            case "WE":
-                header += "By weakening method<br>";
-                break;
-            case "ST":
-                header += "By strengthening method<br>";
-                break;
-            case "TR":
-                header += "By transitivity method<br>";
-                break;
-            case "AI":
-            case "CA":
-                header += "Proof of " + nTeo + ":<br><br>";
-            default:
-                break;
-        }
         
         Term type = typedTerm==null?null:typedTerm.type();
 
@@ -562,7 +541,7 @@ public class InferResponse {
         // -- Here is where we really generate the proof record accoding to the demonstration method ---
 
         // Case when we are using a base method from the start
-        if ((!recursive) && (null != objectMethod)){
+        if (!recursive){
             this.setHistorial(objectMethod.setBaseMethodProof(
                 this.getHistorial(), user, typedTerm, solved, resuelveManager, disponeManager, s
             ));
@@ -580,13 +559,13 @@ public class InferResponse {
                         clickeable, methodTerm, valida, labeled, formula, nTeo, objectMethod);
                     break;
                 case "AI":
-                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, methodTerm, 
-                        valida, labeled, formula, nTeo);
+                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, 
+                        clickeable, methodTerm, valida, labeled, formula, nTeo);
                 case "CA":
                     // ESTE newFormula ES SÓLO PARA MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA
                     Term newFormula = objectMethod.initFormula(formula);
-                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, methodTerm, 
-                        valida, labeled, newFormula, nTeo);
+                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, 
+                        clickeable, methodTerm, valida, labeled, newFormula, nTeo);
                     break;
                 default:
                     break;                                                                    

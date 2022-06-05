@@ -59,7 +59,7 @@ public class CrudOperationsImpl implements CrudOperations {
             case "CA":
                 return new CaseAnalysisMethod();
             default:
-                return null;
+                return new GenericProofMethod();
         }
     }
 

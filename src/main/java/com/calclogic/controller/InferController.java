@@ -912,11 +912,13 @@ public class InferController {
             method = (solucion.getMetodo().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMetodo()));
             Term currentMethod = crudOp.currentMethod(method);
             boolean isWaitingMethod = !ProofBoolean.isBaseMethod(currentMethod);
-            if (!solucion.getMetodo().equals("") && isWaitingMethod)
-            /*if (solucion.getDemostracion().equals("") && !solucion.getMetodo().equals("")) */
+            if (!solucion.getMetodo().equals("") && isWaitingMethod){
+                /*if (solucion.getDemostracion().equals("") && !solucion.getMetodo().equals("")) */
                 respRetroceder = 0;
+            }
             else {
-                respRetroceder = solucion.retrocederPaso(method,currentMethod.toStringFinal());
+                String groupMethod = crudOp.createProofMethodObject(currentMethod.toStringFinal()).getGroupMethod();
+                respRetroceder = solucion.retrocederPaso(method,groupMethod);
             }
             if (respRetroceder == 0) {
                method = crudOp.eraseMethod(solucion.getMetodo());
