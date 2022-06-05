@@ -38,6 +38,18 @@ public class ContradictionMethod extends GenericProofMethod {
     }
 
     /**
+     * Indicates the header that a proof that starts with contradiction
+     * method must have.
+     *  
+     * @param statement: New statement that needs to be proved according to this method
+     * @return The header message to be added to the proof
+     */
+    @Override
+    public String header(String statement){
+        return "By contradiction method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
+    }
+
+    /**
      * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
      * logic according to the contradiction method.
      * 

@@ -102,10 +102,10 @@ public class GenericProofMethod {
      * Indicates the header that a proof that starts with the current demonstration
      * method must have.
      *  
-     * @param nTeo: Number of the theorem to be proved, expressed in a string
+     * @param phrase: Argument to complete the header, that will vary according to the method
      * @return The header message to be added to the proof
      */
-    public String header(String nTeo){
+    public String header(String phrase){
         return "";
     }
 

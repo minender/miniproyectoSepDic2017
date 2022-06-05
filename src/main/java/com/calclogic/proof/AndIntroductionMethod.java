@@ -31,6 +31,7 @@ public class AndIntroductionMethod extends GenericProofMethod {
      */
     @Override
     public String header(String nTeo){
+        // ************* THIS CASE WAS ORIGINALLY MARKED AS IMPOSSIBLE. CHECK IT
         return "Proof of " + nTeo + ":<br><br>";
     }
 

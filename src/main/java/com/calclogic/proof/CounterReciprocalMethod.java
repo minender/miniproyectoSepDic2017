@@ -41,6 +41,19 @@ public class CounterReciprocalMethod extends GenericProofMethod {
     }
 
     /**
+     * Indicates the header that a proof that starts with counter-reciprocal
+     * method must have.
+     *  
+     * @param statement: New statement that needs to be proved according to this method
+     * @return The header message to be added to the proof
+     */
+    @Override
+    public String header(String statement){
+        return "By counter-reciprocal method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
+    }
+
+
+    /**
      * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
      * logic according to the counter reciprocal method.
      * 
