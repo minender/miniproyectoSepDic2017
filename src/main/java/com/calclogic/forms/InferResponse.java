@@ -156,7 +156,7 @@ public class InferResponse {
      * @param objectMethod
      * @return Nothing.
      */
-    private void setRecursiveProof(String user, Term typedTerm, ResuelveManager resuelveManager, 
+    private void setRecursiveMethodProof(String user, Term typedTerm, ResuelveManager resuelveManager, 
             DisponeManager disponeManager, SimboloManager s, String header, String clickable, 
             Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo, GenericProofMethod objectMethod) 
     {
@@ -464,7 +464,7 @@ public class InferResponse {
                         clickable, methodTerm, valida, labeled, newFormula, nTeo);
                     break;
                 default:
-                    setRecursiveProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
+                    setRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
                         clickable, methodTerm, valida, labeled, formula, nTeo, objectMethod);
                     break;                                                                    
             }

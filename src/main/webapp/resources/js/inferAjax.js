@@ -87,7 +87,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
         dataType: 'json',
         data,
         success: function(newData) {
-            if(newData.errorParser1){ // Remember that "lado" is also used to indicate errors
+            if(newData.errorParser1){
                 alert("The selected method does not apply to the current theorem");
                 $("#metodosDiv").show();
                 completeSuccess = false;

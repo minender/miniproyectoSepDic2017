@@ -53,9 +53,9 @@
         switchToOkButtons();
         $('#confirmationModal').modal('show');
     }
-
-    // currently selected proof method.
-    let selectedMethod = null;
+    
+    var selectedMethod = null; // Currently selected proof method.
+    var acceptAvailable = true; // Determines if the Accept button can be activated or not
 
     // Lets the current method be shown as a whole phrase to the user
     var methodPhrase = {
@@ -120,68 +120,73 @@
         on the proog method previously selected.
     */
     async function accept() {
-        $("#selectTeoInicial").val("0");
-        let message = null;
-        let method = this.selectedMethod;
+        if (acceptAvailable){
+            acceptAvailable = false;
 
-        switch (method){
-            case "DM": // Direct method
-                $("#selectTeoInicial").val("1");
+            $("#selectTeoInicial").val("0");
+            let message = null;
+            let method = this.selectedMethod;
 
-                // This is what makes the theorem be clickable
-                $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
-                $(".operator").css({"cursor":"","color":""});
+            switch (method){
+                case "DM": // Direct method
+                    $("#selectTeoInicial").val("1");
 
-                message = 'Please, select the theorem with which the proof will begin.';
+                    // This is what makes the theorem be clickable
+                    $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
+                    $(".operator").css({"cursor":"","color":""});
 
-                // If the AJAX is called from here, we must put the current expression as clickable.
-                // The other case will be called from the view "infer.jsp"
-                method = "DM Clickable"; 
-                break;
+                    message = 'Please, select the theorem with which the proof will begin.';
 
-            case "SS": // One-sided method
-                message = 'Please, select the side from which the proof will begin.';
+                    // If the AJAX is called from here, we must put the current expression as clickable.
+                    // The other case will be called from the view "infer.jsp"
+                    method = "DM Clickable"; 
+                    break;
 
-                // If the AJAX is called from here, we must put the current expression as clickable.
-                // The other case will be called from the view "infer.jsp"
-                method = "SS Clickable"; 
-                break;
+                case "SS": // One-sided method
+                    message = 'Please, select the side from which the proof will begin.';
 
-            case "CA": // Proof by cases method
-                message = 'Please, enter the number of cases that will be proved.';
-                $('#input_cases').removeClass('d-none');
-                break;
+                    // If the AJAX is called from here, we must put the current expression as clickable.
+                    // The other case will be called from the view "infer.jsp"
+                    method = "SS Clickable"; 
+                    break;
 
-            case "AI": // And introduction method
-                message = "Please, select a proof method for the case.";
-                break;
+                case "CA": // Proof by cases method
+                    message = 'Please, enter the number of cases that will be proved.';
+                    $('#input_cases').removeClass('d-none');
+                    break;
 
-            case "CO": // Contradiction method
-            case "CR": // Counter-reciprocal method
-                message = "Please, select another method to do the sub-proof.";
-                break;
+                case "AI": // And introduction method
+                    message = "Please, select a proof method for the case.";
+                    break;
 
-            case "WE": // Weakening method
-            case "ST": // Strengthening method
-            case "TR": // Transitivity method
-            default:
-                break;
-        }
+                case "CO": // Contradiction method
+                case "CR": // Counter-reciprocal method
+                    message = "Please, select another method to do the sub-proof.";
+                    break;
 
-        let success = await proofMethodAjax(method);
+                case "WE": // Weakening method
+                case "ST": // Strengthening method
+                case "TR": // Transitivity method
+                default:
+                    break;
+            }
 
-        if (success && (message!=null)){ // Case in which we must put a message
-            await setModalBody(message);
-            switchToOkButtons();
-        }
-        else {
-            closeModal();
+            let success = await proofMethodAjax(method);
+
+            if (success && (message!=null)){ // Case in which we must put a message
+                await setModalBody(message);
+                switchToOkButtons();
+            }
+            else {
+                closeModal();
+            }
         }
     }
 
     // Hides the modal 
     function closeModal() {
         $('#confirmationModal').modal('hide');
+        acceptAvailable = true;
     }
 
     // Closes modal and adds formula inputs for proof by cases
