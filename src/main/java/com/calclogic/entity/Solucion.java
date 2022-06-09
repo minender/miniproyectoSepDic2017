@@ -196,8 +196,8 @@ public class Solucion implements java.io.Serializable {
         else {
             int i;
             if (subProof==null || subProof.type()==null) {
-             i=2;
-             auxProof =(subProof==null?((TypedApp)fathers.get(1)).q:AIoneLineSubProof(subProof,fathers.get(1)));
+                i=2;
+                auxProof =(subProof==null?((TypedApp)fathers.get(1)).q:AIoneLineSubProof(subProof,fathers.get(1)));
             }
             else {
                 i=1;

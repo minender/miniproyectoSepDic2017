@@ -1128,10 +1128,8 @@ public class InferController {
                     if ("DM".equals(newMethod)){
                         if (teoid.substring(3,teoid.length()).equals(nTeo)) {
                            formulaTerm = crudOp.initStatement(formulaTerm, methodTerm);
-                           typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), methodTerm);
-                        } else {
-                           typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), methodTerm);
                         }
+                        typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), methodTerm);
                         solucion.setTypedTerm(typedTerm);
                     }
                     solucionManager.updateSolucion(solucion);       
@@ -1166,7 +1164,7 @@ public class InferController {
                             break;
                         default:
                             // **** For the "TR" method we should check first if the operator is transitive
-                            // **** Also, ¿why we must always start from the left side ?
+                            // **** Also, why must we always start from the left side ?
                             side = "TR".equals(newMethod) ? "i" : null;
                             break;
                     }
