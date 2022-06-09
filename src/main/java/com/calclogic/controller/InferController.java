@@ -230,13 +230,13 @@ public class InferController {
         map.addAttribute("nStatement","");
         map.addAttribute("instanciacion","");
         map.addAttribute("leibniz","");
+        
         if (solId.equals("new")){
             map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");
             map.addAttribute("elegirMetodo","1");
             map.addAttribute("teoInicial", "");
         }
-        else
-        {
+        else{
             Solucion solucion = solucionManager.getSolucion(resuel.getDemopendiente());
             infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");  
             InferResponse response = new InferResponse(crudOp);
@@ -380,7 +380,7 @@ public class InferController {
         PredicadoId predicadoid = new PredicadoId();
         predicadoid.setLogin(username);
         
-        Term statementTerm = null;
+        Term statementTerm;
         if (nStatement.length() >= 4) {
             // FIND THE THEOREM BEING USED IN THE HINT
             String tipoTeo = nStatement.substring(0, 2);
@@ -479,7 +479,7 @@ public class InferController {
         PredicadoId predicadoid=new PredicadoId();
         predicadoid.setLogin(username);
         
-        Term statementTerm = null;
+        Term statementTerm;
         if (nStatement.length() >= 4) {
             // FIND THE THEOREM BEING USED IN THE HINT
             String tipoTeo = nStatement.substring(0, 2);
@@ -566,7 +566,7 @@ public class InferController {
             }
              
             if (sust != null) {
-                String[] sustVars = sust.getVars().toString().replaceAll("[\\s\\[\\]]", "").split(",");
+                //String[] sustVars = sust.getVars().toString().replaceAll("[\\s\\[\\]]", "").split(",");
                 String[] sustFormatC = new String[freeVars.length];
                 String[] sustLatex = new String[freeVars.length];
                 for (int i=0; i<freeVars.length; i++) {
@@ -709,16 +709,16 @@ public class InferController {
             }*/
         }   
 
-        Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-        Term typedTerm = solucion.getTypedTerm();
-        Term formula = resuel.getTeorema().getTeoTerm();
-        String metodo = solucion.getMetodo();
-        Term methodTerm = ProofMethodUtilities.getTerm(metodo);
+        Resuelve resuel     = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Solucion solucion   = solucionManager.getSolucion(Integer.parseInt(nSol));
+        Term typedTerm      = solucion.getTypedTerm();
+        Term formula        = resuel.getTeorema().getTeoTerm();
+        String metodo       = solucion.getMetodo();
+        Term methodTerm     = ProofMethodUtilities.getTerm(metodo);
         Term methodTermIter = methodTerm;
         
-        Stack<Term> methodStk = new Stack<>();
-        Stack<Term> fatherProofs = new Stack<>();
+        Stack<Term> methodStk       = new Stack<>();
+        Stack<Term> fatherProofs    = new Stack<>();
         Stack<Term> formulasToProof = new Stack<>();
         formulasToProof.push(formula);
         Term initSt = formula;
@@ -840,7 +840,7 @@ public class InferController {
                         break;
                 }
             }
-            String m=null;
+            String m;
             // This ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App && 
                     ( (m=((App)methodTermAux).p.toStringFinal()).equals("AI") || m.equals("CA") )
@@ -961,38 +961,47 @@ public class InferController {
         
     /**
      * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
-     * Object with the proof, in latex format, in witch the statement of the last sub proof is 
-     * is clickeable
+     * Object with the proof, in latex format, in which the statement of the last sub proof is 
+     * clickable
      *
-     * @param username: login of the user that make the request. It is in the url also
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also
-     * @param nTeo: code of statement that the user is proving. It is in the url also
-     * @return Returns an InferResponse Object with the proof, in latex format, in witch the 
-     *         statement of the last sub proof is clickeable
+     * @param newMethod: Proof method that will be introduced in the proof.
+     * @param username: Login of the user that make the request. It is in the url also.
+     * @param nSol: Identifier of the solution of nTeo that the user is editing. It is in the url also.
+     * @param nTeo: Code of statement that the user is proving. It is in the url also.
+     * @return Returns an InferResponse object with the proof, in latex format, in which the 
+     *         statement of the last sub proof is clickable.
      */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeableMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaClickeableMD( /*@RequestParam(value="teoid") String teoid,*/ 
-                                                           @PathVariable String username, 
-                                                           @PathVariable String nSol, 
-                                                           @PathVariable String nTeo)
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/clickableST", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse clickableSTController(
+                                            @RequestParam(value="method") String newMethod,
+                                            @PathVariable String username, 
+                                            @PathVariable String nSol, 
+                                            @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse(crudOp);
-      
+    
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();
         
-        Term metodoTerm = null;
-        Term typedTerm = null;
-        if (!nSol.equals("new"))
-        {
-            // Obtains the solution from DB.
+        Term methodTerm, typedTerm;
+        methodTerm = typedTerm = null;
+
+        if ("SS".equals(newMethod)){
+            response.setLado("1");
+        }
+
+        // When the proof already exists in the DB, we obtain the solution from it.
+        if (!nSol.equals("new")){       
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            typedTerm = solucion.getTypedTerm();
-            String method = solucion.getMetodo();
-            if (!method.equals(""))
-               metodoTerm = ProofMethodUtilities.getTerm(method);
+            
+            String previousMethod = solucion.getMetodo();
+            if (!previousMethod.equals(""))
+                methodTerm = ProofMethodUtilities.getTerm(previousMethod);
+
+            if ("DM".equals(newMethod)){
+                typedTerm = solucion.getTypedTerm();
+            }
         }
 
         response.generarHistorial(
@@ -1003,853 +1012,213 @@ public class InferController {
             typedTerm, 
             true, 
             false, 
-            metodoTerm, 
+            methodTerm, 
             resuelveManager, 
             disponeManager, 
             simboloManager, 
-            "DM",
+            newMethod,
             true
         );
-
-        /*String formula = resuelve.getTeorema().getTeoTerm().toStringInf(simboloManager,"");
-        
-        formula = "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ formula + "}}";
-        
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formula+ "$</center> Proof: ";
-        response.setHistorial(historial);  */
-
         return response;
     }
-    
+
     /**
      * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
-     * Object with the proof, in latex format, in witch the statement of the last sub proof is 
-     * an equality (or equivalence) with both sides (left and right) clickeable 
+     * Object with the proof, in latex format, with only the expression selected for the 
+     * user (a complete statement or a side of the equation) in the first line of the current sub proof.
      *
-     * @param username: login of the user that make the request. It is in the url also
-     * @param nTeo: code of statement that the user is proving. It is in the url also
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also
-     * @return Returns an InferResponse Object with the proof, in latex format, in witch the 
-     *         statement of the last sub proof is an equality (or equivalence) with both 
-     *         sides (left and right) clickeable
-     */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaClickeablePL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaClickeablePL( /*@RequestParam(value="teoid") String teoid,*/ 
-            @PathVariable String username, 
-            @PathVariable String nTeo,
-            @PathVariable String nSol)
-    {   
-        InferResponse response = new InferResponse(crudOp);
-      
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        
-        Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm();
-       // String equiv = ((Const)((App)((App)term).p).p).getCon();
-
-        /*if(!equiv.startsWith("c_{1}") && !equiv.startsWith("c_{20}")){ 
-            response.setErrorParser1(true);                                    
-            return response;
-        }
-        else*/
-            response.setLado("1");
-
-        Term metodoTerm = null;
-        if (!nSol.equals("new"))
-        {
-            // Obtains the solution from DB.
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
-            String method = solucion.getMetodo();
-            if (!method.equals(""))
-               metodoTerm = ProofMethodUtilities.getTerm(method);
-        }
-
-        response.generarHistorial(
-            username, 
-            term,
-            "",
-            nTeo, 
-            null, 
-            true, 
-            false, 
-            metodoTerm, 
-            resuelveManager, 
-            disponeManager, 
-            simboloManager, 
-            "SS",
-            true
-        );
-        /*String formulaDer = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInf(simboloManager,"");
-        String formulaIzq = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInf(simboloManager,"");
-        String operador = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).p.toStringInf(simboloManager,"");//resuelve.getTeorema().getOperador();
-        
-        formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
-        formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
-        
-        String historial = "Theorem "+nTeo+":<br> <center>$"+formulaIzq+"$ $"+ operador +"$ $" + formulaDer + "$</center> Proof: ";
-        response.setHistorial(historial);  
-        */
-        return response;
-    }
-    
-    /**
-     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
-     * Object with the proof, in latex format, with only the statement selected for the 
-     * user in the first line of the current sub proof.
-     *
-     * @param teoid: ID of theorem that user select to start the Direct Method proof. It is a 
-     *               HTTP POST parameter encode with JSON
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also
-     * @param username: login of the user that make the request. It is in the URL also
-     * @param nTeo: code of statement that the user is proving. It is in the URL also 
+     * @param teoid: Identifier of the theorem that the user selects to start the proof. It is a 
+     *               HTTP POST parameter encode with JSON.
+     * @param lado: String that encodes the side of the equation selected for the user. It is a 
+     *              HTTP POST parameter encoded with JSON.
+     * @param newMethod: Proof method that will be introduced in the proof.
+     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also.
+     * @param username: login of the user that make the request. It is in the URL also.
+     * @param nTeo: code of statement that the user is proving. It is in the URL also .
      * @return InferResponse Object with the the proof, in latex format, with only the statement 
      *         selected for the user in the first line of the current sub proof.
      */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialMD(@RequestParam(value="teoid") String teoid, 
-                                                        @PathVariable String nSol, 
-                                                        @PathVariable String username, 
-                                                        @PathVariable String nTeo) //Jean throws TypeVerificationException
+    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatement", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody InferResponse iniStatementController(
+                                            @RequestParam(value="teoid") String teoid,
+                                            @RequestParam(value="lado") String lado, 
+                                            @RequestParam(value="method") String newMethod,
+                                            @PathVariable String nSol, 
+                                            @PathVariable String username, 
+                                            @PathVariable String nTeo)
     {   
-        String nuevoMetodo = "DM";
-        InferResponse response = new InferResponse(crudOp);
+        GenericProofMethod objectMethod = crudOp.createProofMethodObject(newMethod);
+        String groupMethod = objectMethod.getGroupMethod();
+        boolean sideOrTransitive = ("SS".equals(newMethod) || "T".equals(groupMethod));
 
-        // Jean response.setLado("1");
+        InferResponse response = new InferResponse(crudOp);
         Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+
+        // This is the theorem statement but parsed as a binary tree. 
+        // We call it as "previous" because it may change when the proof starts
         Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm();
- 
-        Term formulaTerm = null;
-        if (teoid.substring(0, 3).equals("ST-")){
-            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
-            if (resuelve == null){
-                resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()));
+
+        Solucion solucion = null;
+        Term methodTerm, typedTerm;
+        methodTerm = typedTerm = null;
+
+        try{
+            if ("AI".equals(newMethod) && (((Const)((App)((App)formulaAnterior).p).p).getId() != 5) ) {
+                throw new ClassCastException("Error");
             }
-            //String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
-            formulaTerm = resuelve.getTeorema().getTeoTerm();
-            //formula = formulaTerm.toStringInfLabeled();
-        }
-        else if (teoid.substring(0, 3).equals("MT-")){
-            Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
-            formulaTerm = dispone.getMetateorema().getTeoTerm();
-            //formula = formulaTerm.toStringInfLabeled();
-        }
-        
-        Term metodoTerm = null;
-        Term typedTerm = null;
-        if (nSol.equals("new")){
-            typedTerm = formulaTerm;
-            Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo, crudOp);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-            metodoTerm = new Const(nuevoMetodo);
-        }
-        else{
-            // Obtains the solution from DB.
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
-            String method = solucion.getMetodo();
-            
-            metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
-            if (teoid.substring(3,teoid.length()).equals(nTeo)) {
-               formulaTerm = crudOp.initStatement(formulaTerm, metodoTerm);
-               typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
-               solucion.setTypedTerm(typedTerm);
-            } else {
-               typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
-               solucion.setTypedTerm(typedTerm);
+
+            // ---- In this section we determine the value of "formulaTerm" -----
+            Term formulaTerm = "T".equals(groupMethod) ? formulaAnterior : null;
+
+            if ("DM".equals(newMethod)){
+                if (teoid.substring(0, 3).equals("ST-")){
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
+                    if (resuelve == null){
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()));
+                    }
+                    formulaTerm = resuelve.getTeorema().getTeoTerm();
+                }
+                else if (teoid.substring(0, 3).equals("MT-")){
+                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
+                    formulaTerm = dispone.getMetateorema().getTeoTerm();
+                }
             }
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        response.generarHistorial(
-            username,
-            formulaAnterior, 
-            nTeo,
-            typedTerm,
-            true,
-            true,
-            metodoTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager 
-        );
-        //String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        //response.setHistorial(historial);
-        response.setCambiarMetodo("0");
+            else if ("SS".equals(newMethod)){
+                formulaTerm = resuelveAnterior.getTeorema().getTeoTerm();
+            }
+            // ---- End of assigning "formulaTerm" 
 
-        return response;
-    }
-
-    /**
-     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
-     * Object with the proof, in latex format, with only the expression selected (right or left 
-     * side of the equation) for the user in the first line of the current sub proof.
-     *
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
-     * @param lado: String that encode the side of the equation selected for the user. It is a 
-     *              HTTP POST parameter encode with JSON
-     * @param username: login of the user that make the request. It is in the URL also
-     * @param nTeo: code of statement that the user is proving. It is in the URL also 
-     * @return InferResponse Object with the the proof, in latex format, with only the expression 
-     *         selected (right or left side of the equation) for the user in the first line of the 
-     *         current sub proof.
-     */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialPL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialPL(@PathVariable String nSol, 
-                                                        @RequestParam(value="lado") String lado, 
-                                                        @PathVariable String username, 
-                                                        @PathVariable String nTeo)
-    {
-        String nuevoMetodo = "SS";
-        InferResponse response = new InferResponse(crudOp);
-        
-        /* Jean
-        boolean naturalSide = nuevoMetodo.equals("Natural Deduction,one-sided");
-        Term H = null;
-        */
-        
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        Term formulaTerm = resuelve.getTeorema().getTeoTerm();
-        
-        /* Jean
-        if(naturalSide) {
-+               H = ((App)formulaAnterior).q;
-+               formulaAnterior = ((App)((App)formulaAnterior).p).q;
-+        }
-        */
-        
-        /* Jean
-        // In natural dededuction case add H /\ to the start
-+        if(naturalSide) {
-+               formulaTerm = new App(new App(new Const("c_{5}"), formulaTerm), H);
-        */
-        Solucion solucion = null;
-        Term metodoTerm = null;
-        Term typedTerm = null;
-        if (nSol.equals("new")){
-            solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
-            metodoTerm = new Const(nuevoMetodo);
-        }
-        else{
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            String method = solucion.getMetodo();
-            metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
-            formulaTerm = crudOp.initStatement(formulaTerm,metodoTerm);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-        }
-        
-        if(lado.equals("d")){
-            //formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
-            formulaTerm = ((App)((App)formulaTerm).p).q;
-            //Jean formulaTerm = ((App)((App)formulaAnterior).p).q;
-        }
-        else if(lado.equals("i")){
-            //formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
-            formulaTerm = ((App)formulaTerm).q;
-            // Jean formulaTerm = ((App)formulaAnterior).q;
-        }
-        
-        if (nSol.equals("new")) {
-            typedTerm = formulaTerm;
-            solucion.setTypedTerm(formulaTerm);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        }
-        else {
-            typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
-            solucion.setTypedTerm(typedTerm);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        response.generarHistorial(
-            username,
-            formulaAnterior, 
-            nTeo,
-            typedTerm,
-            true,
-            true,
-            metodoTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager 
-        );
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial); */
-        response.setCambiarMetodo("0");
-
-        return response;
-    }
-    
-    /**
-     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
-     * Object with the proof, in latex format, with only the antecedent of the current statement 
-     * in the first line of the current sub proof.
-     *
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
-     * @param username: login of the user that make the request. It is in the URL also
-     * @param nTeo: code of statement that the user is proving. It is in the URL also 
-     * @return InferResponse Object with the the proof, in latex format, with only the antecedent 
-     *         of the current statement in the first line of the current sub proof.
-     */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialD(@PathVariable String nSol, 
-                                                       @PathVariable String username, 
-                                                       @PathVariable String nTeo)
-    {   
-        String nuevoMetodo = "WE";
-        InferResponse response = new InferResponse(crudOp);
-        
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        
-        //Teorema t = resuelve.getTeorema();
-        //Term term = t.getTeoTerm();
-        
-        //String formula = "";
-        Term formulaTerm = formulaAnterior;
-        
-        Term metodoTerm = null;
-        Solucion solucion = null;
-        Term typedTerm = null;
-        if (nSol.equals("new")){
-            solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
-            metodoTerm = new Const(nuevoMetodo);
-        }
-        else{
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            String method = solucion.getMetodo();
-            metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
-            formulaTerm = crudOp.initStatement(formulaTerm, metodoTerm);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-        }
-        
-        String operador = ((Const)((App)((App)formulaTerm).p).p).getCon();
-        switch (operador) {
-            case "c_{3}":
-                response.setLado("d");
-                formulaTerm = ((App)((App)formulaTerm).p).q;
-                break;
-            case "c_{2}":
-                response.setLado("i");
-                formulaTerm = ((App)formulaTerm).q;
-                break;
-            default:
-                response.setErrorParser1(true);
-                break;
-        }
-        
-        if (nSol.equals("new")) {
-            typedTerm = formulaTerm;
-            solucion.setTypedTerm(formulaTerm);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        } else {
-            typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
-            solucion.setTypedTerm(typedTerm);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        solucionManager.addSolucion(solucion);
-        response.generarHistorial(
-            username,
-            formulaAnterior, 
-            nTeo,
-            typedTerm,
-            true,
-            true,
-            metodoTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager 
-        );
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial);  */
-        response.setCambiarMetodo("0");
-
-        return response;
-    }
-    
-    /**
-     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
-     * Object with the proof, in latex format, with only the consequent of the current statement 
-     * in the first line of the current sub proof when the strenghtening method is used
-     *
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
-     * @param username: login of the user that make the request. It is in the URL also
-     * @param nTeo: code of statement that the user is proving. It is in the URL also 
-     * @return InferResponse Object with the the proof, in latex format, with only the consequent 
-     *         of the current statement in the first line of the current sub proof.
-     */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialF", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialF(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
-    {
-        String nuevoMetodo = "ST";
-        InferResponse response = new InferResponse(crudOp);
-        
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        
-        //String formula = "";
-        Term formulaTerm = formulaAnterior;
-        
-        Term metodoTerm = null;
-        Solucion solucion = null;
-        Term typedTerm = null;
-        if (nSol.equals("new")){
-            solucion = new Solucion(resuelve,false,null,nuevoMetodo,crudOp);
-            metodoTerm = new Const(nuevoMetodo);
-        }
-        else{
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            String method = solucion.getMetodo();
-            metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
-            formulaTerm = crudOp.initStatement(formulaTerm, metodoTerm);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-        }
-        
-        String operador = ((Const)((App)((App)formulaTerm).p).p).getCon();
-        switch (operador) {
-            case "c_{3}":
-                response.setLado("i");
-                formulaTerm = ((App)formulaTerm).q;
-                break;
-            case "c_{2}":
-                response.setLado("d");
-                formulaTerm = ((App)((App)formulaTerm).p).q;
-                break;
-            default:
-                response.setErrorParser1(true);
-                break;
-        }
-        
-        if (nSol.equals("new")) {
-            typedTerm = formulaTerm;
-            solucion.setTypedTerm(formulaTerm);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        } else {
-            typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
-            solucion.setTypedTerm(typedTerm);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        solucionManager.addSolucion(solucion);
-        response.generarHistorial(
-            username,
-            formulaAnterior, 
-            nTeo,
-            typedTerm,
-            true,
-            true,
-            metodoTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager 
-        );
-        response.setCambiarMetodo("0");
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial);  */
-
-        return response;
-    }
-
-    /**
-     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
-     * Object with the proof, in latex format, with only the antecedent of the current statement 
-     * in the first line of the current sub proof.
-     *
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
-     * @param username: login of the user that make the request. It is in the URL also
-     * @param nTeo: code of statement that the user is proving. It is in the URL also 
-     * @return InferResponse Object with the the proof, in latex format, with only the antecedent 
-     *         of the current statement in the first line of the current sub proof.
-     */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementT", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse iniStatementT(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
-    {
-        String nuevoMetodo = "TR";
-        InferResponse response = new InferResponse(crudOp);
-        
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        
-        Term formulaTerm = formulaAnterior;
-        
-        Term metodoTerm = null;
-        Solucion solucion = null;
-        Term typedTerm = null;
-        if (nSol.equals("new"))
-        {
-            solucion = new Solucion(resuelve,false,null,nuevoMetodo,crudOp);
-            metodoTerm = new Const(nuevoMetodo);
-        }
-        else
-        {
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            String method = solucion.getMetodo();
-            metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
-            formulaTerm = crudOp.initStatement(formulaTerm,metodoTerm);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-        }
-        
-        String operador = ((Const)((App)((App)formulaTerm).p).p).getCon();
-        // you must check if operator is transitive before the following
-        if(!operador.equals("c_{2}") && !operador.equals("c_{3}")){
-            response.setLado("i");
-            formulaTerm = ((App)formulaTerm).q;
-        }
-        else{
-            response.setErrorParser1(true);
-        }
-        
-        if (nSol.equals("new")) {
-            typedTerm = formulaTerm;
-            solucion.setTypedTerm(formulaTerm);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        } else {
-            typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
-            solucion.setTypedTerm(typedTerm);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        response.generarHistorial(
-            username,
-            formulaAnterior, 
-            nTeo,
-            typedTerm,
-            true,
-            true,
-            metodoTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager 
-        );
-        response.setCambiarMetodo("0");
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial);  */
-
-        return response;
-    }
-    
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementCO", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse iniStatementCO(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
-    {   
-        String nuevoMetodo = "CO";
-        InferResponse response = new InferResponse(crudOp);
-        
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-
-        // It is the theorem statement but parsed as a binary tree. 
-        // We call it as "previous" because it will change when the proof starts: ¬Statement => False
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm(); 
-        
-        // Despite the new method is "CO", maybe it is nested into a previous one.
-        Term metodoTerm = null;
-        Solucion solucion = null;
-
-        if (nSol.equals("new")){
-            metodoTerm = new Const(nuevoMetodo);
-
-            // The arguments are: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, and 4) demonstration method
-            solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
-
-            // Here is where we add a new row to the "solucion" table
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+""); // The concatenation with "" converts the id to a string
-        }
-        else{   
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = crudOp.updateMethod(solucion.getMetodo(), nuevoMetodo);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        response.generarHistorial(username,formulaAnterior, nTeo,solucion.getTypedTerm(),true,false,metodoTerm,
-                                      resuelveManager,disponeManager,simboloManager);
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial);  */
-
-        // It is "2" because we need the button "Go back" to appear in case we no longer want to use this demonstration method.
-        response.setCambiarMetodo("2");
-
-        return response;
-    }
-    
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementCR", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse iniStatementCR(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
-    {   
-        String nuevoMetodo = "CR";
-        InferResponse response = new InferResponse(crudOp);
-        
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        
-        Term metodoTerm = null;
-        Solucion solucion = null;
-        try {
             if (nSol.equals("new")){
-                // Determines if the prove can by made bu counter-reciprocal method
-                if (((Const)((App)((App)formulaAnterior).p).p).getId() != 2) {
-                    response.setErrorParser1(true);
-                    return response;
+                if ("CR".equals(newMethod) && (((Const)((App)((App)formulaAnterior).p).p).getId() != 2) ){
+                    throw new ClassCastException("Error");
                 }
-                metodoTerm = new Const(nuevoMetodo);
-                solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
+
+                if (sideOrTransitive){
+                    solucion = new Solucion(resuelveAnterior, false, null, newMethod, crudOp);
+                }
+                else{
+                    // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
+                    solucion = new Solucion(resuelveAnterior, false, formulaTerm, newMethod, crudOp);
+                    typedTerm = formulaTerm;
+                    solucionManager.addSolucion(solucion); // This adds a new row to the "solucion" table
+                    response.setnSol(solucion.getId()+""); // The concatenation with "" converts the id to a string
+                }
+
+                methodTerm = new Const(newMethod);        
+            }
+            else{
+                // When the proof already exists in the DB, we obtain the solution from it.
+                solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
+                methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
+
+                if ("CR".equals(newMethod) && 
+                    (((Const)((App)((App)crudOp.initStatement(formulaAnterior, methodTerm)).p).p).getId() != 2)
+                    )
+                {
+                    throw new ClassCastException("Error");
+                }    
+
+                // We save in the database the concatenation of the previous list of methods with the new one
+                solucion.setMetodo(methodTerm.toStringFinal());
+
+                if (sideOrTransitive){
+                    formulaTerm = crudOp.initStatement(formulaTerm,methodTerm);
+                }
+                else{
+                    if ("DM".equals(newMethod)){
+                        if (teoid.substring(3,teoid.length()).equals(nTeo)) {
+                           formulaTerm = crudOp.initStatement(formulaTerm, methodTerm);
+                           typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), methodTerm);
+                        } else {
+                           typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), methodTerm);
+                        }
+                        solucion.setTypedTerm(typedTerm);
+                    }
+                    solucionManager.updateSolucion(solucion);       
+                }
+
+                //*******  PREGUNTAR ESTO AL PROFE: ¿Es necesario?
+                if ("AI".equals(newMethod) || "CA".equals(newMethod)){
+                    typedTerm = solucion.getTypedTerm();
+                }
+            }
+
+            if (sideOrTransitive){
+                // Currently this only applies to "SS" method, but there is no need to specify it because otherwise "lado" is null
+                if(lado.equals("d")){
+                    formulaTerm = ((App)((App)formulaTerm).p).q;
+                }
+                else if(lado.equals("i")){
+                    formulaTerm = ((App)formulaTerm).q;
+                }
+
+                // Transitive methods
+                if ("T".equals(groupMethod)){
+                    String operator = ((Const)((App)((App)formulaTerm).p).p).getCon();
+                    String side;
+
+                    switch (operator){
+                        case "c_{2}": // Right arrow
+                            side = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "i" : "d");
+                            break;
+                        case "c_{3}": // Left arrow
+                            side = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "d" : "i");
+                            break;
+                        default:
+                            // **** For the "TR" method we should check first if the operator is transitive
+                            // **** Also, ¿why we must always start from the left side ?
+                            side = "TR".equals(newMethod) ? "i" : null;
+                            break;
+                    }
+                    if (side != null){
+                        response.setLado(side);
+                        formulaTerm = side.equals("i") ? ((App)formulaTerm).q : ((App)((App)formulaTerm).p).q;  
+                    } 
+                    else {
+                        throw new ClassCastException("Error");
+                    }
+                }
+
+                if (nSol.equals("new")) {
+                    typedTerm = formulaTerm;
+                    solucion.setTypedTerm(formulaTerm);
+                    solucionManager.addSolucion(solucion);
+                    response.setnSol(solucion.getId()+"");
+                }
+                else {
+                    typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), methodTerm);
+                    solucion.setTypedTerm(typedTerm);
+                    solucionManager.updateSolucion(solucion);
+                }       
+            }
+
+            //*******  PREGUNTAR ESTO AL PROFE: ¿Por qué sólo lo tienen debilitamiento y fortalecimiento?
+            if ("WE".equals(newMethod) || "ST".equals(newMethod)){
                 solucionManager.addSolucion(solucion);
-                response.setnSol(solucion.getId()+"");
             }
-            else {   
-                solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-                metodoTerm = crudOp.updateMethod(solucion.getMetodo(), nuevoMetodo);
-                if (((Const)((App)((App)crudOp.initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
-                   response.setErrorParser1(true);
-                   return response;
-                }
-                nuevoMetodo = metodoTerm.toStringFinal();
-                solucion.setMetodo(nuevoMetodo);
-                solucionManager.updateSolucion(solucion);
-            }
+
         } catch (ClassCastException e) {
             response.setErrorParser1(true);
             return response;
         }
-        response.generarHistorial(username,formulaAnterior, nTeo,solucion.getTypedTerm(),true,false,metodoTerm,
-                                      resuelveManager,disponeManager,simboloManager);
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial);  */
-        response.setCambiarMetodo("2");
+        
+        response.generarHistorial(
+            username, // user
+            formulaAnterior, // formula
+            nTeo, 
+            typedTerm, // EN CO y CR, ponía solucion.getTypedTerm()
+            true, // valida
+            ! objectMethod.getIsRecursiveMethod(), // labeled
+            methodTerm,
+            resuelveManager,
+            disponeManager,
+            simboloManager 
+        );
+
+        // In the recursive case, the user still needs to choose another proof method for the sub-proof
+        response.setCambiarMetodo(objectMethod.getIsRecursiveMethod() ? "2" : "0");
 
         return response;
     }
     
-    /**
-     * Inits a proof for Conjunction by parts method.
-     * @param nSol Number of the solution.
-     * @param username Name of the user that is making the proof.
-     * @param nTeo Number of theorem to be proved.
-     * @return
-     */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialAndIntroduction", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialAndIntroduction(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
-    {
-        // revisa la recursion de este metodo si no hace falta un initStatement o getSubProof
-        String nuevoMetodo = "AI";
-        InferResponse response = new InferResponse(crudOp);
-        
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        
-        try {
-            //String formula = "";
-            if (((Const)((App)((App)formulaAnterior).p).p).getId() != 5) {
-               response.setErrorParser1(true);
-               return response;
-            }
-        } catch (ClassCastException e) {
-            response.setErrorParser1(true);
-            return response;
-        }
-        
-        Term metodoTerm = null;
-        Term typedTerm = null;
-        
-        if (nSol.equals("new")){
-            metodoTerm = new Const(nuevoMetodo);
-            Solucion solucion = new Solucion(resuelve,false,null,nuevoMetodo,crudOp);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        } else {
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = crudOp.updateMethod(solucion.getMetodo(), nuevoMetodo);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            typedTerm = solucion.getTypedTerm();
-            solucion.setMetodo(nuevoMetodo);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        response.generarHistorial(username,formulaAnterior, nTeo,typedTerm,true,false,metodoTerm,
-                                      resuelveManager,disponeManager,simboloManager);
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial);  */
-        response.setCambiarMetodo("2");
-
-        return response;
-/*        
-        // Mnuel y Juan
-        InferResponse response = new InferResponse();
-
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-
-        // If we're starting a new proof.
-        if (nSol.equals("new"))
-        {
-            // Get the cases of the proof.
-            Term casepTerm = ((App)formulaAnterior).q;
-            Term caseqTerm = ((App)(((App)formulaAnterior).p)).q;
-
-            // Creates a new tree for the proof of the form:
-            //          .
-            //         / \
-            //        .   qTerm
-            //       / \
-            // TypedU   pTerm
-            //
-            try {
-                Term formulaTerm = new TypedApp(
-                    new TypedApp(
-                        new TypedU(), 
-                        casepTerm
-                    ), 
-                    caseqTerm
-                );
-
-                // Saves the empty solution to the database.
-                Solucion solucion = new Solucion(
-                    resuelve,
-                    false,
-                    formulaTerm,
-                    "And Introduction(null;null)-p"
-                );
-                solucionManager.addSolucion(solucion);
-
-                // Stores the number of the solution to the reponse.
-                response.setnSol(Integer.toString(solucion.getId()));
-            } catch (TypeVerificationException e) {
-                return response;
-            }
-           
-            // Get's the expression of the first case (pTerm) to print it to
-            // the user.
-            String expression1 = casepTerm.toStringInf(simboloManager,"");
-            String historial = "Theorem " + nTeo + ":<br> <center>$" + 
-                               formulaAnterior.toStringInf(simboloManager,"") +
-                               "$</center> Proof:<br><br>";
-            historial += "Proof of $" + expression1 + "$:<br><br>Proof: ";
-            response.setHistorial(historial);  
-        }
-        // If we're taking over a new proof.
-        else {
-            // TODO: review this clause.
-            // Case you have a solution already started.
-            String expression2 = ((App)((App)formulaAnterior).p).q.toStringInf(simboloManager,"");
-        }
-        
-        return response;
-*/
-    }
-
-    /**
-     * Inits a proof for Case analysis method.
-     * @param nSol Number of the solution.
-     * @param username Name of the user that is making the proof.
-     * @param nTeo Number of theorem to be proved.
-     * @return
-     */
-    @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatementCA", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse initCaseAnalysis(@PathVariable String nSol, @PathVariable String username, @PathVariable String nTeo)
-    {
-        // revisa la recursion de este metodo si no hace falta un initStatement o getSubProof
-        String nuevoMetodo = "CA";
-        InferResponse response = new InferResponse(crudOp);
-        
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        
-        Term metodoTerm = null;
-        Term typedTerm = null;
-        
-        if (nSol.equals("new")){
-            metodoTerm = new Const(nuevoMetodo);
-            Solucion solucion = new Solucion(resuelve,false,null, nuevoMetodo,crudOp);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        } else {
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
-            metodoTerm = crudOp.updateMethod(solucion.getMetodo(), nuevoMetodo);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            typedTerm = solucion.getTypedTerm();
-            solucion.setMetodo(nuevoMetodo);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        response.generarHistorial(username,formulaAnterior, nTeo,typedTerm,true,false,metodoTerm,
-                                      resuelveManager,disponeManager,simboloManager);
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial);  */
-        response.setCambiarMetodo("2");
-
-        return response;
-/*        
-        // Mnuel y Juan
-        InferResponse response = new InferResponse();
-
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-
-        // If we're starting a new proof.
-        if (nSol.equals("new"))
-        {
-            // Get the cases of the proof.
-            Term casepTerm = ((App)formulaAnterior).q;
-            Term caseqTerm = ((App)(((App)formulaAnterior).p)).q;
-
-            // Creates a new tree for the proof of the form:
-            //          .
-            //         / \
-            //        .   qTerm
-            //       / \
-            // TypedU   pTerm
-            //
-            try {
-                Term formulaTerm = new TypedApp(
-                    new TypedApp(
-                        new TypedU(), 
-                        casepTerm
-                    ), 
-                    caseqTerm
-                );
-
-                // Saves the empty solution to the database.
-                Solucion solucion = new Solucion(
-                    resuelve,
-                    false,
-                    formulaTerm,
-                    "And Introduction(null;null)-p"
-                );
-                solucionManager.addSolucion(solucion);
-
-                // Stores the number of the solution to the reponse.
-                response.setnSol(Integer.toString(solucion.getId()));
-            } catch (TypeVerificationException e) {
-                return response;
-            }
-           
-            // Get's the expression of the first case (pTerm) to print it to
-            // the user.
-            String expression1 = casepTerm.toStringInf(simboloManager,"");
-            String historial = "Theorem " + nTeo + ":<br> <center>$" + 
-                               formulaAnterior.toStringInf(simboloManager,"") +
-                               "$</center> Proof:<br><br>";
-            historial += "Proof of $" + expression1 + "$:<br><br>Proof: ";
-            response.setHistorial(historial);  
-        }
-        // If we're taking over a new proof.
-        else {
-            // TODO: review this clause.
-            // Case you have a solution already started.
-            String expression2 = ((App)((App)formulaAnterior).p).q.toStringInf(simboloManager,"");
-        }
-        
-        return response;
-*/
-    }
 }

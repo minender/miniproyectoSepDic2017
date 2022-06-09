@@ -45,6 +45,7 @@ public class InferResponse {
 
     // When the proof method is starting from one side, this indicates the side: 
     // 'd' for the right one (derecho) and 'i' for the left one (izquierdo).
+    // It is also "1" when a clickable statement must be splitted in two sides.
     private String lado;
 
     // Determines if the proof was solved so a congratulatory message should be displayed
@@ -366,7 +367,8 @@ public class InferResponse {
     private void privateGenerarHistorial(String user, Term formula, String header, String nTeo, Term typedTerm, Boolean valida, 
         Boolean labeled, Term methodTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
         SimboloManager s, String clickable, Boolean isRootTeorem)
-    {        
+    {    
+
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
@@ -433,8 +435,9 @@ public class InferResponse {
         }
 
         boolean solved;
-        if (labeled && !recursive)
+        if (labeled && !recursive){
             solved = type.equals(formula);
+        }
         else
             solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a
                            // si se pide labeled o no la ultima linea- Aqui se cablea con solved = true

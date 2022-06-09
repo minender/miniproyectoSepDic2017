@@ -38,27 +38,14 @@ function setForms(elegirMetodo) {
     }
 }
 
-// Determines the last part of the url that will be sent to an infer controller
+// This object determines the last part of the url that will be sent to an infer controller
 var urlTermination = {
-    "DM Clickable": "/teoremaClickeableMD", // Direct method, clickable
-    "SS Clickable": "/teoremaClickeablePL", // Starting from one side method, clickable
-
-    DM: "/teoremaInicialMD", // Starting from one side method, clickable
-    SS: "/teoremaInicialPL", // Starting from one side method
-    WE: "/teoremaInicialD",  // Weakening method (The "D" refers to "Debilitamiento")
-    ST: "/teoremaInicialF",  // Strenghtening method (The "F" refers to "Fortalecimiento")
-    TR: "/iniStatementT",    // Transitivity method
-    CO: "/iniStatementCO",   // Contradiction method
-    CR: "/iniStatementCR",   // Counter-reciprocal method
-    AI: "/teoremaInicialAndIntroduction", // And introduction method
-    CA: "/iniStatementCA", // Case analysis method
-
     showInstantiation: "inst", // When we want to show the instantiation of the hint theorem
     setAutomaticSubst: "auto", // When we want the substitution to be made automatically
     automaticSubst:   "/auto", // When we want to get the automatic subsitution of the current hint theorem
 };
 
-// The operations that "instantiationAjax" could receive
+// This object determines the operations that "instantiationAjax" could receive
 var instantiationDict = { 
     showInstantiation: 0,
     setAutomaticSubst: 1,
@@ -77,13 +64,21 @@ var instantiationDict = {
  * @return -> boolean that is only true when the AJAX was send successfully and the method can be applied to the theorem
  */
 async function proofMethodAjax(method, teoid=null, lado=null){
-    var data = {teoid, lado};
+    var data = {
+        teoid, 
+        lado,
+        // Remember the parameter method can have the "Clickable" termination, that we don't want to send
+        method: method.substring(0,2), 
+    };
     var form = $('#inferForm');
     var completeSuccess = true;
+    var clickable = (method.split(" ").pop() == "Clickable");
+
+    console.log("Entré, y data = ", data);
 
     await $.ajax({
         type: 'POST',
-        url: $(form).attr('action') + urlTermination[method],
+        url: $(form).attr('action') + (clickable ? "/clickableST" : "/iniStatement"),
         dataType: 'json',
         data,
         success: function(newData) {
@@ -98,7 +93,6 @@ async function proofMethodAjax(method, teoid=null, lado=null){
 
                 // When the Ajax does not correspond to a theorem clickable, there is already an associated 
                 // entry in the solucion table, so newData.nSol is not null.
-                var clickable = (method.split(" ").pop() == "Clickable");
                 if (!clickable){
                     setForms(newData.cambiarMetodo);
 

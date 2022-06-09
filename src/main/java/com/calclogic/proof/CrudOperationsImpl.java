@@ -96,7 +96,7 @@ public class CrudOperationsImpl implements CrudOperations {
                     break;
                 case "AI":
                 case "CA":
-                    // *********************** ESTE PRIMER IF ES SÓLO PARA MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA **********
+                    // *********************** ESTE PRIMER IF ES SÓLO MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA **********
                     if (strMethod == "CA"){
                         beginFormula = new CaseAnalysisMethod().initFormula(beginFormula);
                     }
@@ -373,7 +373,7 @@ public class CrudOperationsImpl implements CrudOperations {
     @Override
     @Transactional
     public Term addFirstLineSubProof(Term formula, Term typedTerm, Term method) {
-        Term auxMethod = method;
+        Term auxMethod = method; // "method" is entry/exit, so if we use it directly we change its value in the caller
         while (auxMethod instanceof App) {
             // ************ THIS MUST BE DELETED OR CHANGED *********************
             if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIProof2Started(((App)auxMethod).q)){
