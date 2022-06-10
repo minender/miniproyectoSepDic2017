@@ -1080,6 +1080,9 @@ public class InferController {
                 }
                 else if (teoid.substring(0, 3).equals("MT-")){
                     Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
+                    if (dispone == null){
+                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", teoid.substring(3,teoid.length()));
+                    }
                     formulaTerm = dispone.getMetateorema().getTeoTerm();
                 }
             }
@@ -1107,16 +1110,16 @@ public class InferController {
                 methodTerm = new Const(newMethod);        
             }
             else{
-                // When the proof already exists in the DB, we obtain the solution from it.
-                solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
-                methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
-
                 if ("CR".equals(newMethod) && 
                     (((Const)((App)((App)crudOp.initStatement(formulaAnterior, methodTerm)).p).p).getId() != 2)
                     )
                 {
                     throw new ClassCastException("Error");
-                }    
+                }   
+
+                // When the proof already exists in the DB, we obtain the solution from it.
+                solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
+                methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
 
                 // We save in the database the concatenation of the previous list of methods with the new one
                 solucion.setMetodo(methodTerm.toStringFinal());
@@ -1135,10 +1138,9 @@ public class InferController {
                     solucionManager.updateSolucion(solucion);       
                 }
 
-                //*******  PREGUNTAR ESTO AL PROFE: ¿Es necesario?
-                if ("AI".equals(newMethod) || "CA".equals(newMethod)){
-                    typedTerm = solucion.getTypedTerm();
-                }
+                // if ("AI".equals(newMethod) || "CA".equals(newMethod)){
+                //     typedTerm = solucion.getTypedTerm();
+                // }
             }
 
             if (sideOrTransitive){
@@ -1190,7 +1192,7 @@ public class InferController {
                 }       
             }
 
-            //*******  PREGUNTAR ESTO AL PROFE: ¿Por qué sólo lo tienen debilitamiento y fortalecimiento?
+            // This occurs because the first line of the proof is printed inmediately after selecting the following methods
             if ("WE".equals(newMethod) || "ST".equals(newMethod)){
                 solucionManager.addSolucion(solucion);
             }

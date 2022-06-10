@@ -64,7 +64,7 @@ public class AndIntroductionMethod extends GenericProofMethod {
             return newProof;
         }
         catch (TypeVerificationException e) {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(AndIntroductionMethod.class.getName()).log(Level.SEVERE, null, e);
             return theoremBeingProved;
         }
     }
