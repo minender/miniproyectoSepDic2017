@@ -113,5 +113,5 @@ public interface ResuelveDAO {
      */
     public List<Resuelve> getResuelveByCategoria(int categoriaId);
     
-    public List<Resuelve> getResuelveDependent(List<Resuelve> resuelves);
+    public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves);
 }

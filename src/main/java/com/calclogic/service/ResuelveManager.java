@@ -117,5 +117,5 @@ public interface ResuelveManager {
      */
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum);
     
-    public List<Resuelve> getResuelveDependent(List<Resuelve> resuelves);
+    public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves);
 }

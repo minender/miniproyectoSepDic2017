@@ -235,13 +235,20 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         
     
     @Override
-    public List<Resuelve> getResuelveDependent(List<Resuelve> resuelves) {
+    public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves) {
         String enunciados = "";
         for (Resuelve r: resuelves) {
-            String enunciado = "%A^{" + r.getTeorema().getEnunciado() + "}%";
-            enunciados = enunciados + ", " + enunciado;
+            String enunciado = "s.demostracion LIKE '%A^{" + r.getTeorema().getEnunciado() + "}%'";
+            if (enunciados.equals("")) {
+                enunciados = enunciado;
+            }
+            else {
+                enunciados = enunciados + " OR " + enunciado;
+            }
         }
-        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve r WHERE (r.usuario.login = :userLogin OR r.usuario.login = 'adminTeoremas') AND resuelto = true AND NOT EXISTS (SELECT s.id FROM Solucion s WHERE r.solucion.id = s.id AND NOT (s.demostracion LIKE ANY (array[:enunciados])))").setParameter("enunciados", enunciados).list();
+        String queryStr = "FROM Resuelve r WHERE (r.usuario.login = :userLogin OR r.usuario.login = 'adminTeoremas') AND resuelto = 't' AND NOT EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id AND NOT ("+enunciados+"))";
+        System.out.println(enunciados);
+        return this.sessionFactory.getCurrentSession().createQuery(queryStr).setParameter("userLogin",userLogin).list();
     }
     
 }

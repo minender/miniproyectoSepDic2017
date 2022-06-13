@@ -103,6 +103,21 @@ public class InferController {
             return "redirect:/index";
         }
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
+        List<Resuelve> unResuelve = new ArrayList<Resuelve>();
+        for (Resuelve r: resuelves) {
+            if (r.getNumeroteorema().equals("3.3.a")) {
+                unResuelve.add(r);
+                unResuelve.add(r);
+            }
+        }
+        System.out.println(unResuelve.get(0).getNumeroteorema());
+        List<Resuelve> depend = resuelveManager.getResuelveDependent(username, unResuelve);
+        List<String> dependNum = new ArrayList<String>();
+        for (Resuelve r: depend) {
+            dependNum.add(r.getNumeroteorema());
+        }
+        System.out.println(dependNum.toString());
+        
         for (Resuelve r: resuelves) // Este for debes mandarlo para el manager y quitar
         {                           // la construccion del metateorema del true
             Teorema t = r.getTeorema();
