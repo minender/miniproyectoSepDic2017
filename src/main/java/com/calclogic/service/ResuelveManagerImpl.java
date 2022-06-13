@@ -434,4 +434,10 @@ public class ResuelveManagerImpl implements ResuelveManager {
         }
         return resuel;
     }
+    
+    @Override
+    @Transactional
+    public List<Resuelve> getResuelveDependent(List<Resuelve> resuelves){
+        return resuelveDAO.getResuelveDependent(resuelves);
+    }
 }

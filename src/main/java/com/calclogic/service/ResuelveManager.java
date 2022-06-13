@@ -116,4 +116,6 @@ public interface ResuelveManager {
      * @param teoNum Is the number of the theorem used to filter the search.
      */
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum);
+    
+    public List<Resuelve> getResuelveDependent(List<Resuelve> resuelves);
 }

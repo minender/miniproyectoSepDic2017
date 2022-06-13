@@ -233,4 +233,15 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE categoria.id = :categoriaId").setParameter("categoriaId", categoriaId).list();
     }
         
+    
+    @Override
+    public List<Resuelve> getResuelveDependent(List<Resuelve> resuelves) {
+        String enunciados = "";
+        for (Resuelve r: resuelves) {
+            String enunciado = "%A^{" + r.getTeorema().getEnunciado() + "}%";
+            enunciados = enunciados + ", " + enunciado;
+        }
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve r WHERE (r.usuario.login = :userLogin OR r.usuario.login = 'adminTeoremas') AND resuelto = true AND NOT EXISTS (SELECT s.id FROM Solucion s WHERE r.solucion.id = s.id AND NOT (s.demostracion LIKE ANY (array[:enunciados])))").setParameter("enunciados", enunciados).list();
+    }
+    
 }
