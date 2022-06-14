@@ -107,7 +107,6 @@ public class InferController {
         for (Resuelve r: resuelves) {
             if (r.getNumeroteorema().equals("3.3.a")) {
                 unResuelve.add(r);
-                unResuelve.add(r);
             }
         }
         System.out.println(unResuelve.get(0).getNumeroteorema());
