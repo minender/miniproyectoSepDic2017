@@ -397,6 +397,9 @@ public class InferController {
                     break;
                 case "MT":
                     Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                    if (dispone == null){
+                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
+                    }
                     statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
                     break;
                 default:
@@ -496,6 +499,9 @@ public class InferController {
                     break;
                 case "MT":
                     Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                    if (dispone == null){
+                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
+                    }
                     statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
                     break;
                 default:
@@ -638,6 +644,9 @@ public class InferController {
                     break;
                 case "MT":
                     Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                    if (dispone == null){
+                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
+                    }
                     statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
                     break;
                 default:
@@ -999,9 +1008,7 @@ public class InferController {
             if (!previousMethod.equals(""))
                 methodTerm = ProofMethodUtilities.getTerm(previousMethod);
 
-            if ("DM".equals(newMethod)){
-                typedTerm = solucion.getTypedTerm();
-            }
+            typedTerm = solucion.getTypedTerm();
         }
 
         response.generarHistorial(
@@ -1144,39 +1151,29 @@ public class InferController {
             }
 
             if (sideOrTransitive){
-                // Currently this only applies to "SS" method, but there is no need to specify it because otherwise "lado" is null
-                if(lado.equals("d")){
-                    formulaTerm = ((App)((App)formulaTerm).p).q;
-                }
-                else if(lado.equals("i")){
-                    formulaTerm = ((App)formulaTerm).q;
-                }
-
-                // Transitive methods
-                if ("T".equals(groupMethod)){
+                if (lado == null){ // This does not occur in Starting from one side method, so we are in a transitive one
                     String operator = ((Const)((App)((App)formulaTerm).p).p).getCon();
-                    String side;
 
                     switch (operator){
                         case "c_{2}": // Right arrow
-                            side = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "i" : "d");
+                            lado = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "i" : "d");
                             break;
                         case "c_{3}": // Left arrow
-                            side = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "d" : "i");
+                            lado = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "d" : "i");
                             break;
                         default:
                             // **** For the "TR" method we should check first if the operator is transitive
                             // **** Also, why must we always start from the left side ?
-                            side = "TR".equals(newMethod) ? "i" : null;
+                            lado = "TR".equals(newMethod) ? "i" : null;
                             break;
                     }
-                    if (side != null){
-                        response.setLado(side);
-                        formulaTerm = side.equals("i") ? ((App)formulaTerm).q : ((App)((App)formulaTerm).p).q;  
-                    } 
-                    else {
-                        throw new ClassCastException("Error");
-                    }
+                }
+                if (lado != null){ // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
+                    response.setLado(lado);
+                    formulaTerm = lado.equals("i") ? ((App)formulaTerm).q : ((App)((App)formulaTerm).p).q;  
+                } 
+                else {
+                    throw new ClassCastException("Error");
                 }
 
                 if (nSol.equals("new")) {

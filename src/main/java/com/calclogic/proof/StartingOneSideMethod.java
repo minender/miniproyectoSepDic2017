@@ -48,9 +48,10 @@ public class StartingOneSideMethod extends GenericProofMethod {
      * @param s
      * @return 
      */
+    @Override
     public String setBaseMethodProof(String historial, String user, Term typedTerm, boolean solved, 
                 ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s)
-    {
+    {    
         String primExp;
         String newStep; // New part of the proof that will be added
         String lastline; // Plain string of the last line of the demonstration
@@ -62,10 +63,12 @@ public class StartingOneSideMethod extends GenericProofMethod {
         /* If the demonstrarion method is starting from one side, or the typedTerm is not an inference
            but just a functional application (an App) or is an equanimity inference */
         if (this.methodStr.equals("SS") || !(typedTerm instanceof TypedApp) || ((TypedApp)typedTerm).inferType!='e') {
-            if (solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='s') 
+            if (solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='s'){
                 iter = ((TypedApp)typedTerm).q;
-            else
+            }
+            else{
                 iter = typedTerm;
+            }
             Term aux = ((App)((App)iter.type()).p).q;
             // System.out.println("\n(App)iter.type() = "+(App)iter.type());
             // System.out.println("(App)((App)iter.type()).p = "+(App)((App)iter.type()).p);

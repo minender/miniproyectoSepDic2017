@@ -79,6 +79,8 @@ public class TransitivityMethod extends StartingOneSideMethod {
         String lastline; // Plain string of the last line of the demonstration
         Term iter; // Iterator over the lines of a demonstration
 
+        System.out.println("\nMe metí en setBaseMethodProof, con método = "+this.methodStr);
+        System.out.println("y typedTerm= "+typedTerm.toStringFinal());
         boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
                       isInverseImpl(((TypedApp)typedTerm).q.type(),typedTerm.type());
         iter = (reversed?((TypedApp)typedTerm).q:typedTerm);

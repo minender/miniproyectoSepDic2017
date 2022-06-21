@@ -205,8 +205,8 @@ public class InferResponse {
      * @return Nothing.
      */
     private void set_AIorCA_Proof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
-        SimboloManager s, String header, String clickable, Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo) {
-
+        SimboloManager s, String header, String clickable, Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo)
+    {
         String statement;
         boolean isAI = methodTerm.toStringFinal().substring(0, 2).equals("AI");
         String stOrCase = (isAI?"Statement":"Case");
@@ -368,7 +368,6 @@ public class InferResponse {
         Boolean labeled, Term methodTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
         SimboloManager s, String clickable, Boolean isRootTeorem)
     {    
-
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
