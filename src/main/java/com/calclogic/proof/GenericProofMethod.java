@@ -77,7 +77,7 @@ public class GenericProofMethod {
             this.isRecursiveMethod = true;
             this.isLinearRecursiveMethod = true;
         }
-        else if (method.equals("AI") || method.equals("CA")){
+        else if (method.equals("AI") || method.equals("CA") || method.equals("MI")){
             this.isRecursiveMethod = true;
         }
     }

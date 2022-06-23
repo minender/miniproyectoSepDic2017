@@ -48,6 +48,7 @@ public class AndIntroductionMethod extends GenericProofMethod {
      * @param proof: The proof tree so far
      * @return proof of theoremBeingProved if finished, else returns the same proof
      */
+    @Override
     public Term finishedBranchedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
         Map<String,String> values = new HashMap<>();
         values.put("T1",proof.toStringFinal());

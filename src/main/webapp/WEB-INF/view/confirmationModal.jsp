@@ -66,9 +66,10 @@
         ND: "Natural Deduction",
         TR: "Transitivity",
         CO: "Contradiction",
-        CR: "Counter-reciprocal",
-        CA: "Case analysis",
+        CR: "Counter-reciprocal",     
         AI: "Conjunction by parts",
+        MI: "Mutual implication",
+        CA: "Case analysis",
         WI: "Witness",
     };
 
@@ -156,6 +157,7 @@
                     break;
 
                 case "AI": // And introduction method
+                case "MI": // Mutual implication method
                     message = "Please, select a proof method for the case.";
                     break;
 
@@ -191,7 +193,7 @@
 
     // Closes modal and adds formula inputs for proof by cases
     function okButton() {
-        if( this.selectedMethod === "CA"){
+        if(this.selectedMethod === "CA"){
             $("#formulaInput").removeClass('d-none');
             $("#formula").addClass('d-none');
         }

@@ -45,6 +45,7 @@ public class ProofBoolean {
                   ((Const)method).getCon().equals("CO") ||   
                   ((Const)method).getCon().equals("CR") ||
                   ((Const)method).getCon().equals("AI") ||
+                  ((Const)method).getCon().equals("MI") ||
                   ((Const)method).getCon().equals("CA") ||
                   ((Const)method).getCon().equals("WI")
                  )
@@ -64,7 +65,8 @@ public class ProofBoolean {
         }
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
                  (
-                  ((Const)m1).getCon().equals("AI") || 
+                  ((Const)m1).getCon().equals("AI") ||
+                  ((Const)m1).getCon().equals("MI") ||
                   ((Const)m1).getCon().equals("CA") 
                  )
                 )
@@ -74,7 +76,8 @@ public class ProofBoolean {
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof App &&
                   (m2 = ((App)m1).p) instanceof Const &&
                   (
-                   ((Const)m2).getCon().equals("AI") || 
+                   ((Const)m2).getCon().equals("AI") ||
+                   ((Const)m2).getCon().equals("MI") ||
                    ((Const)m2).getCon().equals("CA") 
                   )
                 )
@@ -156,7 +159,8 @@ public class ProofBoolean {
     public static boolean isAIProof2Started(Term method) {
         return method instanceof App && ((App)method).p instanceof App && 
                (
-                    ((App)((App)method).p).p.toStringFinal().equals("AI") || 
+                    ((App)((App)method).p).p.toStringFinal().equals("AI") ||
+                    ((App)((App)method).p).p.toStringFinal().equals("MI") ||
                     ((App)((App)method).p).p.toStringFinal().equals("CA")
                 )
                 && 

@@ -842,6 +842,7 @@ public class InferController {
                         break;
                     case "CA":
                     case "AI":
+                    case "MI":
                         isFinalSolution = false;
                         response.setEndCase(true);
                         break;
@@ -852,7 +853,7 @@ public class InferController {
             String m;
             // This ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App && 
-                    ( (m=((App)methodTermAux).p.toStringFinal()).equals("AI") || m.equals("CA") )
+                    ( (m=((App)methodTermAux).p.toStringFinal()).equals("AI") || m.equals("CA") || m.equals("MI"))
                )
             {
                 objectMethod = crudOp.createProofMethodObject("AI");

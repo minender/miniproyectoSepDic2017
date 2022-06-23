@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.text.StrSubstitutor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +55,8 @@ public class CrudOperationsImpl implements CrudOperations {
                 return new ContradictionMethod();
             case "AI":
                 return new AndIntroductionMethod();
+            case "MI":
+                return new MutualImplicationMethod();
             case "CA":
                 return new CaseAnalysisMethod();
             default:
@@ -438,7 +439,7 @@ public class CrudOperationsImpl implements CrudOperations {
             Term currMethodTerm = ProofMethodUtilities.getTerm(currentMethod);
             Term father = currMethodTerm;
             Term q = ((App)father).q;
-            Term aux = null;
+            Term aux;
             if (q instanceof Const)
                return ((App)father).p;
             else {

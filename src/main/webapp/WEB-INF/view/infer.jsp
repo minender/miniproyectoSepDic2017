@@ -339,6 +339,7 @@
                         <option value="CO">Proof by contradiction</option>
                         <option value="CR">Counter-reciprocal</option>
                         <option value="AI">Conjunction by parts</option>
+                        <option value="MI">Mutual implication</option>
                         <option value="CA">Case analysis</option>
                         <option value="WI">Witness</option>
                     </select>

@@ -74,8 +74,6 @@ async function proofMethodAjax(method, teoid=null, lado=null){
     var completeSuccess = true;
     var clickable = (method.split(" ").pop() == "Clickable");
 
-    console.log("Entré, y data = ", data);
-
     await $.ajax({
         type: 'POST',
         url: $(form).attr('action') + (clickable ? "/clickableST" : "/iniStatement"),
@@ -107,6 +105,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
                             break;
 
                         case "AI": // And introduction method
+                        case "MI": // Mutual implication method
                         case "CA": // Case analysis method
                             $("#metodosDiv").show(); // This overrides what was set in "setForms"
                         
