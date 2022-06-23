@@ -838,7 +838,7 @@ public class InferController {
                 switch (strMethodTermAux){
                     case "CR":
                     case "CO":
-                        finalProof = objectMethod.finishedRecursiveMethodProof(formulasToProof.pop(), finalProof);
+                        finalProof = objectMethod.finishedLinearRecursiveMethodProof(formulasToProof.pop(), finalProof);
                         break;
                     case "CA":
                     case "AI":
@@ -856,7 +856,7 @@ public class InferController {
                )
             {
                 objectMethod = crudOp.createProofMethodObject("AI");
-                finalProof = objectMethod.finishedRecursiveMethodProof(fatherProofs.pop(), finalProof);
+                finalProof = objectMethod.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
             }
         }
 

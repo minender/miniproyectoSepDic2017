@@ -69,10 +69,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
             else{
                 iter = typedTerm;
             }
-            Term aux = ((App)((App)iter.type()).p).q;
-            // System.out.println("\n(App)iter.type() = "+(App)iter.type());
-            // System.out.println("(App)((App)iter.type()).p = "+(App)((App)iter.type()).p);
-            // System.out.println("((App)((App)iter.type()).p).q = "+((App)((App)iter.type()).p).q);        
+            Term aux = ((App)((App)iter.type()).p).q;       
             lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));
         }
         // Case when direct method is applied and we start from the expression to be proved

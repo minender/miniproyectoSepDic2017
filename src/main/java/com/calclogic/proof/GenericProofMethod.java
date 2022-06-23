@@ -1,6 +1,5 @@
 package com.calclogic.proof;
 
-import com.calclogic.entity.Resuelve;
 import com.calclogic.controller.InferController;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
@@ -13,7 +12,6 @@ import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
-import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
@@ -37,6 +35,9 @@ public class GenericProofMethod {
 
     // Determines if the method of the current class is basic or recursive
     protected Boolean isRecursiveMethod = false;
+
+    // Determines if the method is recursive but only has one sub-proof (linear)
+    protected Boolean isLinearRecursiveMethod = false;
 
     /**
      * Establishes the necessary initial class variables according
@@ -72,13 +73,21 @@ public class GenericProofMethod {
     }
 
     private void setIsRecursiveMethod(String method){
-        if (method.equals("CR") || method.equals("CO") || method.equals("AI") || method.equals("CA")){
+        if (method.equals("CR") || method.equals("CO")){
+            this.isRecursiveMethod = true;
+            this.isLinearRecursiveMethod = true;
+        }
+        else if (method.equals("AI") || method.equals("CA")){
             this.isRecursiveMethod = true;
         }
     }
 
     public Boolean getIsRecursiveMethod(){
         return this.isRecursiveMethod;
+    }
+
+    public Boolean getIsLinearRecursiveMethod(){
+        return this.isLinearRecursiveMethod;
     }
 
     /**
@@ -189,6 +198,20 @@ public class GenericProofMethod {
     }
 
     /**
+     * TO BE OVERWRITTEN
+     *
+     * Returns the index of the first inference that is not a 
+     * equiv or = in a Transitivity method
+     * 
+     * @param typedTerm Derivation tree that code a Transitivity proof
+     * @param reverse Determines if we want the index but counting in reverse
+     * @return index of the first no =inference
+     */
+    public int transFirstOpInferIndex(Term typedTerm, Boolean reverse) {
+        return -1;
+    } 
+
+    /**
      * This function adds a step of a proof into a bigger proof.
      *
      * @param historial
@@ -220,8 +243,11 @@ public class GenericProofMethod {
     public Term finishedMethodProof(Term theoremBeingProved, Term proof, String username,
             ResuelveManager resuelveManager, SimboloManager simboloManager) 
     {
+        if (this.isLinearRecursiveMethod){
+            return finishedLinearRecursiveMethodProof(theoremBeingProved, proof);
+        }
         if (this.isRecursiveMethod){
-            return finishedRecursiveMethodProof(theoremBeingProved, proof);
+            return finishedBranchedRecursiveMethodProof(theoremBeingProved, proof);
         }
         return finishedBaseMethodProof(theoremBeingProved, proof, username, resuelveManager, simboloManager);
     }
@@ -279,7 +305,7 @@ public class GenericProofMethod {
     }
 
     /**
-     * This function will only be correct if called when using a recursive method.
+     * This function will only be correct if called when using a linear recursive method.
      * It will return a new proof tree in case it finds out that the last inference
      * caused the whole proof to be correct under the sub-proof method. In other case it will return 
      * the proof given as argument.
@@ -288,13 +314,13 @@ public class GenericProofMethod {
      * @param proof: The proof tree so far
      * @return proof of theoremBeingProved if finished, else return the same proof
      */
-    public Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
+    public Term finishedLinearRecursiveMethodProof(Term theoremBeingProved, Term proof) {
         try {
             // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
             List<Var> vars = new ArrayList<>();
             List<Term> terms = new ArrayList<>();
 
-            Term axiomTree = auxFinRecursiveMethodProof(theoremBeingProved, vars, terms);
+            Term axiomTree = auxFinLinearRecursiveMethodProof(theoremBeingProved, vars, terms);
             return new TypedApp(axiomTree, proof);
              
         } catch (TypeVerificationException e)  {
@@ -306,7 +332,7 @@ public class GenericProofMethod {
     /**
      * TO BE OVERWRITTEN
 
-     * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
+     * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
      * logic according to the current demonstration method.
      * 
      * @param theoremBeingProved: The theorem that user is trying to prove 
@@ -315,23 +341,44 @@ public class GenericProofMethod {
      * @return axiom tree that will later be used to build the complete proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
+    protected Term auxFinLinearRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
     {
         return null;
     }
 
     /**
-     * TO BE OVERWRITTEN
-     *
-     * Returns the index of the first inference that is not a 
-     * equiv or = in a Transitivity method
+     * This function will only be correct if called when using a branched (non linear) recursive method.
+     * This function will return a new proof tree in case it finds out that the last inference
+     * caused the whole proof to be correct under the sub-proof method. In other case it will return 
+     * the proof given as argument.
      * 
-     * @param typedTerm Derivation tree that code a Transitivity proof
-     * @param reverse Determines if we want the index but counting in reverse
-     * @return index of the first no =inference
+     * It will return a new proof tree that connects in one proof of P/\Q, 
+     * two independent sub proofs of P and Q
+     * 
+     * @param theoremBeingProved: The theorem that user is trying to prove 
+     * @param proof: The proof tree so far
+     * @return proof of theoremBeingProved if finished, else returns the same proof
      */
-    public int transFirstOpInferIndex(Term typedTerm, Boolean reverse) {
-        return -1;
-    } 
+    public Term finishedBranchedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
+        return null;
+    }
+
+    /**
+     * TO BE OVERWRITTEN
+
+     * Auxiliar method for "finishedBranchedRecursiveMethodProof" that implements the corresponding
+     * logic according to the current demonstration method.
+     * 
+     * @param theoremBeingProved: The theorem that user is trying to prove 
+     * @param vars: List of variables for doing parallel substitution
+     * @param terms: List of terms for doing parallel substitution
+     * @return axiom tree that will later be used to build the complete proof
+     * @throws com.calclogic.lambdacalculo.TypeVerificationException
+     */
+    protected Term auxFinBranchedRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
+            throws TypeVerificationException
+    {
+        return null;
+    }
 }

@@ -37,6 +37,7 @@ method_base returns [Term value]:
        | CO {$value = new Const("CO");}
        | CR {$value = new Const("CR");}
        | AI {$value = new Const("AI");}
+       | MI {$value = new Const("MI");}
        | CA {$value = new Const("CA");}
        | WI {$value = new Const("WI");}
        | O_PAR method C_PAR { $value = $method.value; };
@@ -62,6 +63,8 @@ CO: 'CO';
 CR: 'CR';
 
 AI: 'AI';
+
+MI: 'MI';
 
 CA: 'CA';
 

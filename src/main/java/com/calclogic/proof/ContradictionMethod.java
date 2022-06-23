@@ -50,7 +50,7 @@ public class ContradictionMethod extends GenericProofMethod {
     }
 
     /**
-     * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
+     * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
      * logic according to the contradiction method.
      * 
      * @param theoremBeingProved: The theorem that user is trying to prove 
@@ -59,7 +59,7 @@ public class ContradictionMethod extends GenericProofMethod {
      * @return axiom tree that will later be used to build the complete proof
      */
     @Override
-    protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms) 
+    protected Term auxFinLinearRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms) 
             throws TypeVerificationException
     {
         // This string says: ¬p => false == ¬(¬p)

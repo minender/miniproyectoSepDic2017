@@ -36,6 +36,7 @@ public class AndIntroductionMethod extends GenericProofMethod {
     }
 
     /**
+     * This function will only be correct if called when using a branched (non linear) recursive method.
      * This function will return a new proof tree in case it finds out that the last inference
      * caused the whole proof to be correct under the sub-proof method. In other case it will return 
      * the proof given as argument.
@@ -47,8 +48,7 @@ public class AndIntroductionMethod extends GenericProofMethod {
      * @param proof: The proof tree so far
      * @return proof of theoremBeingProved if finished, else returns the same proof
      */
-    @Override
-    public Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
+    public Term finishedBranchedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
         Map<String,String> values = new HashMap<>();
         values.put("T1",proof.toStringFinal());
         values.put("T1Type", proof.type().toStringFinal());

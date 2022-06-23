@@ -97,7 +97,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 case "AI":
                 case "CA":
                     // *********************** ESTE PRIMER IF ES SÓLO MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA **********
-                    if (strMethod == "CA"){
+                    if ("CA".equals(strMethod)){
                         beginFormula = new CaseAnalysisMethod().initFormula(beginFormula);
                     }
 
@@ -381,7 +381,7 @@ public class CrudOperationsImpl implements CrudOperations {
                                                                                     ((App)auxMethod).q);
 
                 GenericProofMethod objectMethod = createProofMethodObject("AI");
-                return objectMethod.finishedRecursiveMethodProof(typedTerm,aux);
+                return objectMethod.finishedBranchedRecursiveMethodProof(typedTerm,aux);
             }
             // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
             else if (ProofBoolean.isAIProof2Started(auxMethod)) {

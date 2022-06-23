@@ -52,9 +52,8 @@ public class CounterReciprocalMethod extends GenericProofMethod {
         return "By counter-reciprocal method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
-
     /**
-     * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
+     * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
      * logic according to the counter reciprocal method.
      * 
      * @param theoremBeingProved: The theorem that user is trying to prove 
@@ -63,7 +62,7 @@ public class CounterReciprocalMethod extends GenericProofMethod {
      * @return axiom tree that will later be used to build the complete proof
      */
     @Override
-    protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
+    protected Term auxFinLinearRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
     {
         // This string says: p => q == ¬q => ¬p
