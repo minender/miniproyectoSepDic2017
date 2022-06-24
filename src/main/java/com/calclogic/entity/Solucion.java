@@ -204,7 +204,7 @@ public class Solucion implements java.io.Serializable {
                 auxProof = subProof;
             }
             while (i < fathers.size()) {
-                auxProof = objectMethod.finishedBranchedRecursiveMethodProof(fathers.get(i), auxProof);
+                auxProof = objectMethod.finishedMethodProof(fathers.get(i), auxProof);
                 i++;
             }
             return auxProof;

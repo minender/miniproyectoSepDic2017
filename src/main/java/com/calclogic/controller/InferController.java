@@ -835,29 +835,29 @@ public class InferController {
             objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
 
             if (isFinalSolution && methodTermAux instanceof Const) {
-                switch (strMethodTermAux){
-                    case "CR":
-                    case "CO":
-                        finalProof = objectMethod.finishedLinearRecursiveMethodProof(formulasToProof.pop(), finalProof);
-                        break;
-                    case "CA":
-                    case "AI":
-                    case "MI":
-                        isFinalSolution = false;
-                        response.setEndCase(true);
-                        break;
-                    default:
-                        break;
+                // Recursive and branched method
+                if ("B".equals(objectMethod.getGroupMethod())) {
+                    isFinalSolution = false;
+                    response.setEndCase(true);   
+                }
+                // Recursive linear method
+                else if (objectMethod.getIsRecursiveMethod()) {
+                    finalProof = objectMethod.finishedLinearRecursiveMethodProof(formulasToProof.pop(), finalProof);
+                }
+                else{
+                    break;
                 }
             }
-            String m;
-            // This ensures that after each one-step inference the tree for the second proof is updated
-            if (methodTermAux instanceof App && 
-                    ( (m=((App)methodTermAux).p.toStringFinal()).equals("AI") || m.equals("CA") || m.equals("MI"))
-               )
-            {
-                objectMethod = crudOp.createProofMethodObject("AI");
-                finalProof = objectMethod.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
+
+            // This part ensures that after each one-step inference the tree for the second proof is updated
+            if (methodTermAux instanceof App){
+                Term m = ((App)methodTermAux).p;
+                if (m != null){
+                    objectMethod = crudOp.createProofMethodObject(m.toStringFinal());
+                    if ("B".equals(objectMethod.getGroupMethod())){
+                        finalProof = objectMethod.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
+                    }
+                }
             }
         }
 

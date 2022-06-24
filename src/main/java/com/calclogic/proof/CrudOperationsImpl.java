@@ -382,7 +382,7 @@ public class CrudOperationsImpl implements CrudOperations {
                                                                                     ((App)auxMethod).q);
 
                 GenericProofMethod objectMethod = createProofMethodObject("AI");
-                return objectMethod.finishedBranchedRecursiveMethodProof(typedTerm,aux);
+                return objectMethod.finishedMethodProof(typedTerm,aux);
             }
             // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
             else if (ProofBoolean.isAIProof2Started(auxMethod)) {

@@ -36,9 +36,6 @@ public class GenericProofMethod {
     // Determines if the method of the current class is basic or recursive
     protected Boolean isRecursiveMethod = false;
 
-    // Determines if the method is recursive but only has one sub-proof (linear)
-    protected Boolean isLinearRecursiveMethod = false;
-
     /**
      * Establishes the necessary initial class variables according
      * to the current method.
@@ -61,10 +58,13 @@ public class GenericProofMethod {
 
     private void setGroupMethod(String method){
         if (method.equals("DM") || method.equals("SS")){
-            this.groupMethod = "D";
+            this.groupMethod = "D"; 
         }
         else if (method.equals("TR") || method.equals("WE") || method.equals("ST")){
-            this.groupMethod = "T";
+            this.groupMethod = "T"; // All transitive methods
+        }
+        else if (method.equals("AI") || method.equals("CA") || method.equals("MI")){
+            this.groupMethod = "B"; // All recursive but branched methods (they split in more than one sub-proof)
         }
     }
 
@@ -73,21 +73,13 @@ public class GenericProofMethod {
     }
 
     private void setIsRecursiveMethod(String method){
-        if (method.equals("CR") || method.equals("CO")){
-            this.isRecursiveMethod = true;
-            this.isLinearRecursiveMethod = true;
-        }
-        else if (method.equals("AI") || method.equals("CA") || method.equals("MI")){
+        if (method.equals("CR") || method.equals("CO") || method.equals("AI") || method.equals("CA") || method.equals("MI")){
             this.isRecursiveMethod = true;
         }
     }
 
     public Boolean getIsRecursiveMethod(){
         return this.isRecursiveMethod;
-    }
-
-    public Boolean getIsLinearRecursiveMethod(){
-        return this.isLinearRecursiveMethod;
     }
 
     /**
@@ -235,6 +227,18 @@ public class GenericProofMethod {
      * 
      * @param theoremBeingProved: The theorem the user is trying to prove
      * @param proof: The proof tree so far
+     * @return new proof if finished, else return the same proof
+     */
+    public Term finishedMethodProof(Term theoremBeingProved, Term proof){
+        return finishedMethodProof(theoremBeingProved, proof, null, null, null);
+    }
+
+    /**
+     * The finished function depends on if the demonstration method is basic or recursive,
+     * so this calls the corresponding one.
+     * 
+     * @param theoremBeingProved: The theorem the user is trying to prove
+     * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param resuelveManager
      * @param simboloManager
@@ -243,11 +247,11 @@ public class GenericProofMethod {
     public Term finishedMethodProof(Term theoremBeingProved, Term proof, String username,
             ResuelveManager resuelveManager, SimboloManager simboloManager) 
     {
-        if (this.isLinearRecursiveMethod){
-            return finishedLinearRecursiveMethodProof(theoremBeingProved, proof);
+        if ("B".equals(this.groupMethod)){
+            return finishedBranchedRecursiveMethodProof(theoremBeingProved, proof);     
         }
         if (this.isRecursiveMethod){
-            return finishedBranchedRecursiveMethodProof(theoremBeingProved, proof);
+            return finishedLinearRecursiveMethodProof(theoremBeingProved, proof);
         }
         return finishedBaseMethodProof(theoremBeingProved, proof, username, resuelveManager, simboloManager);
     }
