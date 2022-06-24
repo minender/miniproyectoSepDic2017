@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author francisco
  */
-public class InferResponse {
+public class InferResponse extends GenericResponse{
     
     // Has all the proof made at this point, written in LaTeX.
     private String historial; 
@@ -121,6 +121,18 @@ public class InferResponse {
 
     public void setErrorParser1(Boolean errorParser1) {
         this.errorParser1 = errorParser1;
+    }
+
+    // We need to have the same name as in the other response classes
+    @Override
+    public String getError() {
+        return getErrorParser2();
+    }
+
+    // We need to have the same name as in the other response classes
+    @Override
+    public void setError(String error) {
+        setErrorParser2(error);
     }
 
     public String getErrorParser2() {

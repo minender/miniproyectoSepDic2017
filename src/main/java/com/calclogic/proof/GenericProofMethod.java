@@ -31,6 +31,7 @@ public class GenericProofMethod {
 
     // It will be "D" when methodStr is "DM" or "SS".
     // It will be "T" when methodStr is "TR", "WE" or "ST".
+    // It will be "B" when methodStr is "AI", "CA" or "MI".
     protected String groupMethod = null;
 
     // Determines if the method of the current class is basic or recursive

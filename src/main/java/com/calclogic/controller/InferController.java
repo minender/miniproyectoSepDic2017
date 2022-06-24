@@ -11,6 +11,7 @@ import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Usuario;
 import com.calclogic.forms.AutoSustResponse;
+import com.calclogic.forms.GenericResponse;
 import com.calclogic.forms.InferResponse;
 import com.calclogic.forms.InfersForm;
 import com.calclogic.forms.InstResponse;
@@ -90,7 +91,7 @@ public class InferController {
      * Controller that responds to HTTP GET request and returns the selection statement
      * page if there is a user session active. 
      * 
-     * @param username: login of the user that make the request. It's is in the URL also
+     * @param username: login of the user that made the request. It's is in the URL also
      * @param map: Mapping with values of each variables that will send to infer.jsp 
      * @return the String "infer" that refer to infer.jsp template if the user have an active session.
      *         With the right values in map, the infer.jsp template is filled to obtain the 
@@ -161,7 +162,7 @@ public class InferController {
      * Controller that responds to HTTP GET request. Returns the proof environment 
      * page of the statement (if there is a user session active). 
      * 
-     * @param username: login of the user that make the request. It is in the URL also
+     * @param username: login of the user that made the request. It is in the URL also
      * @param nTeo: code of statement that the user request to prove. It is in the URL also
      * @param map: Mapping with values of each variables that will send to infer.jsp 
      * @return the String "infer" that refer to infer.jsp template if the user have an active session
@@ -380,46 +381,15 @@ public class InferController {
         PredicadoId predicadoid = new PredicadoId();
         predicadoid.setLogin(username);
         
-        Term statementTerm;
-        if (nStatement.length() >= 4) {
-            // FIND THE THEOREM BEING USED IN THE HINT
-            String tipoTeo = nStatement.substring(0, 2);
-            String numeroTeo = nStatement.substring(3, nStatement.length());
-        
-            switch (tipoTeo) {
-                case "ST":
-                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
-                    // Case when the user could only see the theorem but had not a Resuelve object associated to it
-                    if (resuelve == null) {
-                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                    }
-                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
-                    break;
-                case "MT":
-                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                    if (dispone == null){
-                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
-                    }
-                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
-                    break;
-                default:
-                    response.setError("statement format error");
-                    return response;
-            }
-            if (statementTerm == null) {
-                response.setError("The statement doesn't exist");
-                return response;
-            }
-        }
-        else {
-            response.setError("statement format error");
+        Term statementTerm = this.findStatement(response, nStatement, username);
+        if (response.getError() != null){
             return response;
         }
        
         // CREATE THE INSTANTIATION
-       ArrayList<Object> arr = null;
+        ArrayList<Object> arr = null;
         if (!instanciacion.equals("")){
-          arr=TermUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
+            arr=TermUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
         }
         
         if (arr == null)
@@ -482,39 +452,8 @@ public class InferController {
         PredicadoId predicadoid=new PredicadoId();
         predicadoid.setLogin(username);
         
-        Term statementTerm;
-        if (nStatement.length() >= 4) {
-            // FIND THE THEOREM BEING USED IN THE HINT
-            String tipoTeo = nStatement.substring(0, 2);
-            String numeroTeo = nStatement.substring(3, nStatement.length());
-            
-            switch (tipoTeo) {
-                case "ST":
-                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
-                    // Case when the user could only see the theorem but had not a Resuelve object associated to it
-                    if (resuelve == null) {
-                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                    }
-                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
-                    break;
-                case "MT":
-                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                    if (dispone == null){
-                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
-                    }
-                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
-                    break;
-                default:
-                    response.setError("statement format error");
-                    return response;
-            }
-            if (statementTerm == null) {
-                response.setError("The statement doesn't exist");
-                return response;
-            }
-        }
-        else {
-            response.setError("statement format error");
+        Term statementTerm = this.findStatement(response, nStatement, username);
+        if (response.getError() != null){
             return response;
         }
 
@@ -606,7 +545,7 @@ public class InferController {
      *                 HTTP POST parameter encoded with JSON
      * @param instanciacion: String with the description of the substitution of the inference in format C. 
      *                       It is an HTTP POST parameter encoded with JSON
-     * @param username: login of the user that make the request. It is in the URL also
+     * @param username: login of the user that made the request. It is in the URL also
      * @param nTeo: code of statement that the user is proving. It is in the URL also
      * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also 
      * @return InferResponse Object with the the proof, in latex format, after an one step inference. 
@@ -620,102 +559,28 @@ public class InferController {
                                              /*, @RequestParam(value="teoremaInicial") String teoremaInicial, @RequestParam(value="nuevoMetodo") String nuevoMetodo */) 
     {
         InferResponse response = new InferResponse(crudOp);
-        PredicadoId predicadoid=new PredicadoId();
+        PredicadoId predicadoid = new PredicadoId();
         predicadoid.setLogin(username);
-        /* Jean
-        // FIND THE THEOREM BEING USED IN THE HINT
-+       String tipoTeo = nStatement.substring(0, 2);
-+        String numeroTeo = nStatement.substring(3, nStatement.length());
-        */
-        Term statementTerm;
-        if (nStatement.length() >= 4) {
-            // FIND THE THEOREM BEING USED IN THE HINT
-            String tipoTeo = nStatement.substring(0, 2);
-            String numeroTeo = nStatement.substring(3, nStatement.length());
-        
-            switch (tipoTeo) {
-                case "ST":
-                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
-                    // Case when the user could only see the theorem but had not a Resuelve object associated to it
-                    if (resuelve == null) {
-                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                    }
-                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
-                    break;
-                case "MT":
-                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                    if (dispone == null){
-                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
-                    }
-                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
-                    break;
-                default:
-                    response.setErrorParser2("statement format error");
-                    return response;
-            }
-            if (statementTerm == null) {
-                response.setErrorParser2("The statement doesn't exist");
-                return response;
-            }
-        }
-        /* Jean
-        if (tipoTeo.equals("ST")){
-+            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
-+            statementTerm = resuelve.getTeorema().getTeoTerm();
-         }
-        */
-        else {
-        /* Jean
-        else if(tipoTeo.equals("MT")){
-+            Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-+            statementTerm = dispone.getMetateorema().getTeoTerm();    
-        */
-            response.setErrorParser2("statement format error");
+
+        Term statementTerm = this.findStatement(response, nStatement, username);
+        if (response.getError() != null){
             return response;
         }
         
         // CREATE THE INSTANTIATION
         ArrayList<Object> arr = null;
         if (!instanciacion.equals("")){
-            /*Jean solo esta linea CharStream in2 = CharStreams.fromString(instanciacion);
-            TermLexer lexer2 = new TermLexer(in2);
-            CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
-            TermParser parser2 = new TermParser(tokens2);
-            try{*/
-             //Jean el try descomentado solo con esta linea arr=parser2.instantiate(predicadoid,predicadoManager,simboloManager).value;
             arr=TermUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
-            /*}
-            catch(RecognitionException e){ // Wrong instantiation sent by the user
-              String hdr = parser2.getErrorHeader(e);
-              String msg = e.getMessage(); 
-              response.setErrorParser2(hdr + " " + msg);
-                
-              return response;
-            }*/
         }
         
         // CREATE LEIBNIZ
         Term leibnizTerm = null;
         if (!leibniz.equals("")){
-            /*CharStream in3 = CharStreams.fromString(leibniz);
-            TermLexer lexer3 = new TermLexer(in3);
-            CommonTokenStream tokens3 = new CommonTokenStream(lexer3);
-            TermParser parser3 = new TermParser(tokens3);
-            try{*/
-               //leibnizTerm =parser3.lambda(predicadoid,predicadoManager,simboloManager).value;
             leibnizTerm =TermUtilities.lambda(leibniz, predicadoid, predicadoManager, simboloManager);
             if ( ((Bracket)leibnizTerm).isIdFunction()) {
                 leibnizTerm = null;
                 leibniz = "";
             }
-            /*}
-            catch(RecognitionException e) { // Wrong leibniz sent by the user
-                String hdr = parser3.getErrorHeader(e);
-                String msg = e.getMessage(); 
-                response.setErrorParser3(hdr + " " + msg);
-                
-                return response;
-            }*/
         }   
 
         Resuelve resuel     = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
@@ -751,7 +616,7 @@ public class InferController {
         Term theoremBeingProved = formulasToProof.pop();
     
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROOF TYPE
-        Term infer = null;
+        Term infer;
         String strMethodTermIter = methodTermIter.toStringFinal();
         GenericProofMethod objectMethod = crudOp.createProofMethodObject(strMethodTermIter);
         
@@ -896,7 +761,7 @@ public class InferController {
      * line implies that you must select a new proof method, the InferResponse has the select 
      * method attribute on.
      *
-     * @param username: login of the user that make the request. It is in the URL also
+     * @param username: login of the user that made the request. It is in the URL also
      * @param nTeo: code of statement that the user is proving. It is in the URL also
      * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also 
      * @return InferResponse Object with the the proof, in latex format, without the last line. If delete the last 
@@ -955,7 +820,7 @@ public class InferController {
                disponeManager, 
                simboloManager);
         
-        // estos set se pudieran calcular dentro de generar historial
+        // estos set se podrían calcular dentro de generar historial
         if(respRetroceder==0 && method != null){
             response.setCambiarMetodo("2");
         }
@@ -975,7 +840,7 @@ public class InferController {
      * clickable
      *
      * @param newMethod: Proof method that will be introduced in the proof.
-     * @param username: Login of the user that make the request. It is in the url also.
+     * @param username: Login of the user that made the request. It is in the url also.
      * @param nSol: Identifier of the solution of nTeo that the user is editing. It is in the url also.
      * @param nTeo: Code of statement that the user is proving. It is in the url also.
      * @return Returns an InferResponse object with the proof, in latex format, in which the 
@@ -1041,7 +906,7 @@ public class InferController {
      *              HTTP POST parameter encoded with JSON.
      * @param newMethod: Proof method that will be introduced in the proof.
      * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also.
-     * @param username: login of the user that make the request. It is in the URL also.
+     * @param username: login of the user that made the request. It is in the URL also.
      * @param nTeo: code of statement that the user is proving. It is in the URL also .
      * @return InferResponse Object with the the proof, in latex format, with only the statement 
      *         selected for the user in the first line of the current sub proof.
@@ -1217,6 +1082,56 @@ public class InferController {
         response.setCambiarMetodo(objectMethod.getIsRecursiveMethod() ? "2" : "0");
 
         return response;
+    }
+    
+    /************************ Auxiliar functions: Non-controllers ********************************/
+
+    /**
+     * When in a demonstration we need to use a theorem or metatheorem as a hint 
+     * (for inference, instantiation or substitution), we need to get its 
+     * statement. This function does it.
+     *
+     * @param response: Entry-exit parameter. In case there is an error, we set
+     *                  that error here in the parameter and the caller must then
+     *                  inmediately return the updated response.
+     * @param nStatement: Number of the statement, as a string, that will be looked for.
+     * @param username: login of the user that made the request.
+     * @return The statement of the theorem or metatheorem.
+     */
+    private Term findStatement(GenericResponse response, String nStatement, String username){
+        Term statementTerm = null;
+        if (nStatement.length() >= 4) {
+            // FIND THE THEOREM BEING USED IN THE HINT
+            String tipoTeo = nStatement.substring(0, 2);
+            String numeroTeo = nStatement.substring(3, nStatement.length());
+        
+            switch (tipoTeo) {
+                case "ST":
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                    // Case when the user could only see the theorem but had not a Resuelve object associated to it
+                    if (resuelve == null) {
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                    }
+                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
+                    break;
+                case "MT":
+                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                    if (dispone == null){
+                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
+                    }
+                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
+                    break;
+                default:
+                    response.setError("statement format error");
+            }
+            if (statementTerm == null) {
+                response.setError("The statement doesn't exist");
+            }
+        }
+        else {
+            response.setError("statement format error");
+        }
+        return statementTerm;
     }
     
 }

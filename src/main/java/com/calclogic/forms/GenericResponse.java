@@ -7,28 +7,17 @@ package com.calclogic.forms;
 
 /**
  *
- * @author federico
+ * @author ronald
  */
-public class InstResponse extends GenericResponse{
+public class GenericResponse {
     
-    private String instantiation;
     private String error;
-
-    public String getInstantiation() {
-        return instantiation;
-    }
     
-    @Override
     public String getError() {
         return error;
     }
-
-    @Override
+    
     public void setError(String err) {
         error = err;
-    }
-
-    public void setInstantiation(String inst) {
-        instantiation = inst;
     }
 }

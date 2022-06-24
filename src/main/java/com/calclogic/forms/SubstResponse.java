@@ -9,7 +9,7 @@ package com.calclogic.forms;
  *
  * @author federico
  */
-public class SubstResponse {
+public class SubstResponse extends GenericResponse{
 
     private String[] sustFormatC;
     private String[] sustLatex;
@@ -23,9 +23,15 @@ public class SubstResponse {
         return sustLatex;
     }
     
+    @Override
     public String getError() {
         return error;
     }
+
+    @Override
+    public void setError(String err) {
+        error = err;
+    }    
 
     public void setSustFormatC(String[] sust) {
         sustFormatC = sust;
@@ -34,8 +40,5 @@ public class SubstResponse {
     public void setSustLatex(String[] sust) {
         sustLatex = sust;
     }
-    
-    public void setError(String err) {
-        error = err;
-    }    
+
 }
