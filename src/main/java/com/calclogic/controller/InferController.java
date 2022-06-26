@@ -921,6 +921,7 @@ public class InferController {
                                             @PathVariable String nTeo)
     {   
         GenericProofMethod objectMethod = crudOp.createProofMethodObject(newMethod);
+        Boolean isRecursive = objectMethod.getIsRecursiveMethod();
         String groupMethod = objectMethod.getGroupMethod();
         boolean sideOrTransitive = ("SS".equals(newMethod) || "T".equals(groupMethod));
 
@@ -1011,9 +1012,9 @@ public class InferController {
                     solucionManager.updateSolucion(solucion);       
                 }
 
-                // if ("AI".equals(newMethod) || "CA".equals(newMethod)){
-                //     typedTerm = solucion.getTypedTerm();
-                // }
+                if (isRecursive){ // If we don't put this, we will get "typedTerm" as null in a branched sub-proof
+                    typedTerm = solucion.getTypedTerm();
+                }
             }
 
             if (sideOrTransitive){
@@ -1069,9 +1070,9 @@ public class InferController {
             username, // user
             formulaAnterior, // formula
             nTeo, 
-            typedTerm, // EN CO y CR, ponía solucion.getTypedTerm()
+            typedTerm,
             true, // valida
-            ! objectMethod.getIsRecursiveMethod(), // labeled
+            !isRecursive, // labeled
             methodTerm,
             resuelveManager,
             disponeManager,
@@ -1079,7 +1080,7 @@ public class InferController {
         );
 
         // In the recursive case, the user still needs to choose another proof method for the sub-proof
-        response.setCambiarMetodo(objectMethod.getIsRecursiveMethod() ? "2" : "0");
+        response.setCambiarMetodo(isRecursive ? "2" : "0");
 
         return response;
     }
