@@ -11,7 +11,6 @@ import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Usuario;
 import com.calclogic.forms.AutoSustResponse;
-import com.calclogic.forms.GenericResponse;
 import com.calclogic.forms.InferResponse;
 import com.calclogic.forms.InfersForm;
 import com.calclogic.forms.InstResponse;
@@ -193,33 +192,15 @@ public class InferController {
             solId ="" + resuel.getDemopendiente();
         
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,nTeo); // Maybe: getAllResuelveByUserOrAdminResuelto
+        
         for (Resuelve r: resuelves){
             Teorema t = r.getTeorema();
             Term term = t.getTeoTerm();
+
             if(r.isResuelto()==true){ // || r.getNumeroteorema().equals(nTeo)){
-                
-                /*try
-                {
-                  t.setTeoTerm(new App(new App(new Const(1,"\\cssId{click@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{"+((Const)((App)((App)term).p).p).getCon()+"}}}",((Const)((App)((App)term).p).p).getFunNotation(),((Const)((App)((App)term).p).p).getPreced(),((Const)((App)((App)term).p).p).getAsociat()),((App)((App)term).p).q),((App)term).q));
-                }
-                catch (java.lang.ClassCastException e)
-                {*/
-                    t.setTeoTerm(term);
-                //}
+                t.setTeoTerm(term);
                 t.setMetateoTerm(new App(new App(new Const(1,"\\cssId{clickmeta@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{\\equiv}}}",false,1,1),new Const("true ")), term));
             }
-            else{
-                ;
-                /*try
-                {
-                  t.setTeoTerm(new App(new App(new Const(((Const)((App)((App)term).p).p).getCon(),false,1,1),((App)((App)term).p).q),((App)term).q));
-                }
-                catch (java.lang.ClassCastException e)
-                {
-                    t.setTeoTerm(term);
-                }
-                t.setMetateoTerm(new App(new App(new Const("{\\equiv}}",false,1,1),new Const("true ")), term));*/
-            }    
         }
         Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("usuario", usr);
@@ -255,69 +236,13 @@ public class InferController {
                 disponeManager,
                 simboloManager
             );
-
-            //Boolean hasInnerMethodSelected = !solucion.getMetodo().equals("");
-
-
-            // If it is an And Introduction proof
-            //if (solucion.getMetodo().startsWith("And Introduction(")) {
-            // if (solucion.getMetodo().startsWith("AI")) {
-            //     String[] methodAndPath = solucion.getMetodo().split("-");
-            //     String[] methods = methodAndPath[0].substring(
-            //                            17,
-            //                            methodAndPath[0].length() - 1
-            //                        ).split(";");
-            //     String currentMethod;
-            //     String path = methodAndPath[1];
-    
-            //     // TODO: we have to create a parser to identify the recursive
-            //     // case.
-            //     if (path.equals("p")) {
-            //         currentMethod = methods[0];
-            //     } else {
-            //         currentMethod = methods[1];
-            //     }
-
-            //     // If no method has been selected, we should show the method 
-            //     // selector 
-            //     if (currentMethod.equals("null")) {
-            //         hasInnerMethodSelected = false;
-            //     }
-
-            // }
-/*
-            if (typedTerm == null && !hasInnerMethodSelected) 
-                map.addAttribute("elegirMetodo","1");
-            else if (//typedTerm == null && 
-                     hasInnerMethodSelected && response.getCambiarMetodo().equals("2"))
-                map.addAttribute("elegirMetodo","2");
-            else
-                map.addAttribute("elegirMetodo","0");
-*/
             map.addAttribute("elegirMetodo",response.getCambiarMetodo());
             map.addAttribute("formula",response.getHistorial());
-
-            // TODO: preguntarle a Flaviani sobre este caso borde
-            // Term type = null;//typedTerm.type();
-            // String teoInicial;
-            // Resuelve res = null;
-            // if (typedTerm!=null && (type = typedTerm.type()) == null)
-            // {
-            //     teoInicial = solucion.getTypedTerm().toStringFinal();
-            //     res = resuelveManager.getResuelveByUserAndTeorema(username, teoInicial);
-            // }
-            // else if (typedTerm!=null)
-            // {
-            //   teoInicial = ((App)type).q.toStringFinal();
-            //   res = resuelveManager.getResuelveByUserAndTeorema(username, teoInicial);
-            // }
-            // if (res != null)
-            //    map.addAttribute("teoInicial", res.getNumeroteorema());
-            // else
-            //    map.addAttribute("teoInicial", "");
         }
+
         List <Categoria> showCategorias = new LinkedList<>();
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
+
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
@@ -381,7 +306,7 @@ public class InferController {
         PredicadoId predicadoid = new PredicadoId();
         predicadoid.setLogin(username);
         
-        Term statementTerm = this.findStatement(response, nStatement, username);
+        Term statementTerm = crudOp.findStatement(response, nStatement, username, resuelveManager, disponeManager);
         if (response.getError() != null){
             return response;
         }
@@ -452,7 +377,7 @@ public class InferController {
         PredicadoId predicadoid=new PredicadoId();
         predicadoid.setLogin(username);
         
-        Term statementTerm = this.findStatement(response, nStatement, username);
+        Term statementTerm = crudOp.findStatement(response, nStatement, username, resuelveManager, disponeManager);
         if (response.getError() != null){
             return response;
         }
@@ -562,7 +487,7 @@ public class InferController {
         PredicadoId predicadoid = new PredicadoId();
         predicadoid.setLogin(username);
 
-        Term statementTerm = this.findStatement(response, nStatement, username);
+        Term statementTerm = crudOp.findStatement(response, nStatement, username, resuelveManager, disponeManager);
         if (response.getError() != null){
             return response;
         }
@@ -725,8 +650,6 @@ public class InferController {
                 }
             }
         }
-
-        // newProve might or might not be different than pasoPostTerm
         
         // UPDATE SOLUCION 
         solucion.setTypedTerm(finalProof);
@@ -937,10 +860,6 @@ public class InferController {
         methodTerm = typedTerm = null;
 
         try{
-            if ("AI".equals(newMethod) && (((Const)((App)((App)formulaAnterior).p).p).getId() != 5) ) {
-                throw new ClassCastException("Error");
-            }
-
             // ---- In this section we determine the value of "formulaTerm" -----
             Term formulaTerm = "T".equals(groupMethod) ? formulaAnterior : null;
 
@@ -966,7 +885,12 @@ public class InferController {
             // ---- End of assigning "formulaTerm" 
 
             if (nSol.equals("new")){
-                if ("CR".equals(newMethod) && (((Const)((App)((App)formulaAnterior).p).p).getId() != 2) ){
+                // Note: Currently we are not doing CR with <==, BUT WE SHOULD
+                if ( ("CR".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 2) ) || // Right arrow ==>
+                     ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 1) )    // Equivalence ==
+                    )
+                {
                     throw new ClassCastException("Error");
                 }
 
@@ -984,16 +908,18 @@ public class InferController {
                 methodTerm = new Const(newMethod);        
             }
             else{
-                if ("CR".equals(newMethod) && 
-                    (((Const)((App)((App)crudOp.initStatement(formulaAnterior, methodTerm)).p).p).getId() != 2)
-                    )
-                {
-                    throw new ClassCastException("Error");
-                }   
-
                 // When the proof already exists in the DB, we obtain the solution from it.
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
                 methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
+
+                // Note: Currently we are not doing CR with <==, BUT WE SHOULD
+                if ( ("CR".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 2) ) || // Right arrow ==>
+                     ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 1) )    // Equivalence ==
+                    )
+                {
+                    throw new ClassCastException("Error");
+                }
 
                 // We save in the database the concatenation of the previous list of methods with the new one
                 solucion.setMetodo(methodTerm.toStringFinal());
@@ -1030,7 +956,7 @@ public class InferController {
                             break;
                         default:
                             // **** For the "TR" method we should check first if the operator is transitive
-                            // **** Also, why must we always start from the left side ?
+                            // **** Also, the user should be able to start from whichever side they want
                             lado = "TR".equals(newMethod) ? "i" : null;
                             break;
                     }
@@ -1062,6 +988,7 @@ public class InferController {
             }
 
         } catch (ClassCastException e) {
+            System.out.println("El catch que se da cuenta es el de InferController");
             response.setErrorParser1(true);
             return response;
         }
@@ -1083,56 +1010,6 @@ public class InferController {
         response.setCambiarMetodo(isRecursive ? "2" : "0");
 
         return response;
-    }
-    
-    /************************ Auxiliar functions: Non-controllers ********************************/
-
-    /**
-     * When in a demonstration we need to use a theorem or metatheorem as a hint 
-     * (for inference, instantiation or substitution), we need to get its 
-     * statement. This function does it.
-     *
-     * @param response: Entry-exit parameter. In case there is an error, we set
-     *                  that error here in the parameter and the caller must then
-     *                  inmediately return the updated response.
-     * @param nStatement: Number of the statement, as a string, that will be looked for.
-     * @param username: login of the user that made the request.
-     * @return The statement of the theorem or metatheorem.
-     */
-    private Term findStatement(GenericResponse response, String nStatement, String username){
-        Term statementTerm = null;
-        if (nStatement.length() >= 4) {
-            // FIND THE THEOREM BEING USED IN THE HINT
-            String tipoTeo = nStatement.substring(0, 2);
-            String numeroTeo = nStatement.substring(3, nStatement.length());
-        
-            switch (tipoTeo) {
-                case "ST":
-                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
-                    // Case when the user could only see the theorem but had not a Resuelve object associated to it
-                    if (resuelve == null) {
-                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                    }
-                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
-                    break;
-                case "MT":
-                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
-                    if (dispone == null){
-                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
-                    }
-                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
-                    break;
-                default:
-                    response.setError("statement format error");
-            }
-            if (statementTerm == null) {
-                response.setError("The statement doesn't exist");
-            }
-        }
-        else {
-            response.setError("statement format error");
-        }
-        return statementTerm;
     }
     
 }

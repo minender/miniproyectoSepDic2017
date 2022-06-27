@@ -15,6 +15,29 @@ public class CaseAnalysisMethod extends AndIntroductionMethod {
     }
 
     /**
+     * Indicates the header that a proof that starts with case analysis
+     * method must have.
+     *  
+     * @param statement: New statement that needs to be proved according to this method
+     * @return The header message to be added to the proof
+     */
+    @Override
+    public String header(String statement){
+        return "By case analysis method:<br><br>";
+    }
+
+    /**
+     * Indicates the header of a sub-proof of a branched recursive method
+     *  
+     * @param caseStatement: Case that needs to be demonstrated in the current sub-proof
+     * @return The header message to be added to the proof
+     */
+    @Override
+    public String subProofInit(String caseStatement){
+        return "Case:<br>" + caseStatement + "Sub Proof:<br>";
+    }
+
+    /**
      * The statement that is needed to be proven may change inside a sub proof,
      * so this function calculates which that new statement is.
      *  

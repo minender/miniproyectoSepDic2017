@@ -112,6 +112,16 @@ public class GenericProofMethod {
     }
 
     /**
+     * Indicates the header of a sub-proof of a branched recursive method
+     *  
+     * @param statement: Statement that needs to be demonstrated in the current sub-proof
+     * @return The header message to be added to the proof
+     */
+    public String subProofInit(String statement){
+        return "Statement:<br>" + statement + "Sub Proof:<br>";
+    }
+
+    /**
      * This function will create a hint for the current method if it is basic, given the hint's elements.
      * In case the elements don't make sense it will return null.
      * 

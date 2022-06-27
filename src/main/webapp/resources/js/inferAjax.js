@@ -81,7 +81,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
         data,
         success: function(newData) {
             if(newData.errorParser1){
-                alert("The selected method does not apply to the current theorem");
+                alert("The selected method does not apply to the current statement");
                 $("#metodosDiv").show();
                 completeSuccess = false;
             }

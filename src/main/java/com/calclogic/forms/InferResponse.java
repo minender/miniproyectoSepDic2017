@@ -45,7 +45,7 @@ public class InferResponse extends GenericResponse{
 
     // When the proof method is starting from one side, this indicates the side: 
     // 'd' for the right one (derecho) and 'i' for the left one (izquierdo).
-    // It is also "1" when a clickable statement must be splitted in two sides.
+    // It is also "1" when a clickable statement must be splitted into two sides.
     private String lado;
 
     // Determines if the proof was solved so a congratulatory message should be displayed
@@ -57,7 +57,7 @@ public class InferResponse extends GenericResponse{
     // Represents if the solution is ending a case.
     private boolean endCase = false;
 
-    private CrudOperations proofCrudOperations;
+    private final CrudOperations proofCrudOperations;
 
     public InferResponse(CrudOperations proofCrudOperations) {
         this.proofCrudOperations = proofCrudOperations;
@@ -169,7 +169,7 @@ public class InferResponse extends GenericResponse{
      * @param objectMethod
      * @return Nothing.
      */
-    private void setRecursiveMethodProof(String user, Term typedTerm, ResuelveManager resuelveManager, 
+    private void setLinearRecursiveMethodProof(String user, Term typedTerm, ResuelveManager resuelveManager, 
             DisponeManager disponeManager, SimboloManager s, String header, String clickable, 
             Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo, GenericProofMethod objectMethod) 
     {
@@ -184,7 +184,7 @@ public class InferResponse extends GenericResponse{
             this.setErrorParser1(true);
             return;
         }
-        // By current method, the following must be proved: <statement> 
+        // By <current> method, the following must be proved: <statement> 
         header += objectMethod.header(statement);   
         
         if (methodTerm instanceof App) {
@@ -192,7 +192,7 @@ public class InferResponse extends GenericResponse{
                 typedTerm = ((App)typedTerm).q;
             }
             privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
-                             resuelveManager, disponeManager, s, clickable, false);
+                            resuelveManager, disponeManager, s, clickable, false);
         }
         else{
             this.setHistorial(header);
@@ -216,65 +216,85 @@ public class InferResponse extends GenericResponse{
      * @param nTeo
      * @return Nothing.
      */
-    private void set_AIorCA_Proof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
-        SimboloManager s, String header, String clickable, Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo)
+    private void setBranchedRecursiveMethodProof(String user, Term typedTerm, ResuelveManager resuelveManager, 
+        DisponeManager disponeManager, SimboloManager s, String header, String clickable, Term methodTerm, 
+        Boolean valida, Boolean labeled, Term formula, String nTeo, GenericProofMethod objectMethod)
     {
-        String statement;
-        boolean isAI = methodTerm.toStringFinal().substring(0, 2).equals("AI");
-        String stOrCase = (isAI?"Statement":"Case");
-        String methodName = (isAI?"Conjunction by parts":"Case Analysis");
-        Term newFormula = ((App)formula).q;
-        try {
-           statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) 
-                                   + "$</center>";
-        }
-        catch (Exception e) {
-            this.setErrorParser1(true);
-            return;
-        }
-        header+="By "+methodName+" method:<br>"+stOrCase+" 1:<br>"+statement+"Sub Proof:<br>";
-        if (methodTerm instanceof Const){
-           historial = header;
-        }
-        else if ( ((App)methodTerm).p instanceof Const  ) {
-            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
-                                    resuelveManager, disponeManager, s, clickable, false);
-            if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
-                cambiarMetodo = "0";
+        try{
+            System.out.println("\n\n=======================\nEntré en setBranchedRecursiveMethodProof con methodTerm = "+methodTerm.toStringFinal());
+            System.out.println("typedTerm = "+((typedTerm != null) ? typedTerm.toStringFinal() : null));
+            String statement;
+            Term newFormula = ((App)formula).q; // First branch
+
+            System.out.println("\nformula = "+formula.toStringFinal());
+            System.out.println("formula.p = "+((App)formula).p.toStringFinal());
+            System.out.println("formula.q = "+((App)formula).q.toStringFinal());
+            System.out.println("formula.p.p = "+((App)((App)formula).p).p.toStringFinal());
+            System.out.println("formula.p.q = "+((App)((App)formula).p).q.toStringFinal());
+
+            if (!(methodTerm instanceof Const)){
+                System.out.println("\nmethodTerm.p = "+((App)methodTerm).p.toStringFinal());
+                System.out.println("methodTerm.q = "+((App)methodTerm).q.toStringFinal());
             }
-            else {
-                if (!clickable.equals("n"))
-                    cambiarMetodo = "0"; 
-                newFormula = ((App)((App)formula).p).q;
-                try {
+            System.out.println("    \nVoy a asignar el statement 1");
+            statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) 
+                                    + "$</center>";
+            System.out.println("    El cual es = "+statement);
+            header += objectMethod.header("") + objectMethod.subProofInit(statement);
+
+            if (methodTerm instanceof Const){
+                System.out.println("    \nEntré al if");
+                historial = header;
+            }
+            // Proof of the first sub-case
+            else if ( ((App)methodTerm).p instanceof Const  ) {
+                System.out.println("    \nEntré al else if");
+                System.out.println("    Voy a llamar a privateGenerarHistorial 1");
+                privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
+                                        resuelveManager, disponeManager, s, clickable, false);
+
+                if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
+                    System.out.println("        ---> Luego entré al if 1");
+                    cambiarMetodo = "0";
+                }
+                else { // This only occurs when the user has just finalized the previous sub-proof
+                    System.out.println("        ---> Luego entré al else 1");
+                    if (!clickable.equals("n")){
+                        cambiarMetodo = "0"; 
+                    }
+                    newFormula = ((App)((App)formula).p).q; // Second branch
+                    System.out.println("    Voy a asignar el statement 2");
                     statement = "<center>$" + clickableST(newFormula, clickable, new Const("AI"), false, s) 
                                    + "$</center>";
-                }catch (Exception e) {
-                    this.setErrorParser1(true);
-                    return;
+                    System.out.println("    El cual es = "+statement);
+                    historial += objectMethod.subProofInit(statement);
                 }
-                historial += stOrCase+" 2:<br>"+statement+"Sub Proof:<br>";
             }
-        }
-        else{
-            privateGenerarHistorial(user, newFormula, header, nTeo,
-                            (ProofBoolean.isAIProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
-                             valida, labeled, ((App)((App)methodTerm).p).q, resuelveManager, disponeManager, 
-                             s, clickable, false);
-            newFormula = ((App)((App)formula).p).q;
-            try {
+            // Proof of a sub-case that is not the first one (sure?)
+            else{
+                System.out.println("    \nEntré al else");
+                System.out.println("    Voy a llamar a privateGenerarHistorial 2");
+                
+                privateGenerarHistorial(user, newFormula, header, nTeo,
+                                (ProofBoolean.isAIProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
+                                 valida, labeled, ((App)((App)methodTerm).p).q, resuelveManager, disponeManager, 
+                                 s, clickable, false);
+                newFormula = ((App)((App)formula).p).q;
+                System.out.println("    Voy a asignar el statement 3");
                 statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) 
                                    + "$</center>";
-            }catch (Exception e) {
-                this.setErrorParser1(true);
-                return;
+                System.out.println("    El cual es = "+statement);
+                header = historial + objectMethod.subProofInit(statement);
+                historial = "";
+                Term newTypedTerm;
+                newTypedTerm = proofCrudOperations.getSubProof(typedTerm, methodTerm);
+                System.out.println("    Voy a llamar a privateGenerarHistorial 3");
+                privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)methodTerm).q, 
+                                 resuelveManager, disponeManager, s, clickable, false);
             }
-            header = historial + stOrCase+" 2:<br>"+statement+"Sub Proof:<br>";
-            historial = "";
-            Term newTypedTerm;
-            newTypedTerm = proofCrudOperations.getSubProof(typedTerm, methodTerm);
-            privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)methodTerm).q, 
-                             resuelveManager, disponeManager, s, clickable, false);
+        } catch (Exception e) {
+            this.setErrorParser1(true);
+            return;
         }
     }
 
@@ -287,26 +307,34 @@ public class InferResponse extends GenericResponse{
      * @return The string that the user can click.
      */
     private String clickableST(Term newTerm, String clickable, Term method, boolean isRootTeorem, 
-                                SimboloManager s) throws Exception {
-
-        if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ) // en plena recursion
+                                SimboloManager s) throws Exception
+    {
+        // In full recursion
+        if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){
             return newTerm.toStringInf(s,"");
-        else if (clickable.equals("DM"))  // final de la impresion
+        }     
+        else if ("DM".equals(clickable)){ // End of the impression
             return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringInf(s,"") + "}}";
-        else if (clickable.equals("SS")) { // final de la impresion
+        }   
+        else if ("SS".equals(clickable)) { // End of the impression
             String formulaDer = ((App)((App)newTerm).p).q.toStringInf(s,"");
             String formulaIzq = ((App)newTerm).q.toStringInf(s,"");
             Term operatorTerm = ((App)((App)newTerm).p).p;//resuelve.getTeorema().getOperador();
             String operator = operatorTerm.toStringInf(s,"");
-            if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{20}"))
-               throw new Exception();
+
+            if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{20}")){
+                System.out.println("\n\n\n>>>Voy al throw exception de clickableST");
+                throw new Exception();
+            }
             
             formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
             formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
+
             return formulaIzq+"$ $"+ operator +"$ $" + formulaDer;
         }
-        else // clickable.equals("n")
+        else{ // clickable.equals("n")
             return newTerm.toStringInf(s,"");
+        }
     }
     
     /**
@@ -379,7 +407,8 @@ public class InferResponse extends GenericResponse{
     private void privateGenerarHistorial(String user, Term formula, String header, String nTeo, Term typedTerm, Boolean valida, 
         Boolean labeled, Term methodTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
         SimboloManager s, String clickable, Boolean isRootTeorem)
-    {    
+    {   
+        System.out.println("Entre a privateGenerarHistorial con typedTerm = "+((typedTerm!=null) ? typedTerm.toStringFinal() : null));
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
@@ -457,30 +486,31 @@ public class InferResponse extends GenericResponse{
 
         // -- Here is where we really generate the proof record accoding to the demonstration method ---
 
-        // Case when we are using a base method from the start
-        if (!recursive){
+        //System.out.println("Antes de entrar, valida = "+valida);
+        if (recursive){
+            if ("B".equals(objectMethod.getGroupMethod())){
+
+                // ******* I AM NOT SURE IF THIS LINE WILL ALWAYS REMAIN HERE
+                Term editedFormula = objectMethod.initFormula(formula);
+                System.out.println("editedFormula = "+editedFormula.toStringInf(s,""));
+                //System.out.println("editedFormula = "+editedFormula.toStringFinal());
+
+                setBranchedRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
+                    clickable, methodTerm, valida, labeled, editedFormula, nTeo, objectMethod);        
+            }
+            else {
+                setLinearRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
+                    clickable, methodTerm, valida, labeled, formula, nTeo, objectMethod);  
+            }
+        } else {
             this.setHistorial(objectMethod.setBaseMethodProof(
                 this.getHistorial(), user, typedTerm, solved, resuelveManager, disponeManager, s
             ));
-        }
 
-        // Case when we are using a recursive method
-        else{
-            switch (strMethod){
-                case "AI":
-                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, 
-                        clickable, methodTerm, valida, labeled, formula, nTeo);
-                    break;
-                case "CA":
-                    // ESTE newFormula ES SÓLO PARA MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA
-                    Term newFormula = objectMethod.initFormula(formula);
-                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, 
-                        clickable, methodTerm, valida, labeled, newFormula, nTeo);
-                    break;
-                default:
-                    setRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
-                        clickable, methodTerm, valida, labeled, formula, nTeo, objectMethod);
-                    break;                                                                    
+            historial = header + "<center>$" + historial + "</center>";
+
+            if (!valida){
+                historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
             }
         }
 
@@ -494,12 +524,13 @@ public class InferResponse extends GenericResponse{
         //     header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
         // }
 
-        if (!recursive) { // <--- It had commented (!andIntroduction) as a condition
-            historial = header+"<center>$" +historial+"</center>";
-            if (!valida){
-                historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
-            }
-        }
+        // if (!recursive) { // <--- It had commented (!andIntroduction) as a condition
+        //     historial = header+"<center>$" +historial+"</center>";
+        //     if (!valida){
+        //         historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
+        //     }
+        // }
+
         //else if (/*!andIntroduction &&*/ recursive)
         //    ;
         //else 

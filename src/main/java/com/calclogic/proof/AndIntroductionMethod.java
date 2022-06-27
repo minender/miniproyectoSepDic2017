@@ -26,13 +26,12 @@ public class AndIntroductionMethod extends GenericProofMethod {
      * Indicates the header that a proof that starts with and introduction
      * method must have.
      *  
-     * @param nTeo: Number of the theorem to be proved, expressed in a string
+     * @param statement: New statement that needs to be proved according to this method
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo){
-        // ************* THIS CASE WAS ORIGINALLY MARKED AS IMPOSSIBLE. CHECK IT
-        return "Proof of " + nTeo + ":<br><br>";
+    public String header(String statement){
+        return "By conjunction by parts method:<br><br>";
     }
 
     /**

@@ -32,7 +32,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
      */
     @Override
     public String header(String nTeo){
-        return "Starting from one side";
+        return "By starting from one side";
     }
 
     /**
@@ -51,13 +51,13 @@ public class StartingOneSideMethod extends GenericProofMethod {
     @Override
     public String setBaseMethodProof(String historial, String user, Term typedTerm, boolean solved, 
                 ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s)
-    {    
+    {   
         String primExp;
         String newStep; // New part of the proof that will be added
         String lastline; // Plain string of the last line of the demonstration
         Term iter; // Iterator over the lines of a demonstration
 
-        boolean equanimity = false; // Indicates ifequanimity was used
+        boolean equanimity = false; // Indicates if equanimity was used
         String equanimityHint = ""; // Text that indicates in which already proven theorem the current demonstration finalized (if any)
         
         /* If the demonstrarion method is starting from one side, or the typedTerm is not an inference
@@ -72,7 +72,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
             Term aux = ((App)((App)iter.type()).p).q;       
             lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));
         }
-        // Case when direct method is applied and we start from the expression to be proved
+        // Case when direct method is applied and the starting point is the expression to be proved
         else { 
             String eqSust = ""; // Indicates the instantiation (if any) that was necessary to apply to the already proven theorem
 
@@ -217,6 +217,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
             theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo);
 
             if (theo == null){
+                //********** This part will probably be removed
                 teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
                 newStep = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
                 entry = false;
