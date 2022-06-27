@@ -63,7 +63,8 @@ public class CrudOperationsImpl implements CrudOperations {
             case "MI":
                 return new MutualImplicationMethod();
             case "CA":
-                return new CaseAnalysisMethod();
+                //return new CaseAnalysisMethod(); // RESTAURAR
+                return new MutualImplicationMethod(); // BORRAR
             default:
                 return new GenericProofMethod();
         }
@@ -161,14 +162,14 @@ public class CrudOperationsImpl implements CrudOperations {
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
                     ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
-                    !ProofBoolean.isAIProof2Started(auxMethod)
+                    !ProofBoolean.isBranchedProof2Started(auxMethod)
                     ){
                 return null;
             }
-            else if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
                 return ((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t;
             }
-            else if (ProofBoolean.isAIProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
                 if (isRecursive){
                     return getSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,true);
                 }
@@ -205,12 +206,12 @@ public class CrudOperationsImpl implements CrudOperations {
                 li.add(0,typedTerm);
                 return li;
             }
-            else if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
                 li.add(0, typedTerm);
                 li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t);
                 return li;
             }
-            else if (ProofBoolean.isAIProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
                 li.add(0, typedTerm);
                 return getFatherAndSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,li);
             }
@@ -443,7 +444,7 @@ public class CrudOperationsImpl implements CrudOperations {
         Term auxMethod = method; // "method" is entry/exit, so if we use it directly we change its value in the caller
         while (auxMethod instanceof App) {
             // ************ THIS MUST BE DELETED OR CHANGED *********************
-            if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIProof2Started(((App)auxMethod).q)){
+            if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isBranchedProof2Started(((App)auxMethod).q)){
                 Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
                                                                                     ((App)auxMethod).q);
 
@@ -451,7 +452,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 return objectMethod.finishedMethodProof(typedTerm,aux);
             }
             // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
-            else if (ProofBoolean.isAIProof2Started(auxMethod)) {
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod)) {
                 Map<String,String> values1 = new HashMap<>();
                 values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
                 String aux;

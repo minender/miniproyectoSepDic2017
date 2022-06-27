@@ -146,8 +146,8 @@ public class ProofBoolean {
     }
     
     /**
-     * True if and only if method is an And Introduction proof and in the second sub proof 
-     * exists sub proof (can be the same second sub proof) that is already started.
+     * True if and only if method is a branched recursive one 
+     * and the second sub proof is already started.
      *
      * ***************** THIS FUNCTION SHOULDN'T EXIST. EVERY PART THAT USES THIS SHOULD BE CHANGED OR ELIMINATED **************
      *
@@ -156,7 +156,7 @@ public class ProofBoolean {
      * @return True if and only if method is an And Introduction proof and in the second sub proof 
      * exists sub proof (can be the same second sub proof) that is already started.
      */
-    public static boolean isAIProof2Started(Term method) {
+    public static boolean isBranchedProof2Started(Term method) {
         return method instanceof App && ((App)method).p instanceof App && 
                (
                     ((App)((App)method).p).p.toStringFinal().equals("AI") ||

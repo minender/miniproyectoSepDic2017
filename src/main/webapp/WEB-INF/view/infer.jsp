@@ -28,7 +28,6 @@
         <script type="text/javascript">
             
             var clickInTheoremAllowed = true;
-            console.log("clickInTheoremAllowed = ",clickInTheoremAllowed);
             $(function(){
                 
                 setForms(${elegirMetodo});

@@ -158,6 +158,9 @@
 
                 case "AI": // And introduction method
                 case "MI": // Mutual implication method
+                    if (method === "MI"){ // BORRAR
+                        method = "CA";
+                    }
                     message = "Please, select a proof method for the case.";
                     break;
 

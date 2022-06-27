@@ -276,7 +276,7 @@ public class InferResponse extends GenericResponse{
                 System.out.println("    Voy a llamar a privateGenerarHistorial 2");
                 
                 privateGenerarHistorial(user, newFormula, header, nTeo,
-                                (ProofBoolean.isAIProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
+                                (ProofBoolean.isBranchedProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
                                  valida, labeled, ((App)((App)methodTerm).p).q, resuelveManager, disponeManager, 
                                  s, clickable, false);
                 newFormula = ((App)((App)formula).p).q;
@@ -319,11 +319,11 @@ public class InferResponse extends GenericResponse{
         else if ("SS".equals(clickable)) { // End of the impression
             String formulaDer = ((App)((App)newTerm).p).q.toStringInf(s,"");
             String formulaIzq = ((App)newTerm).q.toStringInf(s,"");
-            Term operatorTerm = ((App)((App)newTerm).p).p;//resuelve.getTeorema().getOperador();
-            String operator = operatorTerm.toStringInf(s,"");
+
+            Term operatorTerm = ((App)((App)newTerm).p).p;
+            String operator   = operatorTerm.toStringInf(s,"");
 
             if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{20}")){
-                System.out.println("\n\n\n>>>Voy al throw exception de clickableST");
                 throw new Exception();
             }
             
@@ -486,7 +486,6 @@ public class InferResponse extends GenericResponse{
 
         // -- Here is where we really generate the proof record accoding to the demonstration method ---
 
-        //System.out.println("Antes de entrar, valida = "+valida);
         if (recursive){
             if ("B".equals(objectMethod.getGroupMethod())){
 

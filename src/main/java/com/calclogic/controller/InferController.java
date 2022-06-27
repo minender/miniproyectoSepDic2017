@@ -530,8 +530,7 @@ public class InferController {
                  ((App)((App)methodTermIter).p).p.toStringFinal().equals("AI")
                )
             {
-                // THIS MUST BE CHANGED OR ELIMINATED. THIS ALSO APPLIES TO CASE ANALYSIS
-                if (ProofBoolean.isAIProof2Started(methodTermIter)) {
+                if (ProofBoolean.isBranchedProof2Started(methodTermIter)) {
                     fatherProofs.push(typedTerm);
                     typedTerm = crudOp.getSubProof(typedTerm, methodTermIter);
                 }
@@ -843,6 +842,7 @@ public class InferController {
                                             @PathVariable String username, 
                                             @PathVariable String nTeo)
     {   
+        System.out.println("Entré en iniStatementController con newMethod = "+newMethod);
         GenericProofMethod objectMethod = crudOp.createProofMethodObject(newMethod);
         Boolean isRecursive = objectMethod.getIsRecursiveMethod();
         String groupMethod = objectMethod.getGroupMethod();
@@ -855,6 +855,7 @@ public class InferController {
         // We call it as "previous" because it may change when the proof starts
         Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm();
 
+        Integer opId; // Id of the symbol of the main operator of an expression
         Solucion solucion = null;
         Term methodTerm, typedTerm;
         methodTerm = typedTerm = null;
@@ -886,7 +887,7 @@ public class InferController {
 
             if (nSol.equals("new")){
                 // Note: Currently we are not doing CR with <==, BUT WE SHOULD
-                if ( ("CR".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 2) ) || // Right arrow ==>
+                if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 5) ) || // Conjunction /\
                      ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 1) )    // Equivalence ==
                     )
@@ -913,7 +914,7 @@ public class InferController {
                 methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
 
                 // Note: Currently we are not doing CR with <==, BUT WE SHOULD
-                if ( ("CR".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 2) ) || // Right arrow ==>
+                if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 5) ) || // Conjunction /\
                      ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 1) )    // Equivalence ==
                     )
@@ -944,14 +945,15 @@ public class InferController {
             }
 
             if (sideOrTransitive){
-                if (lado == null){ // This does not occur in Starting from one side method, so we are in a transitive one
-                    String operator = ((Const)((App)((App)formulaTerm).p).p).getCon();
+                // CAUTION: The controller sets the String null parameters as ""
+                if (lado == ""){ // This does not occur in Starting from one side method, so we are in a transitive one
+                    opId = crudOp.binaryOperatorId(formulaTerm,null);
 
-                    switch (operator){
-                        case "c_{2}": // Right arrow
+                    switch (opId){
+                        case 2: // Right arrow ==> 
                             lado = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "i" : "d");
                             break;
-                        case "c_{3}": // Left arrow
+                        case 3: // Left arrow <==
                             lado = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "d" : "i");
                             break;
                         default:
@@ -961,7 +963,7 @@ public class InferController {
                             break;
                     }
                 }
-                if (lado != null){ // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
+                if (lado != ""){ // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
                     response.setLado(lado);
                     formulaTerm = lado.equals("i") ? ((App)formulaTerm).q : ((App)((App)formulaTerm).p).q;  
                 } 
@@ -988,7 +990,6 @@ public class InferController {
             }
 
         } catch (ClassCastException e) {
-            System.out.println("El catch que se da cuenta es el de InferController");
             response.setErrorParser1(true);
             return response;
         }
