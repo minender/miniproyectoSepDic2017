@@ -27,59 +27,60 @@ public class ProofBoolean {
     public static boolean isWaitingMethod(Term method) {
         
         Term m1, m2 = null;
+        String methodStr;
         if (method instanceof Const && 
-            (
-             ((Const)method).getCon().equals("DM") ||
-             ((Const)method).getCon().equals("SS") ||   
-             ((Const)method).getCon().equals("TR") ||
-             ((Const)method).getCon().equals("WE") ||
-             ((Const)method).getCon().equals("ST")    
-            )
+                (
+                    (methodStr=((Const)method).getCon()).equals("DM") || 
+                    methodStr.equals("SS") || 
+                    methodStr.equals("TR") || 
+                    methodStr.equals("WE") || 
+                    methodStr.equals("ST")    
+                )
            ) 
         {
            return false;    
         }
         else if (method instanceof Const && 
-                 (
-                  ((Const)method).getCon().equals("ND") ||
-                  ((Const)method).getCon().equals("CO") ||   
-                  ((Const)method).getCon().equals("CR") ||
-                  ((Const)method).getCon().equals("AI") ||
-                  ((Const)method).getCon().equals("MI") ||
-                  ((Const)method).getCon().equals("CA") ||
-                  ((Const)method).getCon().equals("WI")
-                 )
+                    (
+                        (methodStr=((Const)method).getCon()).equals("ND") || 
+                        methodStr.equals("CO") || 
+                        methodStr.equals("CR") || 
+                        methodStr.equals("AI") || 
+                        methodStr.equals("MI") || 
+                        methodStr.equals("CA") || 
+                        methodStr.equals("WI")
+                    )
                 ) 
         {
             return true;
         }
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
-                 (
-                  ((Const)m1).getCon().equals("ND") || 
-                  ((Const)m1).getCon().equals("CO") || 
-                  ((Const)m1).getCon().equals("CR") 
-                 )
+                    (
+                        (methodStr=((Const)m1).getCon()).equals("ND") || 
+                        methodStr.equals("CO") || 
+                        methodStr.equals("CR")
+                    )
                 ) 
         {
             return isWaitingMethod(((App)method).q);
         }
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
-                 (
-                  ((Const)m1).getCon().equals("AI") ||
-                  ((Const)m1).getCon().equals("MI") ||
-                  ((Const)m1).getCon().equals("CA") 
-                 )
+                    (
+                        (methodStr=((Const)m1).getCon()).equals("AI") || 
+                        methodStr.equals("MI") || 
+                        methodStr.equals("CA")
+                    )
                 )
         {
             return true;
         }
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof App &&
-                  (m2 = ((App)m1).p) instanceof Const &&
-                  (
-                   ((Const)m2).getCon().equals("AI") ||
-                   ((Const)m2).getCon().equals("MI") ||
-                   ((Const)m2).getCon().equals("CA") 
-                  )
+                    (m2 = ((App)m1).p) instanceof Const &&
+                    (
+                        (methodStr=((Const)m2).getCon()).equals("AI") || 
+                        methodStr.equals("MI") || 
+                        methodStr.equals("CA")
+                    )
                 )
         {
             return isWaitingMethod(((App)method).q);
@@ -102,11 +103,12 @@ public class ProofBoolean {
             return false;
         }
         else{
-            return ((Const)method).getCon().equals("DM") || 
-                    ((Const)method).getCon().equals("SS") ||
-                    ((Const)method).getCon().equals("TR") ||
-                    ((Const)method).getCon().equals("WE") ||
-                    ((Const)method).getCon().equals("ST");
+            String methodStr;
+            return (methodStr=((Const)method).getCon()).equals("DM") || 
+                    methodStr.equals("SS") ||
+                    methodStr.equals("TR") ||
+                    methodStr.equals("WE") ||
+                    methodStr.equals("ST");
         }
     }
     
@@ -124,15 +126,17 @@ public class ProofBoolean {
             if (((App)aux).p instanceof App)
                 return true;
             else 
-               aux = ((App)aux).q;
+                aux = ((App)aux).q;
         }
+        String methodStr;
         return aux instanceof Const && 
-                       (((Const)aux).getCon().equals("DM") ||
-                        ((Const)aux).getCon().equals("SS") ||   
-                        ((Const)aux).getCon().equals("TR") ||
-                        ((Const)aux).getCon().equals("WE") ||
-                        ((Const)aux).getCon().equals("ST")
-                       );
+                (
+                    (methodStr=((Const)aux).getCon()).equals("DM") || 
+                    methodStr.equals("SS") ||   
+                    methodStr.equals("TR") ||
+                    methodStr.equals("WE") ||
+                    methodStr.equals("ST")
+                );
     }
 
     /**
@@ -146,10 +150,8 @@ public class ProofBoolean {
     }
     
     /**
-     * True if and only if method is a branched recursive one 
-     * and the second sub proof is already started.
-     *
-     * ***************** THIS FUNCTION SHOULDN'T EXIST. EVERY PART THAT USES THIS SHOULD BE CHANGED OR ELIMINATED **************
+     * True if and only if the method is a branched recursive one 
+     * and its second sub proof is already started.
      *
      * @param method: Term that represents the current state of the proof method. This
      *                term had the information about what is the current sub proof
@@ -157,14 +159,14 @@ public class ProofBoolean {
      * exists sub proof (can be the same second sub proof) that is already started.
      */
     public static boolean isBranchedProof2Started(Term method) {
+        String methodStr;
         return method instanceof App && ((App)method).p instanceof App && 
-               (
-                    ((App)((App)method).p).p.toStringFinal().equals("AI") ||
-                    ((App)((App)method).p).p.toStringFinal().equals("MI") ||
-                    ((App)((App)method).p).p.toStringFinal().equals("CA")
+                (
+                    (methodStr=((App)((App)method).p).p.toStringFinal()).equals("AI") ||
+                    methodStr.equals("MI") ||
+                    methodStr.equals("CA")
                 )
-                && 
-               isProofStarted(((App)method).q);
+                && isProofStarted(((App)method).q);
     }
     
     /**

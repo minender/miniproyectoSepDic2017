@@ -1,16 +1,17 @@
 package com.calclogic.proof;
 
-import com.calclogic.controller.InferController;
 import com.calclogic.lambdacalculo.App;
+import com.calclogic.lambdacalculo.Sust;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
+import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
+import com.calclogic.lambdacalculo.TypedI;
+import com.calclogic.lambdacalculo.TypedS;
+import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang3.text.StrSubstitutor;
+
+import java.util.List;
 
 /**
  *
@@ -35,37 +36,38 @@ public class AndIntroductionMethod extends GenericProofMethod {
     }
 
     /**
-     * This function will only be correct if called when using a branched (non linear) recursive method.
-     * This function will return a new proof tree in case it finds out that the last inference
-     * caused the whole proof to be correct under the sub-proof method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * It will return a new proof tree that connects in one proof of P/\Q, 
+     * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
+     * logic according to the and introduction method.
+     *
+     * It will return a new proof tree that connects in one proof of P/\Q,
      * two independent sub proofs of P and Q
-     * 
+     *
      * @param theoremBeingProved: The theorem that user is trying to prove 
+     * @param vars: List of variables for doing parallel substitution
+     * @param terms: List of terms for doing parallel substitution
      * @param proof: The proof tree so far
-     * @return proof of theoremBeingProved if finished, else returns the same proof
+     * @return axiom tree that will later be used to build the complete proof
+     * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    public Term finishedBranchedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
-        Map<String,String> values = new HashMap<>();
-        values.put("T1",proof.toStringFinal());
-        values.put("T1Type", proof.type().toStringFinal());
-        StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
-        String metaTheo = "S (I^{[x_{113} := %(T1Type)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (%(T1))";
-        String theo = sub.replace(metaTheo);
-        Term theoTerm = CombUtilities.getTerm(theo);
-        Term firstProof = ((App)theoremBeingProved).q;
-        Term firstStAndTrue = ((App)((App)theoremBeingProved).p).p;
-        Term leibniz = ((App)((App)((App)theoremBeingProved).p).q).p;
-        try {
-            Term newProof = new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,theoTerm)),firstProof);
-            return newProof;
-        }
-        catch (TypeVerificationException e) {
-            Logger.getLogger(AndIntroductionMethod.class.getName()).log(Level.SEVERE, null, e);
-            return theoremBeingProved;
-        }
+    protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms, Term proof)
+            throws TypeVerificationException
+    {
+        // This string says: (true == q) == q
+        String str = "c_{1} x_{113} (c_{1} x_{113} c_{8})";
+        Term st = CombUtilities.getTerm(str);
+
+        // We make the formula above to be treated as an axiom
+        TypedA A = new TypedA(st); 
+
+        // Substitution [q := lastLine]
+        vars.add(0, new Var(113)); // Letter 'q'
+        terms.add(0, proof.type());
+        Sust sus = new Sust(vars, terms);
+
+        // We give the instantiation format to the substitution above
+        TypedI I = new TypedI(sus);
+
+        return new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),proof);
     }
 }

@@ -221,74 +221,46 @@ public class InferResponse extends GenericResponse{
         Boolean valida, Boolean labeled, Term formula, String nTeo, GenericProofMethod objectMethod)
     {
         try{
-            System.out.println("\n\n=======================\nEntré en setBranchedRecursiveMethodProof con methodTerm = "+methodTerm.toStringFinal());
-            System.out.println("typedTerm = "+((typedTerm != null) ? typedTerm.toStringFinal() : null));
             String statement;
             Term newFormula = ((App)formula).q; // First branch
 
-            System.out.println("\nformula = "+formula.toStringFinal());
-            System.out.println("formula.p = "+((App)formula).p.toStringFinal());
-            System.out.println("formula.q = "+((App)formula).q.toStringFinal());
-            System.out.println("formula.p.p = "+((App)((App)formula).p).p.toStringFinal());
-            System.out.println("formula.p.q = "+((App)((App)formula).p).q.toStringFinal());
-
-            if (!(methodTerm instanceof Const)){
-                System.out.println("\nmethodTerm.p = "+((App)methodTerm).p.toStringFinal());
-                System.out.println("methodTerm.q = "+((App)methodTerm).q.toStringFinal());
-            }
-            System.out.println("    \nVoy a asignar el statement 1");
-            statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) 
-                                    + "$</center>";
-            System.out.println("    El cual es = "+statement);
+            statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) + "$</center>";
             header += objectMethod.header("") + objectMethod.subProofInit(statement);
 
             if (methodTerm instanceof Const){
-                System.out.println("    \nEntré al if");
                 historial = header;
             }
             // Proof of the first sub-case
             else if ( ((App)methodTerm).p instanceof Const  ) {
-                System.out.println("    \nEntré al else if");
-                System.out.println("    Voy a llamar a privateGenerarHistorial 1");
                 privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
                                         resuelveManager, disponeManager, s, clickable, false);
 
                 if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
-                    System.out.println("        ---> Luego entré al if 1");
                     cambiarMetodo = "0";
                 }
                 else { // This only occurs when the user has just finalized the previous sub-proof
-                    System.out.println("        ---> Luego entré al else 1");
                     if (!clickable.equals("n")){
                         cambiarMetodo = "0"; 
                     }
                     newFormula = ((App)((App)formula).p).q; // Second branch
-                    System.out.println("    Voy a asignar el statement 2");
                     statement = "<center>$" + clickableST(newFormula, clickable, new Const("AI"), false, s) 
                                    + "$</center>";
-                    System.out.println("    El cual es = "+statement);
                     historial += objectMethod.subProofInit(statement);
                 }
             }
             // Proof of a sub-case that is not the first one (sure?)
             else{
-                System.out.println("    \nEntré al else");
-                System.out.println("    Voy a llamar a privateGenerarHistorial 2");
-                
                 privateGenerarHistorial(user, newFormula, header, nTeo,
                                 (ProofBoolean.isBranchedProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
                                  valida, labeled, ((App)((App)methodTerm).p).q, resuelveManager, disponeManager, 
                                  s, clickable, false);
                 newFormula = ((App)((App)formula).p).q;
-                System.out.println("    Voy a asignar el statement 3");
-                statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) 
-                                   + "$</center>";
-                System.out.println("    El cual es = "+statement);
+                statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) + "$</center>";
                 header = historial + objectMethod.subProofInit(statement);
                 historial = "";
+
                 Term newTypedTerm;
                 newTypedTerm = proofCrudOperations.getSubProof(typedTerm, methodTerm);
-                System.out.println("    Voy a llamar a privateGenerarHistorial 3");
                 privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)methodTerm).q, 
                                  resuelveManager, disponeManager, s, clickable, false);
             }
@@ -408,7 +380,6 @@ public class InferResponse extends GenericResponse{
         Boolean labeled, Term methodTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
         SimboloManager s, String clickable, Boolean isRootTeorem)
     {   
-        System.out.println("Entre a privateGenerarHistorial con typedTerm = "+((typedTerm!=null) ? typedTerm.toStringFinal() : null));
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
@@ -491,8 +462,6 @@ public class InferResponse extends GenericResponse{
 
                 // ******* I AM NOT SURE IF THIS LINE WILL ALWAYS REMAIN HERE
                 Term editedFormula = objectMethod.initFormula(formula);
-                System.out.println("editedFormula = "+editedFormula.toStringInf(s,""));
-                //System.out.println("editedFormula = "+editedFormula.toStringFinal());
 
                 setBranchedRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
                     clickable, methodTerm, valida, labeled, editedFormula, nTeo, objectMethod);        

@@ -140,7 +140,6 @@ public class InferController {
         map.addAttribute("misPublicacionesMenu","");
         map.addAttribute("proveMenu","active");
         map.addAttribute("perfilMenu","");
-        //map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","100%");
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
@@ -153,7 +152,7 @@ public class InferController {
         map.addAttribute("predicadoList", predicadoList);
         map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-        //map.addAttribute("makeTerm",new MakeTerm());
+
         return "infer";
     }
 
@@ -268,7 +267,6 @@ public class InferController {
         map.addAttribute("misPublicacionesMenu","");
         map.addAttribute("proveMenu","active");
         map.addAttribute("perfilMenu","");
-        //map.addAttribute("hrefAMiMismo","href=../../eval/"+username+"#!");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
@@ -282,7 +280,6 @@ public class InferController {
         map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
 
-        //map.addAttribute("makeTerm",new MakeTerm());
         return "infer";
     }
     
@@ -526,14 +523,15 @@ public class InferController {
             methodStk.push(((App)methodTermIter).p);
             initSt = crudOp.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
             formulasToProof.push(initSt);
-            if (((App)methodTermIter).p instanceof App && 
-                 ((App)((App)methodTermIter).p).p.toStringFinal().equals("AI")
+
+            if (
+                  ((App)methodTermIter).p instanceof App &&
+                  ("B".equals(crudOp.createProofMethodObject( ((App)((App)methodTermIter).p).p.toStringFinal() ).getGroupMethod())) &&
+                  (ProofBoolean.isBranchedProof2Started(methodTermIter))         
                )
             {
-                if (ProofBoolean.isBranchedProof2Started(methodTermIter)) {
-                    fatherProofs.push(typedTerm);
-                    typedTerm = crudOp.getSubProof(typedTerm, methodTermIter);
-                }
+                fatherProofs.push(typedTerm);
+                typedTerm = crudOp.getSubProof(typedTerm, methodTermIter);
             }
             methodTermIter = ((App)methodTermIter).q;
         }
@@ -624,14 +622,14 @@ public class InferController {
             objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
 
             if (isFinalSolution && methodTermAux instanceof Const) {
-                // Recursive and branched method
+                // Recursive branched method
                 if ("B".equals(objectMethod.getGroupMethod())) {
                     isFinalSolution = false;
                     response.setEndCase(true);   
                 }
                 // Recursive linear method
                 else if (objectMethod.getIsRecursiveMethod()) {
-                    finalProof = objectMethod.finishedLinearRecursiveMethodProof(formulasToProof.pop(), finalProof);
+                    finalProof = objectMethod.finishedRecursiveMethodProof(formulasToProof.pop(), finalProof);
                 }
                 else{
                     break;
@@ -644,7 +642,7 @@ public class InferController {
                 if (m != null){
                     objectMethod = crudOp.createProofMethodObject(m.toStringFinal());
                     if ("B".equals(objectMethod.getGroupMethod())){
-                        finalProof = objectMethod.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
+                        finalProof = objectMethod.finishedRecursiveMethodProof(fatherProofs.pop(), finalProof);
                     }
                 }
             }
@@ -691,9 +689,9 @@ public class InferController {
      * method attribute on. 
      */
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}", method=RequestMethod.POST, params="submitBtn=Retroceder",produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse retroceder( /*@RequestParam(value="nStatement") String nStatement, @RequestParam(value="leibniz") String leibniz , @RequestParam(value="instanciacion") String instanciacion,*/ 
-                                                  @PathVariable String username, 
-                                                  @PathVariable String nTeo, @PathVariable String nSol)
+    public @ResponseBody InferResponse retroceder(@PathVariable String username, 
+                                                  @PathVariable String nTeo, 
+                                                  @PathVariable String nSol)
     {   
         InferResponse response = new InferResponse(crudOp);
 
@@ -710,24 +708,20 @@ public class InferController {
             Term currentMethod = crudOp.currentMethod(method);
             boolean isWaitingMethod = !ProofBoolean.isBaseMethod(currentMethod);
             if (!solucion.getMetodo().equals("") && isWaitingMethod){
-                /*if (solucion.getDemostracion().equals("") && !solucion.getMetodo().equals("")) */
                 respRetroceder = 0;
             }
             else {
-                String groupMethod = crudOp.createProofMethodObject(currentMethod.toStringFinal()).getGroupMethod();
-                respRetroceder = solucion.retrocederPaso(method,groupMethod);
+                GenericProofMethod objectMethod = crudOp.createProofMethodObject(currentMethod.toStringFinal());
+                respRetroceder = solucion.retrocederPaso(method,objectMethod);
             }
             if (respRetroceder == 0) {
                method = crudOp.eraseMethod(solucion.getMetodo());
                solucion.setMetodo((method == null?"":method.toStringFinal()));
             }
-            //else
-              // method = ProofMethodUtilities.getTerm(solucion.getMetodo());
             
             solucionManager.updateSolucion(solucion);
         }
         
-        //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term formula = resuelve.getTeorema().getTeoTerm();
 
         response.generarHistorial(
@@ -842,7 +836,6 @@ public class InferController {
                                             @PathVariable String username, 
                                             @PathVariable String nTeo)
     {   
-        System.out.println("Entré en iniStatementController con newMethod = "+newMethod);
         GenericProofMethod objectMethod = crudOp.createProofMethodObject(newMethod);
         Boolean isRecursive = objectMethod.getIsRecursiveMethod();
         String groupMethod = objectMethod.getGroupMethod();
@@ -946,7 +939,7 @@ public class InferController {
 
             if (sideOrTransitive){
                 // CAUTION: The controller sets the String null parameters as ""
-                if (lado == ""){ // This does not occur in Starting from one side method, so we are in a transitive one
+                if ("".equals(lado)){ // This does not occur in Starting from one side method, so we are in a transitive one
                     opId = crudOp.binaryOperatorId(formulaTerm,null);
 
                     switch (opId){
@@ -963,7 +956,7 @@ public class InferController {
                             break;
                     }
                 }
-                if (lado != ""){ // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
+                if (!"".equals(lado)){ // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
                     response.setLado(lado);
                     formulaTerm = lado.equals("i") ? ((App)formulaTerm).q : ((App)((App)formulaTerm).p).q;  
                 } 

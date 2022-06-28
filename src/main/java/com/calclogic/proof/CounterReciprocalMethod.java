@@ -76,24 +76,26 @@ public class CounterReciprocalMethod extends GenericProofMethod {
     }
 
     /**
-     * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
+     * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
      * logic according to the counter reciprocal method.
      * 
      * @param theoremBeingProved: The theorem that user is trying to prove 
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
+     * @param proof: The proof tree so far
      * @return axiom tree that will later be used to build the complete proof
      */
     @Override
-    protected Term auxFinLinearRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
+    protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms, Term proof)
             throws TypeVerificationException
     {
         String operatorIdSt = binaryOperatorId(theoremBeingProved).toString();
+
         // This string can say: [p => q == !q => !p] or [p <= q == !q <= !p] as well
         String str = "c_{1} (c_{"+operatorIdSt+"} (c_{7} x_{112}) (c_{7} x_{113})) (c_{"+operatorIdSt+"} x_{113} x_{112})";
         Term st = CombUtilities.getTerm(str);
 
-        // We make that formula to be treated as an axiom
+        // We make the formula above to be treated as an axiom
         TypedA A = new TypedA(st); 
 
         // Substitution [p,q := ...]

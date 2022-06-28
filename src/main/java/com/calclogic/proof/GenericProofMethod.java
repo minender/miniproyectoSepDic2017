@@ -1,6 +1,5 @@
 package com.calclogic.proof;
 
-import com.calclogic.controller.InferController;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
@@ -258,11 +257,8 @@ public class GenericProofMethod {
     public Term finishedMethodProof(Term theoremBeingProved, Term proof, String username,
             ResuelveManager resuelveManager, SimboloManager simboloManager) 
     {
-        if ("B".equals(this.groupMethod)){
-            return finishedBranchedRecursiveMethodProof(theoremBeingProved, proof);     
-        }
         if (this.isRecursiveMethod){
-            return finishedLinearRecursiveMethodProof(theoremBeingProved, proof);
+            return finishedRecursiveMethodProof(theoremBeingProved, proof);
         }
         return finishedBaseMethodProof(theoremBeingProved, proof, username, resuelveManager, simboloManager);
     }
@@ -290,7 +286,7 @@ public class GenericProofMethod {
                                         expr, initialExpr, finalExpr);
         }
         catch (TypeVerificationException e)  {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
+            Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
         } 
         return proof;
     }
@@ -320,7 +316,7 @@ public class GenericProofMethod {
     }
 
     /**
-     * This function will only be correct if called when using a linear recursive method.
+     * This function will only be correct if called when using a recursive method.
      * It will return a new proof tree in case it finds out that the last inference
      * caused the whole proof to be correct under the sub-proof method. In other case it will return 
      * the proof given as argument.
@@ -329,17 +325,25 @@ public class GenericProofMethod {
      * @param proof: The proof tree so far
      * @return proof of theoremBeingProved if finished, else return the same proof
      */
-    public Term finishedLinearRecursiveMethodProof(Term theoremBeingProved, Term proof) {
+    public Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
         try {
             // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
             List<Var> vars = new ArrayList<>();
             List<Term> terms = new ArrayList<>();
 
-            Term axiomTree = auxFinLinearRecursiveMethodProof(theoremBeingProved, vars, terms);
+            Term axiomTree = auxFinRecursiveMethodProof(theoremBeingProved, vars, terms, proof);
+
+            if ("B".equals(this.groupMethod)){
+                Term firstProof = ((App)theoremBeingProved).q;
+                Term firstStAndTrue = ((App)((App)theoremBeingProved).p).p;
+                Term leibniz = ((App)((App)((App)theoremBeingProved).p).q).p;
+
+                return new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,axiomTree)),firstProof);
+            }
             return new TypedApp(axiomTree, proof);
              
         } catch (TypeVerificationException e)  {
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e); 
+            Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
         }
         return proof;
     }
@@ -347,51 +351,17 @@ public class GenericProofMethod {
     /**
      * TO BE OVERWRITTEN
 
-     * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
+     * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
      * logic according to the current demonstration method.
      * 
      * @param theoremBeingProved: The theorem that user is trying to prove 
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
-     * @return axiom tree that will later be used to build the complete proof
-     * @throws com.calclogic.lambdacalculo.TypeVerificationException
-     */
-    protected Term auxFinLinearRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
-            throws TypeVerificationException
-    {
-        return null;
-    }
-
-    /**
-     * This function will only be correct if called when using a branched (non linear) recursive method.
-     * This function will return a new proof tree in case it finds out that the last inference
-     * caused the whole proof to be correct under the sub-proof method. In other case it will return 
-     * the proof given as argument.
-     * 
-     * It will return a new proof tree that connects in one proof of P/\Q, 
-     * two independent sub proofs of P and Q
-     * 
-     * @param theoremBeingProved: The theorem that user is trying to prove 
      * @param proof: The proof tree so far
-     * @return proof of theoremBeingProved if finished, else returns the same proof
-     */
-    public Term finishedBranchedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
-        return null;
-    }
-
-    /**
-     * TO BE OVERWRITTEN
-
-     * Auxiliar method for "finishedBranchedRecursiveMethodProof" that implements the corresponding
-     * logic according to the current demonstration method.
-     * 
-     * @param theoremBeingProved: The theorem that user is trying to prove 
-     * @param vars: List of variables for doing parallel substitution
-     * @param terms: List of terms for doing parallel substitution
      * @return axiom tree that will later be used to build the complete proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    protected Term auxFinBranchedRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
+    protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms, Term proof)
             throws TypeVerificationException
     {
         return null;
