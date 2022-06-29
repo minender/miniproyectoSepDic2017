@@ -569,6 +569,8 @@ public class InferController {
         i = 0;
         j = 0;
         while (newProof == null && i < 2) {
+
+            System.out.println("\ni = "+i+ " j = "+j);
             try {
                 if (i == 1 && j == 0){
                     infer = new TypedApp(new TypedS(infer.type()), infer);
@@ -642,7 +644,9 @@ public class InferController {
                 if (m != null){
                     objectMethod = crudOp.createProofMethodObject(m.toStringFinal());
                     if ("B".equals(objectMethod.getGroupMethod())){
+                        System.out.println("\n\n>>> Voy a entrar a la función de finished recursiva, con método = "+m.toStringFinal());
                         finalProof = objectMethod.finishedRecursiveMethodProof(fatherProofs.pop(), finalProof);
+                        System.out.println("    Volví a InferController, con finalProof = "+finalProof.toStringFinal());
                     }
                 }
             }
@@ -835,7 +839,7 @@ public class InferController {
                                             @PathVariable String nSol, 
                                             @PathVariable String username, 
                                             @PathVariable String nTeo)
-    {   
+    {
         GenericProofMethod objectMethod = crudOp.createProofMethodObject(newMethod);
         Boolean isRecursive = objectMethod.getIsRecursiveMethod();
         String groupMethod = objectMethod.getGroupMethod();
@@ -879,7 +883,6 @@ public class InferController {
             // ---- End of assigning "formulaTerm" 
 
             if (nSol.equals("new")){
-                // Note: Currently we are not doing CR with <==, BUT WE SHOULD
                 if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 5) ) || // Conjunction /\
                      ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 1) )    // Equivalence ==
@@ -906,7 +909,6 @@ public class InferController {
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
                 methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
 
-                // Note: Currently we are not doing CR with <==, BUT WE SHOULD
                 if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 5) ) || // Conjunction /\
                      ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 1) )    // Equivalence ==

@@ -326,21 +326,28 @@ public class GenericProofMethod {
      * @return proof of theoremBeingProved if finished, else return the same proof
      */
     public Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
+        System.out.println("Entré en finishedRecursiveMethodProof, con methodStr = "+this.methodStr);
         try {
             // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
             List<Var> vars = new ArrayList<>();
             List<Term> terms = new ArrayList<>();
 
-            Term axiomTree = auxFinRecursiveMethodProof(theoremBeingProved, vars, terms, proof);
+            Term auxiliarTree = auxFinRecursiveMethodProof(theoremBeingProved, vars, terms, proof);
 
             if ("B".equals(this.groupMethod)){
-                Term firstProof = ((App)theoremBeingProved).q;
-                Term firstStAndTrue = ((App)((App)theoremBeingProved).p).p;
-                Term leibniz = ((App)((App)((App)theoremBeingProved).p).q).p;
-
-                return new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,axiomTree)),firstProof);
+                if ("AI".equals(this.methodStr)){
+                    return auxiliarTree;
+                }
+                Term aiTree = new AndIntroductionMethod().finishedMethodProof(theoremBeingProved,proof);
+                try{
+                   return new TypedApp(auxiliarTree, aiTree);
+                   return new TypedApp(, aiTree, );
+                }
+                catch (TypeVerificationException e)  {
+                    return aiTree;
+                }
             }
-            return new TypedApp(axiomTree, proof);
+            return new TypedApp(auxiliarTree, proof);
              
         } catch (TypeVerificationException e)  {
             Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 

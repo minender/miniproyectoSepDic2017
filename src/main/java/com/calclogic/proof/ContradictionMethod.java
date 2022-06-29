@@ -75,7 +75,7 @@ public class ContradictionMethod extends GenericProofMethod {
         TypedA A1 = new TypedA(st1);
         TypedA A2 = new TypedA(st2);
 
-        // Substitution [p := teoremProved]
+        // Substitution [p := theoremBeingProved]
         vars.add(0, new Var(112)); // Letter'p'
         terms.add(0, theoremBeingProved);
         Sust sus = new Sust(vars, terms);

@@ -55,7 +55,6 @@ public class MutualImplicationMethod extends GenericProofMethod {
 
         Term newLeftSide = new App(new App(new Const(2 ,"c_{2}"), prevRightSide), prevLeftSide);  // [L ==> R]  written as  [(==> R) L]
         Term newRightSide = new App(new App(new Const(3 ,"c_{3}"), prevRightSide), prevLeftSide); // [L <== R]  written as  [(<== R) L]
-        //Term newRightSide = new App(new App(new Const(2 ,"c_{2}"), prevLeftSide), prevRightSide); // [R ==> L]  written as  [(==> L) R]
 
         // [newLeftSide /\ newRightSide]  written as  [(/\ newRightSide) newLeftSide]
         return new App(new App(new Const(5,"c_{5}"), newRightSide), newLeftSide);
@@ -75,10 +74,9 @@ public class MutualImplicationMethod extends GenericProofMethod {
     protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms, Term proof)
             throws TypeVerificationException
     {
+        System.out.println("theoremBeingProved = "+theoremBeingProved);
         // This string says: ((p ==> q) /\ (p <== q)) == (p == q)
         String str = "c_{1} (c_{1} x_{113} x_{112}) (c_{5} (c_{3} x_{113} x_{112}) (c_{2} x_{113} x_{112}))";
-        // This string says: ((p ==> q) /\ (q ==> p)) == (p == q)
-        // String str = "c_{1} (c_{1} x_{113} x_{112}) (c_{5} (c_{2} x_{112} x_{113}) (c_{2} x_{113} x_{112}))";
         Term st = CombUtilities.getTerm(str);
 
         // We make the formula above to be treated as an axiom
@@ -88,15 +86,18 @@ public class MutualImplicationMethod extends GenericProofMethod {
         vars.add(0, new Var(112)); // Letter 'p'
         vars.add(0, new Var(113)); // Letter 'q'
         terms.add(0, ((App)theoremBeingProved).q);
-        //terms.add(0, proof.type());
         terms.add(0, ((App)((App)theoremBeingProved).p).q);
-        //terms.add(0, proof.type());
         Sust sus = new Sust(vars, terms);
 
         // We give the instantiation format to the substitution above
         TypedI I = new TypedI(sus);
 
-        //return new TypedApp(new TypedApp(I,A),proof);
-        return new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),proof);
+        System.out.println("\n\nAl finalizar auxFin de Mutual Implication, I = "+I.toStringFinal());
+        System.out.println("Los términos eran:");
+        System.out.println("*izq = "+(((App)theoremBeingProved).q).toStringFinal());
+        System.out.println("*der = "+(((App)theoremBeingProved).p).toStringFinal());
+        //System.out.println("*der = "+(((App)((App)theoremBeingProved).p).q).toStringFinal());
+        return new TypedApp(I,A);
+        //return new TypedApp(new TypedS(),new TypedApp(I,A));
     }
 }

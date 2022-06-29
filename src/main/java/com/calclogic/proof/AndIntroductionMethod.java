@@ -42,15 +42,15 @@ public class AndIntroductionMethod extends GenericProofMethod {
      * It will return a new proof tree that connects in one proof of P/\Q,
      * two independent sub proofs of P and Q
      *
-     * @param theoremBeingProved: The theorem that user is trying to prove 
+     * @param currentProof: The current proof 
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
-     * @param proof: The proof tree so far
+     * @param finalProof: The proof of second sub proof
      * @return axiom tree that will later be used to build the complete proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms, Term proof)
+    protected Term auxFinRecursiveMethodProof(Term currentProof, List<Var> vars, List<Term> terms, Term finalProof)
             throws TypeVerificationException
     {
         // This string says: (true == q) == q
@@ -68,6 +68,12 @@ public class AndIntroductionMethod extends GenericProofMethod {
         // We give the instantiation format to the substitution above
         TypedI I = new TypedI(sus);
 
-        return new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),proof);
+        Term auxiliarTree = new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),finalProof);
+
+        Term firstProof = ((App)currentProof).q;
+        Term firstStAndTrue = ((App)((App)currentProof).p).p;
+        Term leibniz = ((App)((App)((App)currentProof).p).q).p;
+
+        return new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,auxiliarTree)),firstProof);
     }
 }
