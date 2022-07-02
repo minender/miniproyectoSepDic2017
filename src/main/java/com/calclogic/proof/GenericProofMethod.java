@@ -232,35 +232,41 @@ public class GenericProofMethod {
     }
 
     /**
-     * The finished function depends on if the demonstration method is basic or recursive,
-     * so this calls the corresponding one.
+     * The finished function depends on if the demonstration method is basic,
+     * linear recursive or branched recursive, so this calls the corresponding one.
      * 
-     * @param theoremBeingProved: The theorem the user is trying to prove
+     * @param originalTerm: It can be the theorem the user is trying to prove
+     * or a part of the demosntration when the method is branched recursive.
      * @param proof: The proof tree so far
      * @return new proof if finished, else return the same proof
      */
-    public Term finishedMethodProof(Term theoremBeingProved, Term proof){
-        return finishedMethodProof(theoremBeingProved, proof, null, null, null);
+    public Term finishedMethodProof(Term originalTerm, Term proof){
+        return finishedMethodProof(originalTerm, proof, null, null, null);
     }
 
     /**
-     * The finished function depends on if the demonstration method is basic or recursive,
-     * so this calls the corresponding one.
+     * The finished function depends on if the demonstration method is basic,
+     * linear recursive or branched recursive, so this calls the corresponding one.
      * 
-     * @param theoremBeingProved: The theorem the user is trying to prove
+     * @param originalTerm: It can be the theorem the user is trying to prove
+     * or a part of the demosntration when the method is branched recursive.
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param resuelveManager
      * @param simboloManager
      * @return new proof if finished, else return the same proof
      */
-    public Term finishedMethodProof(Term theoremBeingProved, Term proof, String username,
+    public Term finishedMethodProof(Term originalTerm, Term proof, String username,
             ResuelveManager resuelveManager, SimboloManager simboloManager) 
     {
-        if (this.isRecursiveMethod){
-            return finishedRecursiveMethodProof(theoremBeingProved, proof);
+        if ("B".equals(this.groupMethod)){
+            return finishedBranchedRecursiveMethodProof(originalTerm, proof);
         }
-        return finishedBaseMethodProof(theoremBeingProved, proof, username, resuelveManager, simboloManager);
+        else if (this.isRecursiveMethod){
+            return finishedLinearRecursiveMethodProof(originalTerm, proof);
+        }
+
+        return finishedBaseMethodProof(originalTerm, proof, username, resuelveManager, simboloManager);
     }
 
     /**
@@ -316,7 +322,7 @@ public class GenericProofMethod {
     }
 
     /**
-     * This function will only be correct if called when using a recursive method.
+     * This function will only be correct if called when using a linear recursive method.
      * It will return a new proof tree in case it finds out that the last inference
      * caused the whole proof to be correct under the sub-proof method. In other case it will return 
      * the proof given as argument.
@@ -325,29 +331,15 @@ public class GenericProofMethod {
      * @param proof: The proof tree so far
      * @return proof of theoremBeingProved if finished, else return the same proof
      */
-    public Term finishedRecursiveMethodProof(Term theoremBeingProved, Term proof) {
-        System.out.println("Entré en finishedRecursiveMethodProof, con methodStr = "+this.methodStr);
+    public Term finishedLinearRecursiveMethodProof(Term theoremBeingProved, Term proof) {
         try {
             // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
             List<Var> vars = new ArrayList<>();
             List<Term> terms = new ArrayList<>();
 
-            Term auxiliarTree = auxFinRecursiveMethodProof(theoremBeingProved, vars, terms, proof);
+            Term axiomTree = auxFinLinearRecursiveMethodProof(theoremBeingProved, vars, terms);
 
-            if ("B".equals(this.groupMethod)){
-                if ("AI".equals(this.methodStr)){
-                    return auxiliarTree;
-                }
-                Term aiTree = new AndIntroductionMethod().finishedMethodProof(theoremBeingProved,proof);
-                try{
-                   return new TypedApp(auxiliarTree, aiTree);
-                   return new TypedApp(, aiTree, );
-                }
-                catch (TypeVerificationException e)  {
-                    return aiTree;
-                }
-            }
-            return new TypedApp(auxiliarTree, proof);
+            return new TypedApp(axiomTree, proof);
              
         } catch (TypeVerificationException e)  {
             Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
@@ -358,17 +350,58 @@ public class GenericProofMethod {
     /**
      * TO BE OVERWRITTEN
 
-     * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
+     * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
      * logic according to the current demonstration method.
      * 
      * @param theoremBeingProved: The theorem that user is trying to prove 
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
-     * @param proof: The proof tree so far
      * @return axiom tree that will later be used to build the complete proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms, Term proof)
+    protected Term auxFinLinearRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
+            throws TypeVerificationException
+    {
+        return null;
+    }
+
+    /**
+     * This function will only be correct if called when using a branched recursive method.
+     * Unlike the finished function for linear methods, this function will return a new tree 
+     * each time the user makes a new inference in the second branch
+     * 
+     * @param originalTerm: The current proof  
+     * @param finalProof: The proof of second sub proof
+     * @return proof of conjunction of two sub proofs
+     */
+    public Term finishedBranchedRecursiveMethodProof(Term originalTerm, Term finalProof) {
+        try {
+            // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
+            List<Var> vars = new ArrayList<>();
+            List<Term> terms = new ArrayList<>();
+
+            return auxFinBranchedRecursiveMethodProof(originalTerm, vars, terms, finalProof);
+        } 
+        catch (TypeVerificationException e)  {
+            Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
+        }
+        return finalProof;
+    }
+
+    /**
+     * TO BE OVERWRITTEN
+
+     * Auxiliar method for "finishedBranchedRecursiveMethodProof" that implements the corresponding
+     * logic according to the current demonstration method.
+     * 
+     * @param originalTerm: The current proof  
+     * @param vars: List of variables for doing parallel substitution
+     * @param terms: List of terms for doing parallel substitution
+     * @param finalProof: The proof of second sub proof
+     * @return axiom tree that will later be used to build the complete proof
+     * @throws com.calclogic.lambdacalculo.TypeVerificationException
+     */
+    protected Term auxFinBranchedRecursiveMethodProof(Term originalTerm, List<Var> vars, List<Term> terms, Term finalProof)
             throws TypeVerificationException
     {
         return null;

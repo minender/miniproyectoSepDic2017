@@ -623,15 +623,18 @@ public class InferController {
             String strMethodTermAux = methodTermAux.toStringFinal();
             objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
 
+            // We need this because in branched recursive methods we use And Introduction structure anyway
+            GenericProofMethod aiObject = crudOp.createProofMethodObject("AI");
+
             if (isFinalSolution && methodTermAux instanceof Const) {
                 // Recursive branched method
-                if ("B".equals(objectMethod.getGroupMethod())) {
+                if ("AI".equals(objectMethod.getMethodStr())) {
                     isFinalSolution = false;
                     response.setEndCase(true);   
                 }
                 // Recursive linear method
-                else if (objectMethod.getIsRecursiveMethod()) {
-                    finalProof = objectMethod.finishedRecursiveMethodProof(formulasToProof.pop(), finalProof);
+                else if (objectMethod.getIsRecursiveMethod() && !"B".equals(objectMethod.getGroupMethod())) {
+                    finalProof = objectMethod.finishedLinearRecursiveMethodProof(formulasToProof.pop(), finalProof);
                 }
                 else{
                     break;
@@ -644,9 +647,10 @@ public class InferController {
                 if (m != null){
                     objectMethod = crudOp.createProofMethodObject(m.toStringFinal());
                     if ("B".equals(objectMethod.getGroupMethod())){
-                        System.out.println("\n\n>>> Voy a entrar a la función de finished recursiva, con método = "+m.toStringFinal());
-                        finalProof = objectMethod.finishedRecursiveMethodProof(fatherProofs.pop(), finalProof);
-                        System.out.println("    Volví a InferController, con finalProof = "+finalProof.toStringFinal());
+                        finalProof = aiObject.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
+                        if (isFinalSolution){
+                            finalProof = objectMethod.finishedBranchedRecursiveMethodProof(null, finalProof);
+                        }
                     }
                 }
             }

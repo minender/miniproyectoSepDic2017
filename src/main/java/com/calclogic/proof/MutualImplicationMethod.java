@@ -61,43 +61,38 @@ public class MutualImplicationMethod extends GenericProofMethod {
     }
 
     /**
-     * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
+     * Auxiliar method for "finishedBranchedRecursiveMethodProof" that implements the corresponding
      * logic according to the mutual implication method.
      * 
-     * @param theoremBeingProved: The theorem that user is trying to prove 
+     * @param currentProof: The current proof  
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
-     * @param proof: The proof tree so far
+     * @param finalProof: The proof tree of (p ==> q) /\ (p <== q)
      * @return axiom tree that will later be used to build the complete proof
      */
     @Override
-    protected Term auxFinRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms, Term proof)
+    protected Term auxFinBranchedRecursiveMethodProof(Term currentProof, List<Var> vars, List<Term> terms, Term finalProof)
             throws TypeVerificationException
     {
-        System.out.println("theoremBeingProved = "+theoremBeingProved);
         // This string says: ((p ==> q) /\ (p <== q)) == (p == q)
         String str = "c_{1} (c_{1} x_{113} x_{112}) (c_{5} (c_{3} x_{113} x_{112}) (c_{2} x_{113} x_{112}))";
         Term st = CombUtilities.getTerm(str);
 
         // We make the formula above to be treated as an axiom
-        TypedA A = new TypedA(st); 
+        TypedA A = new TypedA(st);
+
+        Term lastLine = finalProof.type();
 
         // Substitution [p,q := ...]
         vars.add(0, new Var(112)); // Letter 'p'
         vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, ((App)theoremBeingProved).q);
-        terms.add(0, ((App)((App)theoremBeingProved).p).q);
+        terms.add(0, ((App)((App)lastLine).q).q); // Note .q is (p => q), so .q.q is 'p'.
+        terms.add(0, ((App)((App)((App)lastLine).q).p).q); // .q.p is (=> q) so .q.p.q is 'q'.
         Sust sus = new Sust(vars, terms);
 
         // We give the instantiation format to the substitution above
         TypedI I = new TypedI(sus);
 
-        System.out.println("\n\nAl finalizar auxFin de Mutual Implication, I = "+I.toStringFinal());
-        System.out.println("Los términos eran:");
-        System.out.println("*izq = "+(((App)theoremBeingProved).q).toStringFinal());
-        System.out.println("*der = "+(((App)theoremBeingProved).p).toStringFinal());
-        //System.out.println("*der = "+(((App)((App)theoremBeingProved).p).q).toStringFinal());
         return new TypedApp(I,A);
-        //return new TypedApp(new TypedS(),new TypedApp(I,A));
     }
 }

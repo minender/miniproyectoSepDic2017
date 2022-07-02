@@ -36,13 +36,13 @@ public class AndIntroductionMethod extends GenericProofMethod {
     }
 
     /**
-     * Auxiliar method for "finishedRecursiveMethodProof" that implements the corresponding
+     * Auxiliar method for "finishedBranchedRecursiveMethodProof" that implements the corresponding
      * logic according to the and introduction method.
      *
      * It will return a new proof tree that connects in one proof of P/\Q,
      * two independent sub proofs of P and Q
      *
-     * @param currentProof: The current proof 
+     * @param originalTerm: The current proof  
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
      * @param finalProof: The proof of second sub proof
@@ -50,7 +50,7 @@ public class AndIntroductionMethod extends GenericProofMethod {
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term auxFinRecursiveMethodProof(Term currentProof, List<Var> vars, List<Term> terms, Term finalProof)
+    protected Term auxFinBranchedRecursiveMethodProof(Term originalTerm, List<Var> vars, List<Term> terms, Term finalProof)
             throws TypeVerificationException
     {
         // This string says: (true == q) == q
@@ -62,7 +62,7 @@ public class AndIntroductionMethod extends GenericProofMethod {
 
         // Substitution [q := lastLine]
         vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, proof.type());
+        terms.add(0, finalProof.type());
         Sust sus = new Sust(vars, terms);
 
         // We give the instantiation format to the substitution above
@@ -70,9 +70,9 @@ public class AndIntroductionMethod extends GenericProofMethod {
 
         Term auxiliarTree = new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),finalProof);
 
-        Term firstProof = ((App)currentProof).q;
-        Term firstStAndTrue = ((App)((App)currentProof).p).p;
-        Term leibniz = ((App)((App)((App)currentProof).p).q).p;
+        Term firstProof = ((App)originalTerm).q;
+        Term firstStAndTrue = ((App)((App)originalTerm).p).p;
+        Term leibniz = ((App)((App)((App)originalTerm).p).q).p;
 
         return new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,auxiliarTree)),firstProof);
     }
