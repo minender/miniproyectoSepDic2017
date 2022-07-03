@@ -462,7 +462,6 @@ public class InferResponse extends GenericResponse{
 
                 // ******* I AM NOT SURE IF THIS LINE WILL ALWAYS REMAIN HERE
                 Term editedFormula = objectMethod.initFormula(formula);
-
                 setBranchedRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
                     clickable, methodTerm, valida, labeled, editedFormula, nTeo, objectMethod);        
             }

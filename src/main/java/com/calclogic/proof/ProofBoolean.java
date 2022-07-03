@@ -162,9 +162,10 @@ public class ProofBoolean {
         String methodStr;
         return method instanceof App && ((App)method).p instanceof App && 
                 (
-                    (methodStr=((App)((App)method).p).p.toStringFinal()).equals("AI") ||
-                    methodStr.equals("MI") ||
-                    methodStr.equals("CA")
+                    "AI".equals(((App)((App)method).p).p.toStringFinal())
+                    // (methodStr=((App)((App)method).p).p.toStringFinal()).equals("AI") ||
+                    // methodStr.equals("MI") ||
+                    // methodStr.equals("CA")
                 )
                 && isProofStarted(((App)method).q);
     }

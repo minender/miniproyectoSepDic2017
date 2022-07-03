@@ -94,7 +94,7 @@ public class CrudOperationsImpl implements CrudOperations {
             if (objectMethod.getIsRecursiveMethod()){
                 beginFormula = objectMethod.initFormula(beginFormula);
 
-                if ("B".equals(objectMethod.getGroupMethod())){ // Branched recursive methods
+                if ("AI".equals(strMethod)){ // And Introduction
                     if ( ((App)method).p instanceof Const ) {
                         beginFormula = ((App)beginFormula).q;
                     } else {
@@ -290,7 +290,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 formula = initStatement(formula, methodTerm);
             }
             // In applicative notation, the expression "P operator Q" is written as "(operator Q) P",
-            // so the attribute 'p' is "(operator Q)" and p.p is "operator". 
+            // so the attribute 'p' is "(operator Q)" and p.p is "operator".
             return ((Const)((App)((App)formula).p).p).getId();
         }
         catch (ClassCastException e){

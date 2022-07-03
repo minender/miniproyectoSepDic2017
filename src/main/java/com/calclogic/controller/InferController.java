@@ -524,11 +524,11 @@ public class InferController {
             initSt = crudOp.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
             formulasToProof.push(initSt);
 
-            if (
-                  ((App)methodTermIter).p instanceof App &&
-                  ("B".equals(crudOp.createProofMethodObject( ((App)((App)methodTermIter).p).p.toStringFinal() ).getGroupMethod())) &&
-                  (ProofBoolean.isBranchedProof2Started(methodTermIter))         
-               )
+            if  (
+                    ((App)methodTermIter).p instanceof App &&
+                    "AI".equals( ((App)((App)methodTermIter).p).p.toStringFinal() ) &&
+                    (ProofBoolean.isBranchedProof2Started(methodTermIter))         
+                )
             {
                 fatherProofs.push(typedTerm);
                 typedTerm = crudOp.getSubProof(typedTerm, methodTermIter);
@@ -624,12 +624,12 @@ public class InferController {
             objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
 
             if (isFinalSolution && methodTermAux instanceof Const) {
-                // Recursive branched method
+                // And Introduction Method
                 if ("AI".equals(objectMethod.getMethodStr())) {
                     isFinalSolution = false;
                     response.setEndCase(true);   
                 }
-                // Recursive linear method
+                // The rest of recursive methods
                 else if (objectMethod.getIsRecursiveMethod()) {
                     finalProof = objectMethod.finishedMethodProof(formulasToProof.pop(), finalProof);
                 }
@@ -838,6 +838,7 @@ public class InferController {
                                             @PathVariable String username, 
                                             @PathVariable String nTeo)
     {
+        System.out.println("Entré en iniStatementCOntroller, con newMethod = "+newMethod);
         GenericProofMethod objectMethod = crudOp.createProofMethodObject(newMethod);
         Boolean isRecursive = objectMethod.getIsRecursiveMethod();
         String groupMethod = objectMethod.getGroupMethod();
@@ -883,7 +884,8 @@ public class InferController {
             if (nSol.equals("new")){
                 if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 1) )    // Equivalence ==
+                     //("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 1) )    // Equivalence ==
+                     ("CA".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");
@@ -911,7 +913,8 @@ public class InferController {
 
                 if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 1) )    // Equivalence ==
+                     //("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 1) )    // Equivalence ==
+                     ("CA".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");

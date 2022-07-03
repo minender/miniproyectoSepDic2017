@@ -36,7 +36,7 @@ public class MutualImplicationMethod extends GenericProofMethod {
      */
     @Override
     public String header(String statement){
-        return "By mutual implication method:<br><br>";
+        return "By mutual implication method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
     /**
@@ -61,17 +61,17 @@ public class MutualImplicationMethod extends GenericProofMethod {
     }
 
     /**
-     * Auxiliar method for "finishedBranchedRecursiveMethodProof" that implements the corresponding
+     * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
      * logic according to the mutual implication method.
      * 
-     * @param currentProof: The current proof  
+     * @param theoremBeingProved: The theorem that user is trying to prove 
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
-     * @param finalProof: The proof tree of (p ==> q) /\ (p <== q)
      * @return axiom tree that will later be used to build the complete proof
+     * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term auxFinBranchedRecursiveMethodProof(Term currentProof, List<Var> vars, List<Term> terms, Term finalProof)
+    protected Term auxFinBranchedRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
     {
         // This string says: ((p ==> q) /\ (p <== q)) == (p == q)
@@ -81,18 +81,18 @@ public class MutualImplicationMethod extends GenericProofMethod {
         // We make the formula above to be treated as an axiom
         TypedA A = new TypedA(st);
 
-        Term lastLine = finalProof.type();
-
         // Substitution [p,q := ...]
         vars.add(0, new Var(112)); // Letter 'p'
         vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, ((App)((App)lastLine).q).q); // Note .q is (p => q), so .q.q is 'p'.
-        terms.add(0, ((App)((App)((App)lastLine).q).p).q); // .q.p is (=> q) so .q.p.q is 'q'.
+        terms.add(0, ((App)theoremBeingProved).q); 
+        terms.add(0, ((App)((App)theoremBeingProved).p).q); 
+        
         Sust sus = new Sust(vars, terms);
 
         // We give the instantiation format to the substitution above
         TypedI I = new TypedI(sus);
 
-        return new TypedApp(I,A);
+        //return new TypedApp(I,A);
+        return new TypedApp(new TypedS(),new TypedApp(I,A));
     }
 }

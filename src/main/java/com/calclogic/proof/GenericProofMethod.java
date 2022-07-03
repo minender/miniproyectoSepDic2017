@@ -259,7 +259,7 @@ public class GenericProofMethod {
     public Term finishedMethodProof(Term originalTerm, Term proof, String username,
             ResuelveManager resuelveManager, SimboloManager simboloManager) 
     {
-        if ("B".equals(this.groupMethod)){
+        if ("AI".equals(this.methodStr)){
             return finishedBranchedRecursiveMethodProof(originalTerm, proof);
         }
         else if (this.isRecursiveMethod){
