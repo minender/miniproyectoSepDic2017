@@ -623,9 +623,6 @@ public class InferController {
             String strMethodTermAux = methodTermAux.toStringFinal();
             objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
 
-            // We need this because in branched recursive methods we use And Introduction structure anyway
-            GenericProofMethod aiObject = crudOp.createProofMethodObject("AI");
-
             if (isFinalSolution && methodTermAux instanceof Const) {
                 // Recursive branched method
                 if ("AI".equals(objectMethod.getMethodStr())) {
@@ -633,8 +630,8 @@ public class InferController {
                     response.setEndCase(true);   
                 }
                 // Recursive linear method
-                else if (objectMethod.getIsRecursiveMethod() && !"B".equals(objectMethod.getGroupMethod())) {
-                    finalProof = objectMethod.finishedLinearRecursiveMethodProof(formulasToProof.pop(), finalProof);
+                else if (objectMethod.getIsRecursiveMethod()) {
+                    finalProof = objectMethod.finishedMethodProof(formulasToProof.pop(), finalProof);
                 }
                 else{
                     break;
@@ -646,11 +643,8 @@ public class InferController {
                 Term m = ((App)methodTermAux).p;
                 if (m != null){
                     objectMethod = crudOp.createProofMethodObject(m.toStringFinal());
-                    if ("B".equals(objectMethod.getGroupMethod())){
-                        finalProof = aiObject.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
-                        if (isFinalSolution){
-                            finalProof = objectMethod.finishedBranchedRecursiveMethodProof(null, finalProof);
-                        }
+                    if ("AI".equals(objectMethod.getMethodStr())){
+                        finalProof = objectMethod.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
                     }
                 }
             }
@@ -899,8 +893,10 @@ public class InferController {
                     solucion = new Solucion(resuelveAnterior, false, null, newMethod, crudOp);
                 }
                 else{
+                    String methodToStore = ("B".equals(groupMethod) && !"AI".equals(newMethod)) ? (newMethod + " AI") : newMethod;
+
                     // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
-                    solucion = new Solucion(resuelveAnterior, false, formulaTerm, newMethod, crudOp);
+                    solucion = new Solucion(resuelveAnterior, false, formulaTerm, methodToStore, crudOp);
                     typedTerm = formulaTerm;
                     solucionManager.addSolucion(solucion); // This adds a new row to the "solucion" table
                     response.setnSol(solucion.getId()+""); // The concatenation with "" converts the id to a string
