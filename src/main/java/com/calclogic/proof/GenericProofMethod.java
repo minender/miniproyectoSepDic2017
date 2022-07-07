@@ -332,6 +332,7 @@ public class GenericProofMethod {
      * @return proof of theoremBeingProved if finished, else return the same proof
      */
     public Term finishedLinearRecursiveMethodProof(Term theoremBeingProved, Term proof) {
+        System.out.println("\nAl entrar a finishedLinearRecursiveMethodProof, theoremBeingProved = "+theoremBeingProved.toStringFinal());
         try {
             // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
             List<Var> vars = new ArrayList<>();
@@ -339,12 +340,16 @@ public class GenericProofMethod {
 
             Term axiomTree = auxFinLinearRecursiveMethodProof(theoremBeingProved, vars, terms);
 
+            System.out.println("* axiomTree = "+axiomTree.toStringFinal());
+            System.out.println("* proof = "+proof.toStringFinal());
+
             return new TypedApp(axiomTree, proof);
              
         } catch (TypeVerificationException e)  {
-            Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
+            return proof;
+            //Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
         }
-        return proof;
+        //return proof;
     }
 
     /**

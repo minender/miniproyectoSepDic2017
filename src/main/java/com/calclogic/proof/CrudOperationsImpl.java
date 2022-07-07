@@ -1,6 +1,5 @@
 package com.calclogic.proof;
 
-import com.calclogic.controller.InferController;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Dispone;
 import com.calclogic.forms.GenericResponse;
@@ -94,7 +93,8 @@ public class CrudOperationsImpl implements CrudOperations {
             if (objectMethod.getIsRecursiveMethod()){
                 beginFormula = objectMethod.initFormula(beginFormula);
 
-                if ("AI".equals(strMethod)){ // And Introduction
+                if ("B".equals(objectMethod.getGroupMethod())){
+                //if ("AI".equals(strMethod)){ // And Introduction
                     if ( ((App)method).p instanceof Const ) {
                         beginFormula = ((App)beginFormula).q;
                     } else {
@@ -473,7 +473,7 @@ public class CrudOperationsImpl implements CrudOperations {
                     proofTerm = new TypedApp(CombUtilities.getTerm(proof),typedTerm);
                 }
                 catch (TypeVerificationException e) {
-                    Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+                    Logger.getLogger(CrudOperationsImpl.class.getName()).log(Level.SEVERE, null, e);
                 }
                 return proofTerm;
             }else{

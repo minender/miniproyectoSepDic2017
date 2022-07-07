@@ -66,9 +66,9 @@ public class ProofBoolean {
         }
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
                     (
-                        (methodStr=((Const)m1).getCon()).equals("AI") || 
-                        methodStr.equals("MI") || 
-                        methodStr.equals("CA")
+                        (methodStr=((Const)m1).getCon()).equals("AI") //|| 
+                        //methodStr.equals("MI") || 
+                        //methodStr.equals("CA")
                     )
                 )
         {
@@ -77,9 +77,9 @@ public class ProofBoolean {
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof App &&
                     (m2 = ((App)m1).p) instanceof Const &&
                     (
-                        (methodStr=((Const)m2).getCon()).equals("AI") || 
-                        methodStr.equals("MI") || 
-                        methodStr.equals("CA")
+                        (methodStr=((Const)m2).getCon()).equals("AI") //|| 
+                        //methodStr.equals("MI") || 
+                        //methodStr.equals("CA")
                     )
                 )
         {

@@ -11,10 +11,7 @@ import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -36,6 +33,7 @@ public class MutualImplicationMethod extends GenericProofMethod {
      */
     @Override
     public String header(String statement){
+        System.out.println("En header, statement = "+statement);
         return "By mutual implication method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
@@ -71,28 +69,40 @@ public class MutualImplicationMethod extends GenericProofMethod {
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term auxFinBranchedRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
+    protected Term auxFinLinearRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
     {
-        // This string says: ((p ==> q) /\ (p <== q)) == (p == q)
-        String str = "c_{1} (c_{1} x_{113} x_{112}) (c_{5} (c_{3} x_{113} x_{112}) (c_{2} x_{113} x_{112}))";
-        Term st = CombUtilities.getTerm(str);
+        try{
 
-        // We make the formula above to be treated as an axiom
-        TypedA A = new TypedA(st);
+            // This string says: ((p ==> q) /\ (p <== q)) == (p == q)
+            String str = "c_{1} (c_{1} x_{113} x_{112}) (c_{5} (c_{3} x_{113} x_{112}) (c_{2} x_{113} x_{112}))";
+            Term st = CombUtilities.getTerm(str);
 
-        // Substitution [p,q := ...]
-        vars.add(0, new Var(112)); // Letter 'p'
-        vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, ((App)theoremBeingProved).q); 
-        terms.add(0, ((App)((App)theoremBeingProved).p).q); 
-        
-        Sust sus = new Sust(vars, terms);
+            // We make the formula above to be treated as an axiom
+            TypedA A = new TypedA(st);
 
-        // We give the instantiation format to the substitution above
-        TypedI I = new TypedI(sus);
+            System.out.println("\nYa en aux");
+            System.out.println("* .p = "+ ((App)theoremBeingProved).p.toStringFinal() );
+            System.out.println("* .q = "+ ((App)theoremBeingProved).q.toStringFinal() );
+            // System.out.println("* p = "+ ((App)((App)theoremBeingProved).q).q.toStringFinal() );
+            // System.out.println("* q = "+ ((App)((App)((App)theoremBeingProved).q).p).q.toStringFinal());
 
-        //return new TypedApp(I,A);
-        return new TypedApp(new TypedS(),new TypedApp(I,A));
+            // Substitution [p,q := ...]
+            vars.add(0, new Var(112)); // Letter 'p'
+            vars.add(0, new Var(113)); // Letter 'q'
+            terms.add(0, ((App)((App)theoremBeingProved).q).q); 
+            terms.add(0, ((App)((App)((App)theoremBeingProved).q).p).q); 
+            
+            Sust sus = new Sust(vars, terms);
+
+            // We give the instantiation format to the substitution above
+            TypedI I = new TypedI(sus);
+
+            //return new TypedApp(I,A);
+            return new TypedApp(new TypedS(),new TypedApp(I,A));
+        } 
+        catch (Exception e)  {
+            return null;
+        }
     }
 }

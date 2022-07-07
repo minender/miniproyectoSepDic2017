@@ -173,6 +173,7 @@ public class InferResponse extends GenericResponse{
             DisponeManager disponeManager, SimboloManager s, String header, String clickable, 
             Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo, GenericProofMethod objectMethod) 
     {
+        System.out.println("Entré en setLinearRecursiveMethodProof");
         Term newFormula = objectMethod.initFormula(formula);
         String statement;
         try {
@@ -221,11 +222,13 @@ public class InferResponse extends GenericResponse{
         Boolean valida, Boolean labeled, Term formula, String nTeo, GenericProofMethod objectMethod)
     {
         try{
-            String statement;
+            System.out.println("Entré en setBranchedRecursiveMethodProof");
+            String headerStatement, statement;
             Term newFormula = ((App)formula).q; // First branch
 
+            headerStatement = "AI".equals(objectMethod.getMethodStr()) ? "" : "<center>$" + formula.toStringInf(s,"") + "$</center>";
             statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) + "$</center>";
-            header += objectMethod.header("") + objectMethod.subProofInit(statement);
+            header += objectMethod.header(headerStatement) + objectMethod.subProofInit(statement);
 
             if (methodTerm instanceof Const){
                 historial = header;
@@ -459,17 +462,20 @@ public class InferResponse extends GenericResponse{
 
         if (recursive){
             if ("B".equals(objectMethod.getGroupMethod())){
+            //if ("AI".equals(strMethod)){
 
                 // ******* I AM NOT SURE IF THIS LINE WILL ALWAYS REMAIN HERE
                 Term editedFormula = objectMethod.initFormula(formula);
+                System.out.println("editedFormula = "+editedFormula.toStringFinal());
                 setBranchedRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
                     clickable, methodTerm, valida, labeled, editedFormula, nTeo, objectMethod);        
             }
             else {
+                System.out.println("El método no es branched");
                 setLinearRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
                     clickable, methodTerm, valida, labeled, formula, nTeo, objectMethod);  
             }
-        } else {
+        } else {         
             this.setHistorial(objectMethod.setBaseMethodProof(
                 this.getHistorial(), user, typedTerm, solved, resuelveManager, disponeManager, s
             ));
