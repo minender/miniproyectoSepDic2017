@@ -259,7 +259,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>4.2.0.Final</version>
+            <version>4.3.2.Final</version>
             <!--<scope>system</scope>
             <systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/hibernate-validator-4.2.0.Final.jar</systemPath>-->
         </dependency>
