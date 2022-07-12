@@ -20,8 +20,7 @@ import java.util.List;
 public class MutualImplicationMethod extends GenericProofMethod {
 
     public MutualImplicationMethod(){
-        //setInitVariables("MI"); // RESTAURAR
-        setInitVariables("CA"); // BORRAR
+        setInitVariables("MI");
     }
 
     /**

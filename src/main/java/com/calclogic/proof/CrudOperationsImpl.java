@@ -62,8 +62,7 @@ public class CrudOperationsImpl implements CrudOperations {
             case "MI":
                 return new MutualImplicationMethod();
             case "CA":
-                //return new CaseAnalysisMethod(); // RESTAURAR
-                return new MutualImplicationMethod(); // BORRAR
+                return new CaseAnalysisMethod();
             default:
                 return new GenericProofMethod();
         }

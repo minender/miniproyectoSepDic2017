@@ -58,7 +58,7 @@ public class ProofBoolean {
                     (
                         (methodStr=((Const)m1).getCon()).equals("ND") || 
                         methodStr.equals("CO") || 
-                        methodStr.equals("CR")
+                        methodStr.equals("CR") 
                     )
                 ) 
         {
