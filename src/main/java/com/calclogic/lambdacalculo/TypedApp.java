@@ -24,14 +24,13 @@ public class TypedApp extends App implements TypedTerm{
         super(t1, t2);
         Term t1Type = t1.type();
         Term t2Type = t2.type();
-
         if (t1Type instanceof Sust)
             inferType = 'i';
         else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
         {
             try{
                 String op = ((Const)((App)((App)t2Type).p).p).getCon().trim();
-                if (!op.equals("c_{1}") && !op.equals("c_{20}"))
+                if (!op.equals("="))
                     throw new TypeVerificationException();
             }
             catch (ClassCastException e){
@@ -45,24 +44,78 @@ public class TypedApp extends App implements TypedTerm{
             try
             {
                 String op1 = ((Const)((App)((App)t1Type).p).p).getCon().trim();
-                if (!op1.equals("c_{1}") && !op1.equals("c_{20}") && !op1.equals("c_{2}") && !op1.equals("c_{3}")){
+                if (!op1.equals("=") && !op1.equals("c_{2}") && !op1.equals("c_{3}")){
                     throw new TypeVerificationException();
                 }    
-                if ((!op1.equals("c_{1}") && !op1.equals("c_{2}")) || !t1Izq.equals(t2Type)) 
-                {
+                if ((!op1.equals("=") && !op1.equals("c_{2}")) || !t1Izq.equals(t2Type)) 
+                {//(q==r)=q q=r pilas con este caso no se sabe si es equanimity o transitividad
                     Term t1Der = ((App)((App)t1Type).p).q;
                     Term t2Izq = ((App)t2Type).q;
+                    int nL1, nL2, maxVar, nMax;
+                    Term aux = t1Der;
+                    nL1 = 0;
+                    maxVar = 0;
+                    while (aux instanceof Bracket) {
+                        maxVar = ((Bracket)aux).x.indice;
+                        aux = ((Bracket)aux).t;
+                        nL1++;
+                    }
+                    aux = t2Izq;
+                    nL2 = 0;
+                    while (aux instanceof Bracket) {
+                        if ( ((Bracket)aux).x.indice > maxVar )
+                            maxVar = ((Bracket)aux).x.indice;
+                        aux = ((Bracket)aux).t;
+                        nL2++;
+                    }
+                    Term max, min;
+                    if (nL1<=nL2) {
+                        max = t2Izq;
+                        min = t1Der;
+                        nMax = nL2;
+                    }
+                    else {
+                        max = t1Der;
+                        min = t2Izq;
+                        nMax = nL1;
+                    }
+                    aux = min;
+                    Term E = (nL1<=nL2?t1Der:t2Izq);//new Var(maxVar+1);
+                    while (aux instanceof Bracket) {
+                        E = new App(E, ((Bracket)aux).x);
+                        aux = ((Bracket)aux).t;
+                    }
+                    for (int i=0; i< nMax; i++) {
+                        aux = max;
+                        for (int j=0; j< nMax-1-i;j++) {
+                           aux = ((Bracket)aux).t;
+                        }
+                        E = new Bracket(((Bracket)aux).x,E);
+                    }
+                    /*E = new Bracket(z,E);*/
+                    //ArrayList q = new ArrayList<Var>();
+                    //q.add(new Var(113));
+                    if (nL1<=nL2) 
+                        t1Der = E.evaluar();
+                    else 
+                        t2Izq = E.evaluar();
+                    
                     String op2 = ((Const)((App)((App)t2Type).p).p).getCon().trim();
             
-                    boolean eq = op1.equals("c_{20}") && op2.equals("c_{20}");
-                    boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
+                    boolean eq = op1.equals("=") && op2.equals("=");
+                    System.out.println(t1Der);
+                    System.out.println(t2Izq);
+                    //t1Der = t1Der.traducBD();
+                    //t2Izq = t2Izq.traducBD();
+                    //boolean equiv = op1.equals("c_{1}") && op2.equals("c_{1}");
     //                boolean eqAndOp = op1.equals("c_{1}") && (op2.equals("c_{1}")
     //                        || op2.equals("c_{3}") || op2.equals("c_{2}"));
     //                boolean leftAndOp = op1.equals("c_{3}") && 
     //                        (op2.equals("c_{3}") || op2.equals("c_{1}"));
     //                boolean rightAndOp = op1.equals("c_{2}") && 
     //                        (op2.equals("c_{2}") || op2.equals("c_{1}"));
-                    if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq))){
+                    if (!(/*(eq || equiv)(eq || eqAndOp || leftAndOp || rightAndOp)*/
+                            eq && t1Der.equals(t2Izq))){
                         throw new TypeVerificationException();
                     }
                     else
@@ -85,22 +138,22 @@ public class TypedApp extends App implements TypedTerm{
                 Const op = (Const)leftChild.p;
 
                 // check if it's deducting an equivalence or not
-                if (!(op.getCon().trim().equals("c_{1}") || op.getCon().trim().equals("c_{20}")))
+                if (!op.getCon().trim().equals("="))
                     throw new TypeVerificationException();
-
+                /*
                 Term r1 = leftChild.q;
                 Term r2 = rootRight.q;  
 
                 // create new tree with r2==r1
                 App inverseApp = new App(new App(op, r2), r1);
                 // (r1==r2)==(r2==r1)
-                Term type = new App(new App(op, inverseApp), rootRight);
-
-                // select type for simetry
-                inferType = 's';
-
+                Term type = new App(new App(new Const(2,"c_{2}"), inverseApp), rootRight);
                 // set the deducted type
                 ((TypedS)t1).setSimetry(type);
+                */
+  
+                // select type for simetry
+                inferType = 's';
 
             } catch (ClassCastException e) {
                 throw new TypeVerificationException();
@@ -117,13 +170,31 @@ public class TypedApp extends App implements TypedTerm{
     {
         Term pType = p.type();
         Term qType = q.type();
-        if (pType instanceof Sust )
-            return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms).evaluar();
+        if (p instanceof TypedS)
+        {
+            return new App(new App(new Const("="), ((App)qType).q), ((App)((App)qType).p).q);
+        }
+        else if(pType instanceof Sust)
+        {
+            String[] vs = pType.stFreeVars().split(",");
+            Var z = new Var((int)vs[vs.length-1].charAt(0)+1);
+            Term t = z;
+            for (int i = 0; i<((Sust)pType).vars.size();i++) {
+                t = new App(t,((Sust)pType).terms.get(i));
+            }
+            for (int i=vs.length-1; i>=0;i--) { 
+                t = new Bracket(new Var((int)vs[i].charAt(0)),t);
+            }
+            Term E = new Bracket(z, t);
+            E = new App(new App(new Const("="),new App(E,((App)((App)qType).p).q)),new App(E,((App)qType).q)).evaluar();
+            return E;
+            //return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms).evaluar();
+        }
         else if (pType instanceof Bracket)
         {
             Term t1 = new App(pType,((App)qType).q).evaluar();
             Term t2 = new App(pType,((App)((App)qType).p).q).evaluar();
-            Term op2 = ((App)((App)qType).p).p; // incluir paridad aqui
+            Term op2 = ((App)((App)qType).p).p; 
             return new App(new App(op2, t2),t1);
         }
         /*else if (pType.toString().equals("U") || pType.toString().equals("U"))
@@ -137,16 +208,18 @@ public class TypedApp extends App implements TypedTerm{
                 return ((App)((App)pType).p).q;
             Term qDer = ((App)((App)qType).p).q;
             Const op1 = (Const)((App)((App)pType).p).p;
-            Const op2 = (Const)((App)((App)qType).p).p;
+            //Const op2 = (Const)((App)((App)qType).p).p;
            
             // incesario luego que se elminaron reglas de inferencias
-            if (op1.equals(op2))
+            //if (op1.equals(op2)) {
                 return new App(new App(op1, qDer), pIzq);
-            else if (op1.getCon().trim().equals("c_{1}"))
+            /*}
+            else if (op1.getCon().trim().equals("c_{1}")) // este no va
                 return new App(new App(op2, qDer), pIzq);
-            else
+            else                                          // este no va
                 return new App(new App(op1, qDer), pIzq);
             // verificar si compartir terminos no trae problemas con reducir
+            */
         }
     }
 }

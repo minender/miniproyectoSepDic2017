@@ -5,8 +5,10 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.service.PredicadoManager;
+import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -58,6 +60,11 @@ public class Sust extends Term{
         return null;
     }
     
+    public int nPhi()
+    {
+        return 0;
+    }
+    
     public boolean containTypedA()
     {
         return false;
@@ -97,6 +104,11 @@ public class Sust extends Term{
         return -1;
     }
     
+    public int fresh(int n)
+    {
+        return n;
+    }
+    
     public Tipo esRedex()
     {
         return new Tipo(false,false);
@@ -129,7 +141,7 @@ public class Sust extends Term{
         return list;
     }
     
-    public Term invBraBD()
+    public Term invBraBD(int n)
     {
         return null;
     }
@@ -294,6 +306,12 @@ public class Sust extends Term{
     @Override
     public Term sustParall(List<Var> Vars, List<Term> varsTerm) {
         return this;
+    }
+    
+    @Override
+    public void freeVars(HashSet<String> hs){
+        for(Term li: terms)
+            li.freeVars(hs);
     }
 
     @Override

@@ -7,6 +7,7 @@ package com.calclogic.lambdacalculo;
 import com.calclogic.entity.PredicadoId;
 import com.calclogic.entity.Simbolo;
 import com.calclogic.service.PredicadoManager;
+import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -112,7 +113,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract Term invBDOneStep();
     
-    public abstract Term invBraBD();
+    public abstract Term invBraBD(int n);
     
     public abstract Term sust(Var x,Term t);
     
@@ -132,6 +133,8 @@ public abstract class Term implements Cloneable, Serializable{
 
     public abstract boolean occur(Var x);
     
+    public abstract int fresh(int n);
+    
     public abstract String position(Var x);
     
     public abstract Term subterm(String position);
@@ -139,6 +142,8 @@ public abstract class Term implements Cloneable, Serializable{
     public abstract Term checkApp();
     
     public abstract Term type();
+    
+    public abstract int nPhi();
     
     public abstract boolean containTypedA();
     
@@ -222,26 +227,22 @@ public abstract class Term implements Cloneable, Serializable{
      */
     public abstract String aliases(String position);
     
-    public String freeVars(){
-        //String st = "";
+    public HashSet<String> freeVars(){
         HashSet<String> hset =new HashSet<String>();
-        Stack<Term> pila = new Stack<Term>();
-        pila.push(this);
-        int i=0;
-        while (!pila.isEmpty()) {
-            Term actual = pila.pop();
-            if (actual instanceof Var) {
-               //st += (i!=0?",":"") + actual.toStringInf(null,"");
-               hset.add(actual.toStringInf(null,""));
-            }
-            else if (actual instanceof App) {
-              pila.push(((App)actual).q);
-              pila.push(((App)actual).p);
-            }
-            i++;
-        } 
+        freeVars(hset);
+        
+        return hset;
+    }
+    
+    public String stFreeVars(){
+        //String st = "";
+        HashSet<String> hset = freeVars();
+
+        // aqui ordenar creo que queda ordenado por el hash function averigua
         return hset.toString().replaceAll("[\\s\\[\\]]", "");
     }
+    
+    public abstract void freeVars(HashSet<String> hs);
     
     public Term setToPrinting(String variables) {
         Term arg1, arg2;
@@ -265,12 +266,16 @@ public abstract class Term implements Cloneable, Serializable{
     }
     
     public Term abstractVars (String variables) {
-        Term arg1;
-        arg1 = this;
-        String[] vars = variables.split(",");
-        for (int i=vars.length-1; 0<=i; i--) 
-            arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
-        return arg1.traducBD();
+        if (!variables.equals("")) {
+           Term arg1;
+           arg1 = this;
+           String[] vars = variables.split(",");
+           for (int i=vars.length-1; 0<=i; i--) 
+               arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
+           return arg1.traducBD();
+        }
+        else
+           return this;
     }
     
     /**
@@ -650,10 +655,9 @@ public abstract class Term implements Cloneable, Serializable{
         return this;
     }
     
-    public Term reducir()
+    public Term reducir(List<Var> vars)
     {
-    	
-        Redex r=buscarRedexIzq(null,false);
+        Redex r=buscarRedexIzqFinal(null,false);
         if(r!=null)
         {
             if(r.context==null)
@@ -661,9 +665,9 @@ public abstract class Term implements Cloneable, Serializable{
                 if(r.tipo.c)
                     return this.kappa();
                 else if(r.tipo.l)
-                    return ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);                    
+                    return ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);
                 else
-                    return this.invBraBD();
+                    return this.invBraBD(vars.remove(0).indice);
             }
             else if(r.context instanceof App)
             {
@@ -675,7 +679,59 @@ public abstract class Term implements Cloneable, Serializable{
                      else if (r.tipo.l)
                         ((App)r.context).p=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
                      else
-                        ((App)r.context).p=t.invBraBD();
+                        ((App)r.context).p=t.invBraBD(vars.remove(0).indice);
+                 }
+                 else
+                 {
+                     Term t=((App)r.context).q; 
+                     if(r.tipo.c)
+                        ((App)r.context).q=t.kappa();
+                     else if(r.tipo.l)
+                        ((App)r.context).q=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
+                     else 
+                        ((App)r.context).q=t.invBraBD(vars.remove(0).indice);
+                 }
+            }
+            else if(r.context instanceof Bracket)
+            {                          
+                 Term t=((Bracket)r.context).t; 
+                 if(r.tipo.c)
+                     ((Bracket)r.context).t=t.kappa();
+                 else if(r.tipo.l)
+                     ((Bracket)r.context).t=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
+                 else
+                     ((Bracket)r.context).t=t.invBraBD(vars.remove(0).indice);
+            }
+        }
+        
+        return this;
+    }
+    
+    public Term reducir()
+    {
+        Redex r=buscarRedexIzq(null,false);
+        if(r!=null)
+        {
+            if(r.context==null)
+            {
+                if(r.tipo.c)
+                    return this.kappa();
+                else if(r.tipo.l)
+                    return ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);                    
+                else
+                    return this.invBraBD(0);
+            }
+            else if(r.context instanceof App)
+            {
+                 if(r.p)
+                 {
+                     Term t=((App)r.context).p; 
+                     if (r.tipo.c)
+                        ((App)r.context).p=t.kappa();
+                     else if (r.tipo.l)
+                        ((App)r.context).p=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
+                     else
+                        ((App)r.context).p=t.invBraBD(0);
                  }
                  else
                  {
@@ -685,7 +741,7 @@ public abstract class Term implements Cloneable, Serializable{
                      else if(r.tipo.l)
                         ((App)r.context).q=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
                      else
-                        ((App)r.context).q=t.invBraBD();
+                        ((App)r.context).q=t.invBraBD(0);
                  }
             }
             else if(r.context instanceof Bracket)
@@ -696,7 +752,7 @@ public abstract class Term implements Cloneable, Serializable{
                  else if(r.tipo.l)
                      ((Bracket)r.context).t=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
                  else
-                     ((Bracket)r.context).t=t.invBraBD();
+                     ((Bracket)r.context).t=t.invBraBD(0);
             }
         }
         
@@ -745,7 +801,7 @@ public abstract class Term implements Cloneable, Serializable{
                 }
                 else
                 {
-                    reduc=this.invBraBD();
+                    reduc=this.invBraBD(0);
                     corr.operations.add(new Integer(2));
                     corr.terminos.add(reduc.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     corr.traducciones++;
@@ -789,7 +845,7 @@ public abstract class Term implements Cloneable, Serializable{
                      }
                      else
                      {
-                        ((App)r.context).p=t.invBraBD();
+                        ((App)r.context).p=t.invBraBD(0);
                         corr.operations.add(new Integer(2));
                         corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                         corr.traducciones++;
@@ -830,7 +886,7 @@ public abstract class Term implements Cloneable, Serializable{
                      }
                      else
                      {
-                        ((App)r.context).q=t.invBraBD();
+                        ((App)r.context).q=t.invBraBD(0);
                         corr.operations.add(new Integer(2));
                         corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                         corr.traducciones++;
@@ -872,7 +928,7 @@ public abstract class Term implements Cloneable, Serializable{
                  }
                  else
                  {
-                     ((Bracket)r.context).t=t.invBraBD();
+                     ((Bracket)r.context).t=t.invBraBD(0);
                      corr.operations.add(new Integer(2));
                      corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                      corr.traducciones++;
@@ -1031,13 +1087,13 @@ public abstract class Term implements Cloneable, Serializable{
                         {
                             Term x1=izq.pq.q;
                             izq.pqr.p=izq.p;
-                            return new App(x1,this.kappaIndexado(Math.max(c,x1.maxVar()+1),xc));
+                            return new App(x1,this.kappaIndexado(x1.fresh(c),xc));
                         }
                         else
                         {
                             Term x1=izq.pq.q;
                             izq.pqr.p=izq.p;
-                            return new App(this.kappaIndexado(Math.max(c,x1.maxVar()+1),xc),x1);
+                            return new App(this.kappaIndexado(x1.fresh(c),xc),x1);
                         }
                     }
                     else
@@ -1057,7 +1113,7 @@ public abstract class Term implements Cloneable, Serializable{
                 {
                     /*xc.setIndice(Math.max(izq.pq.q.maxVar(),c));
                     return xc;*/
-                    xc.indice=Math.max(izq.pq.q.maxVar(),c);
+                    xc.indice=izq.pq.q.fresh(c);
                     return xc;
                 }
             }
@@ -1089,6 +1145,27 @@ public abstract class Term implements Cloneable, Serializable{
                 {
 
                     term1=term1.reducir();
+                    redex=term1.buscarRedexIzqFinal(null, false);
+                }
+            //    term2=term1.invBDOneStep();
+            //}while(!term1.equals(term2));
+
+	    return term1;
+    }
+    
+    public Term evaluar(List<Var> vars)
+    {
+            Term term2=this;
+            Term term1=term2;
+
+            //do
+            //{
+                term1=term2;
+                Redex redex=term1.buscarRedexIzqFinal(null, false);
+                while(redex!=null)
+                {
+
+                    term1=term1.reducir(vars);
                     redex=term1.buscarRedexIzqFinal(null, false);
                 }
             //    term2=term1.invBDOneStep();

@@ -12,5 +12,4 @@ package com.calclogic.lambdacalculo;
 public interface TypedTerm {
     
     public Term type();
-    
 }

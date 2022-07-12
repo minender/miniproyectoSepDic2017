@@ -9,6 +9,7 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.List;
@@ -117,7 +118,13 @@ public class App extends Term{
         else
             return new App(p.sustParall(Vars, varsTerm), q.sustParall(Vars, varsTerm));
     }
-
+    
+    @Override
+    public void freeVars(HashSet<String> hs){
+        p.freeVars(hs);
+        q.freeVars(hs);
+    }
+    
     @Override
     public Term checkApp() {
          
@@ -243,6 +250,11 @@ public class App extends Term{
         return Math.max(p.maxVar(), q.maxVar());
     }
     
+    public int fresh(int n)
+    {
+        return q.fresh(p.fresh(n));
+    }
+    
     public Term traducBD()
     {
         return new App(p.traducBD(),q.traducBD());
@@ -325,19 +337,19 @@ public class App extends Term{
         Redex r=p.buscarRedexIzqFinal(this,true);
         if(r!=null)
             return r;
-        else
+        else 
             return q.buscarRedexIzqFinal(this,false);
     }
     
-    public Term invBraBD()
+    public Term invBraBD(int n)
     {
-        Var xc=new Var(0);
+        Var xc=new Var(n);
         if(obtenerIzq(this,-1).p instanceof Phi)
-            return new Bracket(xc, (new App(this,xc)).kappaIndexado(0,xc));
+            return new Bracket(xc, (new App(this,xc)).kappaIndexado(n,xc));
         else
         {
-            Var x=new Var(this.maxVar()+1);
-            return new Bracket(x,(new App(this,x)).kappa());
+            //Var x=new Var(this.maxVar()+1);
+            return new Bracket(xc,(new App(this,xc)).kappaIndexado(n,xc));
         }
     }
     
@@ -354,10 +366,10 @@ public class App extends Term{
             else
                 aux=obtenerIzq(this,izq.deep-1);
             if(aux.pqr == null)
-                return this.invBraBD().invBD();
+                return this.invBraBD(0).invBD();
             else
             {
-                aux.pqr.p=aux.pqr.p.invBraBD();
+                aux.pqr.p=aux.pqr.p.invBraBD(0);
                 return this.invBD();
             }
         }
@@ -373,7 +385,7 @@ public class App extends Term{
     {
         Term izq=obtenerIzq(this,-1).p;
         if(izq instanceof Phi || izq instanceof Const)
-            return this.invBraBD();
+            return this.invBraBD(0);
         else
             return new App(p.invBD(),q.invBD());
     }
@@ -411,6 +423,11 @@ public class App extends Term{
     public Term type()
     {
         return null;
+    }
+    
+    public int nPhi()
+    {
+        return p.nPhi()+q.nPhi();
     }
     
     public boolean containTypedA()
@@ -473,7 +490,6 @@ public class App extends Term{
     }
     
     private IntXIntXString privateToStringInf(SimboloManager s, String numTeo) {
-        
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
         Term aux = p;

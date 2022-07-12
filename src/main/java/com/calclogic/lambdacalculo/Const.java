@@ -8,6 +8,7 @@ import com.calclogic.entity.Simbolo;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -98,6 +99,11 @@ public class Const extends Term
        return null;
    }
    
+   public int nPhi()
+   {
+       return 0;
+   }
+   
    public boolean containTypedA()
    {
        return this instanceof TypedA;
@@ -106,7 +112,7 @@ public class Const extends Term
    public void getAxioms(List<String> l)
    {
        if (this instanceof TypedA)
-           l.add(this.type().toStringFinal() );
+           l.add(this.type().toStringFinal());
    }
    
    public Term leibniz(int z, Term subterm)
@@ -131,6 +137,11 @@ public class Const extends Term
     public int maxVar()
     {
         return -1;
+    }
+    
+    public int fresh(int n)
+    {
+        return n;
     }
     
     public Tipo esRedex()
@@ -165,7 +176,7 @@ public class Const extends Term
         return list;
     }
     
-    public Term invBraBD()
+    public Term invBraBD(int n)
     {
         return null;
     }
@@ -193,10 +204,10 @@ public class Const extends Term
     public String toString()
     {
         Term typ = this.type();
-        if (typ == null || con.equals("S") || con.equals("U"))
+        if (typ == null || con.equals("S")) //|| con.equals("U"))
           return con;
         else
-          return con+"^{"+typ.toStringFinal()+"}";
+          return con+"^{"+typ.traducBD().toStringFinal()+"}";
     }
    
     /*@Override
@@ -324,6 +335,11 @@ public class Const extends Term
         return this;
     }
 
+    @Override
+    public void freeVars(HashSet<String> hs){
+        ;
+    }
+    
     @Override
     public Term checkApp() {
         return this;

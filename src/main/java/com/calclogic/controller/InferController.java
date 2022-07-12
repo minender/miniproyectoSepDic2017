@@ -756,31 +756,31 @@ public class InferController {
         // CREATE THE NEW PROOF TREE BY ADDING THE NEW INFER
         Term newProof =null;
         
-        boolean onlyOneLine = ProofBoolean.isOneLineProof(typedTerm);
+        boolean isOnlyOneLine = ProofBoolean.isOneLineProof(typedTerm);
         Term currentProof;
-        if (onlyOneLine){
+        if (isOnlyOneLine){
             // If the proof only has one line so far, it may not be a boolean expression yet, because it could only 
             // be arithmetic, like 3 + 4. But since we always need it to be boolean, if the only line was P, we make 
             // the proof to be provisionally: P == P. Soon we will discard again the first P-
-            Term noVarsTerm = typedTerm.abstractVars(typedTerm.freeVars());
+            Term noVarsTerm = typedTerm.abstractVars(typedTerm.stFreeVars());
             currentProof = new TypedA(new App(new App(new Const(0,"="),noVarsTerm),noVarsTerm));
         }
         else{
             currentProof = typedTerm;
         }
 
-        int i, j;
+        int i;//, j;
         i = 0;
-        j = 0;
+        //j = 0;
         while (newProof == null && i < 2) {
             try {
-                if (i == 1 && j == 0){
+                if (i == 1 /*&& j == 0*/){
                     infer = new TypedApp(new TypedS(infer.type()), infer);
                 }
                 // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
                 newProof = crudOp.addInferToProof(currentProof, infer, strMethodTermIter);
-                if (onlyOneLine){
+                if (isOnlyOneLine){
                     // If the proof only has one line with expression P for the user, then at this point it is interally P == P
                     // as explained previously. But since we don't need the first P and the new inference "infer" consists of 
                     // the three parts that will be shown to the user: 1) the previous expression P, 2) the hint and 3) the new expresssion,
@@ -789,11 +789,11 @@ public class InferController {
                 }
             }
             catch (TypeVerificationException e) {
-                if ((i == 1 && !onlyOneLine) || (i == 1 && j == 1)){
+                if (i==1/*(i == 1 && !onlyOneLine) || (i == 1 && j == 1)*/){
                     response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
-                if (onlyOneLine && j == 0) {
+                /*if (onlyOneLine && j == 0) {
                     currentProof = new TypedA(new App(new App(new Const(1,"c_{20}",false,1,1),
                             typedTerm),typedTerm));
                     j=1;
@@ -802,9 +802,10 @@ public class InferController {
                     currentProof = new TypedA(new App(new App(new Const(1,"c_{1}",false,1,1),
                             typedTerm),typedTerm));
                     j=0;
-                }
+                }*/
             }
-            i = (j == 1?i:i+1);
+            //i = (j == 1?i:i+1);
+            i++;
         }       
         
         response.setResuelto("0");
@@ -859,7 +860,6 @@ public class InferController {
             resuelveManager.updateResuelve(resuel);
         }
 
-        solucionManager.updateSolucion(solucion);
         response.generarHistorial(
             username,
             formula, 
@@ -872,6 +872,8 @@ public class InferController {
             disponeManager,
             simboloManager
         );
+        solucionManager.updateSolucion(solucion);
+        
         return response;
     }
 

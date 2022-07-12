@@ -450,7 +450,7 @@ public class PerfilController {
             resuelve.addProperty("stringNumero", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager, resuelves.get(i).getNumeroteorema()));
             resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringInfFinal(simboloManager));
             resuelve.addProperty("demopendiente",resuelves.get(i).getDemopendiente());
-            resuelve.addProperty("vars",resuelves.get(i).getTeorema().getTeoTerm().freeVars());
+            resuelve.addProperty("vars",resuelves.get(i).getTeorema().getTeoTerm().stFreeVars());
             resuelves1.add(resuelve);
         }
         response.add("categories", categories);
@@ -622,7 +622,7 @@ public class PerfilController {
             try //si la sintanxis no es correcta ocurre una Exception
             {
                 teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
-                String variables = teoTerm.freeVars();
+                String variables = teoTerm.stFreeVars();
                 if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
                     ((App)((App)teoTerm).p).p instanceof Const && 
                     ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||

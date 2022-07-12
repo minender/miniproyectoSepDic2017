@@ -5,8 +5,10 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.service.PredicadoManager;
+import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -69,6 +71,11 @@ public class Var extends Term{
         return null;
     }
     
+    public int nPhi()
+    {
+        return 0;
+    }
+    
     public boolean containTypedA()
     {
         return false;
@@ -111,6 +118,11 @@ public class Var extends Term{
         return indice;
     }
     
+    public int fresh(int n)
+    {
+        return (n!=indice?n:indice+1);
+    }
+    
     public Term traducBD()
     {
         return this;
@@ -143,7 +155,7 @@ public class Var extends Term{
         return new Tipo(false,false,false);
     }
     
-    public Term invBraBD()
+    public Term invBraBD(int n)
     {
         return null;
     }
@@ -180,7 +192,7 @@ public class Var extends Term{
     public String toStringInf(SimboloManager s,String numTeo) {
         if(alias == null ) {
             char ascii = (char) indice; 
-            return ""+ascii;
+            return (indice>64?""+ascii:"x_{"+indice+"}");
         }else {
             return alias;
         }
@@ -195,7 +207,7 @@ public class Var extends Term{
 //        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
 //        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
         if(alias == null ) {
-            char ascii = (char) indice; 
+            char ascii = (char) (indice>64?indice:indice+65); 
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+ascii+"}}";
         }else {
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+alias+"}}";
@@ -364,6 +376,11 @@ public class Var extends Term{
         
     }
 
+    @Override
+    public void freeVars(HashSet<String> hs) {
+        hs.add(indice>64?""+(char) indice:"x_{"+indice+"}");
+    }
+    
     @Override
     public Term checkApp() {
         return this;

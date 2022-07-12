@@ -5,6 +5,9 @@
  */
 package com.calclogic.lambdacalculo;
 
+import com.calclogic.parse.TermUtilities;
+import java.util.List;
+
 /**
  *
  * @author federico
@@ -12,15 +15,20 @@ package com.calclogic.lambdacalculo;
 public class TypedA extends Const implements TypedTerm{
     
     private final Term type_;
+    private final String variables_;
     
     public TypedA(Term type)
     {
         super("A");
         type_ = type;
+        variables_ = "q";
     }
     
+    @Override
     public Term type()
     {
-        return type_.evaluar();
+        List<Var> li = TermUtilities.arguments(variables_);
+        li.addAll(li);
+        return type_.evaluar(li);
     }
 }

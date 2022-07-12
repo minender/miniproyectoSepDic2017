@@ -23,6 +23,8 @@ import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.externalservices.MicroServices;
+import com.calclogic.parse.CombUtilities;
+import com.calclogic.parse.TermUtilities;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.InferenceIndex;
 
@@ -336,16 +338,17 @@ public class InferResponse {
                 teo = ((App)ultInf).q.type().toStringFinal();
             }
         } else {
-            Term aux = ultInf.type();
+            Term aux = ultInf.type().traducBD();
             teo = aux.toStringFinal();
             //  primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
         } 
 
         int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 
                                 :((Const)((App)((App)ultInf.type()).p).p).getId());
-        String op = s.getSimbolo(conId).getNotacion_latex();
+        String op = "\\equiv";//s.getSimbolo(conId).getNotacion_latex();
 
         Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
+
         Boolean entry = true;
         if (theo == null){
             theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo);
@@ -462,6 +465,10 @@ public class InferResponse {
         String equanimityHint = ""; // Text that indicates in which already proven theorem the current demonstration finalized (if any)
         Term iter;
         String lastline = "";
+        String st = null;
+        //String vars = null;
+        Resuelve re = null;
+        Term ultInfType = null;
         
         /* If the demonstrarion method is starting from one side, or the typedTerm is not an inference
            but just a functional application (an App) or is an equanimity inference */
@@ -470,6 +477,10 @@ public class InferResponse {
                iter = ((TypedApp)typedTerm).q;
             else
                iter = typedTerm;
+            //st = ((Term)iter.type().clone2()).traducBD().toStringFinal();
+            //re = resuelveManager.getResuelveByUserAndTeorema(user, st);
+            //vars = re.getVariables();
+            ultInfType = iter.type();
             Term aux = ((App)((App)iter.type()).p).q;
             lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));
         }
@@ -480,13 +491,13 @@ public class InferResponse {
 
             // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
             if (((TypedApp)typedTerm).q instanceof TypedApp){
-                nTeo = ((TypedApp)((TypedApp)typedTerm).q).q.type().toStringFinal();
+                nTeo = ((Term)((TypedApp)((TypedApp)typedTerm).q).q.clone2()).type().traducBD().toStringFinal();
                 eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringInf(s,"");
             }
             else {
                 // Note that here we have a less "q" respect of the previous case because in there 
                 // there was an additional tree representing the instantiation
-                nTeo = ((TypedApp)typedTerm).q.type().toStringFinal();
+                nTeo = ((Term)((TypedApp)typedTerm).q.clone2()).type().traducBD().toStringFinal();
             }
 
             // We get the Resuelve row associated to the demonstrated theorem in order that we can 
@@ -520,12 +531,18 @@ public class InferResponse {
             if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t' ) {
                 ultInf = ((TypedApp)iter).q;
                 iter = ((TypedApp)iter).p;
-                Term ultInfType = ultInf.type();
+                ultInfType = ultInf.type();
                 primExp = ((App)ultInfType).q.toStringInf(s,""); 
             }
             else {
                 ultInf = iter;
-                Term ultInfType = ultInf.type();
+                /*if (st == null) {
+                    st = ultInf.type().toStringFinal();
+                    re = resuelveManager.getResuelveByUserAndTeorema(user, st);
+                    vars = re.getVariables();
+                    ultInfType = ultInf.type();
+                }*/
+                ultInfType = ultInf.type();
                 primExp = ((App)ultInfType).q.toStringInf(s,"");
                 if (equanimity){
                     primExp += equanimityHint;
@@ -535,6 +552,7 @@ public class InferResponse {
             this.setHistorial("~~~~~~" + primExp +" \\\\"+ hint +"\\\\"+this.getHistorial());
             primExp = "";
             hint = "";
+            st = null;
         }
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
     }

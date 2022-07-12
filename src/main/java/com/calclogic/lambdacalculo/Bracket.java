@@ -7,6 +7,7 @@ package com.calclogic.lambdacalculo;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -75,6 +76,11 @@ public class Bracket extends Term{
     public Term type()
     {
         return null;
+    }
+    
+    public int nPhi()
+    {
+        return 0;
     }
     
     public boolean containTypedA()
@@ -148,6 +154,11 @@ public class Bracket extends Term{
         return t.maxVar();
     }
     
+    public int fresh(int n)
+    {
+        return t.fresh(n);
+    }
+    
     public Tipo esRedex()
     {
         return new Tipo(false,false);
@@ -168,7 +179,7 @@ public class Bracket extends Term{
         return t.buscarRedexIzqFinal(this,false);
     }
     
-    public Term invBraBD()
+    public Term invBraBD(int n)
     {
         return this;
     }
@@ -216,11 +227,11 @@ public class Bracket extends Term{
         }*/
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
-            return "E: "+t.toStringInf(s,"");
+            return t.toStringInf(s,"");
             //return t.toStringInf(s,numTeo);
         }
         else {
-            return "E: "+t.alias ;
+            return t.alias ;
             //return t.alias;
         }//.split("@")[0].replace("_", "\\_") +")";
     }
@@ -228,9 +239,9 @@ public class Bracket extends Term{
     @Override
     public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
+        return this.t.toStringInfLabeled(s, z, t, leibniz, l2, id, nivel);
+        /*
         id.id++;
-        //leibniz.add(t.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
-        //leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
         leibniz.add(t.leibniz(z, this));
         l2.add(l2.remove(0)+id.id+",");
         if(t.alias == null) {
@@ -240,6 +251,7 @@ public class Bracket extends Term{
         else {
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal(null)+"."+t.alias +")}}";
         }
+        */
     }
     
     @Override
@@ -352,7 +364,16 @@ public class Bracket extends Term{
         }
         
             
+    }
+    
+    @Override
+    public void freeVars(HashSet<String> hs) {
+        String var = x.indice>64?""+(char) x.indice:"x_{"+x.indice+"}";
+        if (!hs.contains(var)) {
+          t.freeVars(hs);
+          hs.remove(var);
         }
+    }
 
     @Override
     public Term checkApp() {

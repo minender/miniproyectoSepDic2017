@@ -5,8 +5,10 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.service.PredicadoManager;
+import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 /**
@@ -52,6 +54,11 @@ public class Phi extends Term{
         return null;
     }
     
+    public int nPhi()
+    {
+        return 1;
+    }
+    
     public boolean containTypedA()
     {
         return false;
@@ -91,6 +98,11 @@ public class Phi extends Term{
         return -1;
     }
     
+    public int fresh(int n)
+    {
+        return n;
+    }
+    
     public Term traducBD()
     {
         return this;
@@ -120,24 +132,29 @@ public class Phi extends Term{
     
     public Redex buscarRedexIzqFinal(Term contexto,boolean p)
     {
-        return null;
+        if (ind.orden == 0) {
+           Tipo tipo = new Tipo(false,false,true);
+           return new Redex(contexto,tipo,p);
+        }
+        else
+           return null;
     }
     
-    public Term invBraBD()
+    public Term invBraBD(int n)
     {
-        Var x0=new Var(0);
+        Var xn=new Var(n);
         
-        return new Bracket(x0,(new App(this,x0)).kappaIndexado(0,x0));
+        return new Bracket(xn,(new App(this,xn)).kappaIndexado(n,xn));
     }
     
     public Term invBD()
     {
-        return this.invBraBD().invBD();
+        return this.invBraBD(0).invBD();
     }
     
     public Term invBDOneStep()
     {
-        return this.invBraBD();
+        return this.invBraBD(0);
     }
     
     public Term bracketAbsSH(Var x)
@@ -228,6 +245,11 @@ public class Phi extends Term{
         return this;
     }
 
+    @Override
+    public void freeVars(HashSet<String> hs){
+        ;
+    }
+    
     @Override
     public Term checkApp() {
         return this;
