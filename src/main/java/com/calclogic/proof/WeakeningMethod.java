@@ -224,7 +224,7 @@ public class WeakeningMethod extends TransitivityMethod {
      * logic according to the weakening or strengthening method.It assumes we have a proof that so far has proved A == ...== F
      * 
      * 
-     * @param theoremBeingProved: The theorem the user is trying to prove
+     * @param expressionBeingProved: Formula that the user is trying to prove in this proof/sub-proof
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param resuelveManager
@@ -236,11 +236,11 @@ public class WeakeningMethod extends TransitivityMethod {
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username,
+    protected Term auxFinBaseMethodProof(Term expressionBeingProved, Term proof, String username,
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
-        String arrow = ((App)((App)theoremBeingProved).p).p.toStringFinal();
+        String arrow = ((App)((App)expressionBeingProved).p).p.toStringFinal();
         Boolean rightArrow = arrow.equals("c_{2}"); // =>
         Boolean leftArrow = arrow.equals("c_{3}"); // <=
 
@@ -248,7 +248,7 @@ public class WeakeningMethod extends TransitivityMethod {
         if ((("WE".equals(this.methodStr)) && rightArrow) || (("ST".equals(this.methodStr)) && leftArrow)){
             // In this case we use the same finalization as in the transitivity method
             TransitivityMethod tr = new TransitivityMethod();
-            return tr.auxFinBaseMethodProof(theoremBeingProved,proof,username,resuelveManager,simboloManager,expr,initialExpr,finalExpr);
+            return tr.auxFinBaseMethodProof(expressionBeingProved,proof,username,resuelveManager,simboloManager,expr,initialExpr,finalExpr);
         }
         /* If we are weakening and the statement is A<=B or we are strengthening and the statement is A=>B, 
            and at least one inference was made.
@@ -259,7 +259,7 @@ public class WeakeningMethod extends TransitivityMethod {
             TypedA axiom = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
             TypedI instantiation;
 
-            if (isInverseImpl(expr,theoremBeingProved)){
+            if (isInverseImpl(expr,expressionBeingProved)){
                 if ("WE".equals(this.methodStr)){
                     instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]"));
                 }
@@ -268,7 +268,7 @@ public class WeakeningMethod extends TransitivityMethod {
                 }
                 return new TypedApp(new TypedApp(instantiation,axiom),proof);
             }
-            if (isInverseImpl(((App)((App)expr).p).q,theoremBeingProved)){
+            if (isInverseImpl(((App)((App)expr).p).q,expressionBeingProved)){
                 Term aux;
                 if ("WE".equals(this.methodStr)){
                     instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]"));

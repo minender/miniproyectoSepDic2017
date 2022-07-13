@@ -41,7 +41,7 @@ public class DirectMethod extends StartingOneSideMethod {
      * logic according to the direct method.It assumes we have a proof that so far has proved A == ...== F
      * 
      * 
-     * @param theoremBeingProved: The theorem the user is trying to prove
+     * @param expressionBeingProved: Formula that the user is trying to prove in this proof/sub-proof
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param resuelveManager
@@ -53,12 +53,12 @@ public class DirectMethod extends StartingOneSideMethod {
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username,
+    protected Term auxFinBaseMethodProof(Term expressionBeingProved, Term proof, String username,
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         // Case when we started from the theorem being proved
-        if(theoremBeingProved.equals(initialExpr)) {
+        if(expressionBeingProved.equals(initialExpr)) {
             // List of theorems solved by the user. We examine them to check if the current proof already reached one 
             List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminResuelto(username);
             Term theorem, mt;
@@ -68,8 +68,8 @@ public class DirectMethod extends StartingOneSideMethod {
                 theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
                 mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem); // theorem == true
 
-                // We don't want to unify with the theoremBeingProved itself if it was already demonstrated
-                if (theorem.equals(theoremBeingProved)){
+                // We don't want to unify with the expressionBeingProved itself if it was already demonstrated
+                if (theorem.equals(expressionBeingProved)){
                     ;
                 }
                 // If the current theorem or theorem==true matches the final expression
@@ -95,7 +95,7 @@ public class DirectMethod extends StartingOneSideMethod {
             }
         }
         // Case when we started from another theorem
-        else if(finalExpr.equals(theoremBeingProved)) {
+        else if(finalExpr.equals(expressionBeingProved)) {
             return new TypedApp(proof, new TypedA(initialExpr));
         }
         return proof;

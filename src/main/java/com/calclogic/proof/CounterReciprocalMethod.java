@@ -79,16 +79,16 @@ public class CounterReciprocalMethod extends GenericProofMethod {
      * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
      * logic according to the counter reciprocal method.
      * 
-     * @param theoremBeingProved: The theorem that user is trying to prove 
+     * @param expressionBeingProved: Formula that the user is trying to prove in this proof/sub-proof 
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
      * @return axiom tree that will later be used to build the complete proof
      */
     @Override
-    protected Term auxFinLinearRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
+    protected Term auxFinLinearRecursiveMethodProof(Term expressionBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
     {
-        String operatorIdSt = binaryOperatorId(theoremBeingProved).toString();
+        String operatorIdSt = binaryOperatorId(expressionBeingProved).toString();
 
         // This string can say: [p => q == !q => !p] or [p <= q == !q <= !p] as well
         String str = "c_{1} (c_{"+operatorIdSt+"} (c_{7} x_{112}) (c_{7} x_{113})) (c_{"+operatorIdSt+"} x_{113} x_{112})";
@@ -100,8 +100,8 @@ public class CounterReciprocalMethod extends GenericProofMethod {
         // Substitution [p,q := ...]
         vars.add(0, new Var(112)); // Letter 'p'
         vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, ((App)theoremBeingProved).q);
-        terms.add(0, ((App)((App)theoremBeingProved).p).q);
+        terms.add(0, ((App)expressionBeingProved).q);
+        terms.add(0, ((App)((App)expressionBeingProved).p).q);
         Sust sus = new Sust(vars, terms);
         
         // We give the instantiation format to the substitution above

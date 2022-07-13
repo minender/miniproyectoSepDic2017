@@ -535,7 +535,7 @@ public class InferController {
             }
             methodTermIter = ((App)methodTermIter).q;
         }
-        Term theoremBeingProved = formulasToProof.pop();
+        Term expressionBeingProved = formulasToProof.pop();
     
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROOF TYPE
         Term infer;
@@ -578,20 +578,27 @@ public class InferController {
                 // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
                 newProof = crudOp.addInferToProof(currentProof, infer, objectMethod);
+                System.out.println("    newProof = "+((newProof == null) ? null : newProof.toStringFinal()));
                 if (onlyOneLine){
                     // If the proof only has one line with expression P for the user, then at this point it is interally P == P
                     // as explained previously. But since we don't need the first P and the new inference "infer" consists of 
                     // the three parts that will be shown to the user: 1) the previous expression P, 2) the hint and 3) the new expresssion,
                     // then we make the proof to be equal to that inference.
+                    System.out.println("    Entré en onlyOneLine");
+                    if ("DM".equals(objectMethod.getMethodStr()) && (newProof instanceof TypedApp) && ((TypedApp)newProof).inferType != 't'){
+                        throw new TypeVerificationException();
+                    }
                     newProof = infer;
                 }
             }
             catch (TypeVerificationException e) {
+                System.out.println("    Entré en el catch");
                 if ((i == 1 && !onlyOneLine) || (i == 1 && j == 1)){
                     response.generarHistorial(username,formula,nTeo,typedTerm,false,true,methodTerm,resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
                 if (onlyOneLine && j == 0) {
+                    System.out.println("    Entré en onlyOneLine && j == 0");
                     currentProof = new TypedA(new App(new App(new Const(1,"c_{20}",false,1,1),
                             typedTerm),typedTerm));
                     j=1;
@@ -613,27 +620,36 @@ public class InferController {
         Term finalProof = newProof;
 
         if (!objectMethod.getIsRecursiveMethod()){
-            finalProof = objectMethod.finishedBaseMethodProof(theoremBeingProved, newProof, username, resuelveManager, simboloManager);
+            finalProof = objectMethod.finishedBaseMethodProof(expressionBeingProved, newProof, username, resuelveManager, simboloManager);
         }
         
         // Get the complete method in case it was not atomic
-        Boolean isFinalSolution = theoremBeingProved.equals(finalProof.type());
+        Boolean isFinalSolution = expressionBeingProved.equals(finalProof.type());
+        System.out.println("\nfinalProof = "+finalProof.toStringFinal());
+        System.out.println("finalProof.type() = "+finalProof.type().toStringFinal());
+        System.out.println("expressionBeingProved = "+expressionBeingProved.toStringFinal());
+
+        System.out.println("methodStk.isEmpty() = "+methodStk.isEmpty());
+
+        // We need this because in branched recursive methods we use And Introduction structure anyway
+        GenericProofMethod aiObject = crudOp.createProofMethodObject("AI");
+
         while (!methodStk.isEmpty()){
             Term methodTermAux = methodStk.pop();
             String strMethodTermAux = methodTermAux.toStringFinal();
+            System.out.println("    strMethodTermAux = "+strMethodTermAux);
             objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
 
-            // We need this because in branched recursive methods we use And Introduction structure anyway
-            GenericProofMethod aiObject = crudOp.createProofMethodObject("AI");
-
             if (isFinalSolution && methodTermAux instanceof Const) {
+                System.out.println("    Entré en isFinalSolution && methodTermAux instanceof Const");
                 // Recursive branched method
-                if ("AI".equals(objectMethod.getMethodStr())) {
+                if ("B".equals(objectMethod.getGroupMethod())) {
+                    System.out.println("    Entré en el caso B");
                     isFinalSolution = false;
                     response.setEndCase(true);   
                 }
                 // Recursive linear method
-                else if (objectMethod.getIsRecursiveMethod() && !"B".equals(objectMethod.getGroupMethod())) {
+                else if (objectMethod.getIsRecursiveMethod()) {
                     finalProof = objectMethod.finishedLinearRecursiveMethodProof(formulasToProof.pop(), finalProof);
                 }
                 else{
@@ -643,12 +659,15 @@ public class InferController {
 
             // This part ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App){
+                System.out.println("    Entré en methodTermAux instanceof App");
                 Term m = ((App)methodTermAux).p;
                 if (m != null){
                     objectMethod = crudOp.createProofMethodObject(m.toStringFinal());
                     if ("B".equals(objectMethod.getGroupMethod())){
+                        System.out.println("    Entré en B 2");
                         finalProof = aiObject.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
                         if (isFinalSolution){
+                            System.out.println("    Entré en isFinalSolution");
                             finalProof = objectMethod.finishedBranchedRecursiveMethodProof(null, finalProof);
                         }
                     }

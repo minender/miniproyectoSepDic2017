@@ -424,7 +424,9 @@ public class CrudOperationsImpl implements CrudOperations {
                 }
             }
         } else {
-            return new TypedApp(proof, infer);
+            Term prueba = new TypedApp(proof, infer);
+            System.out.println("´prueba = "+prueba.toStringFinal());
+            return prueba;
         }
     }
 

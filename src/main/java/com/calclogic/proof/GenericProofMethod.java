@@ -129,12 +129,12 @@ public class GenericProofMethod {
      * @param instantiationString: string that was used to parse instantiation
      * @param leibniz: bracket that represents Leibniz on the hint
      * @param leibnizString: string that was used to parse Leibniz
-     * @param theoremBeingProved: theorem that we are proving using this hint
+     * @param expressionBeingProved: expression that the user is proving using this hint
      * @return a hint for the direct method
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     public Term createBaseMethodInfer(Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
-            Bracket leibniz, String leibnizString, Term theoremBeingProved) throws TypeVerificationException
+            Bracket leibniz, String leibnizString, Term expressionBeingProved) throws TypeVerificationException
     {
         Term infer = null;
         TypedI I;
@@ -235,7 +235,7 @@ public class GenericProofMethod {
      * The finished function depends on if the demonstration method is basic,
      * linear recursive or branched recursive, so this calls the corresponding one.
      * 
-     * @param originalTerm: It can be the theorem the user is trying to prove
+     * @param originalTerm: It can be Formula that the user is trying to prove in this proof/sub-proof
      * or a part of the demosntration when the method is branched recursive.
      * @param proof: The proof tree so far
      * @return new proof if finished, else return the same proof
@@ -248,7 +248,7 @@ public class GenericProofMethod {
      * The finished function depends on if the demonstration method is basic,
      * linear recursive or branched recursive, so this calls the corresponding one.
      * 
-     * @param originalTerm: It can be the theorem the user is trying to prove
+     * @param originalTerm: It can be Formula that the user is trying to prove in this proof/sub-proof
      * or a part of the demosntration when the method is branched recursive.
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
@@ -273,14 +273,14 @@ public class GenericProofMethod {
      * This function checks if a base demonstration has finished depending on the method used, if it is basic.
      * If it determines it has not finished, it returns the same proof tree given as argument.
      * 
-     * @param theoremBeingProved: The theorem the user is trying to prove
+     * @param expressionBeingProved: Formula that the user is trying to prove in this proof/sub-proof
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param resuelveManager
      * @param simboloManager
      * @return new proof if finished, else return the same proof
      */
-    public Term finishedBaseMethodProof(Term theoremBeingProved, Term proof, String username, 
+    public Term finishedBaseMethodProof(Term expressionBeingProved, Term proof, String username, 
         ResuelveManager resuelveManager, SimboloManager simboloManager)
     {
         Term expr = proof.type(); // The root of the proof tree, which is the last line
@@ -288,7 +288,7 @@ public class GenericProofMethod {
         Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
 
         try{
-            return auxFinBaseMethodProof(theoremBeingProved, proof, username, resuelveManager, simboloManager, 
+            return auxFinBaseMethodProof(expressionBeingProved, proof, username, resuelveManager, simboloManager, 
                                         expr, initialExpr, finalExpr);
         }
         catch (TypeVerificationException e)  {
@@ -303,7 +303,7 @@ public class GenericProofMethod {
      * Auxiliar method for "finishedBaseMethodProof" that implements the corresponding
      * logic according to the current demonstration method.
      * 
-     * @param theoremBeingProved: The theorem the user is trying to prove
+     * @param expressionBeingProved: Formula that the user is trying to prove in this proof/sub-proof
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param resuelveManager
@@ -314,7 +314,7 @@ public class GenericProofMethod {
      * @return new proof if finished, else return the same proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username,
+    protected Term auxFinBaseMethodProof(Term expressionBeingProved, Term proof, String username,
                 ResuelveManager resuelveManager, SimboloManager simboloManager,
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
@@ -327,17 +327,17 @@ public class GenericProofMethod {
      * caused the whole proof to be correct under the sub-proof method. In other case it will return 
      * the proof given as argument.
      * 
-     * @param theoremBeingProved: The theorem that user is trying to prove 
+     * @param expressionBeingProved: The theorem that user is trying to prove 
      * @param proof: The proof tree so far
-     * @return proof of theoremBeingProved if finished, else return the same proof
+     * @return proof of expressionBeingProved if finished, else return the same proof
      */
-    public Term finishedLinearRecursiveMethodProof(Term theoremBeingProved, Term proof) {
+    public Term finishedLinearRecursiveMethodProof(Term expressionBeingProved, Term proof) {
         try {
             // The next two lists are for doing a parallel substitution [x1, x2,... := t1, t2, ...]
             List<Var> vars = new ArrayList<>();
             List<Term> terms = new ArrayList<>();
 
-            Term axiomTree = auxFinLinearRecursiveMethodProof(theoremBeingProved, vars, terms);
+            Term axiomTree = auxFinLinearRecursiveMethodProof(expressionBeingProved, vars, terms);
 
             return new TypedApp(axiomTree, proof);
              
@@ -353,13 +353,13 @@ public class GenericProofMethod {
      * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
      * logic according to the current demonstration method.
      * 
-     * @param theoremBeingProved: The theorem that user is trying to prove 
+     * @param expressionBeingProved: The theorem that user is trying to prove 
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
      * @return axiom tree that will later be used to build the complete proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    protected Term auxFinLinearRecursiveMethodProof(Term theoremBeingProved, List<Var> vars, List<Term> terms)
+    protected Term auxFinLinearRecursiveMethodProof(Term expressionBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
     {
         return null;
