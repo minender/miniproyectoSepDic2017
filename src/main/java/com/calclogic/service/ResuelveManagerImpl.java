@@ -444,7 +444,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
             dependent.put(r.getId(), r);
         }
         int prevSize = 0;
-        System.out.println(dependent.size());
+        //System.out.println(dependent.size());
         while (prevSize != dependent.size()) {
             prevSize = dependent.size();
             List<Resuelve> current = new ArrayList<Resuelve>(dependent.values());
