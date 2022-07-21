@@ -243,7 +243,7 @@ public class TransitivityMethod extends StartingOneSideMethod {
      * logic according to the transitivity method.It assumes we have a proof that so far has proved A == ...== F
      * 
      * 
-     * @param expressionBeingProved: Formula that the user is trying to prove in this proof/sub-proof
+     * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param resuelveManager
@@ -255,12 +255,12 @@ public class TransitivityMethod extends StartingOneSideMethod {
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term auxFinBaseMethodProof(Term expressionBeingProved, Term proof, String username,
+    protected Term auxFinBaseMethodProof(Term formulaBeingProved, Term proof, String username,
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         // If at least one opInference was made and reaches the goal
-        if(transFirstOpInferIndex(proof,true)!=0 && ((App)((App)expr).p).q.equals(expressionBeingProved) ){ 
+        if(transFirstOpInferIndex(proof,true)!=0 && ((App)((App)expr).p).q.equals(formulaBeingProved) ){ 
             return new TypedApp(proof,new TypedA(new Const("c_{8}"))); // true
         }
         return proof;

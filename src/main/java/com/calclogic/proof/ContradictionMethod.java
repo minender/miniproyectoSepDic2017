@@ -53,13 +53,13 @@ public class ContradictionMethod extends GenericProofMethod {
      * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
      * logic according to the contradiction method.
      * 
-     * @param expressionBeingProved: Formula that the user is trying to prove in this proof/sub-proof 
+     * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof 
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
      * @return axiom tree that will later be used to build the complete proof
      */
     @Override
-    protected Term auxFinLinearRecursiveMethodProof(Term expressionBeingProved, List<Var> vars, List<Term> terms) 
+    protected Term auxFinLinearRecursiveMethodProof(Term formulaBeingProved, List<Var> vars, List<Term> terms) 
             throws TypeVerificationException
     {
         // This string says: ¬p => false == ¬(¬p)
@@ -74,9 +74,9 @@ public class ContradictionMethod extends GenericProofMethod {
         TypedA A1 = new TypedA(st1);
         TypedA A2 = new TypedA(st2);
 
-        // Substitution [p := expressionBeingProved]
+        // Substitution [p := formulaBeingProved]
         vars.add(0, new Var(112)); // Letter'p'
-        terms.add(0, expressionBeingProved);
+        terms.add(0, formulaBeingProved);
         Sust sus = new Sust(vars, terms);
 
         // We give the instantiation format to the substitution above

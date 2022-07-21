@@ -237,7 +237,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
      * 
      * It assumes we have a proof that so far has proved A == ... == F
      * 
-     * @param expressionBeingProved: Formula that the user is trying to prove in this proof/sub-proof
+     * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param expr: The root of the proof tree, which is the last line
@@ -247,12 +247,12 @@ public class StartingOneSideMethod extends GenericProofMethod {
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term auxFinBaseMethodProof(Term expressionBeingProved, Term proof, String username,
+    protected Term auxFinBaseMethodProof(Term formulaBeingProved, Term proof, String username,
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         // If Formula that the user is trying to prove in this proof/sub-proof is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
-        if(initialExpr.equals(((App)((App)expressionBeingProved).p).q) && finalExpr.equals(((App)expressionBeingProved).q)){
+        if(initialExpr.equals(((App)((App)formulaBeingProved).p).q) && finalExpr.equals(((App)formulaBeingProved).q)){
             return new TypedApp(new TypedS(proof.type()), proof);
         }
         return proof;

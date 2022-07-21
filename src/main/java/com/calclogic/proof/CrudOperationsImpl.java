@@ -63,8 +63,7 @@ public class CrudOperationsImpl implements CrudOperations {
             case "MI":
                 return new MutualImplicationMethod();
             case "CA":
-                //return new CaseAnalysisMethod(); // RESTAURAR
-                return new MutualImplicationMethod(); // BORRAR
+                return new CaseAnalysisMethod();
             default:
                 return new GenericProofMethod();
         }
@@ -425,7 +424,6 @@ public class CrudOperationsImpl implements CrudOperations {
             }
         } else {
             Term prueba = new TypedApp(proof, infer);
-            System.out.println("´prueba = "+prueba.toStringFinal());
             return prueba;
         }
     }

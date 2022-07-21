@@ -535,7 +535,7 @@ public class InferController {
             }
             methodTermIter = ((App)methodTermIter).q;
         }
-        Term expressionBeingProved = formulasToProof.pop();
+        Term formulaBeingProved = formulasToProof.pop();
     
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROOF TYPE
         Term infer;
@@ -620,16 +620,11 @@ public class InferController {
         Term finalProof = newProof;
 
         if (!objectMethod.getIsRecursiveMethod()){
-            finalProof = objectMethod.finishedBaseMethodProof(expressionBeingProved, newProof, username, resuelveManager, simboloManager);
+            finalProof = objectMethod.finishedBaseMethodProof(formulaBeingProved, newProof, username, resuelveManager, simboloManager);
         }
         
         // Get the complete method in case it was not atomic
-        Boolean isFinalSolution = expressionBeingProved.equals(finalProof.type());
-        System.out.println("\nfinalProof = "+finalProof.toStringFinal());
-        System.out.println("finalProof.type() = "+finalProof.type().toStringFinal());
-        System.out.println("expressionBeingProved = "+expressionBeingProved.toStringFinal());
-
-        System.out.println("methodStk.isEmpty() = "+methodStk.isEmpty());
+        Boolean isFinalSolution = formulaBeingProved.equals(finalProof.type());
 
         // We need this because in branched recursive methods we use And Introduction structure anyway
         GenericProofMethod aiObject = crudOp.createProofMethodObject("AI");
@@ -661,13 +656,15 @@ public class InferController {
             if (methodTermAux instanceof App){
                 System.out.println("    Entré en methodTermAux instanceof App");
                 Term m = ((App)methodTermAux).p;
+                String strM = m.toStringFinal();
+                System.out.println("    strM = "+strM);
                 if (m != null){
-                    objectMethod = crudOp.createProofMethodObject(m.toStringFinal());
+                    objectMethod = crudOp.createProofMethodObject(strM);
                     if ("B".equals(objectMethod.getGroupMethod())){
                         System.out.println("    Entré en B 2");
                         finalProof = aiObject.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
-                        if (isFinalSolution){
-                            System.out.println("    Entré en isFinalSolution");
+                        if (isFinalSolution && !("AI".equals(strM))){
+                            System.out.println("    Entré en isFinalSolution && ..");
                             finalProof = objectMethod.finishedBranchedRecursiveMethodProof(null, finalProof);
                         }
                     }

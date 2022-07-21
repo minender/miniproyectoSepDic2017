@@ -23,8 +23,7 @@ import java.util.logging.Logger;
 public class MutualImplicationMethod extends GenericProofMethod {
 
     public MutualImplicationMethod(){
-        //setInitVariables("MI"); // RESTAURAR
-        setInitVariables("CA"); // BORRAR
+        setInitVariables("MI");
     }
 
     /**
@@ -36,7 +35,7 @@ public class MutualImplicationMethod extends GenericProofMethod {
      */
     @Override
     public String header(String statement){
-        return "By mutual implication method:<br><br>";
+        return "By mutual implication method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
     /**
@@ -61,19 +60,19 @@ public class MutualImplicationMethod extends GenericProofMethod {
     }
 
     /**
-     * Auxiliar method for "finishedBranchedRecursiveMethodProof" that implements the corresponding
-     * logic according to the mutual implication method.
+     * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
+     * logic according to the counter reciprocal method.
      * 
-     * @param currentProof: The current proof  
+     * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof 
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
-     * @param finalProof: The proof tree of (p ==> q) /\ (p <== q)
      * @return axiom tree that will later be used to build the complete proof
      */
     @Override
-    protected Term auxFinBranchedRecursiveMethodProof(Term currentProof, List<Var> vars, List<Term> terms, Term finalProof)
+    protected Term auxFinLinearRecursiveMethodProof(Term formulaBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
     {
+        System.out.println("\n\n\nEn final, formulaBeingProved = "+formulaBeingProved.toStringFinal());
         // This string says: ((p ==> q) /\ (p <== q)) == (p == q)
         String str = "c_{1} (c_{1} x_{113} x_{112}) (c_{5} (c_{3} x_{113} x_{112}) (c_{2} x_{113} x_{112}))";
         Term st = CombUtilities.getTerm(str);
@@ -81,13 +80,11 @@ public class MutualImplicationMethod extends GenericProofMethod {
         // We make the formula above to be treated as an axiom
         TypedA A = new TypedA(st);
 
-        Term lastLine = finalProof.type();
-
         // Substitution [p,q := ...]
         vars.add(0, new Var(112)); // Letter 'p'
         vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, ((App)((App)lastLine).q).q); // Note .q is (p => q), so .q.q is 'p'.
-        terms.add(0, ((App)((App)((App)lastLine).q).p).q); // .q.p is (=> q) so .q.p.q is 'q'.
+        terms.add(0, ((App)((App)formulaBeingProved).q).q); // Note .q is (p ==> q), so .q.q is 'p'.
+        terms.add(0, ((App)((App)((App)formulaBeingProved).q).p).q); // .q.p is (==> q) so .q.p.q is 'q'.
         Sust sus = new Sust(vars, terms);
 
         // We give the instantiation format to the substitution above
