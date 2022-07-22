@@ -52,7 +52,7 @@ public interface SolucionManager {
      * Method to get a Solucion object by its principal key.
      * @param id Is the principal key of the Solucion object.
      */ 
-    public Solucion getSolucion(int id);
+    public Solucion getSolucion(int id, String user);
     
     /**
      * Method to get a list of all the entries of the table that correspond 

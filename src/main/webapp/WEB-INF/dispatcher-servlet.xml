@@ -137,6 +137,7 @@
     <bean id="proofTemplateManager" class="com.calclogic.service.ProofTemplateManagerImpl"></bean>
     <bean id="finiPMeth" class="com.calclogic.proof.FinishedProofMethodImpl"></bean>
     <bean id="crudOp" class="com.calclogic.proof.CrudOperationsImpl"></bean>
+    <bean id="staticContextInitializer" class="com.calclogic.lambdacalculo.StaticContextInitializer"></bean>
  
     <tx:annotation-driven />
     <bean id="transactionManager"

@@ -70,7 +70,7 @@ public class Bracket extends Term{
     
     public Term sust(Var x,Term t)
     {
-        return null;
+        return new Bracket(this.x,t.sust(x, t));
     }
     
     public Term type()
@@ -86,6 +86,11 @@ public class Bracket extends Term{
     public boolean containTypedA()
     {
         return t.containTypedA();
+    }
+    
+    public boolean containT()
+    {
+        return t.containT();
     }
     
     public void getAxioms(List<String> l)
@@ -362,8 +367,6 @@ public class Bracket extends Term{
         }else{
             return this;
         }
-        
-            
     }
     
     @Override
@@ -373,6 +376,11 @@ public class Bracket extends Term{
           t.freeVars(hs);
           hs.remove(var);
         }
+    }
+    
+    @Override
+    public Term abstractEq() {
+        return null;
     }
 
     @Override

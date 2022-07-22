@@ -329,28 +329,28 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
            >>>> NOTE: if the app forces to start from the left side, this case may be impossible (not sure) */
         if (((("WE".equals(method)) && leftArrow) || (("ST".equals(method)) && rightArrow)) && (InferenceIndex.wsFirstOpInferIndex(proof)!=0)){
             // Axiom: (q => p) == (p <= q)
-            TypedA axiom = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})") );
+            TypedA axiom = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})",null) );
             TypedI instantiation;
 
             if (ProofBoolean.isInverseImpl(expr,theoremBeingProved)){
                 if ("WE".equals(method)){
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]"));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]",null));
                 }
                 else {
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]"));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]",null));
                 }
                 return new TypedApp(new TypedApp(instantiation,axiom),proof);
             }
             if (ProofBoolean.isInverseImpl(((App)((App)expr).p).q,theoremBeingProved)){
                 Term aux;
                 if ("WE".equals(method)){
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]"));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]",null));
                     aux = new TypedApp(instantiation,axiom);
 
                     return new TypedApp(new TypedApp(new TypedS(aux.type()),aux),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
                 }
                 else {
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]"));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]",null));
                     aux = new TypedApp(instantiation,axiom);
 
                     return new TypedApp(aux,new TypedApp(proof,new TypedA(new Const("c_{8}"))));
@@ -394,7 +394,7 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
                 case "CR": 
                     // This string says: p => q == ¬q => ¬p
                     str = "c_{1} (c_{2} (c_{7} x_{112}) (c_{7} x_{113})) (c_{2} x_{113} x_{112})";
-                    st = CombUtilities.getTerm(str);
+                    st = CombUtilities.getTerm(str,null);
 
                     // We make that formula to be treated as an axiom
                     A = new TypedA(st); 
@@ -416,11 +416,11 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
                 case "CO":
                     // This string says: ¬p => false == ¬(¬p)
                     str = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
-                    st = CombUtilities.getTerm(str);
+                    st = CombUtilities.getTerm(str,null);
 
                     // This string says: ¬(¬p) == p
                     str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
-                    st2 = CombUtilities.getTerm(str2);
+                    st2 = CombUtilities.getTerm(str2,null);
 
                     // We make the two formulas above to be treated as axioms
                     A = new TypedA(st);
@@ -466,7 +466,7 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
         String metaTheo = "S (I^{[x_{113} := %(T1Type)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (%(T1))";
         String theo = sub.replace(metaTheo);
-        Term theoTerm = CombUtilities.getTerm(theo);
+        Term theoTerm = CombUtilities.getTerm(theo,null);
         Term firstProof = ((App)originalTerm).q;
         Term firstStAndTrue = ((App)((App)originalTerm).p).p;
         Term leibniz = ((App)((App)((App)originalTerm).p).q).p;

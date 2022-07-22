@@ -70,6 +70,11 @@ public class Sust extends Term{
         return false;
     }
     
+    public boolean containT()
+    {
+        return false;
+    }
+    
     public void getAxioms(List<String> l)
     {
         ;
@@ -312,6 +317,11 @@ public class Sust extends Term{
     public void freeVars(HashSet<String> hs){
         for(Term li: terms)
             li.freeVars(hs);
+    }
+    
+    @Override
+    public Term abstractEq() {
+        return null;
     }
 
     @Override

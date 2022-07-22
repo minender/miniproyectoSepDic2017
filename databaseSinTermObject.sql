@@ -491,11 +491,11 @@ ALTER TABLE ONLY userdb.simbolo ALTER COLUMN id SET DEFAULT nextval('userdb.simb
 
 ALTER TABLE ONLY userdb.mostrarCategoria ALTER COLUMN id SET DEFAULT nextval('userdb.simbolo_id_seq'::regclass);
 
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (1,'\equiv', 2, TRUE, 3, 1,'%(aa2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (1,'\equiv', 2, TRUE, 4, 1,'%(a2) %(op) %(a1)',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (2,'\Rightarrow', 2, TRUE, 3, 2,'%(a2) %(op) %(aa1)', 1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (3,'\Leftarrow', 2,TRUE,3,2,'%(aa2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (4,'\vee', 2, TRUE, 3, 3,'%(aa2) %(op) %(a1)',1);
-insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (5,'\wedge', 2, TRUE, 3, 3,'%(aa2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (4,'\vee', 2, TRUE, 4, 3,'%(a2) %(op) %(a1)',1);
+insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (5,'\wedge', 2, TRUE, 4, 3,'%(a2) %(op) %(a1)',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (6,'\not\equiv', 2, TRUE, 3, 4,'%(a2) %(op) %(a1)',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (7,'\neg', 1, FALSE, 1, 5,'%(op) %(aa1)',1);
 insert into userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, precedencia, notacion, teoriaid) values (8,'true', 0, FALSE, 0, 0,'%(op)',1);

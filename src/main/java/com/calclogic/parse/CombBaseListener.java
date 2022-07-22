@@ -4,7 +4,8 @@
 package com.calclogic.parse; 
 
 import com.calclogic.lambdacalculo.*;	
-import java.util.LinkedList;	
+import java.util.LinkedList;
+import com.calclogic.entity.Resuelve;	
 	
 
 

@@ -109,6 +109,11 @@ public class Const extends Term
        return this instanceof TypedA;
    }
    
+   public boolean containT()
+   {
+       return id == -1;
+   }
+   
    public void getAxioms(List<String> l)
    {
        if (this instanceof TypedA)
@@ -207,7 +212,7 @@ public class Const extends Term
         if (typ == null || con.equals("S")) //|| con.equals("U"))
           return con;
         else
-          return con+"^{"+typ.traducBD().toStringFinal()+"}";
+          return con+"^{"+((TypedTerm)this).getCombDBType()+"}";
     }
    
     /*@Override
@@ -338,6 +343,11 @@ public class Const extends Term
     @Override
     public void freeVars(HashSet<String> hs){
         ;
+    }
+    
+    @Override
+    public Term abstractEq() {
+        return null;
     }
     
     @Override

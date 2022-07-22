@@ -65,6 +65,11 @@ public class I extends Term {
        return false;
    }
    
+   public boolean containT()
+   {
+       return false;
+   }
+   
    public void getAxioms(List<String> l)
    {
        ;
@@ -223,6 +228,11 @@ public class I extends Term {
     @Override
     public void freeVars(HashSet<String> hs){
         ;
+    }
+    
+    @Override
+    public Term abstractEq() {
+        return null;
     }
     
     @Override

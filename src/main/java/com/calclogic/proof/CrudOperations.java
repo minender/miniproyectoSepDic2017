@@ -25,7 +25,7 @@ public interface CrudOperations {
      * @return a hint for the direct method
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    public Term createBaseMethodInfer(Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
+    public Term createBaseMethodInfer(String user, Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
             Bracket leibniz, String leibnizString, Term theoremBeingProved, String method) 
             throws TypeVerificationException;
 
@@ -125,7 +125,7 @@ public interface CrudOperations {
      *         adds in the last line of proof the infer
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    public Term addInferToProof(Term proof, Term infer, String method) throws TypeVerificationException;
+    public Term addInferToProof(String user, Term proof, Term infer, String method) throws TypeVerificationException;
 
     /**
      * This method add 'formula' in one line sub proof for the current sub proof in 

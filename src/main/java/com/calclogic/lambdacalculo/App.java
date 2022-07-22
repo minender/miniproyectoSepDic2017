@@ -126,6 +126,14 @@ public class App extends Term{
     }
     
     @Override
+    public Term abstractEq() {
+        String sVars = this.stFreeVars();
+        q = q.abstractVars(sVars);
+        ((App)p).q = ((App)p).q.abstractVars(sVars);
+        return this;
+    }
+    
+    @Override
     public Term checkApp() {
          
          Term termP = p.checkApp();
@@ -344,8 +352,9 @@ public class App extends Term{
     public Term invBraBD(int n)
     {
         Var xc=new Var(n);
-        if(obtenerIzq(this,-1).p instanceof Phi)
+        if(obtenerIzq(this,-1).p instanceof Phi){
             return new Bracket(xc, (new App(this,xc)).kappaIndexado(n,xc));
+        }
         else
         {
             //Var x=new Var(this.maxVar()+1);
@@ -433,6 +442,11 @@ public class App extends Term{
     public boolean containTypedA()
     {
         return p.containTypedA() || q.containTypedA();
+    }
+ 
+    public boolean containT()
+    {
+        return p.containT() || q.containT();
     }
     
     public void getAxioms(List<String> l)

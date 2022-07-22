@@ -240,7 +240,7 @@ public class InferController {
         }
         else
         {
-            Solucion solucion = solucionManager.getSolucion(resuel.getDemopendiente());
+            Solucion solucion = solucionManager.getSolucion(resuel.getDemopendiente(),username);
             infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");  
             InferResponse response = new InferResponse(crudOp);
             Term typedTerm = solucion.getTypedTerm();
@@ -518,7 +518,7 @@ public class InferController {
         // String freeV = statementTerm.freeVars();
         if (!freeV.equals("")) {
             String[] freeVars = freeV.split(",");
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),null);
 
             String metodo = solucion.getMetodo();
             Term methodTerm = ProofMethodUtilities.getTerm(metodo);
@@ -711,7 +711,7 @@ public class InferController {
         }   
 
         Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+        Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
         Term typedTerm = solucion.getTypedTerm();
         Term formula = resuel.getTeorema().getTeoTerm();
         String metodo = solucion.getMetodo();
@@ -746,10 +746,10 @@ public class InferController {
         String strMethodTermIter = methodTermIter.toStringFinal();
         
         try {
-            infer = crudOp.createBaseMethodInfer(statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm(), strMethodTermIter);
+            infer = crudOp.createBaseMethodInfer(username,statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm(), strMethodTermIter);
         } 
         catch(TypeVerificationException e) { // If something went wrong building the new hint
-            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
+            response.generarHistorial(username,formula.setToPrinting(resuel.getVariables()), nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
             return response;
         }
 
@@ -762,8 +762,7 @@ public class InferController {
             // If the proof only has one line so far, it may not be a boolean expression yet, because it could only 
             // be arithmetic, like 3 + 4. But since we always need it to be boolean, if the only line was P, we make 
             // the proof to be provisionally: P == P. Soon we will discard again the first P-
-            Term noVarsTerm = typedTerm.abstractVars(typedTerm.stFreeVars());
-            currentProof = new TypedA(new App(new App(new Const(0,"="),noVarsTerm),noVarsTerm));
+            currentProof = new TypedA(new App(new App(new Const(0,"="),typedTerm),typedTerm).abstractEq());
         }
         else{
             currentProof = typedTerm;
@@ -775,11 +774,11 @@ public class InferController {
         while (newProof == null && i < 2) {
             try {
                 if (i == 1 /*&& j == 0*/){
-                    infer = new TypedApp(new TypedS(infer.type()), infer);
+                    infer = new TypedApp(new TypedS(), infer);
                 }
                 // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
-                newProof = crudOp.addInferToProof(currentProof, infer, strMethodTermIter);
+                newProof = crudOp.addInferToProof(username,currentProof, infer, strMethodTermIter);
                 if (isOnlyOneLine){
                     // If the proof only has one line with expression P for the user, then at this point it is interally P == P
                     // as explained previously. But since we don't need the first P and the new inference "infer" consists of 
@@ -790,7 +789,7 @@ public class InferController {
             }
             catch (TypeVerificationException e) {
                 if (i==1/*(i == 1 && !onlyOneLine) || (i == 1 && j == 1)*/){
-                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
+                    response.generarHistorial(username,formula.setToPrinting(resuel.getVariables()), nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
                 /*if (onlyOneLine && j == 0) {
@@ -862,7 +861,7 @@ public class InferController {
 
         response.generarHistorial(
             username,
-            formula, 
+            formula.setToPrinting(resuel.getVariables()), 
             nTeo,
             finalProof,
             true,
@@ -872,6 +871,7 @@ public class InferController {
             disponeManager,
             simboloManager
         );
+
         solucionManager.updateSolucion(solucion);
         
         return response;
@@ -898,7 +898,7 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp);
 
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Solucion solucion = solucionManager.getSolucion(resuelve.getDemopendiente());
+        Solucion solucion = solucionManager.getSolucion(resuelve.getDemopendiente(),username);
         int respRetroceder;
         Term method = null;
         
@@ -926,7 +926,7 @@ public class InferController {
         }
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
-        Term formula = resuelve.getTeorema().getTeoTerm();
+        Term formula = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
 
         response.generarHistorial(
                username,
@@ -983,7 +983,7 @@ public class InferController {
         if (!nSol.equals("new"))
         {
             // Obtains the solution from DB.
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
             typedTerm = solucion.getTypedTerm();
             String method = solucion.getMetodo();
             if (!method.equals(""))
@@ -1071,7 +1071,7 @@ public class InferController {
         if (!nSol.equals("new"))
         {
             // Obtains the solution from DB.
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);     
             String method = solucion.getMetodo();
             if (!method.equals(""))
                metodoTerm = ProofMethodUtilities.getTerm(method);
@@ -1161,7 +1161,7 @@ public class InferController {
         }
         else{
             // Obtains the solution from DB.
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));     
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);     
             String method = solucion.getMetodo();
             
             metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
@@ -1226,8 +1226,8 @@ public class InferController {
         */
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
-        Term formulaTerm = resuelve.getTeorema().getTeoTerm();
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
+        Term formulaTerm = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
         
         /* Jean
         if(naturalSide) {
@@ -1249,7 +1249,7 @@ public class InferController {
             metodoTerm = new Const(nuevoMetodo);
         }
         else{
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
             String method = solucion.getMetodo();
             metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
             formulaTerm = crudOp.initStatement(formulaTerm,metodoTerm);
@@ -1319,7 +1319,7 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp);
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
         
         //Teorema t = resuelve.getTeorema();
         //Term term = t.getTeoTerm();
@@ -1335,7 +1335,7 @@ public class InferController {
             metodoTerm = new Const(nuevoMetodo);
         }
         else{
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
             String method = solucion.getMetodo();
             metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
             formulaTerm = crudOp.initStatement(formulaTerm, metodoTerm);
@@ -1407,7 +1407,7 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp);
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
         
         //String formula = "";
         Term formulaTerm = formulaAnterior;
@@ -1420,7 +1420,7 @@ public class InferController {
             metodoTerm = new Const(nuevoMetodo);
         }
         else{
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
             String method = solucion.getMetodo();
             metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
             formulaTerm = crudOp.initStatement(formulaTerm, metodoTerm);
@@ -1492,7 +1492,7 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp);
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
         
         Term formulaTerm = formulaAnterior;
         
@@ -1506,7 +1506,7 @@ public class InferController {
         }
         else
         {
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
             String method = solucion.getMetodo();
             metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
             formulaTerm = crudOp.initStatement(formulaTerm,metodoTerm);
@@ -1564,7 +1564,7 @@ public class InferController {
 
         // It is the theorem statement but parsed as a binary tree. 
         // We call it as "previous" because it will change when the proof starts: ¬Statement => False
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm(); 
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
         
         // Despite the new method is "CO", maybe it is nested into a previous one.
         Term metodoTerm = null;
@@ -1581,7 +1581,7 @@ public class InferController {
             response.setnSol(solucion.getId()+""); // The concatenation with "" converts the id to a string
         }
         else{   
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
             metodoTerm = crudOp.updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
@@ -1606,7 +1606,7 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp);
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
         
         Term metodoTerm = null;
         Solucion solucion = null;
@@ -1623,7 +1623,7 @@ public class InferController {
                 response.setnSol(solucion.getId()+"");
             }
             else {   
-                solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+                solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
                 metodoTerm = crudOp.updateMethod(solucion.getMetodo(), nuevoMetodo);
                 if (((Const)((App)((App)crudOp.initStatement(formulaAnterior, metodoTerm)).p).p).getId() != 2) {
                    response.setErrorParser1(true);
@@ -1661,7 +1661,7 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp);
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
         
         try {
             //String formula = "";
@@ -1683,7 +1683,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
             metodoTerm = crudOp.updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
             typedTerm = solucion.getTypedTerm();
@@ -1778,7 +1778,7 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp);
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm();
+        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
         
         Term metodoTerm = null;
         Term typedTerm = null;
@@ -1789,7 +1789,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol));
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
             metodoTerm = crudOp.updateMethod(solucion.getMetodo(), nuevoMetodo);
             nuevoMetodo = metodoTerm.toStringFinal();
             typedTerm = solucion.getTypedTerm();

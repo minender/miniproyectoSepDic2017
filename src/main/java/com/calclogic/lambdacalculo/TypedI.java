@@ -12,17 +12,23 @@ package com.calclogic.lambdacalculo;
 public class TypedI extends Const implements TypedTerm{
     
     private final Sust instantiation_;
+    private final String combDBType_;
     
     public TypedI(Sust instantiation)
     {
         super("I");
         instantiation_ = instantiation;
+        combDBType_ = instantiation.toStringFinal();
     }
 
    public Term type()
    {
        return instantiation_;
    }
+   
+    public String getCombDBType() {
+        return combDBType_;
+    }
    
    public Sust getInstantiation() {
 	   return this.instantiation_;

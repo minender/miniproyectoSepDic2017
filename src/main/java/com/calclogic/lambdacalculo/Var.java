@@ -81,6 +81,11 @@ public class Var extends Term{
         return false;
     }
     
+    public boolean containT()
+    {
+        return false;
+    }
+    
     public void getAxioms(List<String> l)
     {
         ;
@@ -379,6 +384,11 @@ public class Var extends Term{
     @Override
     public void freeVars(HashSet<String> hs) {
         hs.add(indice>64?""+(char) indice:"x_{"+indice+"}");
+    }
+    
+    @Override
+    public Term abstractEq() {
+        return null;
     }
     
     @Override

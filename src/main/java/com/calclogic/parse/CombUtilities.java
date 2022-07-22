@@ -1,5 +1,6 @@
 package com.calclogic.parse;
 
+import com.calclogic.entity.Resuelve;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -16,7 +17,7 @@ import com.calclogic.lambdacalculo.Var;
 
 public class CombUtilities {
 	
-	public static Term getTerm(String input) {
+	public static Term getTerm(String input, String usr) {
 		
 		// Feed the argument to the parser
 		CharStream in = CharStreams.fromString(input);
@@ -35,7 +36,7 @@ public class CombUtilities {
 		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 		
 		// get the value of the parser 
-		Term t = parser.start_rule().value;
+		Term t = parser.start_rule(usr).value;
 		
 		return t;
 		
@@ -44,7 +45,7 @@ public class CombUtilities {
         
 	public static Term getTermForPrinting(String input, String variables) {
 		// get the value of the parser 
-		Term t = getTerm(input);
+		Term t = getTerm(input,null);
                 Term arg1, arg2;
                 arg1 = ((App)((App)t).p).q;
                 arg2 = ((App)t).q;

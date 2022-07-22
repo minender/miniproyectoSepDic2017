@@ -31,7 +31,7 @@ public class DerivationTree {
         String Q = q.toStringFinal();
         String neg = "I^{[x_{112}, x_{113} := "+P+", "+Q+"]}A^{c_{1} ("+op2+" (c_{7} x_{113}) (c_{7} x_{112})) ("+op+" x_{113} x_{112})}";
         
-        return CombUtilities.getTerm(neg);
+        return CombUtilities.getTerm(neg,null);
     }
     
     /**
@@ -58,7 +58,7 @@ public class DerivationTree {
         String R = r.toStringFinal();
         String wsl1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{114} x_{113}) ("+op1+" x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
         
-        return CombUtilities.getTerm(wsl1);
+        return CombUtilities.getTerm(wsl1,null);
     }
     
     /**
@@ -85,7 +85,7 @@ public class DerivationTree {
         String R = r.toStringFinal();
         String wsl2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{2} x_{114} x_{113}) (c_{2} x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
         
-        return CombUtilities.getTerm(wsl2);
+        return CombUtilities.getTerm(wsl2,null);
     }
     
     /**
@@ -111,7 +111,7 @@ public class DerivationTree {
         String R = r.toStringFinal();
         String wsr1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{113} x_{114}) ("+op1+" x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
         
-        return CombUtilities.getTerm(wsr1);
+        return CombUtilities.getTerm(wsr1,null);
     }
     
     /**
@@ -137,6 +137,6 @@ public class DerivationTree {
         String R = r.toStringFinal();
         String wsr2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{3} x_{113} x_{114}) (c_{3} x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
         
-        return CombUtilities.getTerm(wsr2);
+        return CombUtilities.getTerm(wsr2,null);
     }
 }

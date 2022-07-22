@@ -185,7 +185,7 @@ public class Solucion implements java.io.Serializable {
         String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
         String metaTheo = sub1.replace(metaTheoT);
         try {
-          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo));
+          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo,null));
           newProof = new TypedApp(new TypedApp(((App)((App)father).p).p, newProof),((App)father).q);
         return newProof;
         }

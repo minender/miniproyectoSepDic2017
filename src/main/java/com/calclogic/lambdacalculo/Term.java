@@ -119,6 +119,10 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract Term sustParall(List<Var>  Vars, List<Term> varsTerm);
     
+    public Term sustParall(Sust sus) {
+        return sustParall(sus.vars, sus.terms);
+    }
+    
     public abstract int setAlias(int currentAlia);
     
     public abstract Tipo esRedex();
@@ -146,6 +150,8 @@ public abstract class Term implements Cloneable, Serializable{
     public abstract int nPhi();
     
     public abstract boolean containTypedA();
+    
+    public abstract boolean containT();
     
     public abstract void getAxioms(List<String> l);
     
@@ -272,10 +278,20 @@ public abstract class Term implements Cloneable, Serializable{
            String[] vars = variables.split(",");
            for (int i=vars.length-1; 0<=i; i--) 
                arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
-           return arg1.traducBD();
+           return arg1;
         }
         else
            return this;
+    }
+    
+    public abstract Term abstractEq();
+    
+    public Term body() {
+        Term aux = this;
+        while (aux instanceof Bracket) {
+            aux = ((Bracket)aux).t;
+        }
+        return aux;
     }
     
     /**
@@ -699,7 +715,7 @@ public abstract class Term implements Cloneable, Serializable{
                      ((Bracket)r.context).t=t.kappa();
                  else if(r.tipo.l)
                      ((Bracket)r.context).t=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                 else
+                 else 
                      ((Bracket)r.context).t=t.invBraBD(vars.remove(0).indice);
             }
         }
@@ -1113,7 +1129,7 @@ public abstract class Term implements Cloneable, Serializable{
                 {
                     /*xc.setIndice(Math.max(izq.pq.q.maxVar(),c));
                     return xc;*/
-                    xc.indice=izq.pq.q.fresh(c);
+                    //xc.indice=izq.pq.q.fresh(c);
                     return xc;
                 }
             }
@@ -1164,7 +1180,6 @@ public abstract class Term implements Cloneable, Serializable{
                 Redex redex=term1.buscarRedexIzqFinal(null, false);
                 while(redex!=null)
                 {
-
                     term1=term1.reducir(vars);
                     redex=term1.buscarRedexIzqFinal(null, false);
                 }

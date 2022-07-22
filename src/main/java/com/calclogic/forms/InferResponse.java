@@ -299,7 +299,7 @@ public class InferResponse {
                 if (((App)((App)ultInf).q).q instanceof App){
                     //  Term aux = ((App)ultInf.type()).q;
                     // primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                    teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
+                    teo = ((App)((App)((App)ultInf).q).q).q.type().traducBD().toStringFinal();
                     inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s,"");
                     inst = "~\\text{with}~" + inst;
                     leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
@@ -308,7 +308,7 @@ public class InferResponse {
                 else {
                     //Term aux = ((App)ultInf.type()).q;
                     //primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                    teo = ((App)((App)ultInf).q).q.type().toStringFinal();
+                    teo = ((App)((App)ultInf).q).q.type().traducBD().toStringFinal();
                     if (((App)ultInf).p instanceof TypedS){
                         if (((App)((App)ultInf).q).p instanceof TypedI){
                             inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
@@ -335,7 +335,7 @@ public class InferResponse {
                     leib = "~\\text{and}~" + pType.toStringInf(s,"");
                 }
                 // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
-                teo = ((App)ultInf).q.type().toStringFinal();
+                teo = ((App)ultInf).q.type().traducBD().toStringFinal();
             }
         } else {
             Term aux = ultInf.type().traducBD();
@@ -469,7 +469,7 @@ public class InferResponse {
         //String vars = null;
         Resuelve re = null;
         Term ultInfType = null;
-        
+
         /* If the demonstrarion method is starting from one side, or the typedTerm is not an inference
            but just a functional application (an App) or is an equanimity inference */
         if (oneSide || !(typedTerm instanceof TypedApp) || ((TypedApp)typedTerm).inferType!='e') {
@@ -481,7 +481,7 @@ public class InferResponse {
             //re = resuelveManager.getResuelveByUserAndTeorema(user, st);
             //vars = re.getVariables();
             ultInfType = iter.type();
-            Term aux = ((App)((App)iter.type()).p).q;
+            Term aux = ((App)((App)iter.type()).p).q.body();
             lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));
         }
         // Case when direct method is applied and we start from the expression to be proved
@@ -970,6 +970,7 @@ public class InferResponse {
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
+        
         if (isRootTeorem && metodo == null)
             cambiarMetodo = "1";
         else if (isRootTeorem && ProofBoolean.isWaitingMethod(metodo)) 
@@ -1161,15 +1162,16 @@ public class InferResponse {
                            // si se pide labeled o no la ultima linea, aqui se cablea con solved = true
 
         // Here is where we really generate the proof record accoding to the demonstration method
+
         if (direct) {       
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, false);
         }
         else if (oneSide){
             setDirectProof(user, typedTerm, solved, resuelveManager, disponeManager, s, true);
         }
-        else if (weakening || strengthening || transitivity)
+        else if (weakening || strengthening || transitivity){
             setWSProof(user, typedTerm, solved, resuelveManager, disponeManager, s);
-
+        }
         else if (counterRecip) {
             setCounterRecipProof(user, typedTerm, resuelveManager, disponeManager, s, header, clickeable, metodo, valida, labeled, formula, nTeo);
         }

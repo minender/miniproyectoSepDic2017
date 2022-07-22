@@ -154,10 +154,10 @@ public class SolucionManagerImpl implements SolucionManager {
      */ 
     @Override
     @Transactional
-    public Solucion getSolucion(int id){
+    public Solucion getSolucion(int id, String user){
         Solucion solucion = solucionDAO.getSolucion(id);
         if (!solucion.getDemostracion().equals("")) {
-            solucion.setTypedTerm(CombUtilities.getTerm(solucion.getDemostracion()));
+            solucion.setTypedTerm(CombUtilities.getTerm(solucion.getDemostracion(),user));
             solucion.setFinishedProofMethod(finiPMeth);
             solucion.setProofCrudOperations(crudOp);
         }
@@ -177,7 +177,7 @@ public class SolucionManagerImpl implements SolucionManager {
         List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelveId);
         for (Solucion sol: sols)
             if (!sol.getDemostracion().equals(""))
-                sol.setTypedTerm(CombUtilities.getTerm(sol.getDemostracion()));
+                sol.setTypedTerm(CombUtilities.getTerm(sol.getDemostracion(),null));
             else
                 sol.setTypedTerm(null);
         return sols;

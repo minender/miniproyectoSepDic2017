@@ -479,7 +479,7 @@ public class PerfilController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
         Term teorema = resuelve.getTeorema().getTeoTerm();
         String nTeo = resuelve.getNumeroteorema();
-        Solucion solucion = solucionManager.getSolucion(idSol);
+        Solucion solucion = solucionManager.getSolucion(idSol,username);
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term typedTerm = solucion.getTypedTerm();
@@ -522,7 +522,7 @@ public class PerfilController {
             typedTerm = new TypedApp(I2,A2);
           else
             typedTerm = new TypedApp(new TypedApp(I1,A1), new TypedApp(I2,A2));
-          typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),A3);
+            typedTerm = new TypedApp(new TypedApp(new TypedS(), typedTerm),A3);
         }
         catch (TypeVerificationException e){
             Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, null, e);
@@ -1392,7 +1392,7 @@ public class PerfilController {
         Predicado p=predicadoManager.getPredicado(id);
         Tokenizar tk = new Tokenizar();
         tk.tokenArgs(p.getArgumentos());
-        Term aux = CombUtilities.getTerm(p.getPredicado());
+        Term aux = CombUtilities.getTerm(p.getPredicado(),null);
         for (String var : tk.getVars()) 
             aux=new App(aux,new Var(var.charAt(0)));
         aux = aux.evaluar();

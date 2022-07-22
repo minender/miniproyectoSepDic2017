@@ -5,7 +5,8 @@ grammar Comb;
 package com.calclogic.parse; 
 
 import com.calclogic.lambdacalculo.*;	
-import java.util.LinkedList;	
+import java.util.LinkedList;
+import com.calclogic.entity.Resuelve;	
 	
 }	
 
@@ -15,12 +16,12 @@ import java.util.LinkedList;
  */
 
 // All kind of expresions
-start_rule returns [Term value] : expr { $value=$expr.value; };
+start_rule[String u] returns [Term value] : expr[u] { $value=$expr.value; };
   
-expr returns [Term value]
-    :	term                                    { $value = $term.value; }
-    |   LAMBDA v=variable PERIOD e1=expr 	{ $value = new Bracket($v.value, $e1.value); }
-    |   O_BRACKET2 vl=variable_list ASSIGN el=term_list C_BRACKET2  
+expr[String u] returns [Term value]
+    :	term[u]                                 { $value = $term.value; }
+    |   LAMBDA v=variable PERIOD e1=expr[u] 	{ $value = new Bracket($v.value, $e1.value); }
+    |   O_BRACKET2 vl=variable_list ASSIGN el=term_list[u] C_BRACKET2  
                                                 { 
                                                   if ($vl.value.size() != $el.value.size()) {
                                                     try {
@@ -35,8 +36,8 @@ expr returns [Term value]
                                                     $value = new Sust($vl.value, $el.value);
                                                 };
 
-term returns [Term value]
-    :  term_base term_tail { 
+term[String u] returns [Term value]
+    :  term_base[u] term_tail[u] { 
                                 Term aux = $term_base.value; 
                                 try {
 	                                for (Term it: $term_tail.value) {
@@ -56,13 +57,13 @@ term returns [Term value]
 				                $value = aux;  
                             };
 
-term_base returns [Term value]
-	: constant	       { $value = $constant.value; }
+term_base[String u] returns [Term value]
+	: constant[u]	       { $value = $constant.value; }
 	| variable	       { $value = $variable.value; }
-	| O_PAR term C_PAR     { $value = $term.value; };
+	| O_PAR term[u] C_PAR  { $value = $term.value; };
 	
-term_tail returns [LinkedList<Term> value]
-    : term_base t=term_tail       { $t.value.add(0,$term_base.value); $value = $t.value; }
+term_tail[String u] returns [LinkedList<Term> value]
+    : term_base[u] t=term_tail[u] { $t.value.add(0,$term_base.value); $value = $t.value; }
     |                             { $value = new LinkedList<Term>(); };
 	
 variable_list returns [LinkedList<Var> value]
@@ -72,22 +73,22 @@ variable_list_tail returns [LinkedList<Var> value]
     :  COMMA variable_list { $value = $variable_list.value; }
     |                      { $value = new LinkedList<Var>(); };
 	
-term_list returns [LinkedList<Term> value]
-    : term el=term_list_tail  { $el.value.add(0,$term.value); $value = $el.value; };   
+term_list[String u] returns [LinkedList<Term> value]
+    : term[u] el=term_list_tail[u]  { $el.value.add(0,$term.value); $value = $el.value; };   
 	
-term_list_tail returns [LinkedList<Term> value]
-	: COMMA term_list   { $value = $term_list.value; }   
-	|                   { $value = new LinkedList<Term>(); };
+term_list_tail[String u] returns [LinkedList<Term> value]
+	: COMMA term_list[u]   { $value = $term_list.value; }   
+	|                      { $value = new LinkedList<Term>(); };
 
 // Variables for example x_{34}
 variable returns [Var value]
 	: VARIABLE {String var = $VARIABLE.text ; // Take string format of the variable
                     int index = Integer.parseInt(var.substring(3,var.length()-1));// Take only the the index of the variable
-                    $value = new Var(index);// Return a new Variable obeject with that index
+                    $value = new Var(index);// Return a new Variable object with that index
 		   };
 
 // All kind of constants
-constant returns [Term value]
+constant[String u] returns [Term value]
     : CONSTANT_C 	{ String cons = $CONSTANT_C.text ; // Take string format of the constant
 			  int index = Integer.parseInt(cons.substring(3,cons.length()-1));// Take only the the index of the constant
 			  $value = new Const(index ,cons);
@@ -99,7 +100,7 @@ constant returns [Term value]
                           $value = new Const(-1 ,cons);
                         }
     | constant_phi 	{ $value = $constant_phi.value; }
-    |   prove_base	{ $value = $prove_base.value; };
+    | prove_base[u]	{ $value = $prove_base.value; };
  
 // All forms of Phi constants for example \Phi_{(cbc,(cb,b))} 
 constant_phi returns [Term value]
@@ -117,7 +118,7 @@ comb_index returns [ListaInd value]
 			 $value.list.add(cb);// Add it to the new value
 			 $value.orden +=cb.orden;// update orden
 			}				
-	| 		{$value = new ListaInd();};
+    |   		{$value = new ListaInd();};
 
 // Combinations of cb in pairs for example (cbc,(cb,b)) 
 cb_pair	returns [Indice value]
@@ -127,10 +128,10 @@ cb_pair	returns [Indice value]
 /*
  * PROVE RELATED RULES
  */
- prove_base returns [Term value]
-    : I expr C_BRACKET { $value = new TypedI((Sust) $expr.value); }
-    | L expr C_BRACKET { $value = new TypedL((Bracket) $expr.value); }
-    | S expr C_BRACKET { 
+ prove_base[String u] returns [Term value]
+    : I expr[u] C_BRACKET { $value = new TypedI((Sust) $expr.value); }
+    | L expr[u] C_BRACKET { $value = new TypedL((Bracket) $expr.value); }
+    | S expr[u] C_BRACKET { 
                             try {
                                 $value = new TypedS($expr.value,0); 
                             } catch (TypeVerificationException e) {
@@ -146,8 +147,7 @@ cb_pair	returns [Indice value]
                 System.exit(1);
             } 
         }
-    | U { $value = new TypedU(); }
-    | A expr C_BRACKET { $value = new TypedA($expr.value); };
+    | A expr[u] C_BRACKET { $value = (u!=null ? new TypedA($expr.value,u) : new TypedA($expr.value)); };
 
  
 /*
@@ -195,7 +195,6 @@ A : 'A^{';
 I : 'I^{';
 L : 'L^{';
 S : 'S^{';
-U : 'U';
 Si: 'S';
 
 

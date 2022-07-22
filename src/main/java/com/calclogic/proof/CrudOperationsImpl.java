@@ -53,14 +53,14 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term createBaseMethodInfer(Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
+    public Term createBaseMethodInfer(String user, Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
             Bracket leibniz, String leibnizString, Term theoremBeingProved, String method) 
             throws TypeVerificationException{
 
         Term infer = null;
         TypedI I = null;
-        TypedA A = new TypedA(theoremHint);
-        TypedL L = new TypedL(leibniz);
+        TypedA A = new TypedA(theoremHint,user);
+        TypedL L;
         Boolean noInstantiation = instantiationString.equals("");
         Boolean noLeibniz = leibnizString.equals("");
         String groupMethod = ("DM".equals(method) || "SS".equals(method)) ? "D" : (("TR".equals(method) || "WE".equals(method) || "ST".equals(method)) ? "T" : "N");
@@ -81,6 +81,7 @@ public class CrudOperationsImpl implements CrudOperations {
 
                         infer = Parity.parityLeibniz(leibniz, A);
                     }else {
+                        L = new TypedL(leibniz);
                         infer = new TypedApp(L,A);
                     } 
                 }
@@ -123,7 +124,7 @@ public class CrudOperationsImpl implements CrudOperations {
                         }
                         leibnizString = "69";
                     }
-                    infer = createBaseMethodInfer(theoremHint, instantiation, instantiationString, leibniz, leibnizString, theoremBeingProved, "DM");
+                    infer = createBaseMethodInfer(user, theoremHint, instantiation, instantiationString, leibniz, leibnizString, theoremBeingProved, "DM");
                 }
                 else { // IF REACHED HERE WE NEED A MODUS PONENS HINT
                     String e = "\\Phi_{}"; // by default use empty phi which represents leibniz z
@@ -140,9 +141,9 @@ public class CrudOperationsImpl implements CrudOperations {
                     // If there is instantiation change a,b and c properly
                     if(!noInstantiation) {
                         I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
-                        cTerm = (new TypedApp(I, new TypedA(cTerm))).type();
-                        bTerm = (new TypedApp(I, new TypedA(bTerm))).type();
-                        aTerm = (new TypedApp(I, new TypedA(aTerm))).type();
+                        cTerm = (new TypedApp(I, new TypedA(cTerm,user))).type();
+                        bTerm = (new TypedApp(I, new TypedA(bTerm,user))).type();
+                        aTerm = (new TypedApp(I, new TypedA(aTerm,user))).type();
                         // Need to add I to the right side
                         iaRightTerm = new TypedApp(I, iaRightTerm);
                     }
@@ -164,7 +165,7 @@ public class CrudOperationsImpl implements CrudOperations {
                     } else { // Direct method
                         iaLeftString = "I^{[x_{65},x_{66},x_{67},x_{69} :=" +a+ "," +b+ "," +c+ "," +e+ "]}A^{c_{2} (c_{1} (c_{1} (c_{5} (x_{69} x_{67}) x_{65}) x_{65}) (c_{1}  (c_{5} (x_{69} x_{66}) x_{65}) x_{65})) (c_{2} (c_{1} x_{67} x_{66}) x_{65})}";
                     }
-                    Term iaLeftTerm = CombUtilities.getTerm(iaLeftString);
+                    Term iaLeftTerm = CombUtilities.getTerm(iaLeftString,user);
                     
                     //throw new TypeVerificationException();
                     infer = new TypedApp(iaLeftTerm, iaRightTerm);
@@ -479,7 +480,7 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term addInferToProof(Term proof, Term infer, String method) throws TypeVerificationException {
+    public Term addInferToProof(String user, Term proof, Term infer, String method) throws TypeVerificationException {
         if (method.equals("WE") || method.equals("ST") || method.equals("TR")) {
             Term type = proof.type();
             Term typeInf = infer.type();
@@ -512,7 +513,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 catch (ClassCastException e) {
                     throw new TypeVerificationException();
                 }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
+                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user), proof), infer);
             }
             else if (index != 0 && !eqInf) {
                 String st = "c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8})";
@@ -523,7 +524,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 }catch (ClassCastException e) {
                     throw new TypeVerificationException();
                 }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv), proof), infer);
+                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user), proof), infer);
             }
             else {
                 if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l' ) {
@@ -584,7 +585,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 String proof = sub2.replace(template);
                 Term proofTerm = null;
                 try {
-                    proofTerm = new TypedApp(CombUtilities.getTerm(proof),typedTerm);
+                    proofTerm = new TypedApp(CombUtilities.getTerm(proof,null),typedTerm);
                 }
                 catch (TypeVerificationException e) {
                     Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
