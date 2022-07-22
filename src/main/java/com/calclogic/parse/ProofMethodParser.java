@@ -1,4 +1,4 @@
-// Generated from ProofMethod.g4 by ANTLR 4.8
+// Generated from .\ProofMethod.g4 by ANTLR 4.8
 
 
 package com.calclogic.parse;
@@ -26,8 +26,8 @@ public class ProofMethodParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		DM=1, SS=2, TR=3, WE=4, ST=5, ND=6, CO=7, CR=8, AI=9, CA=10, WI=11, O_PAR=12, 
-		C_PAR=13, WHITESPACE=14;
+		DM=1, SS=2, TR=3, WE=4, ST=5, ND=6, CO=7, CR=8, AI=9, MI=10, CA=11, WI=12, 
+		O_PAR=13, C_PAR=14, WHITESPACE=15;
 	public static final int
 		RULE_start_rule = 0, RULE_method = 1, RULE_method_tail = 2, RULE_method_base = 3;
 	private static String[] makeRuleNames() {
@@ -40,14 +40,14 @@ public class ProofMethodParser extends Parser {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, "'DM'", "'SS'", "'TR'", "'WE'", "'ST'", "'ND'", "'CO'", "'CR'", 
-			"'AI'", "'CA'", "'WI'", "'('", "')'"
+			"'AI'", "'MI'", "'CA'", "'WI'", "'('", "')'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "DM", "SS", "TR", "WE", "ST", "ND", "CO", "CR", "AI", "CA", "WI", 
-			"O_PAR", "C_PAR", "WHITESPACE"
+			null, "DM", "SS", "TR", "WE", "ST", "ND", "CO", "CR", "AI", "MI", "CA", 
+			"WI", "O_PAR", "C_PAR", "WHITESPACE"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -236,6 +236,7 @@ public class ProofMethodParser extends Parser {
 			case CO:
 			case CR:
 			case AI:
+			case MI:
 			case CA:
 			case WI:
 			case O_PAR:
@@ -282,6 +283,7 @@ public class ProofMethodParser extends Parser {
 		public TerminalNode CO() { return getToken(ProofMethodParser.CO, 0); }
 		public TerminalNode CR() { return getToken(ProofMethodParser.CR, 0); }
 		public TerminalNode AI() { return getToken(ProofMethodParser.AI, 0); }
+		public TerminalNode MI() { return getToken(ProofMethodParser.MI, 0); }
 		public TerminalNode CA() { return getToken(ProofMethodParser.CA, 0); }
 		public TerminalNode WI() { return getToken(ProofMethodParser.WI, 0); }
 		public TerminalNode O_PAR() { return getToken(ProofMethodParser.O_PAR, 0); }
@@ -307,7 +309,7 @@ public class ProofMethodParser extends Parser {
 		Method_baseContext _localctx = new Method_baseContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_method_base);
 		try {
-			setState(49);
+			setState(51);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case DM:
@@ -382,30 +384,38 @@ public class ProofMethodParser extends Parser {
 				((Method_baseContext)_localctx).value =  new Const("AI");
 				}
 				break;
-			case CA:
+			case MI:
 				enterOuterAlt(_localctx, 10);
 				{
 				setState(40);
+				match(MI);
+				((Method_baseContext)_localctx).value =  new Const("MI");
+				}
+				break;
+			case CA:
+				enterOuterAlt(_localctx, 11);
+				{
+				setState(42);
 				match(CA);
 				((Method_baseContext)_localctx).value =  new Const("CA");
 				}
 				break;
 			case WI:
-				enterOuterAlt(_localctx, 11);
+				enterOuterAlt(_localctx, 12);
 				{
-				setState(42);
+				setState(44);
 				match(WI);
 				((Method_baseContext)_localctx).value =  new Const("WI");
 				}
 				break;
 			case O_PAR:
-				enterOuterAlt(_localctx, 12);
+				enterOuterAlt(_localctx, 13);
 				{
-				setState(44);
-				match(O_PAR);
-				setState(45);
-				((Method_baseContext)_localctx).method = method();
 				setState(46);
+				match(O_PAR);
+				setState(47);
+				((Method_baseContext)_localctx).method = method();
+				setState(48);
 				match(C_PAR);
 				 ((Method_baseContext)_localctx).value =  ((Method_baseContext)_localctx).method.value; 
 				}
@@ -426,22 +436,22 @@ public class ProofMethodParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\20\66\4\2\t\2\4\3"+
-		"\t\3\4\4\t\4\4\5\t\5\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\5"+
-		"\4\27\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5"+
-		"\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5\64\n\5\3\5\2\2\6"+
-		"\2\4\6\b\2\2\2=\2\n\3\2\2\2\4\r\3\2\2\2\6\26\3\2\2\2\b\63\3\2\2\2\n\13"+
-		"\5\4\3\2\13\f\b\2\1\2\f\3\3\2\2\2\r\16\5\b\5\2\16\17\5\6\4\2\17\20\b\3"+
-		"\1\2\20\5\3\2\2\2\21\22\5\b\5\2\22\23\5\6\4\2\23\24\b\4\1\2\24\27\3\2"+
-		"\2\2\25\27\b\4\1\2\26\21\3\2\2\2\26\25\3\2\2\2\27\7\3\2\2\2\30\31\7\3"+
-		"\2\2\31\64\b\5\1\2\32\33\7\4\2\2\33\64\b\5\1\2\34\35\7\5\2\2\35\64\b\5"+
-		"\1\2\36\37\7\6\2\2\37\64\b\5\1\2 !\7\7\2\2!\64\b\5\1\2\"#\7\b\2\2#\64"+
-		"\b\5\1\2$%\7\t\2\2%\64\b\5\1\2&\'\7\n\2\2\'\64\b\5\1\2()\7\13\2\2)\64"+
-		"\b\5\1\2*+\7\f\2\2+\64\b\5\1\2,-\7\r\2\2-\64\b\5\1\2./\7\16\2\2/\60\5"+
-		"\4\3\2\60\61\7\17\2\2\61\62\b\5\1\2\62\64\3\2\2\2\63\30\3\2\2\2\63\32"+
-		"\3\2\2\2\63\34\3\2\2\2\63\36\3\2\2\2\63 \3\2\2\2\63\"\3\2\2\2\63$\3\2"+
-		"\2\2\63&\3\2\2\2\63(\3\2\2\2\63*\3\2\2\2\63,\3\2\2\2\63.\3\2\2\2\64\t"+
-		"\3\2\2\2\4\26\63";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\218\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\5\4"+
+		"\27\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3"+
+		"\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5\66\n\5\3\5"+
+		"\2\2\6\2\4\6\b\2\2\2@\2\n\3\2\2\2\4\r\3\2\2\2\6\26\3\2\2\2\b\65\3\2\2"+
+		"\2\n\13\5\4\3\2\13\f\b\2\1\2\f\3\3\2\2\2\r\16\5\b\5\2\16\17\5\6\4\2\17"+
+		"\20\b\3\1\2\20\5\3\2\2\2\21\22\5\b\5\2\22\23\5\6\4\2\23\24\b\4\1\2\24"+
+		"\27\3\2\2\2\25\27\b\4\1\2\26\21\3\2\2\2\26\25\3\2\2\2\27\7\3\2\2\2\30"+
+		"\31\7\3\2\2\31\66\b\5\1\2\32\33\7\4\2\2\33\66\b\5\1\2\34\35\7\5\2\2\35"+
+		"\66\b\5\1\2\36\37\7\6\2\2\37\66\b\5\1\2 !\7\7\2\2!\66\b\5\1\2\"#\7\b\2"+
+		"\2#\66\b\5\1\2$%\7\t\2\2%\66\b\5\1\2&\'\7\n\2\2\'\66\b\5\1\2()\7\13\2"+
+		"\2)\66\b\5\1\2*+\7\f\2\2+\66\b\5\1\2,-\7\r\2\2-\66\b\5\1\2./\7\16\2\2"+
+		"/\66\b\5\1\2\60\61\7\17\2\2\61\62\5\4\3\2\62\63\7\20\2\2\63\64\b\5\1\2"+
+		"\64\66\3\2\2\2\65\30\3\2\2\2\65\32\3\2\2\2\65\34\3\2\2\2\65\36\3\2\2\2"+
+		"\65 \3\2\2\2\65\"\3\2\2\2\65$\3\2\2\2\65&\3\2\2\2\65(\3\2\2\2\65*\3\2"+
+		"\2\2\65,\3\2\2\2\65.\3\2\2\2\65\60\3\2\2\2\66\t\3\2\2\2\4\26\65";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
