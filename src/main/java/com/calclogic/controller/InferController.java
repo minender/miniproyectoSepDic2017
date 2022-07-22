@@ -229,12 +229,15 @@ public class InferController {
                 nTeo, 
                 typedTerm, 
                 true,
-                true,
+                (solucion.getMetodo().equals("") || 
+                        ProofBoolean.isWaitingMethod(ProofMethodUtilities.getTerm(solucion.getMetodo()))?
+                                false:true),
                 (solucion.getMetodo().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMetodo())), 
                 resuelveManager, 
                 disponeManager,
                 simboloManager
             );
+            System.out.println(response.getCambiarMetodo());
             map.addAttribute("elegirMetodo",response.getCambiarMetodo());
             map.addAttribute("formula",response.getHistorial());
         }
@@ -570,7 +573,6 @@ public class InferController {
         j = 0;
         while (newProof == null && i < 2) {
 
-            System.out.println("\ni = "+i+ " j = "+j);
             try {
                 if (i == 1 && j == 0){
                     infer = new TypedApp(new TypedS(infer.type()), infer);
@@ -578,14 +580,13 @@ public class InferController {
                 // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
                 newProof = crudOp.addInferToProof(currentProof, infer, objectMethod);
-                System.out.println("    newProof = "+((newProof == null) ? null : newProof.toStringFinal()));
                 if (onlyOneLine){
                     // If the proof only has one line with expression P for the user, then at this point it is interally P == P
                     // as explained previously. But since we don't need the first P and the new inference "infer" consists of 
                     // the three parts that will be shown to the user: 1) the previous expression P, 2) the hint and 3) the new expresssion,
                     // then we make the proof to be equal to that inference.
-                    System.out.println("    Entré en onlyOneLine");
-                    if ("DM".equals(objectMethod.getMethodStr()) && (newProof instanceof TypedApp) && ((TypedApp)newProof).inferType != 't'){
+                    if (newProof instanceof TypedApp && ((TypedApp)newProof).inferType == 'e'){
+                        newProof = null;
                         throw new TypeVerificationException();
                     }
                     newProof = infer;

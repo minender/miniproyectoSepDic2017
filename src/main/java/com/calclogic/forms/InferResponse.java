@@ -235,8 +235,9 @@ public class InferResponse extends GenericResponse{
                 privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
                                         resuelveManager, disponeManager, s, clickable, false);
 
-                if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
-                    cambiarMetodo = "0";
+                if (typedTerm == null || typedTerm.type()==null || !typedTerm.type().equals(newFormula)){
+                    if (typedTerm != null)
+                       cambiarMetodo = "0";
                 }
                 else { // This only occurs when the user has just finalized the previous sub-proof
                     if (!clickable.equals("n")){
