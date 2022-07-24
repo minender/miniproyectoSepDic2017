@@ -443,7 +443,6 @@ public class CrudOperationsImpl implements CrudOperations {
     public Term addFirstLineSubProof(Term formula, Term typedTerm, Term method) {
         Term auxMethod = method; // "method" is entry/exit, so if we use it directly we change its value in the caller
         while (auxMethod instanceof App) {
-            // ************ THIS MUST BE DELETED OR CHANGED *********************
             if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.containsBranchedProof2Started(((App)auxMethod).q)){
                 Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
                                                                                     ((App)auxMethod).q);
@@ -451,7 +450,6 @@ public class CrudOperationsImpl implements CrudOperations {
                 GenericProofMethod objectMethod = createProofMethodObject("AI");
                 return objectMethod.finishedMethodProof(typedTerm,aux);
             }
-            // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
             else if (ProofBoolean.isBranchedProof2Started(auxMethod)) {
                 Map<String,String> values1 = new HashMap<>();
                 values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
