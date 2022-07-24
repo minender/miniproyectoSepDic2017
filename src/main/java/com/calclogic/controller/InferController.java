@@ -593,13 +593,11 @@ public class InferController {
                 }
             }
             catch (TypeVerificationException e) {
-                System.out.println("    Entré en el catch");
                 if ((i == 1 && !onlyOneLine) || (i == 1 && j == 1)){
                     response.generarHistorial(username,formula,nTeo,typedTerm,false,true,methodTerm,resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
                 if (onlyOneLine && j == 0) {
-                    System.out.println("    Entré en onlyOneLine && j == 0");
                     currentProof = new TypedA(new App(new App(new Const(1,"c_{20}",false,1,1),
                             typedTerm),typedTerm));
                     j=1;

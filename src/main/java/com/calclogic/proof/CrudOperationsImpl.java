@@ -444,7 +444,7 @@ public class CrudOperationsImpl implements CrudOperations {
         Term auxMethod = method; // "method" is entry/exit, so if we use it directly we change its value in the caller
         while (auxMethod instanceof App) {
             // ************ THIS MUST BE DELETED OR CHANGED *********************
-            if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isBranchedProof2Started(((App)auxMethod).q)){
+            if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.containsBranchedProof2Started(((App)auxMethod).q)){
                 Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
                                                                                     ((App)auxMethod).q);
 
