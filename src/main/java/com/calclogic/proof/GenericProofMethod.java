@@ -339,7 +339,6 @@ public class GenericProofMethod {
             List<Term> terms = new ArrayList<>();
 
             Term axiomTree = auxFinLinearRecursiveMethodProof(formulaBeingProved, vars, terms);
-            System.out.println("Pude pasar el axiomTree  s");
 
             return new TypedApp(axiomTree, proof);
              

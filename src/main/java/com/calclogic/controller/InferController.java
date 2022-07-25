@@ -630,14 +630,11 @@ public class InferController {
         while (!methodStk.isEmpty()){
             Term methodTermAux = methodStk.pop();
             String strMethodTermAux = methodTermAux.toStringFinal();
-            System.out.println("    strMethodTermAux = "+strMethodTermAux);
             objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
 
             if (isFinalSolution && methodTermAux instanceof Const) {
-                System.out.println("    Entré en isFinalSolution && methodTermAux instanceof Const");
                 // Recursive branched method
                 if ("B".equals(objectMethod.getGroupMethod())) {
-                    System.out.println("    Entré en el caso B");
                     isFinalSolution = false;
                     response.setEndCase(true);   
                 }
@@ -652,17 +649,13 @@ public class InferController {
 
             // This part ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App){
-                System.out.println("    Entré en methodTermAux instanceof App");
                 Term m = ((App)methodTermAux).p;
                 String strM = m.toStringFinal();
-                System.out.println("    strM = "+strM);
                 if (m != null){
                     objectMethod = crudOp.createProofMethodObject(strM);
                     if ("B".equals(objectMethod.getGroupMethod())){
-                        System.out.println("    Entré en B 2");
                         finalProof = aiObject.finishedBranchedRecursiveMethodProof(fatherProofs.pop(), finalProof);
                         if (isFinalSolution && !("AI".equals(strM))){
-                            System.out.println("    Entré en isFinalSolution && ..");
                             finalProof = objectMethod.finishedBranchedRecursiveMethodProof(null, finalProof);
                         }
                     }

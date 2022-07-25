@@ -72,7 +72,6 @@ public class MutualImplicationMethod extends GenericProofMethod {
     protected Term auxFinLinearRecursiveMethodProof(Term formulaBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
     {
-        System.out.println("\n\n\nEn final, formulaBeingProved = "+formulaBeingProved.toStringFinal());
         // This string says: ((p ==> q) /\ (p <== q)) == (p == q)
         String str = "c_{1} (c_{1} x_{113} x_{112}) (c_{5} (c_{3} x_{113} x_{112}) (c_{2} x_{113} x_{112}))";
         Term st = CombUtilities.getTerm(str);
