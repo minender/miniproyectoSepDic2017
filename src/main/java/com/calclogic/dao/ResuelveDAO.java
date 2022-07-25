@@ -112,4 +112,6 @@ public interface ResuelveDAO {
      * @param categoriaId Is the principal key of the category used to filter the search.
      */
     public List<Resuelve> getResuelveByCategoria(int categoriaId);
+    
+    public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves);
 }

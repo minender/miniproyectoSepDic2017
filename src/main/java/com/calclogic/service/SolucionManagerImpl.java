@@ -133,14 +133,15 @@ public class SolucionManagerImpl implements SolucionManager {
                             solucionDAO.deleteSolucion(id);
                             resuelve.setResuelto(false);
                             resuelveDAO.updateResuelve(resuelve);
-                            break;
+                            return true;
                         }
                     }
                 }
+                solucionDAO.deleteSolucion(id);
+                return true;
             }
             return true;   
         }
-        
         return false;
     }
     

@@ -102,7 +102,9 @@ public class InferController {
         {
             return "redirect:/index";
         }
+        
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
+        
         for (Resuelve r: resuelves) // Este for debes mandarlo para el manager y quitar
         {                           // la construccion del metateorema del true
             Teorema t = r.getTeorema();
@@ -191,7 +193,23 @@ public class InferController {
             solId ="" + resuel.getDemopendiente();
         
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,nTeo); // Maybe: getAllResuelveByUserOrAdminResuelto
-        
+
+        // Usando algoritmo de punto fijo
+        List<Resuelve> unResuelve = new ArrayList<Resuelve>();
+        unResuelve.add(resuel);
+        //System.out.println(unResuelve.get(0).getNumeroteorema());
+        List<Resuelve> depend = resuelveManager.getResuelveDependent(username, unResuelve);
+        HashSet<Integer> dependIds = new HashSet<Integer>();
+        List<String> dependNum = new ArrayList<String>();
+        for (Resuelve r: depend) {
+            dependIds.add(r.getId());
+            dependNum.add(r.getNumeroteorema());
+        }
+        //System.out.println(dependNum.toString());
+        resuelves.removeIf(r -> dependIds.contains(r.getId()));
+        //resuelves.removeAll(depend);
+        //resuelves = new ArrayList<Resuelve>();
+
         for (Resuelve r: resuelves){
             Teorema t = r.getTeorema();
             Term term = t.getTeoTerm();

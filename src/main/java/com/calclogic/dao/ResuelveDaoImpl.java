@@ -233,4 +233,22 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE categoria.id = :categoriaId").setParameter("categoriaId", categoriaId).list();
     }
         
+    
+    @Override
+    public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves) {
+        String enunciados = "";
+        for (Resuelve r: resuelves) {
+            String enunciado = "s.demostracion LIKE '%A^{" + r.getTeorema().getEnunciado() + "}%'";
+            if (enunciados.equals("")) {
+                enunciados = enunciado;
+            }
+            else {
+                enunciados = enunciados + " OR " + enunciado;
+            }
+        }
+        String queryStr = "FROM Resuelve r WHERE (r.usuario.login = :userLogin OR r.usuario.login = 'adminTeoremas') AND resuelto = 't' AND NOT EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id AND NOT ("+enunciados+"))";
+        //System.out.println(queryStr);
+        return this.sessionFactory.getCurrentSession().createQuery(queryStr).setParameter("userLogin",userLogin).list();
+    }
+    
 }
