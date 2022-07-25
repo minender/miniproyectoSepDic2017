@@ -163,7 +163,7 @@ public class CrudOperationsImpl implements CrudOperations {
                     ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
                     !ProofBoolean.isBranchedProof2Started(auxMethod)
                     ){
-                return null;
+                return null;// no deberia devolver this, no seria mas homogeneo?
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
                 return ((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t;

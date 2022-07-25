@@ -202,7 +202,7 @@ public class ProofBoolean {
     public static boolean containsBranchedProof2Started(Term method) {
         String methodStr;
         Term aux = method;
-        while (aux instanceof App && isLinearRecursiveMethod(((App)aux).p) ) {
+        while (aux instanceof App && ((App)aux).p instanceof Const ) {
             aux = ((App)aux).q;
         }
         if (aux instanceof App)
