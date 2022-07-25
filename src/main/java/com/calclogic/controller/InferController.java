@@ -237,7 +237,6 @@ public class InferController {
                 disponeManager,
                 simboloManager
             );
-            System.out.println(response.getCambiarMetodo());
             map.addAttribute("elegirMetodo",response.getCambiarMetodo());
             map.addAttribute("formula",response.getHistorial());
         }
