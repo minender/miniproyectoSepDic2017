@@ -456,4 +456,25 @@ public class ResuelveManagerImpl implements ResuelveManager {
         }
         return new ArrayList<Resuelve>(dependent.values());
     }
+    
+    @Override
+    @Transactional
+    public List<Resuelve> getResuelveDependentGlobal(List<Resuelve> resuelves){
+        HashMap<Integer, Resuelve> dependent = new HashMap<Integer, Resuelve>();
+        for (Resuelve r: resuelves) {
+            dependent.put(r.getId(), r);
+        }
+        int prevSize = 0;
+        //System.out.println(dependent.size());
+        while (prevSize != dependent.size()) {
+            prevSize = dependent.size();
+            List<Resuelve> current = new ArrayList<Resuelve>(dependent.values());
+            List<Resuelve> toAdd = resuelveDAO.getResuelveDependentGlobal(current);
+            for (Resuelve r: toAdd) {
+                dependent.put(r.getId(), r);
+            }
+            //System.out.println(dependent.size());
+        }
+        return new ArrayList<Resuelve>(dependent.values());
+    }
 }

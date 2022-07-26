@@ -55,4 +55,5 @@ public interface TeoremaDAO {
     public Teorema getTeoremaByEnunciados(String enunciado);
     //
 //    public List<Teorema> getPublicTeoremas(Categoria categoria);
+    public List<Teorema> getAllTeoremasWithSimbolo(int idSimbolo);
 }

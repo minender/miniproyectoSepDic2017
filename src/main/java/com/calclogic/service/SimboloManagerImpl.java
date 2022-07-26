@@ -1,7 +1,11 @@
 package com.calclogic.service;
 
+import com.calclogic.dao.ResuelveDAO;
 import com.calclogic.dao.SimboloDAO;
+import com.calclogic.dao.TeoremaDAO;
+import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Simbolo;
+import com.calclogic.entity.Teorema;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,12 @@ public class SimboloManagerImpl implements SimboloManager {
        
     // @Autowired
     private SimboloDAO simboloDAO;
+    @Autowired
+    private TeoremaDAO teoremaDAO;
+    @Autowired
+    private ResuelveDAO resuelveDAO;
+    @Autowired
+    private ResuelveManager resuelveManager;
     private int propFunApp;
     private int termFunApp;
     Simbolo[] symbolsCache; 
@@ -95,7 +105,18 @@ public class SimboloManagerImpl implements SimboloManager {
     @Override
     @Transactional
     public void deleteSimbolo(int id){
-        simboloDAO.deleteSimbolo(id);
+        List<Teorema> orphans = teoremaDAO.getAllTeoremasWithSimbolo(id);
+        List<Integer> orphanIds = new ArrayList<Integer>();
+        for (Teorema t: orphans) {
+            orphanIds.add(t.getId());
+        }
+        List<Resuelve> resuelves = resuelveDAO.getResuelveByTeoremas(orphanIds);
+        List<Resuelve> depends = resuelveManager.getResuelveDependentGlobal(resuelves);
+        
+        System.out.println(orphans.size());
+        System.out.println(resuelves.size());
+        System.out.println(depends.size());
+        //simboloDAO.deleteSimbolo(id);
     }
     
     /**

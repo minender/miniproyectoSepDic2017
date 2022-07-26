@@ -105,6 +105,12 @@ public class TeoremaDaoImpl implements TeoremaDAO {
             return list.get(0);
         }
     }
+    
+    @Override
+    public List<Teorema> getAllTeoremasWithSimbolo(int idSimbolo) {
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Teorema WHERE enunciado LIKE '%c_{" + String.valueOf(idSimbolo) + "}%'").list();
+    }
+    
 //	@Override
 //	public List<Termino> getAllTeoremasByUser(String username)
 //        {

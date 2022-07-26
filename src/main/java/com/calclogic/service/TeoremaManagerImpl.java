@@ -116,7 +116,6 @@ public class TeoremaManagerImpl implements TeoremaManager {
         System.out.println(teorema.getEnunciado());
         
         if (teorema.getEnunciado().equals(statement)) {
-            System.out.println("hola0");
             return teorema;
         }
         List <Resuelve> resuelves = resuelveDAO.getResuelveByTeorema(id);
@@ -124,27 +123,22 @@ public class TeoremaManagerImpl implements TeoremaManager {
             Resuelve resuelve = resuelves.get(0);
             // Verificar que el resuelve pertenezca al usuario actual
             if (!resuelve.getUsuario().getLogin().equals(username)){
-                System.out.println("hola1");
                 return null;
             }
             // Evitar que se borre el resuelve si tiene soluciones
             if (solucionDAO.getAllSolucionesByResuelve(resuelve.getId()).size() > 0){
-                System.out.println("hola2");
                 return null;
             }
             if (resuelve.getUsuario().getLogin().equals(username)) {
-                System.out.println("hola3");
                 //resuelveDAO.deleteResuelve((resuelve.getId()));
                 //Teorema teorema = teoremaDAO.getTeorema(id);
                 Teorema teorema2 = teoremaDAO.getTeoremaByEnunciados(statement);
                 if (teorema2 == null) {
-                    System.out.println("hola4");
                     teorema.setEnunciado(statement);
                     teoremaDAO.updateTeorema(teorema);
                     return teorema;
                 }
                 else {
-                    System.out.println("hola5");
                     teoremaDAO.deleteTeorema(id);
                     return teorema2;
                 }
@@ -152,7 +146,6 @@ public class TeoremaManagerImpl implements TeoremaManager {
         }
         // Si no, se borra solo el resuelve si no hay demostraciones
         else if (resuelves.size() > 1){
-            System.out.println("hola6");
             Iterator<Resuelve> resIter = resuelves.iterator();
             Resuelve resuelve = resIter.next();
             while (resIter.hasNext()
@@ -163,18 +156,15 @@ public class TeoremaManagerImpl implements TeoremaManager {
                 resuelve = resIter.next();
             }
             if (resuelve.getTeorema().getId() == id && resuelve.getUsuario().getLogin().equals(username)) {
-                System.out.println("hola7");
                //Teorema teorema = teoremaDAO.getTeorema(id);
                Teorema teorema2 = this.getTeoremaByEnunciados(statement);
                if (teorema2 == null) {
-                   System.out.println("hola8");
                     teorema.setEnunciado(statement);
                     teorema.setId(0);
                     teoremaDAO.addTeorema(teorema);
                     return teorema;
                }
                else {
-                   System.out.println("hola9");
                     return teorema2;
                }
             }

@@ -98,6 +98,7 @@ public class InferController {
      */
     @RequestMapping(value="/{username}", method=RequestMethod.GET)
     public String selectTeoView(@PathVariable String username, ModelMap map) {
+        simboloManager.deleteSimbolo(1);
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
         {
             return "redirect:/index";

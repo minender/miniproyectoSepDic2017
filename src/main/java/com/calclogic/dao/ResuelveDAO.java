@@ -81,6 +81,8 @@ public interface ResuelveDAO {
      * @param teoremaID Is the principal key of the theorem used to filter the search.
      */
     public List<Resuelve> getResuelveByTeorema(int teoremaID);
+    
+    public List<Resuelve> getResuelveByTeoremas(List<Integer> teoremas);
 
     /**
      * Method to get an entry that relates a user with a theorem, 
@@ -114,4 +116,6 @@ public interface ResuelveDAO {
     public List<Resuelve> getResuelveByCategoria(int categoriaId);
     
     public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves);
+    
+    public List<Resuelve> getResuelveDependentGlobal(List<Resuelve> resuelves);
 }
