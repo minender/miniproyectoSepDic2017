@@ -40,7 +40,7 @@ public interface SimboloManager {
      * @param id Is the principal key of the symbol to delete.
      * @return Nothing.
      */ 
-    public void deleteSimbolo(int id);
+    public String deleteSimbolo(int id, String username);
     
     /**
      * Method to get a Simbolo object by its principal key.

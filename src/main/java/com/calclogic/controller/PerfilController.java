@@ -2045,6 +2045,20 @@ public class PerfilController {
         return "theories";
     }
     
+    @RequestMapping(value="/{username}/deleteSymbol/{symbolId}", method=RequestMethod.GET)
+    @ResponseBody
+    public String DeleteSymbol(@PathVariable String username, @PathVariable String symbolId, ModelMap map) {
+        if (  
+            (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)
+                || !((Usuario)session.getAttribute("user")).isAdmin()
+            )
+        {
+            return "authentication failed";
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
+        return simboloManager.deleteSimbolo(Integer.parseInt(symbolId), username);
+    }
+    
     public void setUsuarioManager(UsuarioManager usuarioManager) 
     {
             this.usuarioManager = usuarioManager;

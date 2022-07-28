@@ -2,9 +2,11 @@ package com.calclogic.service;
 
 import com.calclogic.dao.ResuelveDAO;
 import com.calclogic.dao.SimboloDAO;
+import com.calclogic.dao.SolucionDAO;
 import com.calclogic.dao.TeoremaDAO;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Simbolo;
+import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,8 @@ public class SimboloManagerImpl implements SimboloManager {
        
     // @Autowired
     private SimboloDAO simboloDAO;
+    @Autowired
+    private SolucionDAO solucionDAO;
     @Autowired
     private TeoremaDAO teoremaDAO;
     @Autowired
@@ -104,19 +108,53 @@ public class SimboloManagerImpl implements SimboloManager {
      */ 
     @Override
     @Transactional
-    public void deleteSimbolo(int id){
+    public String deleteSimbolo(int id, String username){
         List<Teorema> orphans = teoremaDAO.getAllTeoremasWithSimbolo(id);
         List<Integer> orphanIds = new ArrayList<Integer>();
         for (Teorema t: orphans) {
             orphanIds.add(t.getId());
         }
         List<Resuelve> resuelves = resuelveDAO.getResuelveByTeoremas(orphanIds);
-        List<Resuelve> depends = resuelveManager.getResuelveDependentGlobal(resuelves);
+        List<Resuelve> resuelves_user = new ArrayList<>();
+        resuelves_user.addAll(resuelves);
+        resuelves.removeIf(r -> r.getUsuario().getLogin() != username);
+        //List<Resuelve> dependents_user = resuelveManager.getResuelveDependent(username, resuelves);
+        if (resuelves_user.size() > 0) {
+            String numsTeo = "";
+            for (Resuelve r: resuelves_user) {
+                if (numsTeo == "") {
+                    numsTeo = r.getNumeroteorema();
+                }
+                else {
+                    numsTeo = numsTeo + ", " + r.getNumeroteorema();
+                }
+            }
+            //return "Couldn't delete Symbol because the following theorems use it:\n" + numsTeo;
+        }
+        
+        List<Resuelve> dependents = resuelveManager.getResuelveDependentGlobal(resuelves);
+        for (Resuelve r: dependents) {
+            //r.setResuelto(false);
+        }
+        for (Resuelve r: dependents) {
+            //resuelveManager.deleteResuelve(r.getId());
+        }
+        // borrar soluciones
+        for (Teorema t: orphans) {
+            //teoremaDAO.deleteTeorema(t.getId());
+        }
+        List<Solucion> soluciones = solucionDAO.getAllSolucionesWithTeorema(orphans);
+        for (Solucion s: soluciones) {
+            //solucionDAO.deleteSolucion(s.getId());
+        }
         
         System.out.println(orphans.size());
         System.out.println(resuelves.size());
-        System.out.println(depends.size());
+        System.out.println(dependents.size());
+        System.out.println(soluciones.size());
+        
         //simboloDAO.deleteSimbolo(id);
+        return "Symbol deleted";
     }
     
     /**
