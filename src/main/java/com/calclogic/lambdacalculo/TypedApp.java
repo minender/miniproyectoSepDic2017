@@ -65,8 +65,9 @@ public class TypedApp extends App implements TypedTerm{
                     if (!((eq || equiv)/*(eq || eqAndOp || leftAndOp || rightAndOp)*/&& t1Der.equals(t2Izq))){
                         throw new TypeVerificationException();
                     }
-                    else
+                    else{
                         inferType = 't';
+                    }
                 }
                 else
                     inferType = (op1.equals("c_{2}")?'m':(t1 instanceof TypedS?'s':'e'));

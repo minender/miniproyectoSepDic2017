@@ -112,9 +112,6 @@ public class TeoremaManagerImpl implements TeoremaManager {
     public Teorema updateTeorema(int id, String username, String statement) {
         Teorema teorema = teoremaDAO.getTeorema(id);
         
-        System.out.println(statement);
-        System.out.println(teorema.getEnunciado());
-        
         if (teorema.getEnunciado().equals(statement)) {
             return teorema;
         }

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author francisco
  */
-public class InferResponse {
+public class InferResponse extends GenericResponse{
     
     // Has all the proof made at this point, written in LaTeX.
     private String historial; 
@@ -45,6 +45,7 @@ public class InferResponse {
 
     // When the proof method is starting from one side, this indicates the side: 
     // 'd' for the right one (derecho) and 'i' for the left one (izquierdo).
+    // It is also "1" when a clickable statement must be splitted into two sides.
     private String lado;
 
     // Determines if the proof was solved so a congratulatory message should be displayed
@@ -56,7 +57,7 @@ public class InferResponse {
     // Represents if the solution is ending a case.
     private boolean endCase = false;
 
-    private CrudOperations proofCrudOperations;
+    private final CrudOperations proofCrudOperations;
 
     public InferResponse(CrudOperations proofCrudOperations) {
         this.proofCrudOperations = proofCrudOperations;
@@ -122,6 +123,18 @@ public class InferResponse {
         this.errorParser1 = errorParser1;
     }
 
+    // We need to have the same name as in the other response classes
+    @Override
+    public String getError() {
+        return getErrorParser2();
+    }
+
+    // We need to have the same name as in the other response classes
+    @Override
+    public void setError(String error) {
+        setErrorParser2(error);
+    }
+
     public String getErrorParser2() {
         return errorParser2;
     }
@@ -156,7 +169,7 @@ public class InferResponse {
      * @param objectMethod
      * @return Nothing.
      */
-    private void setRecursiveProof(String user, Term typedTerm, ResuelveManager resuelveManager, 
+    private void setLinearRecursiveMethodProof(String user, Term typedTerm, ResuelveManager resuelveManager, 
             DisponeManager disponeManager, SimboloManager s, String header, String clickable, 
             Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo, GenericProofMethod objectMethod) 
     {
@@ -171,7 +184,7 @@ public class InferResponse {
             this.setErrorParser1(true);
             return;
         }
-        // By current method, the following must be proved: <statement> 
+        // By <current> method, the following must be proved: <statement> 
         header += objectMethod.header(statement);   
         
         if (methodTerm instanceof App) {
@@ -179,7 +192,7 @@ public class InferResponse {
                 typedTerm = ((App)typedTerm).q;
             }
             privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
-                             resuelveManager, disponeManager, s, clickable, false);
+                            resuelveManager, disponeManager, s, clickable, false);
         }
         else{
             this.setHistorial(header);
@@ -203,65 +216,58 @@ public class InferResponse {
      * @param nTeo
      * @return Nothing.
      */
-    private void set_AIorCA_Proof(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
-        SimboloManager s, String header, String clickable, Term methodTerm, Boolean valida, Boolean labeled, Term formula, String nTeo) {
+    private void setBranchedRecursiveMethodProof(String user, Term typedTerm, ResuelveManager resuelveManager, 
+        DisponeManager disponeManager, SimboloManager s, String header, String clickable, Term methodTerm, 
+        Boolean valida, Boolean labeled, Term formula, String nTeo, GenericProofMethod objectMethod)
+    {
+        try{
+            String statement;
+            Term newFormula = ((App)formula).q; // First branch
 
-        String statement;
-        boolean isAI = methodTerm.toStringFinal().substring(0, 2).equals("AI");
-        String stOrCase = (isAI?"Statement":"Case");
-        String methodName = (isAI?"Conjunction by parts":"Case Analysis");
-        Term newFormula = ((App)formula).q;
-        try {
-           statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) 
-                                   + "$</center>";
-        }
-        catch (Exception e) {
-            this.setErrorParser1(true);
-            return;
-        }
-        header+="By "+methodName+" method:<br>"+stOrCase+" 1:<br>"+statement+"Sub Proof:<br>";
-        if (methodTerm instanceof Const){
-           historial = header;
-        }
-        else if ( ((App)methodTerm).p instanceof Const  ) {
-            privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
-                                    resuelveManager, disponeManager, s, clickable, false);
-            if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
-                cambiarMetodo = "0";
+            statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) + "$</center>";
+            header += objectMethod.header("") + objectMethod.subProofInit(statement);
+
+            if (methodTerm instanceof Const){
+                historial = header;
             }
-            else {
-                if (!clickable.equals("n"))
-                    cambiarMetodo = "0"; 
-                newFormula = ((App)((App)formula).p).q;
-                try {
+            // Proof of the first sub-case
+            else if ( ((App)methodTerm).p instanceof Const  ) {
+                privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)methodTerm).q, 
+                                        resuelveManager, disponeManager, s, clickable, false);
+
+                if (typedTerm == null || typedTerm.type()==null || !typedTerm.type().equals(newFormula)){
+                    if (typedTerm != null)
+                       cambiarMetodo = "0";
+                }
+                else { // This only occurs when the user has just finalized the previous sub-proof
+                    if (!clickable.equals("n")){
+                        cambiarMetodo = "0"; 
+                    }
+                    newFormula = ((App)((App)formula).p).q; // Second branch
                     statement = "<center>$" + clickableST(newFormula, clickable, new Const("AI"), false, s) 
                                    + "$</center>";
-                }catch (Exception e) {
-                    this.setErrorParser1(true);
-                    return;
+                    historial += objectMethod.subProofInit(statement);
                 }
-                historial += stOrCase+" 2:<br>"+statement+"Sub Proof:<br>";
             }
-        }
-        else{
-            privateGenerarHistorial(user, newFormula, header, nTeo,
-                            (ProofBoolean.isAIProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
-                             valida, labeled, ((App)((App)methodTerm).p).q, resuelveManager, disponeManager, 
-                             s, clickable, false);
-            newFormula = ((App)((App)formula).p).q;
-            try {
-                statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) 
-                                   + "$</center>";
-            }catch (Exception e) {
-                this.setErrorParser1(true);
-                return;
+            // Proof of a sub-case that is not the first one (sure?)
+            else{
+                privateGenerarHistorial(user, newFormula, header, nTeo,
+                                (ProofBoolean.isBranchedProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
+                                 valida, labeled, ((App)((App)methodTerm).p).q, resuelveManager, disponeManager, 
+                                 s, clickable, false);
+                newFormula = ((App)((App)formula).p).q;
+                statement = "<center>$" + clickableST(newFormula, clickable, methodTerm, false, s) + "$</center>";
+                header = historial + objectMethod.subProofInit(statement);
+                historial = "";
+
+                Term newTypedTerm;
+                newTypedTerm = proofCrudOperations.getSubProof(typedTerm, methodTerm);
+                privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)methodTerm).q, 
+                                 resuelveManager, disponeManager, s, clickable, false);
             }
-            header = historial + stOrCase+" 2:<br>"+statement+"Sub Proof:<br>";
-            historial = "";
-            Term newTypedTerm;
-            newTypedTerm = proofCrudOperations.getSubProof(typedTerm, methodTerm);
-            privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, ((App)methodTerm).q, 
-                             resuelveManager, disponeManager, s, clickable, false);
+        } catch (Exception e) {
+            this.setErrorParser1(true);
+            return;
         }
     }
 
@@ -274,26 +280,34 @@ public class InferResponse {
      * @return The string that the user can click.
      */
     private String clickableST(Term newTerm, String clickable, Term method, boolean isRootTeorem, 
-                                SimboloManager s) throws Exception {
-
-        if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ) // en plena recursion
+                                SimboloManager s) throws Exception
+    {
+        // In full recursion
+        if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){
             return newTerm.toStringInf(s,"");
-        else if (clickable.equals("DM"))  // final de la impresion
+        }     
+        else if ("DM".equals(clickable)){ // End of the impression
             return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringInf(s,"") + "}}";
-        else if (clickable.equals("SS")) { // final de la impresion
+        }   
+        else if ("SS".equals(clickable)) { // End of the impression
             String formulaDer = ((App)((App)newTerm).p).q.toStringInf(s,"");
             String formulaIzq = ((App)newTerm).q.toStringInf(s,"");
-            Term operatorTerm = ((App)((App)newTerm).p).p;//resuelve.getTeorema().getOperador();
-            String operator = operatorTerm.toStringInf(s,"");
-            if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{20}"))
-               throw new Exception();
+
+            Term operatorTerm = ((App)((App)newTerm).p).p;
+            String operator   = operatorTerm.toStringInf(s,"");
+
+            if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{20}")){
+                throw new Exception();
+            }
             
             formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
             formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
+
             return formulaIzq+"$ $"+ operator +"$ $" + formulaDer;
         }
-        else // clickable.equals("n")
+        else{ // clickable.equals("n")
             return newTerm.toStringInf(s,"");
+        }
     }
     
     /**
@@ -366,7 +380,7 @@ public class InferResponse {
     private void privateGenerarHistorial(String user, Term formula, String header, String nTeo, Term typedTerm, Boolean valida, 
         Boolean labeled, Term methodTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, 
         SimboloManager s, String clickable, Boolean isRootTeorem)
-    {        
+    {   
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
@@ -433,8 +447,9 @@ public class InferResponse {
         }
 
         boolean solved;
-        if (labeled && !recursive)
+        if (labeled && !recursive){
             solved = type.equals(formula);
+        }
         else
             solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a
                            // si se pide labeled o no la ultima linea- Aqui se cablea con solved = true
@@ -443,30 +458,28 @@ public class InferResponse {
 
         // -- Here is where we really generate the proof record accoding to the demonstration method ---
 
-        // Case when we are using a base method from the start
-        if (!recursive){
+        if (recursive){
+            if ("B".equals(objectMethod.getGroupMethod())){
+
+                // ******* I AM NOT SURE IF THIS LINE WILL ALWAYS REMAIN HERE
+                Term editedFormula = objectMethod.initFormula(formula);
+
+                setBranchedRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
+                    clickable, methodTerm, valida, labeled, editedFormula, nTeo, objectMethod);        
+            }
+            else {
+                setLinearRecursiveMethodProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
+                    clickable, methodTerm, valida, labeled, formula, nTeo, objectMethod);  
+            }
+        } else {
             this.setHistorial(objectMethod.setBaseMethodProof(
                 this.getHistorial(), user, typedTerm, solved, resuelveManager, disponeManager, s
             ));
-        }
 
-        // Case when we are using a recursive method
-        else{
-            switch (strMethod){
-                case "AI":
-                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, 
-                        clickable, methodTerm, valida, labeled, formula, nTeo);
-                    break;
-                case "CA":
-                    // ESTE newFormula ES SÓLO PARA MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA
-                    Term newFormula = objectMethod.initFormula(formula);
-                    set_AIorCA_Proof(user, typedTerm, resuelveManager, disponeManager, s, header, 
-                        clickable, methodTerm, valida, labeled, newFormula, nTeo);
-                    break;
-                default:
-                    setRecursiveProof(user, typedTerm, resuelveManager, disponeManager, s, header, 
-                        clickable, methodTerm, valida, labeled, formula, nTeo, objectMethod);
-                    break;                                                                    
+            historial = header + "<center>$" + historial + "</center>";
+
+            if (!valida){
+                historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
             }
         }
 
@@ -480,12 +493,13 @@ public class InferResponse {
         //     header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
         // }
 
-        if (!recursive) { // <--- It had commented (!andIntroduction) as a condition
-            historial = header+"<center>$" +historial+"</center>";
-            if (!valida){
-                historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
-            }
-        }
+        // if (!recursive) { // <--- It had commented (!andIntroduction) as a condition
+        //     historial = header+"<center>$" +historial+"</center>";
+        //     if (!valida){
+        //         historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
+        //     }
+        // }
+
         //else if (/*!andIntroduction &&*/ recursive)
         //    ;
         //else 

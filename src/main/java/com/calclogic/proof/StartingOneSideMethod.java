@@ -32,7 +32,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
      */
     @Override
     public String header(String nTeo){
-        return "Starting from one side";
+        return "By starting from one side";
     }
 
     /**
@@ -48,28 +48,31 @@ public class StartingOneSideMethod extends GenericProofMethod {
      * @param s
      * @return 
      */
+    @Override
     public String setBaseMethodProof(String historial, String user, Term typedTerm, boolean solved, 
                 ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s)
-    {
+    {   
         String primExp;
         String newStep; // New part of the proof that will be added
         String lastline; // Plain string of the last line of the demonstration
         Term iter; // Iterator over the lines of a demonstration
 
-        boolean equanimity = false; // Indicates ifequanimity was used
+        boolean equanimity = false; // Indicates if equanimity was used
         String equanimityHint = ""; // Text that indicates in which already proven theorem the current demonstration finalized (if any)
         
         /* If the demonstrarion method is starting from one side, or the typedTerm is not an inference
            but just a functional application (an App) or is an equanimity inference */
         if (this.methodStr.equals("SS") || !(typedTerm instanceof TypedApp) || ((TypedApp)typedTerm).inferType!='e') {
-            if (solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='s') 
+            if (solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='s'){
                 iter = ((TypedApp)typedTerm).q;
-            else
+            }
+            else{
                 iter = typedTerm;
-            Term aux = ((App)((App)iter.type()).p).q;
+            }
+            Term aux = ((App)((App)iter.type()).p).q;       
             lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));
         }
-        // Case when direct method is applied and we start from the expression to be proved
+        // Case when direct method is applied and the starting point is the expression to be proved
         else { 
             String eqSust = ""; // Indicates the instantiation (if any) that was necessary to apply to the already proven theorem
 
@@ -214,6 +217,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
             theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo);
 
             if (theo == null){
+                //********** This part will probably be removed
                 teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
                 newStep = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
                 entry = false;
@@ -233,7 +237,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
      * 
      * It assumes we have a proof that so far has proved A == ... == F
      * 
-     * @param theoremBeingProved: The theorem the user is trying to prove
+     * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param expr: The root of the proof tree, which is the last line
@@ -243,12 +247,12 @@ public class StartingOneSideMethod extends GenericProofMethod {
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term auxFinBaseMethodProof(Term theoremBeingProved, Term proof, String username,
+    protected Term auxFinBaseMethodProof(Term formulaBeingProved, Term proof, String username,
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
-        // If the theorem the user is trying to prove is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
-        if(initialExpr.equals(((App)((App)theoremBeingProved).p).q) && finalExpr.equals(((App)theoremBeingProved).q)){
+        // If Formula that the user is trying to prove in this proof/sub-proof is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
+        if(initialExpr.equals(((App)((App)formulaBeingProved).p).q) && finalExpr.equals(((App)formulaBeingProved).q)){
             return new TypedApp(new TypedS(proof.type()), proof);
         }
         return proof;

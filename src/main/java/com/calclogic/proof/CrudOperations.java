@@ -1,7 +1,11 @@
 package com.calclogic.proof;
 
+import com.calclogic.forms.GenericResponse;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
+import com.calclogic.service.ResuelveManager;
+import com.calclogic.service.DisponeManager;
+
 import java.util.List;
 
 /**
@@ -78,6 +82,33 @@ public interface CrudOperations {
      *         of only the current sub proof and the father of this sub proof.
      */
     public List<Term> getFatherAndSubProof(Term typedTerm, Term method, List<Term> li);
+
+    /**
+     * When in a demonstration we need to use a theorem or metatheorem as a hint 
+     * (for inference, instantiation or substitution), we need to get its 
+     * statement. This function does it.
+     *
+     * @param response: Entry-exit parameter. In case there is an error, we set
+     *                  that error here in the parameter and the caller must then
+     *                  inmediately return the updated response.
+     * @param nStatement: Number of the statement, as a string, that will be looked for.
+     * @param username: login of the user that made the request.
+     * @param resuelveManager
+     * @param disponeManager
+     * @return The statement of the theorem or metatheorem.
+     */
+    public Term findStatement(GenericResponse response, String nStatement, String username, 
+                                ResuelveManager resuelveManager, DisponeManager disponeManager);
+
+    /**
+     * It finds the id of the operator of a binary expression. 
+     * For example, if we have P == Q, the main operator is ==, and its id is 1
+     * 
+     * @param formula: Expression whose main operator id will be found.
+     * @param methodTerm: Tree of methods that the user has selected to do the proof
+     * @return The id of the main operator.
+     */
+    public int binaryOperatorId(Term formula, Term methodTerm);
 
     /**
      * This method adds a proof method for currentMethod to get a new compose method. 

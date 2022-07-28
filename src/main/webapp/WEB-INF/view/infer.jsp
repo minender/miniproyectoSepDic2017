@@ -27,6 +27,7 @@
         <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript">
             
+            var clickInTheoremAllowed = true;
             $(function(){
                 
                 setForms(${elegirMetodo});
@@ -72,16 +73,27 @@
                     }
                 });
                 
-                $('#formula').on('click','#teoremaMD',function(event){
-                    var selectTeoInicial = $("#selectTeoInicial").val();
-                    if (selectTeoInicial==="1"){
-                        proofMethodAjax("DM", "ST-${nTeo}");  
+                $('#formula').on('click','#teoremaMD',async function(event){
+                    if (clickInTheoremAllowed){
+                        clickInTheoremAllowed = false;
+                        var selectTeoInicial = $("#selectTeoInicial").val();
+                        if (selectTeoInicial==="1"){
+                            await proofMethodAjax("DM", "ST-${nTeo}");
+                            clickInTheoremAllowed = true;
+                        }
+                        else{
+                            clickInTheoremAllowed = true;
+                        }
                     }
                 });
                 
-                $('#formula').on('click','.teoremaClick',function(event){
-                    // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
-                    proofMethodAjax("SS", null, this.id);
+                $('#formula').on('click','.teoremaClick',async function(event){
+                    if (clickInTheoremAllowed){
+                        clickInTheoremAllowed = false;
+                        // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
+                        await proofMethodAjax("SS", null, this.id);
+                        clickInTheoremAllowed = true;
+                    }
                 });
                 
                 var p1=[];
@@ -326,6 +338,7 @@
                         <option value="CO">Proof by contradiction</option>
                         <option value="CR">Counter-reciprocal</option>
                         <option value="AI">Conjunction by parts</option>
+                        <option value="MI">Mutual implication</option>
                         <option value="CA">Case analysis</option>
                         <option value="WI">Witness</option>
                     </select>

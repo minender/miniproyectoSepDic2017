@@ -1,6 +1,9 @@
 package com.calclogic.proof;
 
 import com.calclogic.controller.InferController;
+import com.calclogic.entity.Resuelve;
+import com.calclogic.entity.Dispone;
+import com.calclogic.forms.GenericResponse;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
@@ -11,6 +14,8 @@ import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
+import com.calclogic.service.ResuelveManager;
+import com.calclogic.service.DisponeManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +23,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.text.StrSubstitutor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +60,8 @@ public class CrudOperationsImpl implements CrudOperations {
                 return new ContradictionMethod();
             case "AI":
                 return new AndIntroductionMethod();
+            case "MI":
+                return new MutualImplicationMethod();
             case "CA":
                 return new CaseAnalysisMethod();
             default:
@@ -76,40 +82,26 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term initStatement(Term beginFormula, Term method) {
-        if (method.toString().equals("AI") || method.toString().equals("CA")){
-            return ((App)beginFormula).q;         
-        }
-        // Base methods
-        else if (method instanceof Const){
+    public Term initStatement(Term beginFormula, Term method){
+        if (method instanceof Const){ // Base methods
             return beginFormula;
         }
-        // The only remaining possibilities are recursive methods with other nested ones
         else{
             String strMethod = ((App)method).p.toStringFinal().substring(0, 2);
-            switch (strMethod){
-                case "CR":
-                    beginFormula = new CounterReciprocalMethod().initFormula(beginFormula);
-                    break;
-                case "CO":
-                    beginFormula = new ContradictionMethod().initFormula(beginFormula);
-                    break;
-                case "AI":
-                case "CA":
-                    // *********************** ESTE PRIMER IF ES SÓLO PARA MIENTRAS SE HACEN LAS PRUEBAS CON EL MÉTODO CA **********
-                    if (strMethod == "CA"){
-                        beginFormula = new CaseAnalysisMethod().initFormula(beginFormula);
-                    }
+            GenericProofMethod objectMethod = createProofMethodObject(strMethod);
 
+            if (objectMethod.getIsRecursiveMethod()){
+                beginFormula = objectMethod.initFormula(beginFormula);
+
+                if ("B".equals(objectMethod.getGroupMethod())){ // Branched recursive methods
                     if ( ((App)method).p instanceof Const ) {
                         beginFormula = ((App)beginFormula).q;
                     } else {
                         beginFormula = ((App)((App)beginFormula).p).q;
                     }
-                    break;
-                default:
-                    // Case when no possibility matched
-                    return null;
+                }
+            } else{
+                return null; // When no possibility matched. 
             }
             return initStatement(beginFormula, ((App)method).q);
         }
@@ -169,14 +161,14 @@ public class CrudOperationsImpl implements CrudOperations {
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
                     ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
-                    !ProofBoolean.isAIProof2Started(auxMethod)
+                    !ProofBoolean.isBranchedProof2Started(auxMethod)
                     ){
-                return null;
+                return null;// no deberia devolver this, no seria mas homogeneo?
             }
-            else if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
                 return ((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t;
             }
-            else if (ProofBoolean.isAIProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
                 if (isRecursive){
                     return getSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,true);
                 }
@@ -213,12 +205,12 @@ public class CrudOperationsImpl implements CrudOperations {
                 li.add(0,typedTerm);
                 return li;
             }
-            else if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
                 li.add(0, typedTerm);
                 li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t);
                 return li;
             }
-            else if (ProofBoolean.isAIProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
                 li.add(0, typedTerm);
                 return getFatherAndSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,li);
             }
@@ -228,6 +220,81 @@ public class CrudOperationsImpl implements CrudOperations {
         }
         li.add(0, typedTerm);
         return li;
+    }
+
+    /**
+     * When in a demonstration we need to use a theorem or metatheorem as a hint 
+     * (for inference, instantiation or substitution), we need to get its 
+     * statement. This function does it.
+     *
+     * @param response: Entry-exit parameter. In case there is an error, we set
+     *                  that error here in the parameter and the caller must then
+     *                  inmediately return the updated response.
+     * @param nStatement: Number of the statement, as a string, that will be looked for.
+     * @param username: login of the user that made the request.
+     * @param resuelveManager
+     * @param disponeManager
+     * @return The statement of the theorem or metatheorem.
+     */
+    @Override
+    public Term findStatement(GenericResponse response, String nStatement, String username, 
+                                ResuelveManager resuelveManager, DisponeManager disponeManager){
+        Term statementTerm = null;
+        if (nStatement.length() >= 4) {
+            // FIND THE THEOREM BEING USED IN THE HINT
+            String tipoTeo = nStatement.substring(0, 2);
+            String numeroTeo = nStatement.substring(3, nStatement.length());
+        
+            switch (tipoTeo) {
+                case "ST":
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                    // Case when the user could only see the theorem but had not a Resuelve object associated to it
+                    if (resuelve == null) {
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                    }
+                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
+                    break;
+                case "MT":
+                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                    if (dispone == null){
+                        dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
+                    }
+                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
+                    break;
+                default:
+                    response.setError("statement format error");
+            }
+            if (statementTerm == null) {
+                response.setError("The statement doesn't exist");
+            }
+        }
+        else {
+            response.setError("statement format error");
+        }
+        return statementTerm;
+    }
+
+    /**
+     * It finds the id of the operator of a binary expression. 
+     * For example, if we have P == Q, the main operator is ==, and its id is 1
+     * 
+     * @param formula: Expression whose main operator id will be found.
+     * @param methodTerm: Tree of methods that the user has selected to do the proof
+     * @return The id of the main operator.
+     */
+    @Override
+    public int binaryOperatorId(Term formula, Term methodTerm){
+        try{
+            if (methodTerm != null){
+                formula = initStatement(formula, methodTerm);
+            }
+            // In applicative notation, the expression "P operator Q" is written as "(operator Q) P",
+            // so the attribute 'p' is "(operator Q)" and p.p is "operator". 
+            return ((Const)((App)((App)formula).p).p).getId();
+        }
+        catch (ClassCastException e){
+            return -1;
+        }
     }
 
     /**
@@ -356,7 +423,8 @@ public class CrudOperationsImpl implements CrudOperations {
                 }
             }
         } else {
-            return new TypedApp(proof, infer);
+            Term prueba = new TypedApp(proof, infer);
+            return prueba;
         }
     }
 
@@ -373,18 +441,16 @@ public class CrudOperationsImpl implements CrudOperations {
     @Override
     @Transactional
     public Term addFirstLineSubProof(Term formula, Term typedTerm, Term method) {
-        Term auxMethod = method;
+        Term auxMethod = method; // "method" is entry/exit, so if we use it directly we change its value in the caller
         while (auxMethod instanceof App) {
-            // ************ THIS MUST BE DELETED OR CHANGED *********************
-            if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIProof2Started(((App)auxMethod).q)){
+            if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.containsBranchedProof2Started(((App)auxMethod).q)){
                 Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
                                                                                     ((App)auxMethod).q);
 
                 GenericProofMethod objectMethod = createProofMethodObject("AI");
-                return objectMethod.finishedRecursiveMethodProof(typedTerm,aux);
+                return objectMethod.finishedMethodProof(typedTerm,aux);
             }
-            // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
-            else if (ProofBoolean.isAIProof2Started(auxMethod)) {
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod)) {
                 Map<String,String> values1 = new HashMap<>();
                 values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
                 String aux;
@@ -438,7 +504,7 @@ public class CrudOperationsImpl implements CrudOperations {
             Term currMethodTerm = ProofMethodUtilities.getTerm(currentMethod);
             Term father = currMethodTerm;
             Term q = ((App)father).q;
-            Term aux = null;
+            Term aux;
             if (q instanceof Const)
                return ((App)father).p;
             else {
