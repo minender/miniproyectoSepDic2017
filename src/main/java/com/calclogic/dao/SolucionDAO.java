@@ -56,6 +56,8 @@ public interface SolucionDAO {
      */
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId);
     
+    public List<Solucion> getAllSolucionesByResuelves(List<Integer> resuelveId);
+    
     public List<Solucion> getAllSolucionesWithTeorema(List<Teorema> teoremas);
     
     /**

@@ -2045,7 +2045,7 @@ public class PerfilController {
         return "theories";
     }
     
-    @RequestMapping(value="/{username}/deleteSymbol/{symbolId}", method=RequestMethod.GET)
+    @RequestMapping(value="/{username}/theo/deleteSymbol/{symbolId}", method=RequestMethod.GET)
     @ResponseBody
     public String DeleteSymbol(@PathVariable String username, @PathVariable String symbolId, ModelMap map) {
         if (  

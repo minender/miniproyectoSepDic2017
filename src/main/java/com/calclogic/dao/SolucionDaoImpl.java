@@ -103,6 +103,27 @@ public class SolucionDaoImpl implements SolucionDAO{
     
     @Override
     @Transactional
+    public List<Solucion> getAllSolucionesByResuelves(List<Integer> resuelves){
+        if (resuelves.size() == 0) {
+            return new ArrayList<Solucion>();
+        }
+        String condition = "";
+        for (Integer r: resuelves) {
+            String id = r.toString();
+            String cond = "resuelve.id = " + id;
+            if (condition.equals("")) {
+                condition = cond;
+            }
+            else {
+                condition = condition + " OR " + cond;
+            }
+        }
+        condition = " WHERE " + condition;
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Solucion"+condition).list();
+    }
+    
+    @Override
+    @Transactional
     public List<Solucion> getAllSolucionesWithTeorema(List<Teorema> teoremas){
         if (teoremas.size() == 0) {
             return new ArrayList<Solucion>();

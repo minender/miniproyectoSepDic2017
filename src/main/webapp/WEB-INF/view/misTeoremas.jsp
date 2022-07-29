@@ -64,13 +64,13 @@
               <c:choose>
                 <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
                   <c:choose>
-                    <c:when test="${!resu.isResuelto() && resu.getDemopendiente() < 1}">
+                    <c:when test="${(!resu.isResuelto()) && resu.getDemopendiente() < 1}">
                       <li >
                         <p >
                              <i class="fa fa-lock" aria-hidden="true" ></i>
                           (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
                           <c:choose>
-                            <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas') || usuario.getLogin() == 'AdminTeoremas'}">
+                            <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas') || usuario.getLogin().equals('AdminTeoremas')}">
                                <a onclick="return confirm('Are you sure you want to delete the theorem?')" href="javascript:delTeo(${resu.getTeorema().getId()})"><i class="fa fa-trash" aria-hidden="true" ></i></a>
                                <a onclick="return confirm('Do you want to edit this theorem?')" href="editarteo/${resu.getTeorema().getId()}"><i class="fa fa-pencil" aria-hidden="true" ></i></a>
                             </c:when>

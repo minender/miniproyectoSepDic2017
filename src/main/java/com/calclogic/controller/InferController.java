@@ -592,7 +592,8 @@ public class InferController {
 
             try {
                 if (i == 1 && j == 0){
-                    infer = new TypedApp(new TypedS(infer.type()), infer);
+                    System.out.println(infer.type());
+                    infer = new TypedApp(new TypedS(), infer);
                 }
                 // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true

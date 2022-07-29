@@ -317,7 +317,7 @@
                                 <td>${simbolo.getTeoria().getNombre()}</td>
                                 <td>
                                     <a href="#editEmployeeModal" class="edit" data-toggle="modal" onclick="editSimbol(${loop.index})"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                    <a href="javascript:deleteSimbol({$loop.index})" class="edit" data-toggle="modal" onclick="return confirm('Are you sure you want to delete the symbol?')"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                    <a href="" class="edit" data-toggle="modal" onclick="deleteSimbolo(${simbolo.getId()})"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -511,8 +511,20 @@
                 }
                 table.row(i).data(temp).invalidate().draw();
             }
-            function deleteSimbol(row_number){
-                alert("salu2");
+            function deleteSimbolo(idSimbolo){
+                confirm('Are you sure you want to delete the symbol?');
+                const url = window.location.href + "/deleteSymbol/" + idSimbolo;
+                $("#modalLoading").css('display','inline-block');
+                $.ajax({
+                    type:'GET',
+                    url: url,
+                    success: function(data){
+                        $("#modalLoading").css('display','none');
+                        alert(data);
+                        location.reload();
+                        //MathJax.Hub.Typeset();
+                    }
+                });
             }
             function editSimbol(row_number){
                 fields = table.row(row_number).data();
