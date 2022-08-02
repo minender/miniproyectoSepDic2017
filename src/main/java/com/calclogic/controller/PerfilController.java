@@ -64,6 +64,7 @@ import com.calclogic.parse.IsNotInDBException;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
+import com.calclogic.parse.TermUtilities;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
@@ -613,7 +614,6 @@ public class PerfilController {
             
             PredicadoId predicadoid2=new PredicadoId();
             predicadoid2.setLogin(username);
-            
             CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
             TermLexer lexer = new TermLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -633,7 +633,7 @@ public class PerfilController {
                     Term arg1, arg2;
                     arg1 = ((App)((App)teoTerm).p).q;
                     arg2 = ((App)teoTerm).q;
-                    String[] vars = variables.split(",");
+                    String[] vars = (variables.equals("")?new String[0]:variables.split(","));
                     for (int i=vars.length-1; 0<=i; i--) {
                         arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
                         arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
@@ -641,7 +641,13 @@ public class PerfilController {
                     teoTerm = new App(new App(new Const(0,"="),arg1),arg2);
                 }
                 else {
-                    teoTerm = new App(new App(new Const(0,"="), new Const(-1,"T")), teoTerm);
+                    Term arg2 = new Const(-1,"T");
+                    String[] vars = (variables==null?new String[0]:variables.split(","));
+                    for (int i=vars.length-1; 0<=i; i--) {
+                        teoTerm = new Bracket(new Var((int)vars[i].charAt(0)),teoTerm);
+                        arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
+                    }
+                    teoTerm = new App(new App(new Const(0,"="), arg2), teoTerm);
                 }
                 Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());
                 if (null != test) {
@@ -1132,7 +1138,7 @@ public class PerfilController {
             {
                 return "redirect:/index";
             }
-            
+
             Usuario usr = usuarioManager.getUsuario(username);
             List<Simbolo> simboloList = simboloManager.getAllSimbolo();
             List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);

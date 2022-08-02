@@ -233,28 +233,38 @@ public abstract class Term implements Cloneable, Serializable{
      */
     public abstract String aliases(String position);
     
-    public HashSet<String> freeVars(){
-        HashSet<String> hset =new HashSet<String>();
-        freeVars(hset);
+    public int[] freeVars(){
+        int[] set =new int[58];
+        freeVars(set);
         
-        return hset;
+        return set;
     }
     
     public String stFreeVars(){
-        //String st = "";
-        HashSet<String> hset = freeVars();
+        String st = null;
+        int[] set = freeVars();
 
-        // aqui ordenar creo que queda ordenado por el hash function averigua
-        return hset.toString().replaceAll("[\\s\\[\\]]", "");
+        int i=0;
+        while (st == null && i<58){
+            if (set[i] != 0)
+                st = ((char)set[i])+"";
+            i++;
+        } 
+        for (int j=i; j<58; j++)
+            if (set[j] != 0)
+                st += ","+((char)set[j]);
+        
+        return st;    
+        //return hset.toString().replaceAll("[\\s\\[\\]]", "");
     }
     
-    public abstract void freeVars(HashSet<String> hs);
+    public abstract void freeVars(int[] set);
     
     public Term setToPrinting(String variables) {
         Term arg1, arg2;
         arg1 = ((App)((App)this).p).q;
         arg2 = ((App)this).q;
-        if (!variables.equals("")) {// if no variables you don't need make any reduction
+        if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
             String[] vars = variables.split(",");
             for (int i=0; i<vars.length; i++) {
                 arg1 = new App(arg1,new Var((int)vars[i].trim().charAt(0)));
@@ -1129,7 +1139,7 @@ public abstract class Term implements Cloneable, Serializable{
                 {
                     /*xc.setIndice(Math.max(izq.pq.q.maxVar(),c));
                     return xc;*/
-                    //xc.indice=izq.pq.q.fresh(c);
+                    xc.indice=c;
                     return xc;
                 }
             }

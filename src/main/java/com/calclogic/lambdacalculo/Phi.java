@@ -251,7 +251,7 @@ public class Phi extends Term{
     }
 
     @Override
-    public void freeVars(HashSet<String> hs){
+    public void freeVars(int[] set){
         ;
     }
     

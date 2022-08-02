@@ -125,7 +125,7 @@ public class Var extends Term{
     
     public int fresh(int n)
     {
-        return (n!=indice?n:indice+1);
+        return (n>indice?n:indice+1);
     }
     
     public Term traducBD()
@@ -382,8 +382,8 @@ public class Var extends Term{
     }
 
     @Override
-    public void freeVars(HashSet<String> hs) {
-        hs.add(indice>64?""+(char) indice:"x_{"+indice+"}");
+    public void freeVars(int[] set) {
+        set[indice-65] = indice;
     }
     
     @Override
@@ -397,14 +397,14 @@ public class Var extends Term{
     }
     
     @Override
-	public String aliases(String position) {
+    public String aliases(String position) {
 
-		String currentAlias = "";
-		if( this.alias != null) {
-			currentAlias = this.alias + ':' + position;
-		}
-		
-		return currentAlias;
+	String currentAlias = "";
+	if( this.alias != null) {
+            currentAlias = this.alias + ':' + position;
 	}
+		
+	return currentAlias;
+    }
   
 }

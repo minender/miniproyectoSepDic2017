@@ -147,7 +147,39 @@ cb_pair	returns [Indice value]
                 System.exit(1);
             } 
         }
-    | A expr[u] C_BRACKET { $value = (u!=null ? new TypedA($expr.value,u) : new TypedA($expr.value)); };
+    | A expr[u] C_BRACKET { $value = (u!=null ? new TypedA($expr.value,u) : new TypedA($expr.value)); }
+    | M expr[u] C_BRACKET { /*String templ="(L^{\\lambda x_{122}. c_{1} (%(arg2)) x_{122}} A^{%(arg1)}) (I^{[x_{112}:=%(arg2)]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{1})})";
+                            int i = 2;
+                            int nPar;
+                            String arg1 = $expr.text;
+                            if (arg1.charAt(i) == '(') {
+                              nPar = 1;
+                              i++;
+                              while (nPar != 0) {
+                                if (arg1.charAt(i)=='(')
+                                  nPar++;
+                                else if (arg1.charAt(i)==')')
+                                  nPar--;
+                                i++;
+                              }
+                            } else {
+                              nPar = 0;
+                              while (nPar == 0) {
+                                if (arg1.charAt(i)=='(')
+                                  nPar++;
+                                i++;
+                              }
+                              i--;
+                            }
+                            Term ar1 = $expr.value;
+                            String arg2 = ((App)((App)ar1).p).q.toStringFinal();*/
+                            try {
+                               $value = new TypedM($expr.value, u);
+                            } catch (TypeVerificationException e) {
+                                e.printStackTrace();
+                                System.exit(1);
+                            }
+                          };
 
  
 /*
@@ -192,6 +224,7 @@ VARIABLE: X '_{' DIGITS '}';
 
 // Neccesary for proofs
 A : 'A^{';
+M : 'M^{';
 I : 'I^{';
 L : 'L^{';
 S : 'S^{';

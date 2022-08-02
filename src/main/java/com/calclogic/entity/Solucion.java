@@ -323,7 +323,7 @@ public class Solucion implements java.io.Serializable {
             return 2;
         }
         else {
-            typedTerm = mergeSubProofs(((App)auxTypedTerm.type()).q,li);
+            typedTerm = mergeSubProofs(((App)auxTypedTerm.type()).q.body(),li);
             demostracion = typedTerm.toStringFinal();
         //           System.out.println(typedTerm.toStringInfFinal());
         //           System.out.println("1");

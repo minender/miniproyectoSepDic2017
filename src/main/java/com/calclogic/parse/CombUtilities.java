@@ -49,7 +49,7 @@ public class CombUtilities {
                 Term arg1, arg2;
                 arg1 = ((App)((App)t).p).q;
                 arg2 = ((App)t).q;
-                if (!variables.equals("")) {// if no variables you don't need make any reduction
+                if (variables!=null && !variables.equals("")) {// if no variables you don't need make any reduction
                   String[] vars = variables.split(",");
                   for (int i=0; i<vars.length; i++) {
                     arg1 = new App(arg1,new Var((int)vars[i].trim().charAt(0)));

@@ -10,6 +10,7 @@
  * @returns nothing
  */
 function insertAtMathjaxDiv(text,simboloId, isAlias){
+
 	var input = document.activeElement; // get the input box where the cursor was
 	
 	// if the cursor was not on any element, or the element wasn't a Math_Jax 

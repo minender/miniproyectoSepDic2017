@@ -27,17 +27,17 @@ public class MetaTheorem {
      * @return new Theorem for the given template meta theorem, null if the argument isn't valid
      */
     public static TypedApp metaTheorem(Term teo) {
-        Term A1 = new TypedA( new App(new App(new Const("c_{1}"), new App(new App(new Const("c_{1}"),new Var(112)),new Var(113)) ), new App(new App(new Const("c_{1}"),new Var(113)),new Var(112))) );
-        Term A2 = new TypedA( new App(new App(new Const("c_{1}"),new Var(113)),
-                                     new App(new App(new Const("c_{1}"),new Var(113)),
-                                                               new Const("c_{8}"))));
+        Term A1 = new TypedA( new App(new App(new Const(1,"c_{1}"), new App(new App(new Const(1,"c_{1}"),new Var(112)),new Var(113)) ), new App(new App(new Const(1,"c_{1}"),new Var(113)),new Var(112))) );
+        Term A2 = new TypedA( new App(new App(new Const(1,"c_{1}"),new Var(113)),
+                                     new App(new App(new Const(1,"c_{1}"),new Var(113)),
+                                                               new Const(8,"c_{8}"))));
         Term A3 = new TypedA(teo);
         List<Var> list1 = new ArrayList<>();
         list1.add(new Var(112));
         list1.add(new Var(113));
         List<Term> list2 = new ArrayList<>();
         list2.add(teo);
-        list2.add(new Const("c_{8}"));
+        list2.add(new Const(8,"c_{8}"));
         Term I1 = new TypedI(new Sust(list1,list2));
         
         List<Var> lis1 = new ArrayList<>();
@@ -67,9 +67,9 @@ public class MetaTheorem {
      */
     public static TypedApp metaTheoTrueLeft(Term proof) {
     
-        Term A2 = new TypedA( new App(new App(new Const("c_{1}"),new Var(113)),
-                                     new App(new App(new Const("c_{1}"),new Var(113)),
-                                                               new Const("c_{8}"))));
+        Term A2 = new TypedA( new App(new App(new Const(1,"c_{1}"),new Var(113)),
+                                     new App(new App(new Const(1,"c_{1}"),new Var(113)),
+                                                               new Const(8,"c_{8}"))));
         
         List<Var> lis1 = new ArrayList<>();
         lis1.add(new Var(113));

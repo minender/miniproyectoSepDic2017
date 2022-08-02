@@ -314,9 +314,9 @@ public class Sust extends Term{
     }
     
     @Override
-    public void freeVars(HashSet<String> hs){
+    public void freeVars(int[] set){
         for(Term li: terms)
-            li.freeVars(hs);
+            li.freeVars(set);
     }
     
     @Override

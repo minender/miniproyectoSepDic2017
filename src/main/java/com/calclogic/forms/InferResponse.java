@@ -23,6 +23,7 @@ import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.externalservices.MicroServices;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.TermUtilities;
 import com.calclogic.proof.CrudOperations;
@@ -490,27 +491,28 @@ public class InferResponse {
             String eqSust = ""; // Indicates the instantiation (if any) that was necessary to apply to the already proven theorem
 
             // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
-            if (((TypedApp)typedTerm).q instanceof TypedApp){
+            /*if (((TypedApp)typedTerm).q instanceof TypedApp){
                 nTeo = ((Term)((TypedApp)((TypedApp)typedTerm).q).q.clone2()).type().traducBD().toStringFinal();
                 eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringInf(s,"");
-            }
-            else {
+            /*}
+            else {*/
                 // Note that here we have a less "q" respect of the previous case because in there 
                 // there was an additional tree representing the instantiation
-                nTeo = ((Term)((TypedApp)typedTerm).q.clone2()).type().traducBD().toStringFinal();
-            }
+                nTeo = ((TypedA)((TypedApp)typedTerm).q).getNSt();//((Term)((TypedApp)typedTerm).q.clone2()).type().traducBD().toStringFinal();
+            //}
 
             // We get the Resuelve row associated to the demonstrated theorem in order that we can 
             // later get its current number (established by the user) to indicate that it is what
             // was used to end the demonstration
-            Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, nTeo);
+            //Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, nTeo);
 
             // Case when the user could only see the theorem but had not a Resuelve object associated to it
-            if (eqHintResuel == null){
+            /*if (eqHintResuel == null){
                 eqHintResuel = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", nTeo);
-            }
+            }*/
 
-            equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")"+eqSust;
+            //equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")"+eqSust;
+            equanimityHint = "~~~-~\\text{st}~("+nTeo+")"+eqSust;
 
             if( ((TypedApp)typedTerm).p instanceof TypedApp && 
                 ((TypedApp)((TypedApp)typedTerm).p).inferType=='s' 
@@ -580,7 +582,7 @@ public class InferResponse {
         Term newFormula = proofCrudOperations.noRecursiveInitSt(formula, "CR");
         String statement = "";
         try {
-           statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+           statement = "<center>$" + clickeableST(user, newFormula, clickeable, metodo, false, s) 
                               + "$</center>";
         }
         catch (Exception e) {
@@ -623,7 +625,7 @@ public class InferResponse {
         Term newFormula = proofCrudOperations.noRecursiveInitSt(formula, "CO");
         String statement = "";
         try {
-           statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+           statement = "<center>$" + clickeableST(user, newFormula, clickeable, metodo, false, s) 
                               + "$</center>";
         }
         catch (Exception e) {
@@ -673,7 +675,7 @@ public class InferResponse {
         String methodName = (isAI?"Conjunction by parts":"Case Analysis");
         Term newFormula = ((App)formula).q;
         try {
-           statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+           statement = "<center>$" + clickeableST(user, newFormula, clickeable, metodo, false, s) 
                                    + "$</center>";
         }
         catch (Exception e) {
@@ -695,7 +697,7 @@ public class InferResponse {
                     cambiarMetodo = "0"; 
                 newFormula = ((App)((App)formula).p).q;
                 try {
-                    statement = "<center>$" + clickeableST(newFormula, clickeable, new Const("AI"), false, s) 
+                    statement = "<center>$" + clickeableST(user, newFormula, clickeable, new Const("AI"), false, s) 
                                    + "$</center>";
                 }catch (Exception e) {
                     this.setErrorParser1(true);
@@ -711,7 +713,7 @@ public class InferResponse {
                              s, clickeable, false);
             newFormula = ((App)((App)formula).p).q;
             try {
-                statement = "<center>$" + clickeableST(newFormula, clickeable, metodo, false, s) 
+                statement = "<center>$" + clickeableST(user,newFormula, clickeable, metodo, false, s) 
                                    + "$</center>";
             }catch (Exception e) {
                 this.setErrorParser1(true);
@@ -818,19 +820,19 @@ public class InferResponse {
      * @param isRootTeorem
      * @return The string that the user can click.
      */
-    private String clickeableST(Term newTerm, String clickeable, Term method, boolean isRootTeorem, 
+    private String clickeableST(String user, Term newTerm, String clickeable, Term method, boolean isRootTeorem, 
                                 SimboloManager s) throws Exception {
-
+        Term noComNewTerm = new TypedA(newTerm,user).type();
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ) // en plena recursion
-            return newTerm.toStringInf(s,"");
+            return noComNewTerm.toStringInf(s,"");
         else if (clickeable.equals("DM"))  // final de la impresion
-            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringInf(s,"") + "}}";
+            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ noComNewTerm.toStringInf(s,"") + "}}";
         else if (clickeable.equals("SS")) { // final de la impresion
-            String formulaDer = ((App)((App)newTerm).p).q.toStringInf(s,"");
-            String formulaIzq = ((App)newTerm).q.toStringInf(s,"");
-            Term operatorTerm = ((App)((App)newTerm).p).p;//resuelve.getTeorema().getOperador();
+            String formulaDer = ((App)((App)noComNewTerm).p).q.body().toStringInf(s,"");
+            String formulaIzq = ((App)noComNewTerm).q.body().toStringInf(s,"");
+            Term operatorTerm = ((App)((App)noComNewTerm).p).p;//resuelve.getTeorema().getOperador();
             String operator = operatorTerm.toStringInf(s,"");
-            if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{20}"))
+            if(!operatorTerm.toString().startsWith("=") || ((App)((App)noComNewTerm).p).q.containT())
                throw new Exception();
             
             formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
@@ -983,7 +985,7 @@ public class InferResponse {
             this.setHistorial("");
             try {
                 header = "Theorem " + nTeo + ":<br> <center>$" + 
-                         clickeableST(formula, clickeable, metodo, isRootTeorem, s) + "$</center>" +
+                         clickeableST(user,formula, clickeable, metodo, isRootTeorem, s) + "$</center>" +
                          "Proof:<br>";
             }
             catch (Exception e) {

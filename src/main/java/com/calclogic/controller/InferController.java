@@ -14,6 +14,7 @@ import com.calclogic.forms.AutoSustResponse;
 import com.calclogic.forms.InferResponse;
 import com.calclogic.forms.InfersForm;
 import com.calclogic.forms.InstResponse;
+import com.calclogic.forms.StringResponse;
 import com.calclogic.forms.SubstResponse;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
@@ -25,6 +26,7 @@ import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
+import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermUtilities;
@@ -41,6 +43,7 @@ import com.calclogic.proof.FinishedProofMethod;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.ProofBoolean;
 import com.calclogic.proof.InferenceIndex;
+import com.calclogic.proof.MetaTheorem;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -193,36 +196,8 @@ public class InferController {
         String solId = "new";
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
-        
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,nTeo); // Maybe: getAllResuelveByUserOrAdminResuelto
-        for (Resuelve r: resuelves){
-            Teorema t = r.getTeorema();
-            Term term = t.getTeoTerm();
-            if(r.isResuelto()==true){ // || r.getNumeroteorema().equals(nTeo)){
-                
-                /*try
-                {
-                  t.setTeoTerm(new App(new App(new Const(1,"\\cssId{click@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{"+((Const)((App)((App)term).p).p).getCon()+"}}}",((Const)((App)((App)term).p).p).getFunNotation(),((Const)((App)((App)term).p).p).getPreced(),((Const)((App)((App)term).p).p).getAsociat()),((App)((App)term).p).q),((App)term).q));
-                }
-                catch (java.lang.ClassCastException e)
-                {*/
-                    t.setTeoTerm(term);
-                //}
-                t.setMetateoTerm(new App(new App(new Const(1,"\\cssId{clickmeta@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{\\equiv}}}",false,1,1),new Const("true ")), term));
-            }
-            else{
-                ;
-                /*try
-                {
-                  t.setTeoTerm(new App(new App(new Const(((Const)((App)((App)term).p).p).getCon(),false,1,1),((App)((App)term).p).q),((App)term).q));
-                }
-                catch (java.lang.ClassCastException e)
-                {
-                    t.setTeoTerm(term);
-                }
-                t.setMetateoTerm(new App(new App(new Const("{\\equiv}}",false,1,1),new Const("true ")), term));*/
-            }    
-        }
+        
         Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("usuario", usr);
         InfersForm infersForm = new InfersForm();
@@ -384,6 +359,7 @@ public class InferController {
         predicadoid.setLogin(username);
         
         Term statementTerm = null;
+        TypedA A = null;
         if (nStatement.length() >= 4) {
             // FIND THE THEOREM BEING USED IN THE HINT
             String tipoTeo = nStatement.substring(0, 2);
@@ -391,12 +367,13 @@ public class InferController {
         
             switch (tipoTeo) {
                 case "ST":
-                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                    A = new TypedA(numeroTeo,username);
+                    /*Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
                     // Case when the user could only see the theorem but had not a Resuelve object associated to it
                     if (resuelve == null) {
                         resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
                     }
-                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
+                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);*/
                     break;
                 case "MT":
                     Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
@@ -406,7 +383,7 @@ public class InferController {
                     response.setError("statement format error");
                     return response;
             }
-            if (statementTerm == null) {
+            if (A.getNSt().equals("")) {
                 response.setError("The statement doesn't exist");
                 return response;
             }
@@ -423,9 +400,16 @@ public class InferController {
         }
         
         if (arr == null)
-            response.setInstantiation(statementTerm.toStringInf(simboloManager, ""));
-        else
-            response.setInstantiation(statementTerm.sustParall((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)).toStringInf(simboloManager, ""));
+            response.setInstantiation(A.type().toStringInf(simboloManager, ""));
+        else {// (ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)
+            try {
+            TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
+            response.setInstantiation(new TypedApp(I,A).type().toStringInf(simboloManager, ""));
+            }
+            catch (TypeVerificationException e) {
+                e.printStackTrace();
+            }
+        }
         return response;
     }
 
@@ -591,6 +575,28 @@ public class InferController {
         return response;
     }
     
+        /**
+     * Controller that responds to HTTP POST request encoded with JSON.Returns an InferResponse
+     * object with the selected metatheorem applied to the selected theorem, in latex format.
+     *
+     * @param username: login of the user that made the request. It is in the URL also.
+     * @param nTheo: code of statement of the theorem.
+     * @return InferResponse Object with the statement of the metatheorem, in latex format.
+     */
+    @RequestMapping(value="/{username}/metatheorem", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody StringResponse metatheoremController(@PathVariable String username,
+                                                      @RequestParam(value="nTheo") String nTheo
+                                                    )
+    {
+        Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo).getTeorema().getTeoTerm();
+
+        // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
+        Term metaTheo = MetaTheorem.metaTheorem(statement).type();
+
+        return new StringResponse(nTheo + " with MetaTheorem (" + "3.7" +") $" + metaTheo.toStringInf(simboloManager,"") + "$");
+
+    }
+    
     /**
      * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
      * Object with the the proof, in latex format, after an one step inference. 
@@ -713,7 +719,7 @@ public class InferController {
         Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
         Term typedTerm = solucion.getTypedTerm();
-        Term formula = resuel.getTeorema().getTeoTerm();
+        Term formula = resuel.getTeorema().getTeoTerm().setToPrinting(resuel.getVariables());
         String metodo = solucion.getMetodo();
         Term methodTerm = ProofMethodUtilities.getTerm(metodo);
         Term methodTermIter = methodTerm;
@@ -749,7 +755,7 @@ public class InferController {
             infer = crudOp.createBaseMethodInfer(username,statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm(), strMethodTermIter);
         } 
         catch(TypeVerificationException e) { // If something went wrong building the new hint
-            response.generarHistorial(username,formula.setToPrinting(resuel.getVariables()), nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
+            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
             return response;
         }
 
@@ -762,7 +768,7 @@ public class InferController {
             // If the proof only has one line so far, it may not be a boolean expression yet, because it could only 
             // be arithmetic, like 3 + 4. But since we always need it to be boolean, if the only line was P, we make 
             // the proof to be provisionally: P == P. Soon we will discard again the first P-
-            currentProof = new TypedA(new App(new App(new Const(0,"="),typedTerm),typedTerm).abstractEq());
+            currentProof = new TypedA(new App(new App(new Const(0,"="),typedTerm),typedTerm));
         }
         else{
             currentProof = typedTerm;
@@ -789,7 +795,7 @@ public class InferController {
             }
             catch (TypeVerificationException e) {
                 if (i==1/*(i == 1 && !onlyOneLine) || (i == 1 && j == 1)*/){
-                    response.generarHistorial(username,formula.setToPrinting(resuel.getVariables()), nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
+                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
                     return response;
                 }
                 /*if (onlyOneLine && j == 0) {
@@ -808,7 +814,6 @@ public class InferController {
         }       
         
         response.setResuelto("0");
-        
         // CHECK IF THE PROOF FINISHED
         Term finalProof = finiPMeth.finishedBaseMethodProof(theoremBeingProved, newProof, username, strMethodTermIter);
         
@@ -817,7 +822,7 @@ public class InferController {
         */
         
         // Get the complete method in case it was not atomic
-        Boolean isFinalSolution = theoremBeingProved.equals(finalProof.type());
+        Boolean isFinalSolution = theoremBeingProved.equals(finalProof.type().setToPrinting(resuel.getVariables()));
         while (!methodStk.isEmpty())
         {
             Term methodTermAux = methodStk.pop();
@@ -861,7 +866,7 @@ public class InferController {
 
         response.generarHistorial(
             username,
-            formula.setToPrinting(resuel.getVariables()), 
+            formula, 
             nTeo,
             finalProof,
             true,
@@ -1065,6 +1070,11 @@ public class InferController {
             return response;
         }
         else*/
+        if (((App)((App)term).p).q.containT()){
+            response.setErrorParser1(true);
+            return response;
+        }
+        else
             response.setLado("1");
 
         Term metodoTerm = null;

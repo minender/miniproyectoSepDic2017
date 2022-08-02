@@ -226,7 +226,7 @@ public class I extends Term {
     }
 
     @Override
-    public void freeVars(HashSet<String> hs){
+    public void freeVars(int[] set){
         ;
     }
     

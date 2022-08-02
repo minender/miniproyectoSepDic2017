@@ -6,6 +6,7 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.entity.Resuelve;
+import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.TermUtilities;
 import com.calclogic.service.ResuelveManager;
 import java.util.List;
@@ -17,21 +18,29 @@ import java.util.List;
 public class TypedA extends Const implements TypedTerm{
     
     private final Term type_;
-    private final String variables_;
-    private final String nSt_;
-    private final String combDBType_;
+    protected final String variables_;
+    protected final String nSt_;
+    protected final String combDBType_;
     private static ResuelveManager rm_;
     
     public static void setResuelveManager(ResuelveManager rm) {
         rm_ = rm;
     }
     
+    protected TypedA(Term type, String variables, String nSt, String combDBType) {
+        super("A");
+        type_ = type;
+        variables_ = variables;
+        nSt_ = nSt;
+        combDBType_ = combDBType;
+    }
+    
     public TypedA(Term type)
     {
         super("A");
-        type_ = type;
-        combDBType_ = type.toStringFinal();
         variables_ = type.stFreeVars();
+        type_ = type.abstractEq();
+        combDBType_ = type.toStringFinal();
         nSt_ = "";
     }
     
@@ -51,10 +60,42 @@ public class TypedA extends Const implements TypedTerm{
         }
     }
     
+    public TypedA(String nTeo, String user)
+    {
+        super("A");
+        Resuelve r = rm_.getResuelveByUserAndTeoNum(user, nTeo);
+        type_ = r.getTeorema().getTeoTerm();
+        combDBType_ = type_.toStringFinal();
+        if (r != null) {
+           variables_ = r.getVariables();
+           nSt_ = r.getNumeroteorema();
+        }
+        else {
+           variables_ = "";
+           nSt_ = "";
+        }
+    }
+
+    public TypedA(int idTeo, String user)
+    {
+        super("A");
+        Resuelve r = rm_.getResuelveByUserAndTeorema(user, idTeo);
+        type_ = r.getTeorema().getTeoTerm();
+        combDBType_ = type_.toStringFinal();
+        if (r != null) {
+           variables_ = r.getVariables();
+           nSt_ = r.getNumeroteorema();
+        }
+        else {
+           variables_ = "";
+           nSt_ = "";
+        }
+    }
+    
     @Override
     public Term type()
     {
-        if (!variables_.equals("")) {
+        if (variables_ != null && !variables_.equals("")) {
            List<Var> li = TermUtilities.arguments(variables_);
            li.addAll(li);
            return type_.evaluar(li);

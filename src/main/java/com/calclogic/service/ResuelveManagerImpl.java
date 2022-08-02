@@ -5,7 +5,9 @@ import com.calclogic.dao.SolucionDAO;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
+import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
+import com.calclogic.parse.TermUtilities;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -192,7 +194,13 @@ public class ResuelveManagerImpl implements ResuelveManager {
                 }
                 
                 Teorema teo = resuelve.getTeorema();
-                teo.setTeoTerm(CombUtilities.getTermForPrinting(teo.getEnunciado(),resuelve.getVariables()));
+                if (resuelve.getVariables()!=null && !resuelve.getVariables().equals("")) {
+                   List<Var> li = TermUtilities.arguments(resuelve.getVariables());
+                   li.addAll(li);
+                   teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),"").evaluar(li));
+                }
+                else
+                    teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),"").evaluar());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -388,7 +396,10 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Override
     @Transactional
     public Resuelve getResuelveByUserAndTeorema(String userLogin,String teo){
-		return resuelveDAO.getResuelveByUserAndTeorema(userLogin, teo);
+        Resuelve r = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teo);
+        if (r == null && !userLogin.equals("AdminTeoremas"))
+            r = resuelveDAO.getResuelveByUserAndTeorema("AdminTeoremas", teo);
+	return r;
     }
 	
     /**
@@ -401,6 +412,8 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Transactional
     public Resuelve getResuelveByUserAndTeorema(String userLogin,int teoremaID){
         Resuelve resuel = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID);
+        if (resuel == null && !userLogin.equals("AdminTeoremas"))
+            resuel = resuelveDAO.getResuelveByUserAndTeorema("AdminTeoremas", teoremaID);
         if (resuel != null) {
             Teorema teo = resuel.getTeorema();
             teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null));
@@ -420,6 +433,8 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Transactional
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum){
         Resuelve resuel = resuelveDAO.getResuelveByUserAndTeoNum(userLogin, teoNum);
+        if (resuel == null && !userLogin.equals("AdminTeoremas"))
+            resuel = resuelveDAO.getResuelveByUserAndTeoNum("AdminTeoremas", teoNum);
         if (resuel != null) {
             List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuel.getId());
             resuel.setDemopendiente(-1);

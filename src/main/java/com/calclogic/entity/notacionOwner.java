@@ -78,7 +78,7 @@ public abstract class notacionOwner {
     public String fullLatexNotation(String newVariables, Boolean extraBackSlash) {
     	
     	// Original notation
-    	String notacionString = this.getNotacion();
+    	String notacionString = this.getNotacion().replace("v1", "a2");
     	
     	// Final answer
     	String latexString;

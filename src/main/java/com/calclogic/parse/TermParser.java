@@ -208,8 +208,8 @@ public class TermParser extends Parser {
 				match(T__2);
 				Term aux;
 				                                               if (Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == sm.getPropFunApp() 
-                                                                                   || Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == sm.getTermFunApp()
-                                                                                  ) {
+				                                                   || Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == sm.getTermFunApp()
+				                                                  ) {
 				                                                Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator();
 				                                                aux = i.next();
 				                                                for(i = i; i.hasNext();)
@@ -218,14 +218,19 @@ public class TermParser extends Parser {
 				                                               else {
 				                                                Simbolo s = sm.getSimbolo(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null))); 
 				                                                if (s == null)throw new IsNotInDBException(this,"");
+				                                                boolean isForall = s.getId() == 11;
 				                                                int nArg = s.getArgumentos();
+				                                                if (isForall) nArg++;
 				                                                if (((EqContext)_localctx).explist.value.size() != nArg)
 				                                                  throw new NoViableAltException(this);
 				                                                aux = new Const(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)),"c_{"+(((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)+"}",
 				                                                                     !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				                                                for(Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator(); i.hasNext();)
 				                                                   aux=new App(aux,i.next());
+				                                                if (isForall) 
+				                                                   aux = new App(((App)((App)aux).p).p,new Bracket((Var)((App)aux).q,((App)((App)aux).p).q).traducBD());
 				                                               }
+				                                               
 				                                               ((EqContext)_localctx).value =  aux;
 				                                              
 				}

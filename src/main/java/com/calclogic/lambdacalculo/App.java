@@ -120,16 +120,18 @@ public class App extends Term{
     }
     
     @Override
-    public void freeVars(HashSet<String> hs){
-        p.freeVars(hs);
-        q.freeVars(hs);
+    public void freeVars(int[] set){
+        p.freeVars(set);
+        q.freeVars(set);
     }
     
     @Override
     public Term abstractEq() {
         String sVars = this.stFreeVars();
-        q = q.abstractVars(sVars);
-        ((App)p).q = ((App)p).q.abstractVars(sVars);
+        if (sVars!=null) {
+           q = q.abstractVars(sVars);
+           ((App)p).q = ((App)p).q.abstractVars(sVars);
+        }
         return this;
     }
     
@@ -517,15 +519,22 @@ public class App extends Term{
         Simbolo sym = null;
         int opId;
         int nArgs;
+        Const c = null;
         if (aux instanceof Var) {
             //sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
             opId = -1;
             nArgs = 0;
         }
         else {
-          Const c = (Const) aux;
-          sym = s.getSimbolo(c.getId());
-          opId = c.getId();
+          c = (Const) aux;
+          if (c.getId()==0) {
+            sym = s.getSimbolo(1);
+            opId = 1;
+          }
+          else {
+            sym = s.getSimbolo(c.getId());
+            opId = c.getId();
+          }
           nArgs = sym.getArgumentos();
         }
         
@@ -550,6 +559,7 @@ public class App extends Term{
         int i = 1;
         while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
          Term arg = stk.pop();
+         if (c !=null && c.getId()==0) arg=arg.body();
          if (notation.contains("%(na"+i+")"))
                values.put("na"+i,arg.toStringInf(s,""));
          else if (notation.contains("%(a"+i+")"))
@@ -594,7 +604,11 @@ public class App extends Term{
      */
     public String toStringInf(SimboloManager s, String numTeo)
     {
-        return privateToStringInf(s,numTeo).x3;
+        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
+            && ((App)p).q.containT() )
+            return q.toStringInf(s,numTeo);
+        else
+           return privateToStringInf(s,numTeo).x3;
         /*
         Stack<String> stk = new Stack<String>();
         Simbolo s1, s2;
@@ -709,15 +723,22 @@ public class App extends Term{
         Simbolo sym = null;
         int opId;
         int nArgs;
+        Const c = null;
         if (aux instanceof Var) {
             //sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
             opId = -1;
             nArgs = 0;
         }
         else {
-          Const c = (Const) aux;
-          sym = s.getSimbolo(c.getId());
-          opId = c.getId();
+          c = (Const) aux;
+          if (c.getId()==0) {
+            sym = s.getSimbolo(1);
+            opId = 1;
+          }
+          else {
+            sym = s.getSimbolo(c.getId());
+            opId = c.getId();
+          }
           nArgs = sym.getArgumentos();
         }
         
@@ -739,6 +760,7 @@ public class App extends Term{
         int i = 1;
         while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
          Term arg = stk.pop();
+         if (c != null && c.getId()==0) arg = arg.body();
          if (notation.contains("%(na"+i+")"))
                values.put("na"+i,arg.toStringWithInputs(s,position+i,rootId));
          else if (notation.contains("%(a"+i+")"))
@@ -784,7 +806,11 @@ public class App extends Term{
      */
     public String toStringWithInputs(SimboloManager s, String position, String rootId)
     {
-        return privateToStringWithInputs(s,position,rootId).x3;
+        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
+            && ((App)p).q.containT() )
+            return q.toStringWithInputs(s,position,rootId);
+        else
+            return privateToStringWithInputs(s,position,rootId).x3;
     }
     
     private IntXIntXString privateToStringInfLabeled(SimboloManager s,int z, Term t, 
@@ -804,15 +830,22 @@ public class App extends Term{
         Simbolo sym = null;
         int opId;
         int nArgs;
+        Const c = null;
         if (aux instanceof Var) {
             //sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
             opId = -1;
             nArgs = 0;
         }
         else {
-          Const c = (Const) aux;
-          sym = s.getSimbolo(c.getId());
-          opId = c.getId();
+          c = (Const) aux;
+          if (c.getId()==0) {
+            sym = s.getSimbolo(1);
+            opId = 1;
+          }
+          else {
+            sym = s.getSimbolo(c.getId());
+            opId = c.getId();
+          }
           nArgs = sym.getArgumentos();
         }
         
@@ -836,6 +869,7 @@ public class App extends Term{
         int i = 1;
         while (!stk.empty()) {
          Term arg = stk.pop();
+         if (c!=null && c.getId()==0) arg=arg.body();
          if (notation.contains("%(na"+i+")")) {
                values.put("na"+i,arg.toStringInfLabeled(s,z,t,l,l2,id,nivel+1));
                setVar += l2.get(l2.size()-1);
@@ -901,7 +935,11 @@ public class App extends Term{
      */
     public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> l1, List<String> l2, Id id, int nivel)
     {
-        return privateToStringInfLabeled(s, z, t, l1, l2, id, nivel).x3;
+        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
+            && ((App)p).q.containT() )
+            return q.toStringInfLabeled(s, z, t, l1, l2, id, nivel);
+        else
+            return privateToStringInfLabeled(s, z, t, l1, l2, id, nivel).x3;
     }   
     
     /**
@@ -1021,15 +1059,22 @@ public class App extends Term{
         Simbolo sym=null;
         int opId;
         int nArgs;
+        Const c = null;
         if (aux instanceof Var) {
             // sym = new Simbolo(aux.toStringInf(s,""), 1, false, 11, "%(op)(%(na1))", null);
             opId = -1;
             nArgs = 0;
         }
         else {
-          Const c = (Const) aux;
-          sym = s.getSimbolo(c.getId());
-          opId = c.getId();
+          c = (Const) aux;
+          if (c.getId()==0) {
+            sym = s.getSimbolo(1);
+            opId = 1;
+          }
+          else {
+            sym = s.getSimbolo(c.getId());
+            opId = c.getId();
+          }
           nArgs = sym.getArgumentos();
         }
         
@@ -1064,6 +1109,10 @@ public class App extends Term{
              values.put("aa"+i,tStr.term);
          }
          else {
+           if (c!=null && c.getId()==0) 
+               arg = arg.body();
+           if (arg instanceof Bracket)
+               values.put("v1",((Bracket)arg).x.toString()); 
            if (notation.contains("%(na"+i+")")) {
              arg.toStringInfAbrv(tStr,s,pm,"");
              values.put("na"+i,tStr.term);
@@ -1106,7 +1155,11 @@ public class App extends Term{
     @Override
     public ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager pm, String numTeo)
     {
-        privateToStringInfAbr(toString,s,pm,numTeo);
+        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
+            && ((App)p).q.containT() )
+            q.toStringInfAbrv(toString,s,pm,numTeo);
+        else
+            privateToStringInfAbr(toString,s,pm,numTeo);
         return toString;
         
         /*String izq;

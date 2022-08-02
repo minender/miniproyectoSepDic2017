@@ -30,14 +30,19 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]:
                                                else {
                                                 Simbolo s = sm.getSimbolo(Integer.parseInt($NUMBER.text)); 
                                                 if (s == null)throw new IsNotInDBException(this,"");
+                                                boolean isForall = s.getId() == 11;
                                                 int nArg = s.getArgumentos();
+                                                if (isForall) nArg++;
                                                 if ($explist.value.size() != nArg)
                                                   throw new NoViableAltException(this);
                                                 aux = new Const(Integer.parseInt($NUMBER.text),"c_{"+$NUMBER.text+"}",
                                                                      !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
                                                 for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();)
                                                    aux=new App(aux,i.next());
+                                                if (isForall) 
+                                                   aux = new App(((App)((App)aux).p).p,new Bracket((Var)((App)aux).q,((App)((App)aux).p).q).traducBD());
                                                }
+                                               
                                                $value = aux;
                                               }
 

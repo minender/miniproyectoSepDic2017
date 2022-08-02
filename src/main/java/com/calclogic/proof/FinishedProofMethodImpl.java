@@ -14,6 +14,7 @@ import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
@@ -56,8 +57,8 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
     @Transactional
     public Term finishedBaseMethodProof(Term theoremBeingProved, Term proof, String username, String method) {
         Term expr = proof.type(); // The root of the proof tree, which is the last line
-        Term initialExpr = ((App)expr).q; // The expression (could be a theorem) from which the user started the demonstration
-        Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
+        Term initialExpr = ((App)expr).q.body(); // The expression (could be a theorem) from which the user started the demonstration
+        Term finalExpr = ((App)((App)expr).p).q.body(); // The last line in the demonstration that the user has made
 
         try{
             switch (method){
@@ -256,7 +257,6 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
     @Transactional
     public Term finishedDirectMethodProof(Term theoremBeingProved, Term proof, String username, 
                 Term initialExpr, Term finalExpr) throws TypeVerificationException{
-
         // Case when we started from the theorem being proved
         if(theoremBeingProved.equals(initialExpr)) {
             // List of theorems solved by the user. We examine them to check if the current proof already reached one 
@@ -266,27 +266,34 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
 
             for(Resuelve resu: resuelves){ 
                 theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
+                Term noEqTheo = ((Term)theorem.clone2()).setToPrinting(resu.getVariables());
                 mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem); // theorem == true
 
                 // We don't want to unify with the theoremBeingProved itself if it was already demonstrated
-                if (theorem.equals(theoremBeingProved)){
+                if (noEqTheo.equals(theoremBeingProved)){
                     ;
                 }
                 // If the current theorem or theorem==true matches the final expression
-                else if(theorem.equals(finalExpr) || mt.equals(finalExpr)){
-                    equanimityExpr = new TypedA(finalExpr);
+                else if(noEqTheo.equals(finalExpr) || mt.equals(finalExpr)){
+                    if (((App)((App)theorem).p).q.containT() )
+                      equanimityExpr = new TypedA(theorem);
+                    else
+                      equanimityExpr = new TypedM(theorem,username);
                 } 
                 else {
                     // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
                     // >>> It would not work if we did it backwards: (finalExpr, theorem)
-                    Equation eq = new Equation(theorem, finalExpr);
+                    Equation eq = new Equation(noEqTheo, finalExpr);
                     Sust sust = eq.mgu(simboloManager);
 
                     // Case whe lanst line is an instantiation of the compared theorem
                     if (sust != null){
                         //System.out.println("Por el sust != null");
                         // The equanimity is applied with the instantiated theorem, not with the last line instantiated
-                        equanimityExpr = new TypedApp(new TypedI(sust), new TypedA(theorem)); 
+                        if (((App)((App)theorem).p).q.containT() )
+                          equanimityExpr = new TypedApp(new TypedI(sust), new TypedA(theorem)); 
+                        else 
+                          equanimityExpr = new TypedM(theorem,username); 
                     }   
                 }
                 if (equanimityExpr != null){
@@ -296,7 +303,15 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
         }
         // Case when we started from another theorem
         else if(finalExpr.equals(theoremBeingProved)) {
-            return new TypedApp(proof, new TypedA(initialExpr));
+            Term aux = new App(new App(new Const(0,"="),new Const(-1,"T")),initialExpr).abstractEq();
+            TypedA A = new TypedA(aux.traducBD(),username);
+            if (A.getNSt().equals("")) {
+              initialExpr= new App(new App(new Const(0,"="),((App)((App)initialExpr).p).q),((App)initialExpr).q);
+              initialExpr = initialExpr.abstractEq().traducBD();
+              Term M = new TypedM(initialExpr,username);
+              return new TypedApp(proof, M);
+            }else
+               return new TypedApp(proof, A);
         }
         return proof;
     }

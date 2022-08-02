@@ -341,7 +341,7 @@ public class Const extends Term
     }
 
     @Override
-    public void freeVars(HashSet<String> hs){
+    public void freeVars(int[] set){
         ;
     }
     

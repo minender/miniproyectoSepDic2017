@@ -294,14 +294,14 @@ public class Bracket extends Term{
     {
         if(t.alias == null)
         {
-            t.toStringInfAbrvFinal(toString);
-            toString.term= "(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
+            t.toStringInfAbrvFinal(toString,s,p,nTeo);
+            //toString.term= "(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
             return toString;
         }
         else
         {
             toString.setNuevoAlias(t.alias, t);
-            toString.term="(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
+            //toString.term="(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
             return toString;
         }
         
@@ -370,12 +370,12 @@ public class Bracket extends Term{
     }
     
     @Override
-    public void freeVars(HashSet<String> hs) {
-        String var = x.indice>64?""+(char) x.indice:"x_{"+x.indice+"}";
-        if (!hs.contains(var)) {
-          t.freeVars(hs);
-          hs.remove(var);
-        }
+    public void freeVars(int[] set) {
+        if (set[x.indice-65] != 0) {//(!set.contains(x)) 
+          t.freeVars(set);
+          set[x.indice-65] = 0; // set.remove(x);
+        } else 
+          t.freeVars(set);
     }
     
     @Override
