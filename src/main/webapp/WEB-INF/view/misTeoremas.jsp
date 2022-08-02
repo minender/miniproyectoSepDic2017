@@ -268,12 +268,6 @@
             guardarMostrarCategorias();
 
         }
-        
-        function moverPanel() {
-            $('#panelSoluciones').css("margin-top", window.pageYOffset);
-            $('#formula').css("margin-top", window.pageYOffset);
-        }
-        window.onscroll = function() {moverPanel()};
 
 </script> 
     <%--<c:choose>

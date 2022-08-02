@@ -473,7 +473,6 @@ public class App extends Term{
     }
     
     private IntXIntXString privateToStringInf(SimboloManager s, String numTeo) {
-        
         Stack<Term> stk = new Stack<Term>();
         stk.push(q);
         Term aux = p;

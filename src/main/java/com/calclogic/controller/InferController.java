@@ -15,6 +15,7 @@ import com.calclogic.forms.InferResponse;
 import com.calclogic.forms.InfersForm;
 import com.calclogic.forms.InstResponse;
 import com.calclogic.forms.SubstResponse;
+import com.calclogic.forms.StringResponse;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
@@ -40,6 +41,7 @@ import com.calclogic.service.SimboloManager;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.GenericProofMethod;
 import com.calclogic.proof.ProofBoolean;
+import com.calclogic.proof.MetaTheorem;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -210,15 +212,6 @@ public class InferController {
         //resuelves.removeAll(depend);
         //resuelves = new ArrayList<Resuelve>();
 
-        for (Resuelve r: resuelves){
-            Teorema t = r.getTeorema();
-            Term term = t.getTeoTerm();
-
-            if(r.isResuelto()==true){ // || r.getNumeroteorema().equals(nTeo)){
-                t.setTeoTerm(term);
-                t.setMetateoTerm(new App(new App(new Const(1,"\\cssId{clickmeta@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{\\equiv}}}",false,1,1),new Const("true ")), term));
-            }
-        }
         Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("usuario", usr);
         InfersForm infersForm = new InfersForm();
@@ -1037,5 +1030,28 @@ public class InferController {
 
         return response;
     }
-    
+
+    /**
+     * Controller that responds to HTTP POST request encoded with JSON.Returns an InferResponse
+     * object with the selected metatheorem applied to the selected theorem, in latex format.
+     *
+     * @param username: login of the user that made the request. It is in the URL also.
+     * @param nTheo: code of statement of the theorem. 
+     * @return InferResponse Object with the statement of the metatheorem, in latex format.
+     */
+    @RequestMapping(value="/{username}/metatheorem", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody StringResponse metatheoremController(@PathVariable String username,
+                                                      @RequestParam(value="nTheo") String nTheo
+                                                    )
+    {
+        System.out.println("nTheo = "+nTheo);
+        System.out.println("username = "+username);
+        Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo).getTeorema().getTeoTerm();
+
+        // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
+        Term metaTheo = MetaTheorem.metaTheorem(statement).type();
+
+        return new StringResponse(nTheo + " with MetaTheorem (" + "3.7" +") $" + metaTheo.toStringInf(simboloManager,"") + "$");
+
+    }
 }

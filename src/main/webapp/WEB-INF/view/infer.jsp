@@ -412,7 +412,7 @@
                                                                                 <%--|| resu.getNumeroteorema().equals(nTeo)}">--%>
                                                                                 <c:choose>
                                                                                     <c:when test="${!resu.getNumeroteorema().equals(nTeo)}">
-                                                                                        <a onclick="expandMeta('metaTeo${resu.getNumeroteorema()}')" >
+                                                                                        <a onclick="expandMeta('${resu.getNumeroteorema()}')" >
                                                                                             <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
                                                                                         </a>
                                                                                     </c:when>
@@ -434,11 +434,15 @@
                                                                                             <br>
                                                                                             <span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>                
                                
-                                                                                            <span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span>  
+                                                                                            <!--<span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span> -->
+
+                                                                                            <!--BUSCAR (LUEGO BORRAR ESTE COMENTARIO) -->
+                                                                                            <div id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">
+                                                                                            </div>
                                    
-                                                                                            <script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
+                                                                                            <!--<script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
                                                                                                 clickOperator('clickmeta${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().freeVars()}');
-                                                                                            </script>
+                                                                                            </script>-->
                                                                                         </span>
                                                                                     </c:when>
                                                                                 </c:choose>
@@ -554,12 +558,47 @@
             </div>-->
         
             <script>
-                function expandMeta(id) {
-                    elem = document.getElementById(id);
+                async function expandMeta(id) {
+                    elem = document.getElementById("metateoIdName"+id);
                     if (elem.style.display == "inline")
                         elem.style.display = "none";
-                    else
-                        elem.style.display = "inline";
+                    else{
+
+                        // We need to know the username from the URL
+                        var currentURL = window.location.href; 
+                        var urlSplitted = currentURL.split("/");
+                        var stop = 0;
+                        for (i=0; i < urlSplitted.length; i++){
+                            // We are interested in that the URL of the AJAX preserves from the current one
+                            // until the username, and before that username it can only be the "infer" or the
+                            // "perfil" word.
+                            if ((urlSplitted[i] === "infer") || (urlSplitted[i] === "perfil")){
+                                stop = i+1;
+                                break;
+                            }
+                        }
+                        var urlBegin = "";
+                        for (i=0; i <= stop; i++){
+                            urlBegin += urlSplitted[i] + "/";
+                        }
+
+                        await $.ajax({
+                            type: 'POST',
+                            url: urlBegin + "metatheorem",
+                            dataType: 'json',
+                            //data: {nTheo: id.split("ST-")[1]},
+                            data: {nTheo: id},
+                            success: function(newData) {
+                                console.log("Entré en newData");
+                                let div = document.getElementById("metateoIdName"+id);
+                                elem.style.display = "inline";
+                                div.innerHTML = `<span>`+newData.string+`</span>`;
+                            }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                                console.log("Entré en error de ajax");
+                                alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+                            }
+                        });        
+                    }
                 };
                 
                 //function getMetateo(id) {
@@ -722,7 +761,7 @@
                                                 if(teoremas[j].numeroteorema != ""){
                                             </c:otherwise>
                                         </c:choose>
-                                        newRows = newRows + '<a onclick="expandMeta(' + "'metaTeo" + teoremas[j].numeroteorema + "'" + ')" >';
+                                        newRows = newRows + '<a onclick="expandMeta(' + teoremas[j].numeroteorema + "'" + ')" >';
                                         newRows = newRows + '<i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>';
                                         newRows = newRows + '</a>';
                                     }/*else{
@@ -753,8 +792,10 @@
                                     //newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ');'
                                     //newRows = newRows + 'clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" +');';
                                     //newRows = newRows + '</' + 'script>';
-                                    script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ',' + "'" +teoremas[j].vars+ "'" +');'
-                                    newRows = newRows + '</span>';
+
+                                    // script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ',' + "'" +teoremas[j].vars+ "'" +');'
+
+                                    newRows += '</span>';
                                 }
                             }
                         }else{
