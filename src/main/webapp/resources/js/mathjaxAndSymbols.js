@@ -10,13 +10,13 @@
  * @returns nothing
  */
 function insertAtMathjaxDiv(text,simboloId, isAlias){
-        console.log(text, simboloId, isAlias);
+        //console.log(text, simboloId, isAlias);
 	var input = document.activeElement; // get the input box where the cursor was
 	
 	// if the cursor was not on any element, or the element wasn't a Math_Jax 
 	// input field, return
 	if(!input || !(input.classList.contains("MathJax_Input"))){
-		return 
+		return;
 	}
 	
 	var rootId = input.getAttribute('data-rootId');
@@ -32,12 +32,11 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 
 	// Util data 
 	var idParentBox = input.id; // get the id of the input box        	
-	var createdChilds = []; // here the created child id's must be saved
-        var createdChildren = [];
+        var createdChildren = []; // here the created child id's must be saved
 	var notacionLatexVariables = simboloDic[simboloId]['notacionVariables'];//get the notation variables of the symbol
         var notacionString = simboloDic[simboloId]['notacionString'];
-        console.log(notacionLatexVariables);
-        console.log(notacionString);
+        //console.log(notacionLatexVariables);
+        //console.log(notacionString);
 	
 	// SAVE THE OLD CONTENT FROM THE BOXES
 	var saveDictionary = saveMathJaxFormContent(id);
@@ -45,76 +44,39 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	// SET THE NEW MATHJAX 
 	
 	var parentBox = "\\FormInput{" + idParentBox + "}"; // this is how the old box should look in the old  mathjax text
-	var idLeftChild = idParentBox + "1";
-	var idRightChild = idParentBox + "2";
-	var parserRight = '';
-	var parserLeft = '';
         var parserChildren = [];
-	var leftChildInLatex1 = false;//Will be true if in the latex notation the left child is supossed to be also left
-	var leftChildInLatex2;
 	
-	var replaced1 = false;	
-	var newNotation = text.replace("\\FormInput{1}",function(token){replaced1 = true; return "\\FormInput{" + idLeftChild + "}";}); // we replace left child's id with the proper position
-        var betterNewNotation = text;
+        var newNotation = text;
         var notacionLatexVariablesSorted = Array.from(notacionLatexVariables, (_,index) => null);
         for (var i = 0; i < notacionLatexVariables.length; i++) {
             var index = parseInt(notacionLatexVariables[i].match(/\d+/)[0]) - 1;
             notacionLatexVariablesSorted[index] = notacionLatexVariables[i];
         }
-        console.log("sorted", notacionLatexVariablesSorted);
+        //console.log("sorted", notacionLatexVariablesSorted);
         for (var i = 0; i < notacionLatexVariablesSorted.length; i++) {
             var varNotation = notacionLatexVariablesSorted[i];
-            var index = i+1; //varNotation.match(/\d+/)[0];
-            var childId = idParentBox + index;
-            console.log(varNotation, index, childId);
-            betterNewNotation = betterNewNotation.replace("\\FormInput{"+index+"}", "\\FormInput{" + childId + "}");
+            var index = i+1;
+            var childId = idParentBox + "-" + index;
+            //console.log(varNotation, index, childId);
+            newNotation = newNotation.replace("\\FormInput{"+index+"}", "\\FormInput{" + childId + "}");
             createdChildren.push([childId, {'simboloId' : simboloId}]);
             parserChildren.push('Input{' + childId + '}');
         }
 	
-	// If left child was inserted
-	if(replaced1){
-		parserLeft = 'Input{' + idLeftChild + '}';
-		
-		// Check if the node is also left in the latex notation order 
-		var var1 = notacionLatexVariables[0];
-		if(var1[var1.length - 1] == '1'){leftChildInLatex1 = true;}
-		createdChilds.push([idLeftChild, {'simboloId' : simboloId,'isLeftLatex' : leftChildInLatex1 }]);
-	}
-	
-	var replaced2 = false;
-	newNotation = newNotation.replace("\\FormInput{2}", function(token){replaced2 = true; return "\\FormInput{" + idRightChild + "}";});// we replace right child's id with the proper position
-	
-	// If right child was inserted
-	if(replaced2){
-		parserRight = 'Input{' + idRightChild + '}';
-		// 2nd child is the opposite of first child 
-		leftChildInLatex2 = !leftChildInLatex1;
-		createdChilds.push([idRightChild, {'simboloId' : simboloId,'isLeftLatex' : leftChildInLatex2 }]);
-	}
-	
         console.log(newNotation);
-        console.log(betterNewNotation);
-        console.log(parserLeft, parserRight, parserChildren)
+        //console.log(parserChildren);
         
 	// UPDATE STRING FOR PARSER
 	
 	var parserExp = 'C' + simboloId;
 	
-	var comma = '';
-	if(replaced2){
-		comma = ',';
-	}
-	
 	// If is an alias use its numericId and redefine left and right
 	if(isAlias){
 		parserExp = 'C' + simboloDic[simboloId]['numericId'];
 	}
-	
-	parserExp =  parserExp + '(' + parserLeft + comma +  parserRight + ')';
         
-        var betterParserExp = 'C' + simboloId + '(' + parserChildren.join(comma) + ')';
-        console.log(parserExp, betterParserExp);
+        var parserExp = 'C' + simboloId + '(' + parserChildren.join(',') + ')';
+        console.log(parserExp);
 		
 	// Update the global expression
 	var oldExpr = 'Input{' + idParentBox + '}';
@@ -142,22 +104,24 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 		arguments = 0;
 		parentSimboloId = "";
 	}else{
-		
 		parentSimboloId = jaxInputDictionary[idParentBox]['simboloId'];
-		
-		// Depending on the fact that the parent is left or not we get our notacion variable name
-		if(jaxInputDictionary[idParentBox]['isLeftLatex']){
-			variableName = simboloDic[parentSimboloId]['notacionVariables'][0];
-		}else{
-			variableName = simboloDic[parentSimboloId]['notacionVariables'][1];
-		}
-                var index = parseInt(parentSimboloId[parentSimboloId.length - 1]);
-		var betterVariableName = simboloDic[parentSimboloId]['notacionVariables'][index-1];
 		m = simboloDic[parentSimboloId]['precedence'];
 		n = simboloDic[simboloId]['precedence'];
 		arguments = simboloDic[simboloId]['arguments'];
+                
+                var parentIdSplit = idParentBox.split('-');
+                var index = parentIdSplit[parentIdSplit.length - 1];
+                var notacionVarParent = simboloDic[parentSimboloId]['notacionVariables'];
+                for (var i = 0; i < notacionVarParent.length; i++) {
+                    var varIndex = notacionVarParent[i].match(/\d+/)[0];;
+                    if (index == varIndex){
+                        variableName = notacionVarParent[i];
+                        break;
+                    }
+                }
+                //console.log(idParentBox, index);
 	}
-        console.log(variableName, betterVariableName);
+        //console.log(variableName);
 	
 
 	// Rule 1
@@ -194,16 +158,10 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 			
 		// Set in the global dictionary which symbol id is 
 		// associated to the new created inputs and also extra information
-		createdChilds.forEach(element => jaxInputDictionary[element[0]]=element[1]);	
+                createdChildren.forEach(element => jaxInputDictionary[element[0]]=element[1]);
 	});
 	
 };
-
-function insertAt(input, text,simboloId, isAlias){
-    input.focus();
-    insertAtMathjaxDiv(text,simboloId, isAlias);
-};
-
 
 /**
  * This function sets the mathjax form 
@@ -441,10 +399,12 @@ function deleteOperatorParserString(formId, rootId){
 	var error = "Wrong input on the mathjax div, check there are parenthesis";
 	// Get a copy of the parser variable string and work with this 
 	var parserString = window[rootId + 'parserString'];
+        console.log(parserString);
 	var n = parserString.length;
 	
 	// Must know if this was a right child or a left child
 	var leftChild = (lastChar == '1');
+        var childPosition = parseInt(lastChar);
 	
 	// Get the index from which we'll start studying the string to replace the expression
 	var indexFormId = parserString.indexOf("Input{" + formId + '}');
@@ -453,8 +413,43 @@ function deleteOperatorParserString(formId, rootId){
 	var i = indexFormId ;// count where the form starts
 	var result;
 	var currentChar = parserString[i];
-	
+        var currentParam = 0;
+        
+        /*
+        var toReplace = "C";
 
+        while(currentChar != 'C'){
+                i--;
+                currentChar = parserString[i];
+                if(i < -1){
+                        throw error;
+                }
+        }
+
+
+        while((currentChar != ')') || (leftPar != rightPar)){
+
+                i++;
+                currentChar = parserString[i];
+
+                if(currentChar == '('){
+                        leftPar++;
+                }else if(currentChar == ')'){
+                        rightPar++;
+                }
+
+                toReplace += currentChar;
+
+                // If we went over the original mathjax length something went wrong
+                if(i > n){
+                        throw error;
+                }
+
+        }
+
+        result = parserString.replace(toReplace, 'Input{' + oldParentId + '}');
+        */
+	
 	if(leftChild){
 		
 		var toReplace = "C";
