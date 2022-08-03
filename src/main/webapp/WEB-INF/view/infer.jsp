@@ -434,7 +434,7 @@
                                                                                             <br>
                                                                                             <span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>                
                                
-                                                                                            <!--<span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span> -->
+                                                                                            <%--<span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span> --%>
 
                                                                                             <!--BUSCAR (LUEGO BORRAR ESTE COMENTARIO) -->
                                                                                             <div id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">
@@ -593,6 +593,9 @@
                                 let div = document.getElementById("metateoIdName"+id);
                                 elem.style.display = "inline";
                                 div.innerHTML = `<span>`+newData.string+`</span>`;
+                                elem = document.getElementById("metaTeo"+id);
+                                elem.style.display = "inline";
+                                MathJax.Hub.Typeset();
                             }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
                                 console.log("Entré en error de ajax");
                                 alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
