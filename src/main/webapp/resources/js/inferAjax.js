@@ -233,11 +233,6 @@ function clickTeoremaInicial(teoid){
 
 // This is called when the page is rendering
 function clickOperator(Math1,myField,teoid,vars){
-    // console.log("Entré a clickOperator con:");
-    // console.log("   Math1 = ",Math1);
-    // console.log("   myField = ",myField);
-    // console.log("   teoid = ",teoid);
-    // console.log("   vars = ",vars);
     var render=document.getElementById(Math1);
     render.onclick = function (event) {
         var targetString = "";

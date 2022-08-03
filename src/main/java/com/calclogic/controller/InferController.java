@@ -1032,12 +1032,12 @@ public class InferController {
     }
 
     /**
-     * Controller that responds to HTTP POST request encoded with JSON.Returns an InferResponse
+     * Controller that responds to HTTP POST request encoded with JSON.Returns an StringResponse
      * object with the selected metatheorem applied to the selected theorem, in latex format.
      *
      * @param username: login of the user that made the request. It is in the URL also.
      * @param nTheo: code of statement of the theorem. 
-     * @return InferResponse Object with the statement of the metatheorem, in latex format.
+     * @return StringResponse Object with the statement of the metatheorem, in latex format.
      */
     @RequestMapping(value="/{username}/metatheorem", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody StringResponse metatheoremController(@PathVariable String username,

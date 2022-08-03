@@ -434,15 +434,15 @@
                                                                                             <br>
                                                                                             <span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>                
                                
-                                                                                            <!--<span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span> -->
+                                                                                            <%--<span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span> --%>
 
-                                                                                            <!--BUSCAR (LUEGO BORRAR ESTE COMENTARIO) -->
+                                                                                            <%--BUSCAR (LUEGO BORRAR ESTE COMENTARIO) --%>
                                                                                             <div id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">
                                                                                             </div>
                                    
-                                                                                            <!--<script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
+                                                                                            <%--<script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
                                                                                                 clickOperator('clickmeta${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().freeVars()}');
-                                                                                            </script>-->
+                                                                                            </script>--%>
                                                                                         </span>
                                                                                     </c:when>
                                                                                 </c:choose>
@@ -586,7 +586,6 @@
                             type: 'POST',
                             url: urlBegin + "metatheorem",
                             dataType: 'json',
-                            //data: {nTheo: id.split("ST-")[1]},
                             data: {nTheo: id},
                             success: function(newData) {
                                 console.log("Entré en newData");
