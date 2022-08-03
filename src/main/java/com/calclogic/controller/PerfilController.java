@@ -1090,7 +1090,7 @@ public class PerfilController {
     		notacionVariables = simbolo.getNotacionVariables().toString();
     		notacionString = simbolo.getNotacion();
     		
-    		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + "}"; 
+    		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + ", notacionString: '" + notacionString + "'}"; 
     		result.append(idString+":  " + simboloString + ",");
 		}
     	

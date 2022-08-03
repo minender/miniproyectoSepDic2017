@@ -10,6 +10,7 @@
  * @returns nothing
  */
 function insertAtMathjaxDiv(text,simboloId, isAlias){
+        console.log(text, simboloId, isAlias);
 	var input = document.activeElement; // get the input box where the cursor was
 	
 	// if the cursor was not on any element, or the element wasn't a Math_Jax 
@@ -32,8 +33,11 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	// Util data 
 	var idParentBox = input.id; // get the id of the input box        	
 	var createdChilds = []; // here the created child id's must be saved
+        var createdChildren = [];
 	var notacionLatexVariables = simboloDic[simboloId]['notacionVariables'];//get the notation variables of the symbol
-	
+        var notacionString = simboloDic[simboloId]['notacionString'];
+        console.log(notacionLatexVariables);
+        console.log(notacionString);
 	
 	// SAVE THE OLD CONTENT FROM THE BOXES
 	var saveDictionary = saveMathJaxFormContent(id);
@@ -45,11 +49,28 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	var idRightChild = idParentBox + "2";
 	var parserRight = '';
 	var parserLeft = '';
+        var parserChildren = [];
 	var leftChildInLatex1 = false;//Will be true if in the latex notation the left child is supossed to be also left
 	var leftChildInLatex2;
 	
 	var replaced1 = false;	
 	var newNotation = text.replace("\\FormInput{1}",function(token){replaced1 = true; return "\\FormInput{" + idLeftChild + "}";}); // we replace left child's id with the proper position
+        var betterNewNotation = text;
+        var notacionLatexVariablesSorted = Array.from(notacionLatexVariables, (_,index) => null);
+        for (var i = 0; i < notacionLatexVariables.length; i++) {
+            var index = parseInt(notacionLatexVariables[i].match(/\d+/)[0]) - 1;
+            notacionLatexVariablesSorted[index] = notacionLatexVariables[i];
+        }
+        console.log("sorted", notacionLatexVariablesSorted);
+        for (var i = 0; i < notacionLatexVariablesSorted.length; i++) {
+            var varNotation = notacionLatexVariablesSorted[i];
+            var index = i+1; //varNotation.match(/\d+/)[0];
+            var childId = idParentBox + index;
+            console.log(varNotation, index, childId);
+            betterNewNotation = betterNewNotation.replace("\\FormInput{"+index+"}", "\\FormInput{" + childId + "}");
+            createdChildren.push([childId, {'simboloId' : simboloId}]);
+            parserChildren.push('Input{' + childId + '}');
+        }
 	
 	// If left child was inserted
 	if(replaced1){
@@ -72,6 +93,10 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 		createdChilds.push([idRightChild, {'simboloId' : simboloId,'isLeftLatex' : leftChildInLatex2 }]);
 	}
 	
+        console.log(newNotation);
+        console.log(betterNewNotation);
+        console.log(parserLeft, parserRight, parserChildren)
+        
 	// UPDATE STRING FOR PARSER
 	
 	var parserExp = 'C' + simboloId;
@@ -87,6 +112,9 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	}
 	
 	parserExp =  parserExp + '(' + parserLeft + comma +  parserRight + ')';
+        
+        var betterParserExp = 'C' + simboloId + '(' + parserChildren.join(comma) + ')';
+        console.log(parserExp, betterParserExp);
 		
 	// Update the global expression
 	var oldExpr = 'Input{' + idParentBox + '}';
@@ -123,11 +151,13 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 		}else{
 			variableName = simboloDic[parentSimboloId]['notacionVariables'][1];
 		}
-		
+                var index = parseInt(parentSimboloId[parentSimboloId.length - 1]);
+		var betterVariableName = simboloDic[parentSimboloId]['notacionVariables'][index-1];
 		m = simboloDic[parentSimboloId]['precedence'];
 		n = simboloDic[simboloId]['precedence'];
 		arguments = simboloDic[simboloId]['arguments'];
 	}
+        console.log(variableName, betterVariableName);
 	
 
 	// Rule 1
