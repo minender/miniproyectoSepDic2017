@@ -231,9 +231,13 @@ function clickTeoremaInicial(teoid){
     };
 }
 
-// This is called when the page is rendering
+// This function may seem that is which is activated when the user clicks on one of the theorems on the right
+// in the "Prove" view to use it as a hint. BUT IT IS NOT. It is called when the page is rendering, and it assigns
+// to each theorem, that is an HTML portion, the function that will in fact be activated when the user clicks on it.
 function clickOperator(Math1,myField,teoid,vars){
     var render=document.getElementById(Math1);
+
+    // Here is where we assign to each theorem the function that will be activated when the user clicks on it.
     render.onclick = function (event) {
         var targetString = "";
         if (teoid.substring(0,3)==="ST-"){

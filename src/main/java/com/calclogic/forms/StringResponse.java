@@ -19,4 +19,11 @@ public class StringResponse {
     public StringResponse(String string) {
         this.string = string;
     }
+    
+    // It is important that the variable has a "get" method in order that when we want to send this
+    // class as a JSON (from a controller to a web page) the dictionary with the corresponding property
+    // can be created.
+    public String getString() {
+        return string;
+    }
 }

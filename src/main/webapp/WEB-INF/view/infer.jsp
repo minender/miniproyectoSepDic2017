@@ -560,10 +560,12 @@
             <script>
                 async function expandMeta(id) {
                     elem = document.getElementById("metateoIdName"+id);
-                    if (elem.style.display == "inline")
+                    elem2 = document.getElementById("metaTeo"+id);
+                    if (elem.style.display == "inline") {
                         elem.style.display = "none";
-                    else{
-
+                        elem2.style.display = "none";
+                    } else{
+                      if (elem.childElementCount==0) {
                         // We need to know the username from the URL
                         var currentURL = window.location.href; 
                         var urlSplitted = currentURL.split("/");
@@ -588,15 +590,20 @@
                             dataType: 'json',
                             data: {nTheo: id},
                             success: function(newData) {
-                                console.log("Entré en newData");
                                 let div = document.getElementById("metateoIdName"+id);
-                                elem.style.display = "inline";
                                 div.innerHTML = `<span>`+newData.string+`</span>`;
+                                MathJax.Hub.Typeset();
+                                elem.style.display = "inline";
+                                elem2.style.display = "inline";
                             }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                                console.log("Entré en error de ajax");
                                 alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
                             }
-                        });        
+                        });   
+                      }
+                      else {
+                          elem.style.display = "inline";
+                          elem2.style.display = "inline";
+                      }
                     }
                 };
                 
