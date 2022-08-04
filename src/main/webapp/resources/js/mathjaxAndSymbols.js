@@ -242,7 +242,9 @@ function deleteOperator(FormId, rootId){
 	var input = document.getElementById(FormId); // get the input box
 	var math = MathJax.Hub.getAllJax(id)[0]; // get the jax alement from the div
 	var originalMathJax = math.originalText; // get the old mathjax text
-	var oldParentId = FormId.substring(0, FormId.length - 1);// the id the new input box will have
+        var oldParentId = FormId.split('-');// the id the new input box will have
+        oldParentId.pop();
+        oldParentId = oldParentId.join('-');
 	var result;
 
 	//Global variables
@@ -383,7 +385,10 @@ function deleteOperator(FormId, rootId){
  * @returns nothing
  */
 function deleteOperatorParserString(formId, rootId){
-	var oldParentId = formId.substring(0, formId.length - 1);// the id the new input box will have
+	//var oldParentId = formId.substring(0, formId.length - 1);// the id the new input box will have
+        var oldParentId = formId.split('-');// the id the new input box will have
+        oldParentId.pop();
+        oldParentId = oldParentId.join('-');
 	
 	var lastChar = formId[formId.length-1];// the last char of the id tells us if is right or left child
 
@@ -521,6 +526,7 @@ function deleteOperatorParserString(formId, rootId){
 	}
 	
 	// Update global variable of the parserString
+        console.log(parserString, " => ", result);
 	window[rootId + 'parserString'] = result;
 		
 }
