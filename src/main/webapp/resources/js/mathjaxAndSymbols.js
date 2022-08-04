@@ -125,13 +125,13 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	
 
 	// Rule 1
-	if(n > m && (variableName.match(/^aa?(1|2)$/))){
+	if(n > m && (variableName.match(/^aa?\d$/))){
 		leftPar = '';
 		rightPar = '';
 	}
 	
 	// Rule 2
-	else if(simboloId == parentSimboloId && variableName.match(/^aa(1|2)$/)){
+	else if(simboloId == parentSimboloId && variableName.match(/^aa\d$/)){
 		leftPar = '';
 		rightPar = '';
 	}
@@ -143,7 +143,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
 	}
 	
 	// Rule 4
-	else if((variableName.match(/^na(1|2)$/))){
+	else if((variableName.match(/^na\d$/))){
 		leftPar = '';
 		rightPar = '';
 	}
@@ -408,7 +408,8 @@ function deleteOperatorParserString(formId, rootId){
 	var n = parserString.length;
 	
 	// Must know if this was a right child or a left child
-	var leftChild = (lastChar == '1');
+	//var leftChild = (lastChar == '1');
+        var leftChild = true;
         var childPosition = parseInt(lastChar);
 	
 	// Get the index from which we'll start studying the string to replace the expression
@@ -527,6 +528,7 @@ function deleteOperatorParserString(formId, rootId){
 	
 	// Update global variable of the parserString
         console.log(parserString, " => ", result);
+        console.log("replaced", toReplace, "index:", indexFormId);
 	window[rootId + 'parserString'] = result;
 		
 }
