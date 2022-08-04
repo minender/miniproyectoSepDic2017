@@ -220,6 +220,46 @@ public class ResuelveDaoImpl implements ResuelveDAO {
             return list.get(0);
         }
     }
+
+    /**
+     * Method to get an entry that relates a user or the admin with a theorem, 
+     * using the identifier of the theorem.
+     * This query is made using HQL (Hibernate Query Language).
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teoremaID Is the principal key of the theorem used to filter the search.
+     */
+    @Override
+    @Transactional
+    public Resuelve getResuelveByUserOrAdminAndTeorema(String userLogin,int teoremaID){
+        String sql = "FROM Resuelve WHERE teorema.id = :teoremaID AND (usuario.login = :userLogin OR usuario.login = 'AdminTeoremas')";
+        List<Resuelve> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("teoremaID",teoremaID).setParameter("userLogin",userLogin).list();
+    
+        if (list.isEmpty()) {
+            return null;
+        } else {
+            return list.get(0);
+        }
+    }
+    
+    /**
+     * Method to get an entry that relates a user or the admin with a theorem, 
+     * using the statement of the theorem.
+     * This query is made using HQL (Hibernate Query Language).
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teo Is the statement of the theorem used to filter the search.
+     */
+    @Override
+    @Transactional
+    public Resuelve getResuelveByUserOrAdminAndTeorema(String userLogin,String teo){
+        String sql = "FROM Resuelve WHERE teorema.enunciado = :teo AND (usuario.login = :userLogin OR usuario.login = 'AdminTeoremas')";
+        List<Resuelve> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("teo",teo).setParameter("userLogin",userLogin).list();
+    
+        if (list.isEmpty()) {
+            return null;
+        } else {
+            return list.get(0);
+        }
+    }
     
     /**
      * Method to get an entry that relates a user with a theorem, 
@@ -232,6 +272,26 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     @Transactional
     public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum){
         String sql = "FROM Resuelve WHERE numeroteorema = :teoNum AND usuario.login = :userLogin";
+        List<Resuelve> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("teoNum",teoNum).setParameter("userLogin",userLogin).list();
+    
+        if (list.isEmpty()) {
+            return null;
+        } else {
+            return list.get(0);
+        }
+    }
+
+    /**
+     * Method to get an entry that relates a user or the admin with a theorem, 
+     * using the number of the theorem.
+     * This query is made using HQL (Hibernate Query Language).
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param teoNum Is the number of the theorem used to filter the search.
+     */
+    @Override
+    @Transactional
+    public Resuelve getResuelveByUserOrAdminAndTeoNum(String userLogin,String teoNum){
+        String sql = "FROM Resuelve WHERE numeroteorema = :teoNum AND (usuario.login = :userLogin OR usuario.login = 'AdminTeoremas')";
         List<Resuelve> list = this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("teoNum",teoNum).setParameter("userLogin",userLogin).list();
     
         if (list.isEmpty()) {

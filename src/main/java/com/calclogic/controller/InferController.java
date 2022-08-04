@@ -1044,12 +1044,11 @@ public class InferController {
                                                       @RequestParam(value="nTheo") String nTheo
                                                     )
     {
-        Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo).getTeorema().getTeoTerm();
+        Term statement = resuelveManager.getResuelveByUserOrAdminAndTeoNum(username,nTheo).getTeorema().getTeoTerm();
 
         // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
         Term metaTheo = MetaTheorem.metaTheorem(statement).type();
-        StringResponse response = new StringResponse("("+nTheo+")" + " with metatheorem (" + "3.7" +"): $" + metaTheo.toStringInf(simboloManager,nTheo) + "$");
+        StringResponse response = new StringResponse("("+nTheo+")" + " with Metatheorem (" + "3.7" +"): $" + metaTheo.toStringInf(simboloManager,nTheo) + "$");
         return response;
-
     }
 }
