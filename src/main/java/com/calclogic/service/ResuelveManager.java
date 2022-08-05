@@ -120,6 +120,7 @@ public interface ResuelveManager {
      * using the statement of the theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teo Is the statement of the theorem used to filter the search.
+     * @return The mentoned Resuelve object.
      */
     public Resuelve getResuelveByUserOrAdminAndTeorema(String userLogin, String teo);
     
@@ -128,6 +129,7 @@ public interface ResuelveManager {
      * using the identifier of the theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoremaID Is the principal key of the theorem used to filter the search.
+     * @return The mentoned Resuelve object.
      */
     public Resuelve getResuelveByUserOrAdminAndTeorema(String userLogin, int teoremaID);
     

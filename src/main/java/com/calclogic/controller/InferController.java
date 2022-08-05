@@ -38,6 +38,7 @@ import com.calclogic.service.MetateoremaManager;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.SimboloManager;
+import com.calclogic.externalservices.MicroServices;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.GenericProofMethod;
 import com.calclogic.proof.ProofBoolean;
@@ -1048,7 +1049,9 @@ public class InferController {
 
         // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
         Term metaTheo = MetaTheorem.metaTheorem(statement).type();
-        StringResponse response = new StringResponse("("+nTheo+")" + " with Metatheorem (" + "3.7" +"): $" + metaTheo.toStringInf(simboloManager,nTheo) + "$");
+        String str = "<span>("+nTheo+")" + " with Metatheorem (" + "3.7" +"):$~~~" + metaTheo.toStringInf(simboloManager,nTheo) + "$</span>";
+        StringResponse response = new StringResponse(MicroServices.transformLaTexToHTML(str));
+
         return response;
     }
 }

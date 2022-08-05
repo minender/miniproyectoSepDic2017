@@ -308,7 +308,7 @@
                                                                                 <c:choose>
                                                                                     <c:when test="${!resu.getNumeroteorema().equals(nTeo)}">
                                                                                         <a onclick="expandMeta('${resu.getNumeroteorema()}')" >
-                                                                                            <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
+                                                                                            <i class="fa fa-plus-circle" aria-hidden="true"  style="cursor:pointer; margin-left: 10px; margin-right: 10px;"></i>
                                                                                         </a>
                                                                                     </c:when>
                                                                                 </c:choose>                                    
@@ -470,7 +470,6 @@
                                 }
                             }
                             const urlBegin = urlSplitted.slice(0,stop+1).join("/");
-                            console.log("urlBegin = ", urlBegin);
 
                             await $.ajax({
                                 type: 'POST',
@@ -479,7 +478,7 @@
                                 data: {nTheo: id},
                                 success: function(newData) {
                                     let div = document.getElementById("metateoIdName"+id);
-                                    div.innerHTML = `<span>`+newData.string+`</span>`;
+                                    div.innerHTML = newData.string;
                                     MathJax.Hub.Typeset();
                                     elem.style.display = "inline";
                                     elem2.style.display = "inline";

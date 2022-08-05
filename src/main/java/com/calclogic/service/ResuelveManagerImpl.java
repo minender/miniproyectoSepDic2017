@@ -28,83 +28,9 @@ public class ResuelveManagerImpl implements ResuelveManager {
     
     @Autowired
     private SolucionDAO solucionDAO;
-    
+
     //@Autowired
     //private CombUtilities combUtilities;
-    
-    /** 
-     * Adds a new object entry to the table only if an equivalent one has not been added yet,
-     * and if so then returns again the object. Otherwise, it returns the equivalent object that was previously added.
-     * @param resuelve The new Resuelve object to be added.
-     * @return The added Resuelve object
-     */
-    @Override
-    @Transactional
-    public Resuelve addResuelve(Resuelve resuelve){
-        Resuelve res = this.getResuelveByUserAndTeorema(resuelve.getUsuario().getLogin(),resuelve.getTeorema().getId());
-        if (res != null){
-            return res;
-        }
-        resuelveDAO.addResuelve(resuelve);
-        return resuelve;
-    }
-    
-    /**
-     * Updates one of the Resuelve objects of the table.
-     * @param resuelve Is the Resuelve object to be updated.
-     */   
-    @Override   
-    @Transactional
-    public void updateResuelve(Resuelve resuelve){
-        resuelveDAO.updateResuelve(resuelve);
-    }
-
-    /**
-     * Deletes one of the Resuelve objects of the table.
-     * @param id Is the principal key of the Resuelve object to delete.
-     */   
-    @Override
-    @Transactional
-    public void deleteResuelve(int id){
-        resuelveDAO.deleteResuelve(id);
-    }
-    
-    /**
-     * Method to get a Resuelve object by its principal key.
-     * @param id Is the principal key of the Resuelve object.
-     * @return The Resuelve object.
-     */ 
-    @Override
-    @Transactional
-    public Resuelve getResuelve(int id){
-        return resuelveDAO.getResuelve(id);
-    }
-    
-    /**
-     * Method to get a list of all the entries of the table.
-     * @return All the Resuelve objects of the database.
-     */
-    @Override
-    @Transactional
-    public List<Resuelve> getAllResuelve(){
-        return resuelveDAO.getAllResuelve();
-    }
-
-    /**
-     * Method to get a list of all the entries of the table that correspond to a specific user.
-     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
-     * @return The mentioned list of Resuelve objects.
-     */
-    @Override
-    @Transactional
-    public List<Resuelve> getAllResuelveByUser(String userLogin){
-        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin);
-        return resuelves;
-    }
-
-    // *********************************************************************************************
-    // BEGIN: Auxiliar private methods that will be used in the subsequent methods below this block
-    // *********************************************************************************************
 
     /*
      * Since many methods of this class will get both the current user's resuleves 
@@ -208,10 +134,76 @@ public class ResuelveManagerImpl implements ResuelveManager {
         }
         return resuelves;
     }
+    
+    /** 
+     * Adds a new object entry to the table only if an equivalent one has not been added yet,
+     * and if so then returns again the object. Otherwise, it returns the equivalent object that was previously added.
+     * @param resuelve The new Resuelve object to be added.
+     * @return The added Resuelve object
+     */
+    @Override
+    @Transactional
+    public Resuelve addResuelve(Resuelve resuelve){
+        Resuelve res = this.getResuelveByUserAndTeorema(resuelve.getUsuario().getLogin(),resuelve.getTeorema().getId());
+        if (res != null){
+            return res;
+        }
+        resuelveDAO.addResuelve(resuelve);
+        return resuelve;
+    }
+    
+    /**
+     * Updates one of the Resuelve objects of the table.
+     * @param resuelve Is the Resuelve object to be updated.
+     */   
+    @Override   
+    @Transactional
+    public void updateResuelve(Resuelve resuelve){
+        resuelveDAO.updateResuelve(resuelve);
+    }
 
-    // *********************************************************************************************
-    // END: Auxiliar private methods that will be used in the subsequent methods below this block
-    // *********************************************************************************************
+    /**
+     * Deletes one of the Resuelve objects of the table.
+     * @param id Is the principal key of the Resuelve object to delete.
+     */   
+    @Override
+    @Transactional
+    public void deleteResuelve(int id){
+        resuelveDAO.deleteResuelve(id);
+    }
+    
+    /**
+     * Method to get a Resuelve object by its principal key.
+     * @param id Is the principal key of the Resuelve object.
+     * @return The Resuelve object.
+     */ 
+    @Override
+    @Transactional
+    public Resuelve getResuelve(int id){
+        return resuelveDAO.getResuelve(id);
+    }
+    
+    /**
+     * Method to get a list of all the entries of the table.
+     * @return All the Resuelve objects of the database.
+     */
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelve(){
+        return resuelveDAO.getAllResuelve();
+    }
+
+    /**
+     * Method to get a list of all the entries of the table that correspond to a specific user.
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @return The mentioned list of Resuelve objects.
+     */
+    @Override
+    @Transactional
+    public List<Resuelve> getAllResuelveByUser(String userLogin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin);
+        return resuelves;
+    }
     
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user, and also
@@ -370,6 +362,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * using the statement of the theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teo Is the statement of the theorem used to filter the search.
+     * @return The mentoned Resuelve object.
      */
     @Override
     @Transactional
@@ -382,6 +375,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * using the identifier of the theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoremaID Is the principal key of the theorem used to filter the search.
+     * @return The mentoned Resuelve object.
      */
     @Override
     @Transactional
