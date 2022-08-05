@@ -247,10 +247,10 @@ public class CrudOperationsImpl implements CrudOperations {
         
             switch (tipoTeo) {
                 case "ST":
-                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo, false);
                     // Case when the user could only see the theorem but had not a Resuelve object associated to it
                     if (resuelve == null) {
-                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo, false);
                     }
                     statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
                     break;

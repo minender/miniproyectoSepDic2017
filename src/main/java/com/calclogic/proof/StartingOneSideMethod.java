@@ -90,11 +90,11 @@ public class StartingOneSideMethod extends GenericProofMethod {
             // We get the Resuelve row associated to the demonstrated theorem in order that we can 
             // later get its current number (established by the user) to indicate that it is what
             // was used to end the demonstration
-            Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, lastline);
+            Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, lastline, false);
 
             // Case when the user could only see the theorem but had not a Resuelve object associated to it
             if (eqHintResuel == null){
-                eqHintResuel = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", lastline);
+                eqHintResuel = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", lastline, false);
             }
 
             equanimityHint = "~~~-~\\text{st}~("+eqHintResuel.getNumeroteorema()+")"+eqSust;
@@ -211,10 +211,10 @@ public class StartingOneSideMethod extends GenericProofMethod {
                                 :((Const)((App)((App)ultInf.type()).p).p).getId());
         String op = s.getSimbolo(conId).getNotacion_latex();
 
-        Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo);
+        Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo, false);
         Boolean entry = true;
         if (theo == null){
-            theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo);
+            theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo, false);
 
             if (theo == null){
                 //********** This part will probably be removed

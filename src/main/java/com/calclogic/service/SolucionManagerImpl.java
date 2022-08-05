@@ -40,7 +40,6 @@ public class SolucionManagerImpl implements SolucionManager {
 	 * for the same theorem where already completed. It is not possible to work in new solutions
      * if there is an incomplete one.
      * @param sol The new Solucion object to be added.
-     * @return Nothing.
      */
     @Override
     @Transactional
@@ -69,7 +68,6 @@ public class SolucionManagerImpl implements SolucionManager {
 	 * has the structure established in this application.
      * @param solucionId Is the principal key of the Solucion object to be updated
 	 * @param typedTerm Is the Term object that will be added to the demonstration.
-     * @return Nothing.
      */   
     @Override
     @Transactional
@@ -82,7 +80,6 @@ public class SolucionManagerImpl implements SolucionManager {
     /**
      * Updates one of the Solucion objects of the table.
      * @param sol Is the Solucion object to be updated.
-     * @return Nothing.
      */   
     @Override
     @Transactional
@@ -93,7 +90,6 @@ public class SolucionManagerImpl implements SolucionManager {
     /**
      * Deletes one of the Solucion objects of the table.
      * @param id Is the principal key of the Solucion object to delete.
-     * @return Nothing.
      */ 
     @Override
     @Transactional
@@ -109,7 +105,7 @@ public class SolucionManagerImpl implements SolucionManager {
             Set<Solucion> li = resuelve.getSolucions();
             int nSol = li.size();
             if (nSol == 1) {
-                Resuelve resuelveAdmin = resuelveDAO.getResuelveByUserAndTeorema("AdminTeoremas", teorema.getId());
+                Resuelve resuelveAdmin = resuelveDAO.getResuelveByUserAndTeorema("AdminTeoremas", teorema.getId(),false);
                 if (resuelveAdmin != null) {
                     solucionDAO.deleteSolucion(id);
                     resuelveDAO.deleteResuelve(resuelve.getId());

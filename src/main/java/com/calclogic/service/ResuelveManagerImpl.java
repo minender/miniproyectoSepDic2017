@@ -134,6 +134,29 @@ public class ResuelveManagerImpl implements ResuelveManager {
         }
         return resuelves;
     }
+
+    /*
+     * Receives a list of Resuelve objects and invokes a function to parse all the
+     * corresponding theorems. Also, it previously invokes a function to remove the 
+     * possible duplicates if the "resuelves" of 'AdminTeoremas' are considered.
+     *
+     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param resuelves The original list of Resuelve objects.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
+     * @return The modified list of Resuelve objects
+     */
+    private List<Resuelve> parsedResuelvesList(String userLogin, List<Resuelve> resuelves, Boolean orAdmin){
+        if (orAdmin){
+            resuelves = this.removeResuelveDuplicates(userLogin, resuelves);
+        }
+        try {
+            resuelves = this.parseTheoremsWithSolFromResuelves(resuelves);
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resuelves;
+    }
     
     /** 
      * Adds a new object entry to the table only if an equivalent one has not been added yet,
@@ -144,7 +167,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Override
     @Transactional
     public Resuelve addResuelve(Resuelve resuelve){
-        Resuelve res = this.getResuelveByUserAndTeorema(resuelve.getUsuario().getLogin(),resuelve.getTeorema().getId());
+        Resuelve res = this.getResuelveByUserAndTeorema(resuelve.getUsuario().getLogin(),resuelve.getTeorema().getId(),false);
         if (res != null){
             return res;
         }
@@ -201,7 +224,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Override
     @Transactional
     public List<Resuelve> getAllResuelveByUser(String userLogin){
-        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin);
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin, false);
         return resuelves;
     }
     
@@ -209,41 +232,14 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * Method to get a list of all the entries of the table that correspond to a specific user, and also
      * establishes for each one if it is an axiom or not.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      * @return The mentioned list of Resuelve objects.
      */
     @Override
     @Transactional
-    public List<Resuelve> getAllResuelveByUserWithSol(String userLogin){
-        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin);
-
-        try {
-            resuelves = this.parseTheoremsWithSolFromResuelves(resuelves);
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return resuelves;
-    }
-
-    /**
-     * Method to get a list of all the entries of the table that correspond to a specific user and to
-     * the admin user.
-     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
-     * @return The mentioned list of Resuelve objects.
-     */
-    @Override
-    @Transactional
-    public List<Resuelve> getAllResuelveByUserOrAdminWithSol(String userLogin){
-        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdmin(userLogin);
-        resuelves = this.removeResuelveDuplicates(userLogin, resuelves);
-
-        try {
-            resuelves = this.parseTheoremsWithSolFromResuelves(resuelves);
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return resuelves;
+    public List<Resuelve> getAllResuelveByUserWithSol(String userLogin, Boolean orAdmin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin, orAdmin);
+        return this.parsedResuelvesList(userLogin, resuelves, orAdmin);
     }
     
     /**
@@ -252,70 +248,28 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * an argument.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoNum Is the number of the theorem, used to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      * @return The list of the Resuelve objects in which the theorems fulfill the mentioned condition.
      */
     @Override
     @Transactional
-    public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin, String teoNum){
-        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserWithoutAxiom(userLogin,teoNum);//getAllResuelveByUser(userLogin);
-
-        try {
-            resuelves = this.parseTheoremsWithSolFromResuelves(resuelves);
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return resuelves;
-    }
-    
-    @Override
-    @Transactional
-    public List<Resuelve> getAllResuelveByUserOrAdminWithSolWithoutAxiom(String userLogin, String teoNum){
-        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdminWithoutAxiom(userLogin,teoNum);//getAllResuelveByUser(userLogin);
-        resuelves = this.removeResuelveDuplicates(userLogin, resuelves);
-
-        try {
-            resuelves = this.parseTheoremsWithSolFromResuelves(resuelves);
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return resuelves;
+    public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin, String teoNum, Boolean orAdmin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserWithoutAxiom(userLogin, teoNum, orAdmin);
+        return this.parsedResuelvesList(userLogin, resuelves, orAdmin);
     }
     
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user
      * having solved the demonstration of a theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      * @return The mentioned list of Resuelve objects.
      */
     @Override
     @Transactional
-    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin){
-        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserResuelto(userLogin);
-
-        try {
-            resuelves = this.parseTheoremsFromResuelves(resuelves);
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return resuelves;
-    }
-    
-    @Override
-    @Transactional
-    public List<Resuelve> getAllResuelveByUserOrAdminResuelto(String userLogin){
-        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserOrAdminResuelto(userLogin);
-        resuelves = this.removeResuelveDuplicates(userLogin, resuelves);
-        
-        try {
-            resuelves = this.parseTheoremsFromResuelves(resuelves);
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return resuelves;
+    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin, Boolean orAdmin){
+        List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserResuelto(userLogin, orAdmin);
+        return this.parsedResuelvesList(userLogin, resuelves, orAdmin);
     }
     
     /**
@@ -334,11 +288,12 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * using the statement of the theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teo Is the statement of the theorem used to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      */
     @Override
     @Transactional
-    public Resuelve getResuelveByUserAndTeorema(String userLogin, String teo){
-		return resuelveDAO.getResuelveByUserAndTeorema(userLogin, teo);
+    public Resuelve getResuelveByUserAndTeorema(String userLogin, String teo, Boolean orAdmin){
+		return resuelveDAO.getResuelveByUserAndTeorema(userLogin, teo, orAdmin);
     }
 	
     /**
@@ -346,41 +301,12 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * using the identifier of the theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoremaID Is the principal key of the theorem used to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      */
     @Override
     @Transactional
-    public Resuelve getResuelveByUserAndTeorema(String userLogin, int teoremaID){
-        Resuelve resuelve = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID);
-        if (resuelve != null) {
-            this.parseTheoremFromResuelveObject(resuelve);
-        }
-        return resuelve;
-    }
-
-    /**
-     * Method to get an entry that relates a user or the admin with a theorem, 
-     * using the statement of the theorem.
-     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
-     * @param teo Is the statement of the theorem used to filter the search.
-     * @return The mentoned Resuelve object.
-     */
-    @Override
-    @Transactional
-    public Resuelve getResuelveByUserOrAdminAndTeorema(String userLogin, String teo){
-        return resuelveDAO.getResuelveByUserOrAdminAndTeorema(userLogin, teo);
-    }
-    
-    /**
-     * Method to get an entry that relates a user or the admin with a theorem, 
-     * using the identifier of the theorem.
-     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
-     * @param teoremaID Is the principal key of the theorem used to filter the search.
-     * @return The mentoned Resuelve object.
-     */
-    @Override
-    @Transactional
-    public Resuelve getResuelveByUserOrAdminAndTeorema(String userLogin, int teoremaID){
-        Resuelve resuelve = resuelveDAO.getResuelveByUserOrAdminAndTeorema(userLogin, teoremaID);
+    public Resuelve getResuelveByUserAndTeorema(String userLogin, int teoremaID, Boolean orAdmin){
+        Resuelve resuelve = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID, orAdmin);
         if (resuelve != null) {
             this.parseTheoremFromResuelveObject(resuelve);
         }
@@ -393,30 +319,12 @@ public class ResuelveManagerImpl implements ResuelveManager {
 	 * If it exists, it parses the string associated with the object.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoNum Is the number of the theorem used to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      */
     @Override
     @Transactional
-    public Resuelve getResuelveByUserAndTeoNum(String userLogin, String teoNum){
-        Resuelve resuelve = resuelveDAO.getResuelveByUserAndTeoNum(userLogin, teoNum);
-        if (resuelve != null) {
-            this.setDemopendienteToSolsFromResuelve(resuelve);
-            this.parseTheoremFromResuelveObject(resuelve);
-        }
-        return resuelve;
-    }
-
-    /**
-     * Method to get an entry that relates a user or the admin with a theorem, 
-     * using the number of the theorem.
-     * If it exists, it parses the string associated with the object.
-     * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
-     * @param teoNum Is the number of the theorem used to filter the search.
-     * @return The corresponding Resuelve object.
-     */
-    @Override
-    @Transactional
-    public Resuelve getResuelveByUserOrAdminAndTeoNum(String userLogin, String teoNum){
-        Resuelve resuelve = resuelveDAO.getResuelveByUserOrAdminAndTeoNum(userLogin, teoNum);
+    public Resuelve getResuelveByUserAndTeoNum(String userLogin, String teoNum, Boolean orAdmin){
+        Resuelve resuelve = resuelveDAO.getResuelveByUserAndTeoNum(userLogin, teoNum, orAdmin);
         if (resuelve != null) {
             this.setDemopendienteToSolsFromResuelve(resuelve);
             this.parseTheoremFromResuelveObject(resuelve);

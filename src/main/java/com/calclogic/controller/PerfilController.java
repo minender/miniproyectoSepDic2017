@@ -6,28 +6,20 @@ package com.calclogic.controller;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.calclogic.entity.Categoria;
-import com.calclogic.entity.Dispone;
 import com.calclogic.entity.Materia;
-import com.calclogic.entity.Metateorema;
-import com.calclogic.entity.Publicacion;
-import com.calclogic.entity.PublicacionId;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Simbolo;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Teoria;
-import com.calclogic.entity.PlantillaTeorema;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.util.SerializationUtils;
 import com.calclogic.entity.Usuario;
-import com.calclogic.entity.Termino;
 import com.calclogic.entity.TerminoId;
 import com.calclogic.entity.MostrarCategoria;
 import com.calclogic.entity.Predicado;
@@ -75,7 +67,6 @@ import com.calclogic.service.SimboloManager;
 import com.calclogic.service.SolucionManager;
 import com.calclogic.service.TeoremaManager;
 import com.calclogic.service.TeoriaManager;
-import com.calclogic.service.PlantillaTeoremaManager;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -346,7 +337,7 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
         for (Resuelve r: resuelves){
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
@@ -398,7 +389,7 @@ public class PerfilController {
             response.addProperty("error", "Debes estar logueado en el sistema");
             return response.toString();
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
@@ -462,7 +453,7 @@ public class PerfilController {
     {   
         //validar si esta el usuario en sesion
         teoremasSolucion response = new teoremasSolucion();
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid,false);
         Integer resuelveId = resuelve.getId();
         
         response.soluciones = solucionManager.getAllSolucionesIdByResuelve(resuelveId);
@@ -475,7 +466,7 @@ public class PerfilController {
     {   
         // validar que el usuario este en sesion
         InferResponse response = new InferResponse(crudOp);
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
         Term teorema = resuelve.getTeorema().getTeoTerm();
         String nTeo = resuelve.getNumeroteorema();
         Solucion solucion = solucionManager.getSolucion(idSol);
@@ -491,7 +482,7 @@ public class PerfilController {
     public @ResponseBody InferResponse buscarMetaFormula(@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {
         InferResponse response = new InferResponse(crudOp);
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
         Term teo = resuelve.getTeorema().getTeoTerm();
         Simbolo s = simboloManager.getSimbolo(1);
         Simbolo s2 = simboloManager.getSimbolo(8);
@@ -502,10 +493,10 @@ public class PerfilController {
                                      new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(113)),
                                                                new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad()))));
         Term A3 = new TypedA(teo);
-        List<Var> list1 = new ArrayList<Var>();
+        List<Var> list1 = new ArrayList<>();
         list1.add(new Var(112));
         list1.add(new Var(113));
-        List<Term> list2 = new ArrayList<Term>();
+        List<Term> list2 = new ArrayList<>();
         list2.add(teo);
         list2.add(new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad()));
         Term I1 = new TypedI(new Sust(list1,list2));
@@ -583,7 +574,7 @@ public class PerfilController {
             String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
             
             boolean nTheoExists = false;
-            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema()) != null)
+            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(),false) != null)
                 nTheoExists = true;
             
             if(nTheoExists || bindingResult.hasErrors())
@@ -622,7 +613,7 @@ public class PerfilController {
             {
                 teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
 //                teoTerm.setAlias(0);
-                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());
+                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal(), false);
                 if (null != test) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                 }
@@ -771,7 +762,7 @@ public class PerfilController {
         Term teoTerm = teorema.getTeoTerm();
         String teoC = teoTerm.toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
         String teoInputs = teoTerm.toStringWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false);
         
         map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
@@ -819,10 +810,10 @@ public class PerfilController {
             predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
             String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
             int intIdTeo = Integer.parseInt(idTeo);
-            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, intIdTeo);
+            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, intIdTeo, false);
             
             boolean nTheoExists = false;
-            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema()) != null)
+            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(), false) != null)
                 nTheoExists = true;
             
             if(bindingResult.hasErrors())
@@ -881,7 +872,7 @@ public class PerfilController {
                
                 Teorema teorema = teoremaManager.getTeorema(intIdTeo);
                 if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
-                  Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());
+                  Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal(), false);
                   if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                   }

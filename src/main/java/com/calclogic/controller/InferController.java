@@ -106,7 +106,7 @@ public class InferController {
             return "redirect:/index";
         }
         
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username,true);
         
         for (Resuelve r: resuelves) // Este for debes mandarlo para el manager y quitar
         {                           // la construccion del metateorema del true
@@ -178,11 +178,11 @@ public class InferController {
         {
             return "redirect:/index";
         }
-        Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
 
         // Case when the user could only see the theorem but had not a Resuelve object associated to it
         if (resuel == null) {
-            resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo);
+            resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo,false);
             Usuario user = usuarioManager.getUsuario(username);
             resuel.setUsuario(user);
             resuel.setDemopendiente(-1);
@@ -195,7 +195,7 @@ public class InferController {
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
         
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,nTeo); // Maybe: getAllResuelveByUserOrAdminResuelto
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSolWithoutAxiom(username,nTeo,true); // Maybe: getAllResuelveByUserResuelto
 
         // Usando algoritmo de punto fijo
         List<Resuelve> unResuelve = new ArrayList<Resuelve>();
@@ -519,7 +519,7 @@ public class InferController {
             }
         }   
 
-        Resuelve resuel     = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Resuelve resuel     = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Solucion solucion   = solucionManager.getSolucion(Integer.parseInt(nSol));
         Term typedTerm      = solucion.getTypedTerm();
         Term formula        = resuel.getTeorema().getTeoTerm();
@@ -723,7 +723,7 @@ public class InferController {
     {   
         InferResponse response = new InferResponse(crudOp);
 
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Solucion solucion = solucionManager.getSolucion(resuelve.getDemopendiente());
         int respRetroceder;
         Term method = null;
@@ -799,7 +799,7 @@ public class InferController {
     {   
         InferResponse response = new InferResponse(crudOp);
     
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();
         
@@ -870,7 +870,7 @@ public class InferController {
         boolean sideOrTransitive = ("SS".equals(newMethod) || "T".equals(groupMethod));
 
         InferResponse response = new InferResponse(crudOp);
-        Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
 
         // This is the theorem statement but parsed as a binary tree. 
         // We call it as "previous" because it may change when the proof starts
@@ -887,9 +887,9 @@ public class InferController {
 
             if ("DM".equals(newMethod)){
                 if (teoid.substring(0, 3).equals("ST-")){
-                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()),false);
                     if (resuelve == null){
-                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()));
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()),false);
                     }
                     formulaTerm = resuelve.getTeorema().getTeoTerm();
                 }
@@ -1045,7 +1045,7 @@ public class InferController {
                                                       @RequestParam(value="nTheo") String nTheo
                                                     )
     {
-        Term statement = resuelveManager.getResuelveByUserOrAdminAndTeoNum(username,nTheo).getTeorema().getTeoTerm();
+        Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo,true).getTeorema().getTeoTerm();
 
         // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
         Term metaTheo = MetaTheorem.metaTheorem(statement).type();

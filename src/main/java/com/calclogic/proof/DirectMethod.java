@@ -60,7 +60,7 @@ public class DirectMethod extends StartingOneSideMethod {
         // Case when we started from the theorem being proved
         if(formulaBeingProved.equals(initialExpr)) {
             // List of theorems solved by the user. We examine them to check if the current proof already reached one 
-            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminResuelto(username);
+            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username,true);
             Term theorem, mt;
             Term equanimityExpr = null; // Expression with which equanimity will be applied
 
