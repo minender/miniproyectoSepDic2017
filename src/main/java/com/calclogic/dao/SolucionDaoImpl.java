@@ -140,7 +140,6 @@ public class SolucionDaoImpl implements SolucionDAO{
             }
         }
         String queryStr = "FROM Solucion WHERE " + statements;
-        //System.out.println(queryStr);
         return this.sessionFactory.getCurrentSession().createQuery(queryStr).list();
     }
     

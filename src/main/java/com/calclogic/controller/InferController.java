@@ -200,7 +200,6 @@ public class InferController {
         // Usando algoritmo de punto fijo
         List<Resuelve> unResuelve = new ArrayList<Resuelve>();
         unResuelve.add(resuel);
-        //System.out.println(unResuelve.get(0).getNumeroteorema());
         List<Resuelve> depend = resuelveManager.getResuelveDependent(username, unResuelve);
         HashSet<Integer> dependIds = new HashSet<Integer>();
         List<String> dependNum = new ArrayList<String>();
@@ -208,7 +207,6 @@ public class InferController {
             dependIds.add(r.getId());
             dependNum.add(r.getNumeroteorema());
         }
-        //System.out.println(dependNum.toString());
         resuelves.removeIf(r -> dependIds.contains(r.getId()));
         //resuelves.removeAll(depend);
         //resuelves = new ArrayList<Resuelve>();
@@ -586,7 +584,6 @@ public class InferController {
 
             try {
                 if (i == 1 && j == 0){
-                    System.out.println(infer.type());
                     infer = new TypedApp(new TypedS(), infer);
                 }
                 // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.

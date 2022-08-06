@@ -263,7 +263,6 @@ public class ResuelveDaoImpl implements ResuelveDAO {
             }
         }
         String queryStr = "FROM Resuelve r WHERE (r.usuario.login = :userLogin OR r.usuario.login = 'adminTeoremas') AND EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id) AND resuelto = 't' AND NOT EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id AND NOT ("+enunciados+"))";
-        //System.out.println(queryStr);
         return this.sessionFactory.getCurrentSession().createQuery(queryStr).setParameter("userLogin",userLogin).list();
     }
     
@@ -279,9 +278,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
                 enunciados = enunciados + " OR " + enunciado;
             }
         }
-        //System.out.println(enunciados);
         String queryStr = "FROM Resuelve r WHERE resuelto = 't' AND EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id) AND NOT EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id AND NOT ("+enunciados+"))";
-        //System.out.println(queryStr);
         return this.sessionFactory.getCurrentSession().createQuery(queryStr).list();
     }
     
