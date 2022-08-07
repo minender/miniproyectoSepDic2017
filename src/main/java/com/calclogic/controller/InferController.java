@@ -1237,8 +1237,7 @@ public class InferController {
         
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
         Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
-        Term formulaTerm = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
-        
+        Term formulaTerm = (Term)formulaAnterior.clone2();
         /* Jean
         if(naturalSide) {
 +               H = ((App)formulaAnterior).q;
@@ -1266,7 +1265,6 @@ public class InferController {
             nuevoMetodo = metodoTerm.toStringFinal();
             solucion.setMetodo(nuevoMetodo);
         }
-        
         if(lado.equals("d")){
             //formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
             formulaTerm = ((App)((App)formulaTerm).p).q;
