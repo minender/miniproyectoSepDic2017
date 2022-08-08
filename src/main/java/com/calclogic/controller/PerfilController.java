@@ -331,7 +331,6 @@ public class PerfilController {
     
     @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.GET)
     public String misTeoremasView(@PathVariable String username, ModelMap map) {
-        System.out.println("Entré al controlador misTeoremas");
         if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
            && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
            )
@@ -387,7 +386,7 @@ public class PerfilController {
            )
         {   
             JsonObject response = new JsonObject();
-            response.addProperty("error", "Debes estar logueado en el sistema");
+            response.addProperty("error", "You must be logged in the system");
             return response.toString();
         }
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
@@ -446,7 +445,58 @@ public class PerfilController {
         }
         response.add("categories", categories);
         response.add("resuelves", resuelves1);
+
         return response.toString();
+    }
+
+    /* 
+     * Used to show the categories in the infer view again (Ex: Equivalence and True, etc.) 
+     * when the user has just changed the categories that must be diplayed. This does not receive
+     * any params from the requesting AJAX, except the username that is included in the path.
+     *
+     * @return The "theoremsList" view, with the categories updated.
+     */
+    @RequestMapping(value="/{username}/theoremsList", method=RequestMethod.GET)
+    public String theoremsListController(@PathVariable String username, ModelMap map) {
+        if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
+           && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
+           )
+        {
+            return "redirect:/index";
+        }
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
+        for (Resuelve r: resuelves){
+            Teorema t = r.getTeorema();
+            t.setTeoTerm(t.getTeoTerm());
+            t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
+        }
+        Usuario currentUser = (Usuario)session.getAttribute("user");
+        Usuario usr = usuarioManager.getUsuario(username);        
+        List <Categoria> showCategorias = new LinkedList<Categoria>();
+        List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
+        
+        for (int i = 0; i < mostrarCategoria.size(); i++ ){
+            showCategorias.add(mostrarCategoria.get(i).getCategoria());
+        }
+
+        map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
+        map.addAttribute("usuario", usr);
+        map.addAttribute("guardarMenu","");
+        map.addAttribute("listarTerminosMenu","");
+        map.addAttribute("perfilMenu","");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("categorias",categoriaManager.getAllCategorias());
+        map.addAttribute("teoremas", resuelves);
+        map.addAttribute("resuelveManager",resuelveManager);
+        map.addAttribute("categoriaManager",categoriaManager);
+        map.addAttribute("simboloManager",simboloManager);
+        map.addAttribute("predicadoManager",predicadoManager);
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("selecTeo",true);
+        map.addAttribute("showCategorias",showCategorias);
+        map.addAttribute("resuelves", resuelves);
+        return "theoremsList";
     }
     
     @RequestMapping(value="/{username}/misTeoremas/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)

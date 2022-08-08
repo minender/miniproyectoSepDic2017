@@ -403,6 +403,48 @@
 
         <script>
             function guardarMostrarCategorias() {
+                allCategoriasSettings = document.getElementsByClassName("categoria-settings");
+                let categorias = {
+                    listaIdCategorias:[],
+                    username: "${usuario.getLogin()}"
+                };
+                for (let i = 0; i<allCategoriasSettings.length;i++){
+                    cat = allCategoriasSettings.item(i);
+                    if (cat.checked === true){
+                        let id = allCategoriasSettings.item(i).getAttribute("name");
+                        categorias.listaIdCategorias.push(id);
+                    }
+                    
+                };
+                $("#modalLoading").css('display','inline-block');
+                // This first AJAX updates the user's displayed categories in the database
+                // but does not give us the updated part of the view
+                $.ajax({
+                    cache:false,
+                    type: 'POST',
+                    url: "misTeoremas", // This is located in PerfilController.java
+                    data: JSON.stringify(categorias),
+                    contentType: "application/json",
+                    dataType: "text",
+                    success:  function(data) {
+                        // This second AJAX is for getting the updated view
+                        $.ajax({
+                            type: 'GET',
+                            url: "theoremsList", // This is located in PerfilController.java
+                            dataType: "text",
+                            success:  function(data) {
+                                let div = document.getElementById("misteoremasSpace");
+                                div.innerHTML = data;
+                                $("#modalLoading").css('display','none'); 
+                            }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                                alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+                            }
+                        });
+                        $("#modalLoading").css('display','none'); 
+                    }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                        alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+                    }
+                });
             }
             document.getElementById("saveConfig").onclick = function(){
                 guardarMostrarCategorias();
