@@ -5,7 +5,7 @@
     <div id="showNoCategories">
         <c:choose>
             <c:when test="${showCategorias.size() == 0}">
-                You currently have no categories to display, adjust your settings
+                You currently have no categories to display, adjust your settings with the gear button above
             </c:when>
         </c:choose>
     </div>

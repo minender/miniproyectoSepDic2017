@@ -287,7 +287,22 @@
             </div>-->
         
             <script>
-                async function expandMeta(id) {
+                function getURLuntilUsername(){
+                    const currentURL = window.location.href; 
+                    const urlSplitted = currentURL.split("/");
+                    var stop = 0;
+                    for (i=0; i < urlSplitted.length; i++){
+                        // We are interested in that the URL of the AJAX preserves from the current one
+                        // until the username, and before that username it can only be the "infer" or the
+                        // "perfil" word.
+                        if ((urlSplitted[i] === "infer") || (urlSplitted[i] === "perfil")){
+                            stop = i+1; // The +1 is because we stop in the username (after current position)
+                            break;
+                        }
+                    }
+                    return urlSplitted.slice(0,stop+1).join("/");
+                }
+                function expandMeta(id) {
                     elem = document.getElementById("metateoIdName"+id);
                     elem2 = document.getElementById("metaTeo"+id);
                     if (elem.style.display == "inline") {
@@ -296,24 +311,10 @@
                     } else{
                         // Case when the metatheorems have not been generated yet
                         if (elem.childElementCount==0) {
-                            var currentURL = window.location.href; 
-                            var urlSplitted = currentURL.split("/");
-                            var stop = 0;
-                            for (i=0; i < urlSplitted.length; i++){
-                                // We are interested in that the URL of the AJAX preserves from the current one
-                                // until the username, and before that username it can only be the "infer" or the
-                                // "perfil" word.
-                                if ((urlSplitted[i] === "infer") || (urlSplitted[i] === "perfil")){
-                                    stop = i+1; // The +1 is because we stop in the username (after current position)
-                                    break;
-                                }
-                            }
-                            const urlBegin = urlSplitted.slice(0,stop+1).join("/");
-
-                            await $.ajax({
+                            $.ajax({
                                 type: 'POST',
-                                url: urlBegin + "/metatheorem",
-                                dataType: 'json',
+                                url: getURLuntilUsername() + "/metatheorem",
+                                dataType: "json",
                                 data: {nTheo: id},
                                 success: function(newData) {
                                     let div = document.getElementById("metateoIdName"+id);
@@ -402,7 +403,7 @@
         <a href="misTeoremas" id="linkDemostrar" style="display:none"></a>
 
         <script>
-            function guardarMostrarCategorias() {
+            async function guardarMostrarCategorias() {
                 allCategoriasSettings = document.getElementsByClassName("categoria-settings");
                 let categorias = {
                     listaIdCategorias:[],
@@ -414,37 +415,30 @@
                         let id = allCategoriasSettings.item(i).getAttribute("name");
                         categorias.listaIdCategorias.push(id);
                     }
-                    
                 };
                 $("#modalLoading").css('display','inline-block');
-                // This first AJAX updates the user's displayed categories in the database
-                // but does not give us the updated part of the view
-                $.ajax({
-                    cache:false,
+                await $.ajax({
                     type: 'POST',
-                    url: "misTeoremas", // This is located in PerfilController.java
-                    data: JSON.stringify(categorias),
+                    url: "theoremsList", // This is located in PerfilController.java
                     contentType: "application/json",
                     dataType: "text",
+                    data: JSON.stringify(categorias),
                     success:  function(data) {
-                        // This second AJAX is for getting the updated view
-                        $.ajax({
-                            type: 'GET',
-                            url: "theoremsList", // This is located in PerfilController.java
-                            dataType: "text",
-                            success:  function(data) {
-                                let div = document.getElementById("misteoremasSpace");
-                                div.innerHTML = data;
-                                $("#modalLoading").css('display','none'); 
-                            }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                                alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-                            }
-                        });
-                        $("#modalLoading").css('display','none'); 
+                        let split = data.split("myTheorems");
+                        if (split.length > 1){
+                            let div = document.getElementById("misteoremasSpace");
+                            div.innerHTML = data;
+                            MathJax.Hub.Typeset();
+                        }
+                        // Case when the user is no longer active
+                        else {
+                            document.getElementsByTagName("body")[0].innerHTML = data;
+                        }
                     }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
                         alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
                     }
                 });
+                $("#modalLoading").css('display','none'); 
             }
             document.getElementById("saveConfig").onclick = function(){
                 guardarMostrarCategorias();

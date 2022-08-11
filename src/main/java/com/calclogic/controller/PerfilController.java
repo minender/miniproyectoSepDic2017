@@ -450,14 +450,13 @@ public class PerfilController {
     }
 
     /* 
-     * Used to show the categories in the infer view again (Ex: Equivalence and True, etc.) 
-     * when the user has just changed the categories that must be diplayed. This does not receive
-     * any params from the requesting AJAX, except the username that is included in the path.
+     * Used to store the new checked categories in the database and to show the then in the infer 
+     * view again (Ex: Equivalence and True, etc.)
      *
      * @return The "theoremsList" view, with the categories updated.
      */
-    @RequestMapping(value="/{username}/theoremsList", method=RequestMethod.GET)
-    public String theoremsListController(@PathVariable String username, ModelMap map) {
+    @RequestMapping(value="/{username}/theoremsList", method=RequestMethod.POST)
+    public String theoremsListController(@PathVariable String username, ModelMap map, @RequestBody MostrarCategoriaForm answer) {
         if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
            && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
            )
@@ -473,10 +472,32 @@ public class PerfilController {
         Usuario currentUser = (Usuario)session.getAttribute("user");
         Usuario usr = usuarioManager.getUsuario(username);        
         List <Categoria> showCategorias = new LinkedList<Categoria>();
-        List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
+        List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
+        List<Integer> categoriasIdListUser =  new LinkedList<Integer>();
+
+        for (MostrarCategoria mc: mostrarCategorias){
+           categoriasIdListUser.add(mc.getCategoria().getId());
+        }
+        // We add the new categories that were checked
+        for (int categoriaId :answer.getListaIdCategorias()){
+            if (!categoriasIdListUser.contains(categoriaId)){
+                Categoria categoria = categoriaManager.getCategoria(categoriaId);
+                MostrarCategoria mostrarCategoriaNew = new MostrarCategoria(categoria, currentUser);
+                mostrarCategoriaManager.addMostrarCategoria(mostrarCategoriaNew);
+            }
+        }
+        // We delete the categories that were unchecked
+        for (int categoriaId: categoriasIdListUser){
+            if (!answer.getListaIdCategorias().contains(categoriaId)){
+                Categoria categoria = categoriaManager.getCategoria(categoriaId);
+                MostrarCategoria mostrarCategoria = mostrarCategoriaManager.getMostrarCategoriaByCategoriaAndUsuario(categoria, currentUser);
+                mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria.getId());
+            }
+        }
         
-        for (int i = 0; i < mostrarCategoria.size(); i++ ){
-            showCategorias.add(mostrarCategoria.get(i).getCategoria());
+        mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
+        for (int i = 0; i < mostrarCategorias.size(); i++ ){
+            showCategorias.add(mostrarCategorias.get(i).getCategoria());
         }
 
         map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
@@ -485,7 +506,7 @@ public class PerfilController {
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("perfilMenu","");
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-        map.addAttribute("categorias",categoriaManager.getAllCategorias());
+        //map.addAttribute("categorias",categoriaManager.getAllCategorias());
         map.addAttribute("teoremas", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("categoriaManager",categoriaManager);
@@ -496,6 +517,7 @@ public class PerfilController {
         map.addAttribute("selecTeo",true);
         map.addAttribute("showCategorias",showCategorias);
         map.addAttribute("resuelves", resuelves);
+
         return "theoremsList";
     }
     

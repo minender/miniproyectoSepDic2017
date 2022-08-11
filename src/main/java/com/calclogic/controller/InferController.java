@@ -15,7 +15,6 @@ import com.calclogic.forms.InferResponse;
 import com.calclogic.forms.InfersForm;
 import com.calclogic.forms.InstResponse;
 import com.calclogic.forms.SubstResponse;
-import com.calclogic.forms.StringResponse;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
@@ -58,6 +57,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -1030,25 +1030,31 @@ public class InferController {
     }
 
     /**
-     * Controller that responds to HTTP POST request encoded with JSON.Returns an StringResponse
-     * object with the selected metatheorem applied to the selected theorem, in latex format.
+     * Controller that responds to HTTP POST request, with data sent as a dictionary.
      *
      * @param username: login of the user that made the request. It is in the URL also.
      * @param nTheo: code of statement of the theorem. 
-     * @return StringResponse Object with the statement of the metatheorem, in latex format.
+     * @return A JSON object with a property named "string" representing the formula 
+     * of a metatheorem applied to a selected theorem, written in LaTeX notation.
+     *
+     * The reason why we don't return the String directly is because doing it that way,
+     * the tokens of the form \cssId{num} are not processed later in the web page, but
+     * they remain as "?".
      */
     @RequestMapping(value="/{username}/metatheorem", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody StringResponse metatheoremController(@PathVariable String username,
-                                                      @RequestParam(value="nTheo") String nTheo
-                                                    )
+    @ResponseBody // This lets the return value be written straight to the HTTP response body
+    public JSONObject metatheoremController( @PathVariable String username,
+                                             @RequestParam(value="nTheo") String nTheo
+                                            )
     {
         Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo,true).getTeorema().getTeoTerm();
 
         // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
         Term metaTheo = MetaTheorem.metaTheorem(statement).type();
         String str = "<span>("+nTheo+")" + " with Metatheorem (" + "3.7" +"):$~~~" + metaTheo.toStringInf(simboloManager,nTheo) + "$</span>";
-        StringResponse response = new StringResponse(MicroServices.transformLaTexToHTML(str));
 
-        return response;
+        JSONObject json = new JSONObject();
+        json.put("string", MicroServices.transformLaTexToHTML(str));
+        return json;
     }
 }
