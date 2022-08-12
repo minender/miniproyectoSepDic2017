@@ -620,6 +620,7 @@ public class PerfilController {
             Term teoTerm;
             try //si la sintanxis no es correcta ocurre una Exception
             {
+                //System.out.println(agregarTeorema.getTeorema());
                 teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
 //                teoTerm.setAlias(0);
                 Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());

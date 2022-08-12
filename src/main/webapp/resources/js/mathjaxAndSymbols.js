@@ -47,12 +47,31 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         var parserChildren = [];
 	
         var newNotation = text;
+        
         var notacionLatexVariablesSorted = Array.from(notacionLatexVariables, (_,index) => null);
         for (var i = 0; i < notacionLatexVariables.length; i++) {
             var index = parseInt(notacionLatexVariables[i].match(/\d+/)[0]) - 1;
             notacionLatexVariablesSorted[index] = notacionLatexVariables[i];
         }
-        //console.log("sorted", notacionLatexVariablesSorted);
+        /*
+        var notacionLatexVariablesSorted = notacionLatexVariables.map((x) => x); //Array.from(notacionLatexVariables, (_,index) => null);
+        notacionLatexVariablesSorted.sort(function(a, b) {
+            var indexA = parseInt(a.match(/\d+/)[0]);
+            var indexB = parseInt(b.match(/\d+/)[0]);
+            var isBoundA = a.includes("v");
+            var isBoundB = b.includes("v");
+            if (isBoundA && !isBoundB) {
+                return -1;
+            }
+            else if (isBoundB && !isBoundA) {
+                return 1;
+            }
+            else {
+                return indexA - indexB;
+            }
+        });
+        */
+        console.log(notacionLatexVariables, notacionLatexVariablesSorted);
         for (var i = 0; i < notacionLatexVariablesSorted.length; i++) {
             var varNotation = notacionLatexVariablesSorted[i];
             var index = i+1;
@@ -63,7 +82,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
             parserChildren.push('Input{' + childId + '}');
         }
 	
-        console.log(newNotation);
+        console.log(text, newNotation);
         //console.log(parserChildren);
         
 	// UPDATE STRING FOR PARSER
@@ -420,41 +439,6 @@ function deleteOperatorParserString(formId, rootId){
 	var result;
 	var currentChar = parserString[i];
         var currentParam = 0;
-        
-        /*
-        var toReplace = "C";
-
-        while(currentChar != 'C'){
-                i--;
-                currentChar = parserString[i];
-                if(i < -1){
-                        throw error;
-                }
-        }
-
-
-        while((currentChar != ')') || (leftPar != rightPar)){
-
-                i++;
-                currentChar = parserString[i];
-
-                if(currentChar == '('){
-                        leftPar++;
-                }else if(currentChar == ')'){
-                        rightPar++;
-                }
-
-                toReplace += currentChar;
-
-                // If we went over the original mathjax length something went wrong
-                if(i > n){
-                        throw error;
-                }
-
-        }
-
-        result = parserString.replace(toReplace, 'Input{' + oldParentId + '}');
-        */
 	
 	if(leftChild){
 		
@@ -550,6 +534,7 @@ function setInputValueOnParser(rootId){
 	
 	// Get all input boxes from the div
 	var inputs = $('#' + rootId + 'MathJaxDiv' + ' .MathJax_Input').toArray();
+        console.log(inputs);
 	var parserString = window[rootId + 'parserString'];
 	var simboloDic = window[rootId + 'simboloDic'];
 	
@@ -565,6 +550,8 @@ function setInputValueOnParser(rootId){
 	var prefix = window[rootId + 'prefixCnotation'];
 	if(parserString.length == 0){ prefix = '';}
 	textarea.val(prefix + parserString);
+        //console.log(parserString);
+        //alert("perro");
 	return parserString;
 }
 

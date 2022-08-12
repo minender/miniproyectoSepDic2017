@@ -1001,7 +1001,7 @@ public class App extends Term{
           Const c = (Const) aux;
           sym = s.getSimbolo(c.getId());
           opId = c.getId();
-          nArgs = sym.getArgumentos();
+          nArgs = sym.getArgumentosQuantifier();
         }
         
         if ( j > nArgs) {
@@ -1035,6 +1035,10 @@ public class App extends Term{
              values.put("aa"+i,tStr.term);
          }
          else {
+           if (arg instanceof Bracket) {
+               values.put("v"+i,((Bracket) arg).x.toString());
+               arg = ((Bracket)arg).t;
+           }
            if (notation.contains("%(na"+i+")")) {
              arg.toStringInfAbrv(tStr,s,pm,"");
              values.put("na"+i,tStr.term);

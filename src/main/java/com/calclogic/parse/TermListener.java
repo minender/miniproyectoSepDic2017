@@ -8,6 +8,9 @@ import com.calclogic.entity.Simbolo;
 import com.calclogic.lambdacalculo.*;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
+import org.antlr.v4.runtime.misc.Pair;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 

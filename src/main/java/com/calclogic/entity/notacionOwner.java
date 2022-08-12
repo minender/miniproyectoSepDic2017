@@ -1,6 +1,10 @@
 package com.calclogic.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.antlr.v4.runtime.misc.Pair;
 
 public abstract class notacionOwner {
 	
@@ -65,6 +69,27 @@ public abstract class notacionOwner {
     	}
     	
     	return result;
+    }
+    
+    public Pair<HashSet<Integer>, HashSet<Integer>> getNotacionVariablesQuantifier() {
+        Pattern pattern = Pattern.compile("[0-9]+");
+        ArrayList<String> notacionVars = getNotacionVariables();
+        HashSet<Integer> boundVars = new HashSet<Integer>();
+        HashSet<Integer> unboundVars = new HashSet<Integer>();
+        for (String var: notacionVars) {
+            Matcher matcher = pattern.matcher(var);
+            boolean matched = matcher.find();
+            if (matched) {
+                Integer varNum = Integer.parseInt(matcher.group());
+                if (var.contains("v")) {
+                    boundVars.add(varNum);
+                }
+                else {
+                    unboundVars.add(varNum);
+                }
+            }
+        }
+        return new Pair(boundVars, unboundVars);
     }
     
     /**

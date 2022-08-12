@@ -8,6 +8,9 @@ import com.calclogic.entity.Simbolo;
 import com.calclogic.lambdacalculo.*;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
+import org.antlr.v4.runtime.misc.Pair;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -208,8 +211,8 @@ public class TermParser extends Parser {
 				match(T__2);
 				Term aux;
 				                                               if (Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == sm.getPropFunApp() 
-                                                                                   || Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == sm.getTermFunApp()
-                                                                                  ) {
+				                                                   || Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == sm.getTermFunApp()
+				                                                  ) {
 				                                                Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator();
 				                                                aux = i.next();
 				                                                for(i = i; i.hasNext();)
@@ -219,12 +222,44 @@ public class TermParser extends Parser {
 				                                                Simbolo s = sm.getSimbolo(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null))); 
 				                                                if (s == null)throw new IsNotInDBException(this,"");
 				                                                int nArg = s.getArgumentos();
-				                                                if (((EqContext)_localctx).explist.value.size() != nArg)
-				                                                  throw new NoViableAltException(this);
-				                                                aux = new Const(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)),"c_{"+(((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)+"}",
+				                                                if (s.isQuantifier()) {
+				                                                    nArg = s.getArgumentosQuantifier();
+				                                                    Pair<HashSet<Integer>, HashSet<Integer>> P = s.getNotacionVariablesQuantifier();
+				                                                    HashSet<Integer> boundVarIndexes = P.a;
+				                                                    ArrayList<Term> boundVars = new ArrayList<Term>();
+				                                                    ArrayList<Term> unboundVars = new ArrayList<Term>();
+				                                                    int j = 1;
+				                                                    for(Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator(); i.hasNext();) {
+				                                                        if (boundVarIndexes.contains(j)) {
+				                                                            boundVars.add(i.next());
+				                                                        }
+				                                                        else {
+				                                                            unboundVars.add(i.next());
+				                                                        }
+				                                                        j++;
+				                                                    }
+				                                                    ArrayList<Term> abstractedTerms = new ArrayList<Term>();
+				                                                    for (Term base_term: unboundVars) {
+				                                                        Term t = base_term;
+				                                                        for (Term var: boundVars) {
+				                                                            t = new Bracket((Var) var, t);
+				                                                        }
+				                                                        abstractedTerms.add(t);
+				                                                    }
+				                                                    aux = new Const(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)),"c_{"+(((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)+"}",
 				                                                                     !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
-				                                                for(Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator(); i.hasNext();)
-				                                                   aux=new App(aux,i.next());
+				                                                    for (Term t: abstractedTerms) {
+				                                                        aux = new App(aux, t);
+				                                                    }
+				                                                }
+				                                                else {
+				                                                    if (((EqContext)_localctx).explist.value.size() != nArg)
+				                                                      throw new NoViableAltException(this);
+				                                                    aux = new Const(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)),"c_{"+(((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)+"}",
+				                                                                         !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
+				                                                    for(Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator(); i.hasNext();)
+				                                                       aux=new App(aux,i.next());
+				                                                }
 				                                               }
 				                                               ((EqContext)_localctx).value =  aux;
 				                                              

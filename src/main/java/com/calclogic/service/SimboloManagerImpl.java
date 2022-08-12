@@ -41,9 +41,11 @@ public class SimboloManagerImpl implements SimboloManager {
     public SimboloManagerImpl(SimboloDAO simboloDAO) {
         this.simboloDAO = simboloDAO;
         List<Simbolo> l = simboloDAO.getAllSimbolo();
-        symbolsCache = new Simbolo[l.size()];
-        for (int i=0; i < l.size(); i++)
-            symbolsCache[i] = l.get(i);
+        Simbolo last = l.get(l.size()-1);
+        int lastIndex = last.getId();
+        symbolsCache = new Simbolo[lastIndex + 1];
+        for (Simbolo s: l)
+            symbolsCache[s.getId()] = s;
     }
     
     public int getPropFunApp() {
@@ -148,23 +150,23 @@ public class SimboloManagerImpl implements SimboloManager {
         for (Solucion s: soluciones) {
             solucionDAO.deleteSolucion(s.getId());
         }
-        System.out.println("Seteando resuelves a no resuelto");
+        //System.out.println("Seteando resuelves a no resuelto");
         for (Resuelve r: dependents) {
             r.setResuelto(false);
         }
-        System.out.println("Borrando resuelves");
+        //System.out.println("Borrando resuelves");
         for (Resuelve r: dependents) {
             resuelveDAO.deleteResuelve(r.getId());
         }
-        System.out.println("Borrando teoremas");
+        //System.out.println("Borrando teoremas");
         for (Teorema t: orphans) {
             teoremaDAO.deleteTeorema(t.getId());
         }
         
-        System.out.println(orphans.size());
-        System.out.println(resuelves.size());
-        System.out.println(dependents.size());
-        System.out.println(soluciones.size());
+        //System.out.println(orphans.size());
+        //System.out.println(resuelves.size());
+        //System.out.println(dependents.size());
+        //System.out.println(soluciones.size());
         
         simboloDAO.deleteSimbolo(id);
         return "Symbol deleted";
@@ -178,7 +180,7 @@ public class SimboloManagerImpl implements SimboloManager {
     @Transactional
     public Simbolo getSimbolo(int id){
         if (0 < id && id <= symbolsCache.length)
-            return symbolsCache[id-1];
+            return symbolsCache[id];
         else
             return null;
     }
@@ -191,8 +193,8 @@ public class SimboloManagerImpl implements SimboloManager {
     public List<Simbolo> getAllSimbolo(){
         List<Simbolo> list = new ArrayList<Simbolo>();
         for (int i= 0; i < symbolsCache.length; i++)
-            if (i >= 0)
-            list.add(symbolsCache[i]);
+            if (i >= 0 && symbolsCache[i] != null)
+                list.add(symbolsCache[i]);
         return list;
     }
     
