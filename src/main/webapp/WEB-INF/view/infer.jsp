@@ -400,8 +400,6 @@
             </c:when>
         </c:choose>
 
-        <a href="misTeoremas" id="linkDemostrar" style="display:none"></a>
-
         <script>
             async function guardarMostrarCategorias() {
                 allCategoriasSettings = document.getElementsByClassName("categoria-settings");
@@ -432,7 +430,7 @@
                         }
                         // Case when the user is no longer active
                         else {
-                            document.getElementsByTagName("body")[0].innerHTML = data;
+                            window.location = $("#linkCloseSession").attr("href");
                         }
                     }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
                         alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 

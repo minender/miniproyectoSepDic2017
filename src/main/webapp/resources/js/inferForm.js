@@ -34,7 +34,7 @@ $(function() {
                     }*/
                     if(data.resuelto === "1"){
                         alert("Congratulations you have found a proof of the theorem!!");
-                        window.location = $("#linkDemostrar").attr("href");
+                        window.location = $("#linkMyTheorems").attr("href");
                     }
 
                     // Verifies if it has ended a proof for a case.
