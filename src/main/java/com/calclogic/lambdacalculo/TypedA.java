@@ -40,7 +40,7 @@ public class TypedA extends Const implements TypedTerm{
         super("A");
         variables_ = type.stFreeVars();
         type_ = type.abstractEq();
-        combDBType_ = type.toStringFinal();
+        combDBType_ = type_.traducBD().toStringFinal();
         nSt_ = "";
     }
     
@@ -55,7 +55,7 @@ public class TypedA extends Const implements TypedTerm{
            nSt_ = r.getNumeroteorema();
         }
         else {
-           variables_ = "";
+           variables_ = "p,q,r";
            nSt_ = "";
         }
     }

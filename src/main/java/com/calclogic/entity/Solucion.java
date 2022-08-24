@@ -195,7 +195,7 @@ public class Solucion implements java.io.Serializable {
         }
     }
     
-    private Term mergeSubProofs(Term subProof, List<Term> fathers) {
+    private Term mergeSubProofs(String user, Term subProof, List<Term> fathers) {
         Term auxProof;
         if (fathers.size()==1)
             return subProof;
@@ -210,7 +210,7 @@ public class Solucion implements java.io.Serializable {
                 auxProof = subProof;
             }
             while (i < fathers.size()) {
-              auxProof = finishedProofMethod.finishedAI2Proof(fathers.get(i), auxProof);
+              auxProof = finishedProofMethod.finishedAI2Proof(user,fathers.get(i), auxProof);
               i++;
             }
             return auxProof;
@@ -250,7 +250,7 @@ public class Solucion implements java.io.Serializable {
 
     }*/
 
-    public int retrocederPaso(Term methodTerm, String currentMethod){
+    public int retrocederPaso(String user, Term methodTerm, String currentMethod){
         /*int tam = this.arregloInferencias.size();
         this.deserialize();
         if(tam>0){
@@ -264,7 +264,7 @@ public class Solucion implements java.io.Serializable {
         Term auxTypedTerm = li.get(0);
 
         if (ProofBoolean.isOneLineProof(auxTypedTerm)){
-            typedTerm= mergeSubProofs(null,li);
+            typedTerm= mergeSubProofs(user,null,li);
             demostracion =(typedTerm==null?"":typedTerm.toStringFinal());
             return 0;
         }
@@ -301,20 +301,20 @@ public class Solucion implements java.io.Serializable {
                 !(auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t')    
                ) 
             {
-                typedTerm = mergeSubProofs(((App)((App)auxTypedTerm).p).q,li);
+                typedTerm = mergeSubProofs(user,((App)((App)auxTypedTerm).p).q,li);
                 if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
                     ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
                     ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
                    )
-                    typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q,li);
+                    typedTerm = mergeSubProofs(user,((TypedApp)auxTypedTerm).q,li);
             }
             else {
-                typedTerm = mergeSubProofs(((App)auxTypedTerm).p,li);
+                typedTerm = mergeSubProofs(user,((App)auxTypedTerm).p,li);
                 if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
                     ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
                     ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
                    )
-                    typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q,li);
+                    typedTerm = mergeSubProofs(user,((TypedApp)auxTypedTerm).q,li);
                 
             }
             demostracion = typedTerm.toStringFinal();
@@ -323,7 +323,7 @@ public class Solucion implements java.io.Serializable {
             return 2;
         }
         else {
-            typedTerm = mergeSubProofs(((App)auxTypedTerm.type()).q.body(),li);
+            typedTerm = mergeSubProofs(user,((App)auxTypedTerm.type().setToPrint()).q,li);
             demostracion = typedTerm.toStringFinal();
         //           System.out.println(typedTerm.toStringInfFinal());
         //           System.out.println("1");

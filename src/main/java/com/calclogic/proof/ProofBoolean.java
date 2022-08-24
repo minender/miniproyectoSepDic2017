@@ -104,6 +104,29 @@ public class ProofBoolean {
     }
     
     /**
+     * Returns true if and only if method is a linear recursive method, i.e. a method 
+     * that can't compose with another proof method. The base methods are 
+     * Direct Method, Starting From One Side Method, Transitivity Method, 
+     * Weakening Method, Strengthening Method
+     *  
+     * @param method: Term that represents the current state of the proof method
+     * @return true if and only if method is a linear recursive method.
+     */
+    public static boolean isLinearRecursiveMethod(Term method) {
+        if (method instanceof App){
+            return false;
+        }
+        else{
+            String methodStr;
+            return (methodStr=((Const)method).getCon()).equals("CO") || 
+                    methodStr.equals("CR") ||
+                    methodStr.equals("MI") ||
+                    methodStr.equals("CA") ||
+                    methodStr.equals("WI");
+        }
+    }
+    
+    /**
      * True if and only if exists a sub proof that is already started. This information 
      * can be inferred from the method term.
      *  
@@ -139,6 +162,50 @@ public class ProofBoolean {
     }
     
     /**
+     * True if and only if the method is a branched recursive one 
+     * and its second sub proof is already started.
+     *
+     * @param method: Term that represents the current state of the proof method. This
+     *                term had the information about what is the current sub proof
+     * @return True if and only if method is an And Introduction proof and in the second sub proof 
+     * exists sub proof (can be the same second sub proof) that is already started.
+     */
+    public static boolean isBranchedProof2Started(Term method) {
+        String methodStr;
+        return method instanceof App && ((App)method).p instanceof App && 
+                (
+                    (methodStr=((App)((App)method).p).p.toStringFinal()).equals("AI") ||
+                    methodStr.equals("CA")
+                )
+                && isProofStarted(((App)method).q);
+    }
+    
+    /**
+     * True if and only if the method contains a branched recursive one 
+     * and its second sub proof is already started.
+     *
+     * @param method: Term that represents the current state of the proof method. This
+     *                term had the information about what is the current sub proof
+     * @return True if and only if method contains a branched proof and in the second sub proof 
+     * exists sub proof (can be the same second sub proof) that is already started.
+     */
+    public static boolean containsBranchedProof2Started(Term method) {
+        String methodStr;
+        Term aux = method;
+        while (aux instanceof App && ((App)aux).p instanceof Const ) {
+            aux = ((App)aux).q;
+        }
+        if (aux instanceof App)
+           return ((App)aux).p instanceof App && 
+                   (
+                    (methodStr=((App)((App)aux).p).p.toStringFinal()).equals("AI") ||
+                     methodStr.equals("CA")
+                   ) && isProofStarted(((App)aux).q);
+        else
+           return false;
+    }
+    
+    /**
      * True if and only if method is an And Introduction proof and in the second sub proof 
      * exists sub proof (can be the same second sub proof) that is already started.
      * 
@@ -167,8 +234,9 @@ public class ProofBoolean {
                                     ((App)((App)typedTerm).p).q instanceof App && 
                                    ((App)((App)((App)typedTerm).p).q).q instanceof App &&
                        ((App)((App)((App)((App)typedTerm).p).q).q).q instanceof App &&
-                    ((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p instanceof TypedL &&
-    !(((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t.occur(new Var(122)));
+                    ((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q instanceof App &&
+             ((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p instanceof TypedL &&
+    !(((Bracket)((TypedL)((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p).type()).t.occur(new Var(122)));
     }
 
     /**

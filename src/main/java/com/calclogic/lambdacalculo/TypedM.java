@@ -31,6 +31,16 @@ public class TypedM extends TypedA implements TypedTerm {
         proof_ = new TypedApp(aux,proof_);
     }
     
+    public TypedM(Term proof, Term type, String user) throws TypeVerificationException {
+        super(type, user);
+        //A = new TypedA(type, variables_, nSt_, combDBType_);
+        Term lambType = type;
+        String arg2 = ((App)((App)lambType).p).q.body().toStringFinal();
+        Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{1} ("+arg2+") x_{122}}",user);
+        aux = new TypedApp(aux,proof);
+        proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{1})}", user);
+        proof_ = new TypedApp(aux,proof_);
+    }
     /*public TypedM(String proofTemplate, String usr, String arg1, String arg2) {
         super("M");
         proofTemplate_ = proofTemplate;

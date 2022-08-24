@@ -29,19 +29,19 @@ public class Parity {
         while (t instanceof App) {
             Term nabla2 = nabla; // si no entra en ninguna guardia aborta el TApp(nabla,nabla)
             if (((App)t).q instanceof Const && ((Const)((App)t).q).getId() == 7 ) {
-                Term root = nabla.type();
+                Term root = ((App)nabla.type()).q.body();
                 nabla2 = DerivationTree.neg(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p);
                 t = ((App)t).p;
             }
             else if (((App)t).q instanceof App && ((App)((App)t).q).p instanceof Const) {
                 if (((Const)((App)((App)t).q).p).getId() == 2 ) {
-                    Term root = nabla.type();
+                    Term root = ((App)nabla.type()).q.body();
                     nabla2 = DerivationTree.wsl2(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p, ((App)((App)t).q).q);
                 }
                 else if ( (((Const)((App)((App)t).q).p).getId() != 1 ) ) {
-                    Term root = nabla.type();
+                    Term root = ((App)nabla.type()).q.body();
                     nabla2 = DerivationTree.wsl1(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p, ((App)((App)t).q).q,
                                              (Const)((App)((App)t).q).p);
@@ -50,12 +50,12 @@ public class Parity {
             }
             else if (((App)t).q instanceof Const && ((App)t).p instanceof App) {
                 if ( ((Const)((App)t).q).getId()==3 ) {
-                    Term root = nabla.type();
+                    Term root = ((App)nabla.type()).q.body();
                     nabla2 = DerivationTree.wsr2(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p, ((App)((App)t).p).q);
                 }
                 else if (((Const)((App)t).q).getId() != 1) {
-                    Term root = nabla.type();
+                    Term root = ((App)nabla.type()).q.body();
                     nabla2 = DerivationTree.wsr1(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p, ((App)((App)t).p).q,
                                              (Const)((App)t).q);
@@ -64,7 +64,6 @@ public class Parity {
             }
             nabla = new TypedApp(nabla2,nabla);
         }
-        
         return nabla;
     }
 }

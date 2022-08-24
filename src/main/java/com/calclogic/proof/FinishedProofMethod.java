@@ -71,5 +71,5 @@ public interface FinishedProofMethod {
      * @param finalProof: The proof of second sub proof
      * @return proof of conjunction of two sub proofs
      */
-    public Term finishedAI2Proof(Term originalTerm, Term finalProof);
+    public Term finishedAI2Proof(String user, Term originalTerm, Term finalProof);
 }

@@ -6,6 +6,7 @@ package com.calclogic.lambdacalculo;
 
 import com.calclogic.entity.PredicadoId;
 import com.calclogic.entity.Simbolo;
+import com.calclogic.parse.TermUtilities;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
@@ -261,24 +262,42 @@ public abstract class Term implements Cloneable, Serializable{
     public abstract void freeVars(int[] set);
     
     public Term setToPrinting(String variables) {
-        Term arg1, arg2;
-        arg1 = ((App)((App)this).p).q;
-        arg2 = ((App)this).q;
+        
         if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
-            String[] vars = variables.split(",");
+            List<Var> li = TermUtilities.arguments(variables);
+            li.addAll(li);
+            /*String[] vars = variables.split(",");
             for (int i=0; i<vars.length; i++) {
                 arg1 = new App(arg1,new Var((int)vars[i].trim().charAt(0)));
                 arg2 = new App(arg2,new Var((int)vars[i].trim().charAt(0)));
             }
             arg1 = arg1.evaluar();
             arg2 = arg2.evaluar();
+            */
+            this.evaluar(li);
         }
+        Term arg2;
+        arg2 = ((App)this).q;
         Term t;
-        if (arg1 instanceof Const && ((Const)arg1).getCon().equals("T"))
-            t = arg2;
-        else
-            t = new App(new App(new Const(1,"c_{1}"),arg1),arg2);
+        if (this.containT())
+            t = arg2.body();
+        else {
+            Term arg1 = ((App)((App)this).p).q;
+            t = new App(new App(new Const(1,"c_{1}"),arg1.body()),arg2.body());
+        }
 	return t;
+    }
+    
+    public Term setToPrint() {
+        Term arg1, arg2;
+        arg1 = ((App)((App)this).p).q;
+        arg2 = ((App)this).q;
+        Term t;
+        if (arg1.containT())
+            t = arg2.body();
+        else
+            t = new App(new App(new Const(1,"c_{1}"),arg1.body()),arg2.body());
+        return t;
     }
     
     public Term abstractVars (String variables) {

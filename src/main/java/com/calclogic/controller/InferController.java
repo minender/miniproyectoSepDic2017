@@ -192,7 +192,8 @@ public class InferController {
             resuel.setResuelto(false);
             resuel = resuelveManager.addResuelve(resuel);
         }
-        Term formula = resuel.getTeorema().getTeoTerm().setToPrinting(resuel.getVariables());
+        TypedA A = new TypedA(resuel.getTeorema().getTeoTerm(),username);
+        Term formula = A.type();
         String solId = "new";
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
@@ -476,10 +477,11 @@ public class InferController {
                 case "ST":
                     Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username, numeroTeo);
                     // Case when the user could only see the theorem but had not a Resuelve object associated to it
-                    if (resuelve == null) {
+                    /*if (resuelve == null) {
                         resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",numeroTeo);
-                    }
-                    statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);
+                    }*/
+                    statementTerm = (resuelve!=null?
+                          resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables()):null);
                     break;
                 case "MT":
                     Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
@@ -502,13 +504,14 @@ public class InferController {
         // String freeV = statementTerm.freeVars();
         if (!freeV.equals("")) {
             String[] freeVars = freeV.split(",");
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),null);
+            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
 
             String metodo = solucion.getMetodo();
             Term methodTerm = ProofMethodUtilities.getTerm(metodo);
             Term typedTerm = crudOp.getSubProof(solucion.getTypedTerm(),methodTerm,true);
 
             Term lastLine = typedTerm.type();
+            
             if (lastLine == null)
                 lastLine = typedTerm;
             else {
@@ -524,6 +527,7 @@ public class InferController {
                     lastLine = ((App)((App)lastLine).p).q;
             }
 
+            lastLine = lastLine.body();
             Term leibnizTerm = null;
             // CREATE THE INSTANTIATION
             Sust sust = null;
@@ -549,7 +553,7 @@ public class InferController {
                     sust = eq.mgu(simboloManager);
                 }
             }
-             
+
             if (sust != null) {
                 String[] sustVars = sust.getVars().toString().replaceAll("[\\s\\[\\]]", "").split(",");
                 String[] sustFormatC = new String[freeVars.length];
@@ -848,7 +852,7 @@ public class InferController {
             if (methodTermAux instanceof App && 
                     ( (m=((App)methodTermAux).p.toStringFinal()).equals("AI") || m.equals("CA") )
                )
-               finalProof = finiPMeth.finishedAI2Proof(fatherProofs.pop(), finalProof);
+               finalProof = finiPMeth.finishedAI2Proof(username,fatherProofs.pop(), finalProof);
         }
 
         // newProve might or might not be different than pasoPostTerm
@@ -918,7 +922,7 @@ public class InferController {
             /*if (solucion.getDemostracion().equals("") && !solucion.getMetodo().equals("")) */
                 respRetroceder = 0;
             else {
-                respRetroceder = solucion.retrocederPaso(method,currentMethod.toStringFinal());
+                respRetroceder = solucion.retrocederPaso(username,method,currentMethod.toStringFinal());
             }
             if (respRetroceder == 0) {
                method = crudOp.eraseMethod(solucion.getMetodo());
@@ -1177,10 +1181,10 @@ public class InferController {
             metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
             if (teoid.substring(3,teoid.length()).equals(nTeo)) {
                formulaTerm = crudOp.initStatement(formulaTerm, metodoTerm);
-               typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+               typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
                solucion.setTypedTerm(typedTerm);
             } else {
-               typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+               typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
                solucion.setTypedTerm(typedTerm);
             }
             nuevoMetodo = metodoTerm.toStringFinal();
@@ -1283,7 +1287,7 @@ public class InferController {
             response.setnSol(solucion.getId()+"");
         }
         else {
-            typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -1372,7 +1376,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -1457,7 +1461,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }
@@ -1538,7 +1542,7 @@ public class InferController {
             solucionManager.addSolucion(solucion);
             response.setnSol(solucion.getId()+"");
         } else {
-            typedTerm = crudOp.addFirstLineSubProof(formulaTerm, solucion.getTypedTerm(), metodoTerm);
+            typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
             solucion.setTypedTerm(typedTerm);
             solucionManager.updateSolucion(solucion);
         }

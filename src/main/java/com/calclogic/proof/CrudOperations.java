@@ -137,7 +137,7 @@ public interface CrudOperations {
      *                term had the information about what is the current sub proof
      * @return Term that represent the statement to be proved in the current sub proof.
      */
-    public Term addFirstLineSubProof(Term formula, Term typedTerm, Term method);
+    public Term addFirstLineSubProof(String user, Term formula, Term typedTerm, Term method);
     
     /**
      * This method erase one basic proof method for currentMethod. 

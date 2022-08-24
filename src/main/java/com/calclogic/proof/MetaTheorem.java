@@ -67,20 +67,19 @@ public class MetaTheorem {
      */
     public static TypedApp metaTheoTrueLeft(Term proof) {
     
-        Term A2 = new TypedA( new App(new App(new Const(1,"c_{1}"),new Var(113)),
+        Term A2 = new TypedA( new App(new App(new Const(0,"="),new Var(113)),
                                      new App(new App(new Const(1,"c_{1}"),new Var(113)),
                                                                new Const(8,"c_{8}"))));
-        
         List<Var> lis1 = new ArrayList<>();
         lis1.add(new Var(113));
         List<Term> lis2 = new ArrayList<>();
-        lis2.add(proof.type());
+        lis2.add(proof.type().setToPrint());
         Term I2 = new TypedI(new Sust(lis1,lis2));
         
         TypedApp typedTerm = null;
         try {
           typedTerm = new TypedApp(I2,A2);
-          typedTerm = new TypedApp(new TypedApp(new TypedS(typedTerm.type()), typedTerm),proof);
+          typedTerm = new TypedApp(new TypedApp(new TypedS(), typedTerm),proof);
           return typedTerm;
         }
         catch (TypeVerificationException e){

@@ -97,7 +97,7 @@ public class InferenceIndex {
                 ultInf = iter;
             }
             i++;
-            Term ultInfType = ultInf.type();
+            Term ultInfType = ultInf.type().setToPrint();
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
                    !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
                      ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{20}")

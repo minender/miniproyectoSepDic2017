@@ -12,6 +12,8 @@ import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
+import com.calclogic.lambdacalculo.TypedM;
+import com.calclogic.lambdacalculo.TypedMApp;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.service.SimboloManager;
@@ -70,15 +72,16 @@ public class CrudOperationsImpl implements CrudOperations {
             // Direct, starting from one side, transitivity, weakening or strengthening method
             case "D":
             case "T":
-                Term C;       
+                theoremHint = new TypedA(theoremHint,user).type();
+                Term C, T;
                 if (noInstantiation && noLeibniz){
                     infer = A;
                 }
                 else if (noInstantiation){
-                    if (("T".equals(groupMethod)) && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                         (C=((App)(((App)theoremHint).p)).p) != null && C instanceof Const &&
+                    if (("T".equals(groupMethod)) && theoremHint.containT() && theoremHint instanceof App && 
+                         (T=((App)theoremHint).q.body()) instanceof App && ((App)T).p instanceof App &&
+                         (C=((App)((App)T).p).p) != null && C instanceof Const &&
                          (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
-
                         infer = Parity.parityLeibniz(leibniz, A);
                     }else {
                         L = new TypedL(leibniz);
@@ -86,15 +89,14 @@ public class CrudOperationsImpl implements CrudOperations {
                     } 
                 }
                 else{
-
                     I = new TypedI(new Sust((ArrayList<Var>)instantiation.get(0), (ArrayList<Term>)instantiation.get(1)));
                     if (noLeibniz){
                         infer = new TypedApp(I,A);
                     }
-                    else if (("T".equals(groupMethod)) && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                            (C=((App)((App)theoremHint).p).p) != null && C instanceof Const &&
+                    else if (("T".equals(groupMethod)) && theoremHint.containT() && theoremHint instanceof App && 
+                            (T=((App)theoremHint).q.body()) instanceof App && ((App)T).p instanceof App && 
+                            (C=((App)((App)T).p).p) != null && C instanceof Const &&
                             (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
-
                         infer = Parity.parityLeibniz(leibniz,new TypedApp(I,A));
                     } else {
                         L = new TypedL((Bracket)leibniz);
@@ -360,14 +362,15 @@ public class CrudOperationsImpl implements CrudOperations {
                 return null;
             }
             else if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
-                return ((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t;
+                return ((Bracket)((TypedL)((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p).type()).t;
             }
             else if (ProofBoolean.isAIProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
                 if (isRecursive){
-                    return getSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,true);
+                    return getSubProof(((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q,
+                                                                                 ((App)auxMethod).q,true);
                 }
                 else{
-                    return ((App)((App)((App)((App)typedTerm).p).q).q).q;
+                    return ((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q;
                 }
             } else{
                 auxMethod = ((App)auxMethod).q;
@@ -402,12 +405,13 @@ public class CrudOperationsImpl implements CrudOperations {
             }
             else if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
                 li.add(0, typedTerm);
-                li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).p).type()).t);
+                li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p).type()).t);
                 return li;
             }
             else if (ProofBoolean.isAIProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
                 li.add(0, typedTerm);
-                return getFatherAndSubProof(((App)((App)((App)((App)typedTerm).p).q).q).q,((App)auxMethod).q,li);
+                return getFatherAndSubProof(((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q,
+                                                                                   ((App)auxMethod).q,li);
             }
             else{
                 auxMethod = ((App)auxMethod).q;
@@ -487,39 +491,43 @@ public class CrudOperationsImpl implements CrudOperations {
             String op;
             String opInf;
             try {
-                op = ((App)((App)type).p).p.toStringFinal();
-                opInf = ((App)((App)typeInf).p).p.toStringFinal();
+                op = (type.containT()?((App)((App)((App)type).q.body()).p).p.toStringFinal()
+                                       :((App)((App)type).p).p.toStringFinal());
+                opInf = (typeInf.containT()?((App)((App)((App)typeInf).q.body()).p).p.toStringFinal()
+                                       :((App)((App)typeInf).p).p.toStringFinal());
             }
             catch (ClassCastException e) {
                 throw new TypeVerificationException();
             }
-            if ( !op.equals("c_{1}") && !op.equals("c_{20}") ) {
+            if ( !op.equals("=") ) {
                 proof = MetaTheorem.metaTheoTrueLeft(proof);
                 type = proof.type();
             }
             int index = InferenceIndex.wsFirstOpInferIndex(proof);
-            boolean eqInf = opInf.equals("c_{1}") || opInf.equals("c_{20}");
+            boolean eqInf = opInf.equals("=");
             if ( index == 0 && eqInf) {
                 return new TypedApp(proof, infer);
             }
             else if (index == 0 && !eqInf) {
-                String eq = op;
-                String st = "c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101})";
+                String eq = "c_{1}";//op;
+                String st = "= T (c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101}))";
                 String deriv = "";
+                typeInf = ((App)typeInf).q.body();
                 try {
-                    String E = "\\Phi_{b} ("+ ((App)infer.type()).p+")";
-                    deriv = "I^{[x_{101}, x_{102}, x_{69} := "+((App)type).q+", "+((App)((App)type).p).q+", "+E+"]} A^{"+st+"}";
+                    String E = "\\Phi_{b} ("+ ((App)typeInf).p+")";
+                    deriv = "I^{[x_{101}, x_{102}, x_{69} := "+((App)type).q.body()+", "+((App)((App)type).p).q.body()+", "+E+"]} A^{"+st+"}";
                 }
                 catch (ClassCastException e) {
                     throw new TypeVerificationException();
                 }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user), proof), infer);
+                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,null), new TypedM(type,user)), infer);
             }
             else if (index != 0 && !eqInf) {
-                String st = "c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8})";
+                String st = "= T (c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8}))";
                 String deriv = "";
+                typeInf = ((App)typeInf).q.body();
                 try {
-                    Term aux = (App)((App)((App)type).p).q;
+                    Term aux = (App)((App)((App)((App)type).q.body()).p).q;
                     deriv = "I^{[x_{112}, x_{113}, x_{114} := "+((App)aux).q+", "+((App)((App)aux).p).q+", "+((App)((App)typeInf).p).q+"]} A^{"+st+"}";
                 }catch (ClassCastException e) {
                     throw new TypeVerificationException();
@@ -558,34 +566,41 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term addFirstLineSubProof(Term formula, Term typedTerm, Term method) {
+    public Term addFirstLineSubProof(String usr, Term formula, Term typedTerm, Term method) {
         Term auxMethod = method;
         while (auxMethod instanceof App) {
-            if (ProofBoolean.isAIProof2Started(auxMethod) && ProofBoolean.isAIProof2Started(((App)auxMethod).q)){
-                Term aux = addFirstLineSubProof(formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
+            if (ProofBoolean.isBranchedProof2Started(auxMethod) && 
+                ProofBoolean.containsBranchedProof2Started(((App)auxMethod).q)
+               )
+            {
+                Term aux = addFirstLineSubProof(usr, formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
                                                                                     ((App)auxMethod).q);
-                return finiPMeth.finishedAI2Proof(typedTerm,aux);
+                return finiPMeth.finishedAI2Proof(usr,typedTerm,aux);
             }
             // si la segunda prueba del AI es otro metodo que adentro tiene un AI, esto no funciona
             else if (ProofBoolean.isAIProof2Started(auxMethod)) {
                 Map<String,String> values1 = new HashMap<>();
-                values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
+                //values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
                 String aux;
                 values1.put("ST2", formula.toStringFinal());
                 StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
-                String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
+                //String fLineEncode = "L^{\\lambda x_{122}."+formula.toStringFinal()+"} A^{= x_{113} x_{113}}";
+                //String l = ((App)((App)CombUtilities.getTerm(fLineEncode,null).type()).p).q.body().toStringFinal();
+                //String lamb = "L^{\\lambda x_{122}. c_{1} ("+l+") x_{122}}";
+                //String metaTheoT= "L^{\\lambda x_{122}. c_{1} (%(ST2)) x_{122}} (L^{\\lambda x_{122}.%(ST2)} A^{= x_{113} x_{113}}) (I^{[x_{112}:= %(ST2)]} A^{= c_{8} (c_{1} x_{112} x_{112})})";
+                String metaTheoT = "I^{[x_{113}:= %(ST2)]} A^{= (\\Phi_{(b,)} c_{1}) (\\Phi_{K} c_{8})} (L^{\\lambda x_{122}. c_{1} x_{122} (%(ST2))} (L^{\\lambda x_{122}.%(ST2)} A^{= (\\Phi_{(b,)} c_{1}) (\\Phi_{K} c_{8})}))";
                 String metaTheo = sub1.replace(metaTheoT);
                 Map<String,String> values2 = new HashMap<>();
                 values2.put("MT", metaTheo);
-                values2.put("T1Type", typedTerm.type().toStringFinal());
+                values2.put("T1Type", typedTerm.type().setToPrint().toStringFinal());
                 aux = typedTerm.toStringFinal();
                 values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
                 StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
-                String template = "S (I^{[x_{112}:=%(T1Type)]} A^{c_{1} x_{112} (c_{5} c_{8} x_{112})}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";
+                String template = "S (I^{[x_{112}:=%(T1Type)]} A^{= \\Phi_{} (\\Phi_{b} (c_{5} c_{8}))}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";
                 String proof = sub2.replace(template);
                 Term proofTerm = null;
                 try {
-                    proofTerm = new TypedApp(CombUtilities.getTerm(proof,null),typedTerm);
+                    proofTerm = new TypedApp(CombUtilities.getTerm(proof,usr),typedTerm);
                 }
                 catch (TypeVerificationException e) {
                     Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);

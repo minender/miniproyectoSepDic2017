@@ -43,7 +43,9 @@ public class TypedApp extends App implements TypedTerm{
             inferType = 'l'; // Cuando se tipe hay que verificar si (t1Type t2Type) no dan error de tipo
         }
         else if (t1 instanceof TypedS) // <== S operand created by the grammar
-        {   
+        {
+            if (t2.containT())
+                throw new TypeVerificationException();
             inferType = 's';
         }
         else if (t1Type instanceof App)
@@ -169,9 +171,8 @@ public class TypedApp extends App implements TypedTerm{
             E = new App(new App(new Const("="),new App(E,((App)((App)qType).p).q)),new App(E,((App)qType).q)).evaluar();
             return E;*/
             //return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms).evaluar();
-            Term right = ((App)((App)qType).p).q.body().sustParall((Sust)pType);
-            Term left = (((App)qType).q).body().sustParall((Sust)pType);
-           
+            Term right = ((App)((App)qType).p).q.body().sustParall((Sust)pType).evaluar();
+            Term left = (((App)qType).q).body().sustParall((Sust)pType).evaluar();
             return new App(new App(new Const("="),right),left).abstractEq();
         }
         else if (inferType == 'l')
@@ -194,7 +195,7 @@ public class TypedApp extends App implements TypedTerm{
         }
         else if (inferType == 'm')
         {
-            Const eq = (Const)((App)((App)((App)pType).q.body()).p).p;
+            Const eq = (Const)((App)((App)pType).p).p;
             pType = ((App)((App)((App)pType).q.body()).p).q;
             Const T = (Const)((App)((App)qType).p).q.body();
             return new App(new App(eq,T),pType).abstractEq();

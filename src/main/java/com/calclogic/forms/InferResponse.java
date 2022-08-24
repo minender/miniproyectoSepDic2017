@@ -420,8 +420,8 @@ public class InferResponse {
                 
                 Term t;
                 if ( modusPones ) {
-                    App aux1 = (App)((App)((App)((App)((App)ultInf).q.type()).p).q).q;
-                    App aux2 = (App)((App)((App)((App)ultInf.type()).p).q).q;
+                    App aux1 = (App)((App)((App)((App)((App)ultInf).q.type().setToPrint()).p).q).q;
+                    App aux2 = (App)((App)((App)((App)ultInf.type().setToPrint()).p).q).q;
                     if ( ((Var)aux1.q).indice == 112 ) {
                         t = new App(((App)aux2).p,new Var('z'));
                     }
@@ -440,7 +440,7 @@ public class InferResponse {
             }
         }
         hint = hintOneSide(user, ultInf, resuelveManager, disponeManager, s);
-        hint = ((App)((App)typedTerm.type()).p).p.toStringInf(s,"")+hint.substring(hint.indexOf("~"));
+        hint = ((App)((App)typedTerm.type().setToPrint()).p).p.toStringInf(s,"")+hint.substring(hint.indexOf("~"));
         if (leibniz.toStringFinal().equals("x_{122}") )
             return hint;
         else
@@ -673,6 +673,7 @@ public class InferResponse {
         boolean isAI = metodo.toStringFinal().substring(0, 2).equals("AI");
         String stOrCase = (isAI?"Statement":"Case");
         String methodName = (isAI?"Conjunction by parts":"Case Analysis");
+        formula = formula.setToPrint();
         Term newFormula = ((App)formula).q;
         try {
            statement = "<center>$" + clickeableST(user, newFormula, clickeable, metodo, false, s) 
@@ -689,7 +690,7 @@ public class InferResponse {
         else if ( ((App)metodo).p instanceof Const  ) {
             privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, ((App)metodo).q, 
                                     resuelveManager, disponeManager, s, clickeable, false);
-            if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(newFormula))){
+            if (!(typedTerm!=null && typedTerm.type()!=null && typedTerm.type().setToPrint().equals(newFormula))){
                 cambiarMetodo = "0";
             }
             else {
@@ -735,15 +736,15 @@ public class InferResponse {
         String hint;
         //Term t;
         boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
-                      ProofBoolean.isInverseImpl(((TypedApp)typedTerm).q.type(),typedTerm.type());
+                      ProofBoolean.isInverseImpl(((TypedApp)typedTerm).q.type().setToPrint(),
+                                                                       typedTerm.type().setToPrint());
         Term iter = (reversed?((TypedApp)typedTerm).q:typedTerm);
         boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
-                      ((TypedApp)iter).q.type().toStringFinal().equals("c_{8}");
+                      ((TypedApp)iter).q.type().setToPrint().toStringFinal().equals("c_{8}");
         iter = (lastEquan?((TypedApp)iter).p:iter);
         Term ultInf = null;
         int i = 0;
         int firstOpInf = InferenceIndex.wsFirstOpInferIndex(iter);
-        
         while (iter!=ultInf){
             // iter is of the form TT with transitivity
             if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t') {
@@ -772,7 +773,7 @@ public class InferResponse {
             }
             i++;
             // if ultInf is a no =inference do this
-            Term ultInfType = ultInf.type();
+            Term ultInfType = ultInf.type().setToPrint();
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
                    !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
                      ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{20}")
@@ -801,12 +802,13 @@ public class InferResponse {
         String lastline;
         if ( firstOpInf == 0 || i == 1)
         {
-            Term last = (reversed?((App)typedTerm.type()).q:((App)((App)typedTerm.type()).p).q);
+            Term last = (reversed?((App)typedTerm.type().setToPrint()).q:
+                                      ((App)((App)typedTerm.type().setToPrint()).p).q);
             lastline = (solved?last.toStringInf(s,"")+"$":last.toStringInfLabeled(s));
         }
         else {
             Term last = (reversed?((TypedApp)typedTerm).q:typedTerm);
-            last = ((App)((App)((App)((App)(lastEquan?((TypedApp)last).p:last).type()).p).q).p).q;
+            last = ((App)((App)((App)((App)(lastEquan?((TypedApp)last).p:last).type().setToPrint()).p).q).p).q;
             lastline = (solved?last.toStringInf(s,"")+"$":last.toStringInfLabeled(s));
         }
         this.setHistorial(this.getHistorial()+"~~~~~~"+lastline);
@@ -823,8 +825,8 @@ public class InferResponse {
     private String clickeableST(String user, Term newTerm, String clickeable, Term method, boolean isRootTeorem, 
                                 SimboloManager s) throws Exception {
         Term noComNewTerm = new TypedA(newTerm,user).type();
-        if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ) // en plena recursion
-            return noComNewTerm.toStringInf(s,"");
+        if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // en plena recursion
+            return noComNewTerm.toStringInf(s,"");}
         else if (clickeable.equals("DM"))  // final de la impresion
             return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ noComNewTerm.toStringInf(s,"") + "}}";
         else if (clickeable.equals("SS")) { // final de la impresion
@@ -972,7 +974,6 @@ public class InferResponse {
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
-        
         if (isRootTeorem && metodo == null)
             cambiarMetodo = "1";
         else if (isRootTeorem && ProofBoolean.isWaitingMethod(metodo)) 

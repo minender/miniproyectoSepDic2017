@@ -324,13 +324,13 @@ public class CombParser extends Parser {
 				                                for (Term it: ((TermContext)_localctx).term_tail.value) {
 			                                        if (aux instanceof TypedTerm && 
 			                                            (it instanceof TypedTerm || it instanceof Const || it instanceof App))
-			                                            aux = new TypedApp(aux,it);
-							                        else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
-								                        aux = new App(aux,it);
+			                                             aux = new TypedApp(aux,it);
+							        else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm))
+								     aux = new App(aux,it);
 			                                        else
 			                                            throw new TypeVerificationException();
 			                                    }
-							                }
+			                                }
 			                                catch (TypeVerificationException e){
 			                                    e.printStackTrace();
 			                                    System.exit(1);

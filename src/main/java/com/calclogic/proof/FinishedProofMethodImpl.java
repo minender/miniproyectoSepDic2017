@@ -276,7 +276,7 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
                 // If the current theorem or theorem==true matches the final expression
                 else if(noEqTheo.equals(finalExpr) || mt.equals(finalExpr)){
                     if (((App)((App)theorem).p).q.containT() )
-                      equanimityExpr = new TypedA(theorem);
+                      equanimityExpr = new TypedA(theorem,username);
                     else
                       equanimityExpr = new TypedM(theorem,username);
                 } 
@@ -291,13 +291,13 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
                         //System.out.println("Por el sust != null");
                         // The equanimity is applied with the instantiated theorem, not with the last line instantiated
                         if (((App)((App)theorem).p).q.containT() )
-                          equanimityExpr = new TypedApp(new TypedI(sust), new TypedA(theorem)); 
+                          equanimityExpr = new TypedApp(new TypedI(sust), new TypedA(theorem,username)); 
                         else 
-                          equanimityExpr = new TypedM(theorem,username); 
+                          equanimityExpr = new TypedApp(new TypedI(sust),new TypedM(theorem,username)); 
                     }   
                 }
                 if (equanimityExpr != null){
-                    return new TypedApp(new TypedApp(new TypedS(proof.type()), proof), equanimityExpr);
+                    return new TypedApp(new TypedApp(new TypedS(), proof), equanimityExpr);
                 }
             }
         }
@@ -474,14 +474,16 @@ public class FinishedProofMethodImpl implements FinishedProofMethod {
      */
     @Override
     @Transactional
-    public Term finishedAI2Proof(Term originalTerm, Term finalProof) {
+    public Term finishedAI2Proof(String usr, Term originalTerm, Term finalProof) {
         Map<String,String> values = new HashMap<>();
         values.put("T1",finalProof.toStringFinal());
-        values.put("T1Type", finalProof.type().toStringFinal());
+        values.put("T1TypeQ", ((App)finalProof.type().setToPrint()).q.toStringFinal());
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
-        String metaTheo = "S (I^{[x_{113} := %(T1Type)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (%(T1))";
+        //String metaTheo = "S (I^{[x_{113} := %(T1Type)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (%(T1))";
+        String metaTheo = "I^{[x_{113}:= %(T1TypeQ)]} A^{= (\\Phi_{(b,)} c_{1}) (\\Phi_{K} c_{8})} (L^{\\lambda x_{122}. c_{1} x_{122} (%(T1TypeQ))} (%(T1)))";
         String theo = sub.replace(metaTheo);
-        Term theoTerm = CombUtilities.getTerm(theo,null);
+        System.out.println(theo);
+        Term theoTerm = CombUtilities.getTerm(theo,usr);
         Term firstProof = ((App)originalTerm).q;
         Term firstStAndTrue = ((App)((App)originalTerm).p).p;
         Term leibniz = ((App)((App)((App)originalTerm).p).q).p;
