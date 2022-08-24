@@ -88,6 +88,11 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
     public int getArgumentos() {
         return argumentos;
     }
+    
+    @Override
+    public int getArgs() {
+        return this.getArgumentos();
+    }
 
     public boolean isEsInfijo() {
         return esInfijo;

@@ -1035,9 +1035,17 @@ public class App extends Term{
              values.put("aa"+i,tStr.term);
          }
          else {
+           if (sym.getId() == 14) {
+            //System.out.println((arg instanceof Bracket));
+           }
            if (arg instanceof Bracket) {
-               values.put("v"+i,((Bracket) arg).x.toString());
-               arg = ((Bracket)arg).t;
+               Term aux_arg = arg;
+               int index = 1;
+               while (aux_arg instanceof Bracket) {
+                   values.put("v"+index,((Bracket) aux_arg).x.toString());
+                   index++;
+                   aux_arg = ((Bracket) aux_arg).t;
+               }
            }
            if (notation.contains("%(na"+i+")")) {
              arg.toStringInfAbrv(tStr,s,pm,"");

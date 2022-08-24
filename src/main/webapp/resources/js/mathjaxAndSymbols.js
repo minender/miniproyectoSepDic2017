@@ -550,8 +550,8 @@ function setInputValueOnParser(rootId){
 	var prefix = window[rootId + 'prefixCnotation'];
 	if(parserString.length == 0){ prefix = '';}
 	textarea.val(prefix + parserString);
-        //console.log(parserString);
-        //alert("perro");
+        console.log(parserString);
+        alert(parserString);
 	return parserString;
 }
 

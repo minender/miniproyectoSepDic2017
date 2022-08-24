@@ -11,6 +11,7 @@ import com.calclogic.lambdacalculo.*;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import org.antlr.v4.runtime.misc.Pair;
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;}
@@ -35,14 +36,11 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]:
                                                 if (s == null)throw new IsNotInDBException(this,"");
                                                 int nArg = s.getArgumentos();
                                                 if (s.isQuantifier()) {
-                                                    nArg = s.getArgumentosQuantifier();
-                                                    Pair<HashSet<Integer>, HashSet<Integer>> P = s.getNotacionVariablesQuantifier();
-                                                    HashSet<Integer> boundVarIndexes = P.a;
                                                     ArrayList<Term> boundVars = new ArrayList<Term>();
                                                     ArrayList<Term> unboundVars = new ArrayList<Term>();
                                                     int j = 1;
                                                     for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();) {
-                                                        if (boundVarIndexes.contains(j)) {
+                                                        if (j > nArg) {
                                                             boundVars.add(i.next());
                                                         }
                                                         else {
@@ -50,6 +48,7 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm] returns [Term value]:
                                                         }
                                                         j++;
                                                     }
+                                                    Collections.reverse(boundVars);
                                                     ArrayList<Term> abstractedTerms = new ArrayList<Term>();
                                                     for (Term base_term: unboundVars) {
                                                         Term t = base_term;

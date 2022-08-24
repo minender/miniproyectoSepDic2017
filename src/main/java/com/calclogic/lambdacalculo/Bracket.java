@@ -277,8 +277,9 @@ public class Bracket extends Term{
     {
         if(t.alias == null)
         {
-            t.toStringInfAbrvFinal(toString);
-            toString.term= "(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
+            //System.out.println(t);
+            t.toStringInfAbrvFinal(toString, s, p, nTeo);
+            //toString.term= "(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
             return toString;
         }
         else

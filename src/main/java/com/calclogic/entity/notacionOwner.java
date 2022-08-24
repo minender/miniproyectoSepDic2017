@@ -9,6 +9,10 @@ import org.antlr.v4.runtime.misc.Pair;
 public abstract class notacionOwner {
 	
 	private String notacion;
+        
+        public int getArgs() {
+            return 0; // Para no romper la clase Predicado
+        }
 	
 	public String getNotacion() {
 		return notacion;
@@ -152,6 +156,7 @@ public abstract class notacionOwner {
     			
     			// Get the variable
     			currentVariable = notacionString.substring(variableStart, i+1);
+                        boolean isBound = currentVariable.contains("v");
     			
     			// If is an op we must get the latex notation of the symbol
     			if( currentVariable.equals("%(op)")) {
@@ -163,7 +168,11 @@ public abstract class notacionOwner {
     				
     				// In case we are seeing a forminput we must change its id
     				if(forminput) {
-    					newId = "{" + notacionString.charAt(i-1) + "}";
+                                        int id = Integer.parseInt(String.valueOf(notacionString.charAt(i-1)));
+                                        if (isBound) {
+                                            id = id + this.getArgs();
+                                        }
+    					newId = "{" + id + "}";
     					currentVariable = currentVariable.replaceFirst("\\{.*\\}", newId);
     				}
     			}
@@ -199,7 +208,6 @@ public abstract class notacionOwner {
     		
     		latexString = result.toString();
     	}
-    	
     	
     	return latexString;
     	
