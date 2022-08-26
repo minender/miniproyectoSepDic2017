@@ -58,8 +58,8 @@ public class InferResponse extends GenericResponse{
     private boolean endCase = false;
 
     // Portion of HTML to center a formula, but also the formula is aligned to the left in its own block
-    private String centerBegin = "<center style='display:flex; flex-direction:row'><div style='flex-grow:1'></div>";
-    private String centerEnd = "<div style='flex-grow:1'></div></center>";
+    private final String centerBegin = "<center style='display:flex; flex-direction:row'><div style='flex-grow:1'></div>";
+    private final String centerEnd = "<div style='flex-grow:1'></div></center>";
 
     private final CrudOperations proofCrudOperations;
 
@@ -289,17 +289,17 @@ public class InferResponse extends GenericResponse{
     {
         // In full recursion
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){
-            return newTerm.toStringInf(s,"");
+            return newTerm.toStringLaTeX(s,"");
         }     
         else if ("DM".equals(clickable)){ // End of the impression
-            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringInf(s,"") + "}}";
+            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringLaTeX(s,"") + "}}";
         }   
         else if ("SS".equals(clickable)) { // End of the impression
-            String formulaDer = ((App)((App)newTerm).p).q.toStringInf(s,"");
-            String formulaIzq = ((App)newTerm).q.toStringInf(s,"");
+            String formulaDer = ((App)((App)newTerm).p).q.toStringLaTeX(s,"");
+            String formulaIzq = ((App)newTerm).q.toStringLaTeX(s,"");
 
             Term operatorTerm = ((App)((App)newTerm).p).p;
-            String operator   = operatorTerm.toStringInf(s,"");
+            String operator   = operatorTerm.toStringLaTeX(s,"");
 
             if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{20}")){
                 throw new Exception();
@@ -311,7 +311,7 @@ public class InferResponse extends GenericResponse{
             return formulaIzq+"$ $"+ operator +"$ $" + formulaDer;
         }
         else{ // clickable.equals("n")
-            return newTerm.toStringInf(s,"");
+            return newTerm.toStringLaTeX(s,"");
         }
     }
     
@@ -436,16 +436,16 @@ public class InferResponse extends GenericResponse{
             return;
         }
         if (typedTerm!=null && type == null && !valida && !recursive){
-            this.setHistorial(this.getHistorial()+header+this.centerBegin+"$"+typedTerm.toStringInfLabeled(s)+MicroServices.transformLaTexToHTML("$\\text{No valid inference}$"));
+            this.setHistorial(this.getHistorial()+header+this.centerBegin+"$"+typedTerm.toStringLaTeXLabeled(s)+MicroServices.transformLaTexToHTML("$\\text{No valid inference}$"));
             return;
         }
         if (typedTerm!=null && type == null && valida && !recursive) { // Case where what we want to print is the first line
             String firstLine;
             if(naturalSide){
-                firstLine = ((App)((App)typedTerm).p).q.toStringInfLabeled(s);  
-                this.setHistorial(this.getHistorial()+header+"<br>Assuming H1: $"+ ((App)typedTerm).q.toStringInf(s, "")+"$"+this.centerBegin+"$"+firstLine+this.centerEnd);
+                firstLine = ((App)((App)typedTerm).p).q.toStringLaTeXLabeled(s);  
+                this.setHistorial(this.getHistorial()+header+"<br>Assuming H1: $"+ ((App)typedTerm).q.toStringLaTeX(s, "")+"$"+this.centerBegin+"$"+firstLine+this.centerEnd);
             }else {
-                firstLine = typedTerm.toStringInfLabeled(s);
+                firstLine = typedTerm.toStringLaTeXLabeled(s);
                 this.setHistorial(this.getHistorial()+header+this.centerBegin+"$"+firstLine+this.centerEnd);
             }
             return;
@@ -486,30 +486,6 @@ public class InferResponse extends GenericResponse{
             if (!valida){
                 historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
             }
-        }
-
-        //else if (naturalDirect)
-        //    ; //setDirectProof(user, translateToDirect(typedTerm), resuelveManager, disponeManager, s, false);
-        //else if (naturalSide)
-        //    ; //setDirectProof(user, translateToOneSide(typedTerm), resuelveManager, disponeManager, s, true);
-        
-        // Add the hypothesis if we are doing natural deduction
-        // if(naturalDirect || naturalSide) { 
-        //     header += "<br>Assuming H1: $" +((App)((App)((App)type).p).q).q.toStringInf(s,"") + "$<br><br>";
-        // }
-
-        // if (!recursive) { // <--- It had commented (!andIntroduction) as a condition
-        //     historial = header+"<center>$" +historial+"</center>";
-        //     if (!valida){
-        //         historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
-        //     }
-        // }
-
-        //else if (/*!andIntroduction &&*/ recursive)
-        //    ;
-        //else 
-        //    this.setHistorial(header +this.getHistorial());
-        
-        //this.setHistorial(this.getHistorial()+ "$$" +pasoPost + "$$");        
+        }      
     }  
 }

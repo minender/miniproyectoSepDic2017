@@ -150,12 +150,12 @@ public class I extends Term {
     }
    
     @Override
-    public String toStringInf(SimboloManager s,String numTeo) {
+    public String toStringLaTeX(SimboloManager s,String numTeo) {
             return ""; //"|";
     }     
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> l, List<String> l2, Id id, int nivel){
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> l, List<String> l2, Id id, int nivel){
             return ""; //"|";
     }
         
@@ -174,7 +174,7 @@ public class I extends Term {
     }
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
+    public String toStringLaTeXWithInputs(SimboloManager s, String position, String rootId) {
         return "";
     }
     
@@ -191,7 +191,7 @@ public class I extends Term {
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
+    public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
                                     String nTeo)
     {
         toString.term=this.toString();

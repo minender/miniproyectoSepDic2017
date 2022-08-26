@@ -30,7 +30,7 @@
                                                             </a>
                                                         </c:when>
                                                     </c:choose>                                    
-                                                    <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,resu.getNumeroteorema())}$</span>
+                                                    <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().toStringLaTeX(simboloManager,resu.getNumeroteorema())}$</span>
 
                                                     <script>clickTeoremaInicial('ST-${resu.getNumeroteorema()}');
                                                             clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().freeVars()}');
@@ -42,7 +42,7 @@
                                                                 <br>
                                                                 <span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>                
    
-                                                                <%--<span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span> --%>
+                                                                <%--<span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringLaTeX(simboloManager,"")}$</span> --%>
 
                                                                 <%--BUSCAR (LUEGO BORRAR ESTE COMENTARIO) --%>
                                                                 <div id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">
@@ -70,11 +70,11 @@
         
                                             <c:choose>
                                                 <c:when test="${!resu.isEsAxioma()}">
-                                                    <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "You are going to prove the theorem":"You have left an incomplete proof of the theorem"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". To be continued the proof from the point where you left it;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,mensaje)}$
+                                                    <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "You are going to prove the theorem":"You have left an incomplete proof of the theorem"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". To be continued the proof from the point where you left it;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringLaTeX(simboloManager,mensaje)}$
                                                 </c:when>
 
                                                 <c:otherwise>
-                                                    (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,"")}$    
+                                                    (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringLaTeX(simboloManager,"")}$    
                                                 </c:otherwise>
                                             </c:choose>
                                             <%--<span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
@@ -87,7 +87,7 @@
                                                         <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
                                                     </c:otherwise>
                                                 </c:choose>
-                                                (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$  
+                                                (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringLaTeXFinal()}$  
                                                 <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
                                             </span>--%>
                                         </c:otherwise>

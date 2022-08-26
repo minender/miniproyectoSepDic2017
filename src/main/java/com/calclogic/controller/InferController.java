@@ -223,13 +223,13 @@ public class InferController {
         map.addAttribute("leibniz","");
         
         if (solId.equals("new")){
-            map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");
+            map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"")+"$</center> Proof:");
             map.addAttribute("elegirMetodo","1");
             map.addAttribute("teoInicial", "");
         }
         else{
             Solucion solucion = solucionManager.getSolucion(resuel.getDemopendiente());
-            infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");  
+            infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"")+"$</center> Proof:");  
             InferResponse response = new InferResponse(crudOp);
             Term typedTerm = solucion.getTypedTerm();
 
@@ -327,9 +327,9 @@ public class InferController {
         }
         
         if (arr == null)
-            response.setInstantiation(statementTerm.toStringInf(simboloManager, ""));
+            response.setInstantiation(statementTerm.toStringLaTeX(simboloManager, ""));
         else
-            response.setInstantiation(statementTerm.sustParall((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)).toStringInf(simboloManager, ""));
+            response.setInstantiation(statementTerm.sustParall((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)).toStringLaTeX(simboloManager, ""));
         return response;
     }
 
@@ -452,7 +452,7 @@ public class InferController {
                     int j = sust.getVars().indexOf(new Var(freeVars[i].toCharArray()[0]));
                     if (j != -1) {
                         sustFormatC[i] = sust.getTerms().get(j).toStringFormatC(simboloManager,"",0,"substitutionButtonsId."+freeVars[i]);
-                        sustLatex[i] = sust.getTerms().get(j).toStringWithInputs(simboloManager,"","substitutionButtonsId."+freeVars[i]);
+                        sustLatex[i] = sust.getTerms().get(j).toStringLaTeXWithInputs(simboloManager,"","substitutionButtonsId."+freeVars[i]);
                     }
                     else {
                         sustFormatC[i] = "";
@@ -1051,7 +1051,7 @@ public class InferController {
 
         // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
         Term metaTheo = MetaTheorem.metaTheorem(statement).type();
-        String str = "<span>("+nTheo+")" + " with Metatheorem (" + "3.7" +"):$~~~" + metaTheo.toStringInf(simboloManager,nTheo) + "$</span>";
+        String str = "<span>("+nTheo+")" + " with Metatheorem (" + "3.7" +"):$~~~" + metaTheo.toStringLaTeX(simboloManager,nTheo) + "$</span>";
 
         JSONObject json = new JSONObject();
         json.put("string", MicroServices.transformLaTexToHTML(str));

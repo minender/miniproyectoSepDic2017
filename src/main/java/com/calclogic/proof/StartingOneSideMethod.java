@@ -70,7 +70,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
                 iter = typedTerm;
             }
             Term aux = ((App)((App)iter.type()).p).q;       
-            lastline = (solved?aux.toStringInf(s,"")+"$":aux.toStringInfLabeled(s));
+            lastline = (solved?aux.toStringLaTeX(s,"")+"$":aux.toStringLaTeXLabeled(s));
         }
         // Case when direct method is applied and the starting point is the expression to be proved
         else { 
@@ -79,7 +79,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
             // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
             if (((TypedApp)typedTerm).q instanceof TypedApp){
                 lastline = ((TypedApp)((TypedApp)typedTerm).q).q.type().toStringFinal();
-                eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringInf(s,"");
+                eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringLaTeX(s,"");
             }
             else {
                 // Note that here we have a less "q" respect of the previous case because in there 
@@ -104,12 +104,12 @@ public class StartingOneSideMethod extends GenericProofMethod {
                ) 
             {
                 iter = ((TypedApp)((TypedApp)typedTerm).p).q;       
-                lastline = ((App)((App)iter.type()).p).q.toStringInf(s,"")+equanimityHint+"$";
+                lastline = ((App)((App)iter.type()).p).q.toStringLaTeX(s,"")+equanimityHint+"$";
             }
             else  {
                 iter = ((TypedApp)typedTerm).p;
                 equanimity = true;
-                lastline = ((App)((App)iter.type()).p).q.toStringInf(s,"")+"$";
+                lastline = ((App)((App)iter.type()).p).q.toStringLaTeX(s,"")+"$";
             }
         }
 
@@ -119,12 +119,12 @@ public class StartingOneSideMethod extends GenericProofMethod {
                 ultInf = ((TypedApp)iter).q;
                 iter = ((TypedApp)iter).p;
                 Term ultInfType = ultInf.type();
-                primExp = ((App)ultInfType).q.toStringInf(s,""); 
+                primExp = ((App)ultInfType).q.toStringLaTeX(s,""); 
             }
             else {
                 ultInf = iter;
                 Term ultInfType = ultInf.type();
-                primExp = ((App)ultInfType).q.toStringInf(s,"");
+                primExp = ((App)ultInfType).q.toStringLaTeX(s,"");
                 if (equanimity){
                     primExp += equanimityHint;
                 }
@@ -161,42 +161,38 @@ public class StartingOneSideMethod extends GenericProofMethod {
         if (ultInf instanceof App){
             if (((App)ultInf).q instanceof App){
                 if (((App)((App)ultInf).q).q instanceof App){
-                    //  Term aux = ((App)ultInf.type()).q;
-                    // primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
                     teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
-                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringInf(s,"");
+                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringLaTeX(s,"");
                     inst = "~\\text{with}~" + inst;
-                    leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
+                    leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
                     leib = "~\\text{and}~" + leib;
                 }
                 else {
-                    //Term aux = ((App)ultInf.type()).q;
-                    //primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
                     teo = ((App)((App)ultInf).q).q.type().toStringFinal();
                     if (((App)ultInf).p instanceof TypedS){
                         if (((App)((App)ultInf).q).p instanceof TypedI){
-                            inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
+                            inst = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
                             inst = "~\\text{with}~" + inst;
                         }
                         else {
-                            leib = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
+                            leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
                             leib = "~\\text{and}~" + leib;
                         }
                     } else {
-                        inst = ((App)((App)ultInf).q).p.type().toStringInf(s,"");
+                        inst = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
                         inst = "~\\text{with}~" + inst;
-                        leib = ((App)ultInf).p.type().toStringInf(s,"");
+                        leib = ((App)ultInf).p.type().toStringLaTeX(s,"");
                         leib = "~\\text{and}~" + leib;
                     }
                 }
             } else {
                 Term pType = ((App)ultInf).p.type();
                 if (((App)ultInf).p instanceof TypedI){
-                    inst = pType.toStringInf(s,"");
+                    inst = pType.toStringLaTeX(s,"");
                     inst = "~\\text{with}~" + inst;
                 }
                 else if (((App)ultInf).p instanceof TypedL){
-                    leib = "~\\text{and}~" + pType.toStringInf(s,"");
+                    leib = "~\\text{and}~" + pType.toStringLaTeX(s,"");
                 }
                 // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
                 teo = ((App)ultInf).q.type().toStringFinal();
@@ -204,7 +200,6 @@ public class StartingOneSideMethod extends GenericProofMethod {
         } else {
             Term aux = ultInf.type();
             teo = aux.toStringFinal();
-            //  primExp = ((App)aux).q.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
         } 
 
         int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 

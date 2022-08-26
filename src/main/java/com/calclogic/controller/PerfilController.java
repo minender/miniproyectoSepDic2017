@@ -399,7 +399,7 @@ public class PerfilController {
         Usuario usuario = usuarioManager.getUsuario(answer.getUsername());
         Usuario currentUser = (Usuario)session.getAttribute("user");
         List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
-        List<Integer> categoriasIdListUser =  new LinkedList<Integer>();
+        List<Integer> categoriasIdListUser =  new LinkedList<>();
         for (MostrarCategoria mc: mostrarCategorias){
            categoriasIdListUser.add(mc.getCategoria().getId());
         }
@@ -436,9 +436,9 @@ public class PerfilController {
             resuelve.addProperty("numeroteorema", resuelves.get(i).getNumeroteorema());
             resuelve.addProperty("nombreteorema", resuelves.get(i).getNombreteorema());
             resuelve.addProperty("teoremaid", resuelves.get(i).getTeorema().getId());
-            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager,""));
-            resuelve.addProperty("stringNumero", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager, resuelves.get(i).getNumeroteorema()));
-            resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringInfFinal(simboloManager));
+            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringLaTeX(simboloManager,""));
+            resuelve.addProperty("stringNumero", resuelves.get(i).getTeorema().getTeoTerm().toStringLaTeX(simboloManager, resuelves.get(i).getNumeroteorema()));
+            resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringLaTeXFinal(simboloManager));
             resuelve.addProperty("demopendiente",resuelves.get(i).getDemopendiente());
             resuelve.addProperty("vars",resuelves.get(i).getTeorema().getTeoTerm().freeVars());
             resuelves1.add(resuelve);
@@ -574,9 +574,9 @@ public class PerfilController {
         list2.add(new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad()));
         Term I1 = new TypedI(new Sust(list1,list2));
         
-        List<Var> lis1 = new ArrayList<Var>();
+        List<Var> lis1 = new ArrayList<>();
         lis1.add(new Var(113));
-        List<Term> lis2 = new ArrayList<Term>();
+        List<Term> lis2 = new ArrayList<>();
         lis2.add(teo);
         Term I2 = new TypedI(new Sust(lis1,lis2));
         Term typedTerm = null;
@@ -834,7 +834,7 @@ public class PerfilController {
         Teorema teorema = teoremaManager.getTeorema(teoId);
         Term teoTerm = teorema.getTeoTerm();
         String teoC = teoTerm.toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
-        String teoInputs = teoTerm.toStringWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
+        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false);
         
         map.addAttribute("navUrlPrefix", "../");
@@ -1445,7 +1445,7 @@ public class PerfilController {
         for (String var : tk.getVars()) 
             aux=new App(aux,new Var(var.charAt(0)));
         aux = aux.evaluar();
-        String term=aux.toStringInf(simboloManager,"").replace("\\", "\\\\");
+        String term=aux.toStringLaTeX(simboloManager,"").replace("\\", "\\\\");
         //String termino;
         //termino = term.replace("\\","" ).replace("}", "").replaceAll("[_][{]", "");
         Usuario usr = usuarioManager.getUsuario(username);

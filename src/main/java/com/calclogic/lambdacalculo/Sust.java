@@ -171,14 +171,14 @@ public class Sust extends Term{
     }
     
     @Override
-    public String toStringInf(SimboloManager s,String numTeo) {
+    public String toStringLaTeX(SimboloManager s,String numTeo) {
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringInf(s,"")+",";
+            varss += v.toStringLaTeX(s,"")+",";
         
         for (Term t : terms)
-            termss += t.reducir().toStringInf(s,"")+",";
+            termss += t.reducir().toStringLaTeX(s,"")+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
@@ -187,21 +187,19 @@ public class Sust extends Term{
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term init, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term init, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
         id.id++;
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringInf(null,"")+",";
+            varss += v.toStringLaTeX(null,"")+",";
         
         for (Term t : terms)
-            termss += t.reducir().toStringInf(null,"")+",";
+            termss += t.reducir().toStringLaTeX(null,"")+",";
         
-         varss = varss.substring(0, varss.length()-1);
-         termss = termss.substring(0, termss.length()-1);
-         leibniz.add(init.leibniz(z, this));
-//         leibniz.add(init.leibniz(z, this).toStringInfFinal(null).replace("\\", "\\\\"));
-//         leibnizL.add(init.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
+        varss = varss.substring(0, varss.length()-1);
+        termss = termss.substring(0, termss.length()-1);
+        leibniz.add(init.leibniz(z, this));
         
         return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{["+varss+" := "+termss+"]}}";
     }
@@ -211,30 +209,17 @@ public class Sust extends Term{
     {
         return toString();
     }
-    /*public String toStringInFin() {
-        String varss = "";
-        String termss = "";
-        for (Var v : vars)
-            varss += v.toStringInFin()+",";
-        
-        for (Term t : terms)
-            termss += t.toStringInFin()+",";
-        
-         varss = varss.substring(0, varss.length()-1);
-         termss = termss.substring(0, termss.length()-1);
-        
-        return "["+varss+" := "+termss+"]";
-    }*/
+
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
+    public String toStringLaTeXWithInputs(SimboloManager s, String position, String rootId) {
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringInf(s,"")+",";
+            varss += v.toStringLaTeX(s,"")+",";
         
         for (Term t : terms)
-            termss += t.reducir().toStringInfFinal(s)+",";
+            termss += t.reducir().toStringLaTeXFinal(s)+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
@@ -255,10 +240,10 @@ public class Sust extends Term{
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
+    public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
                                     String nTeo)
     {
-        toString.term=this.toStringInf(s,"");
+        toString.term=this.toStringLaTeX(s,"");
         return toString;
     }
 
