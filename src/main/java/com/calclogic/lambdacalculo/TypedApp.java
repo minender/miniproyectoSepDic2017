@@ -83,8 +83,9 @@ public class TypedApp extends App implements TypedTerm{
                     if (!t1Der.body().equals(t2Izq.body())){
                         throw new TypeVerificationException();
                     }
-                    else
+                    else{
                         inferType = 't';
+                    }
                 }
                 else
                     inferType = (op1 == 2?'m':'e');

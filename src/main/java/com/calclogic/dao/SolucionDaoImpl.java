@@ -1,6 +1,8 @@
 package com.calclogic.dao;
 
 import com.calclogic.entity.Solucion;
+import com.calclogic.entity.Teorema;
+import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +99,49 @@ public class SolucionDaoImpl implements SolucionDAO{
     @Transactional
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId){
         return this.sessionFactory.getCurrentSession().createQuery("FROM Solucion WHERE resuelve.id = :resuelveId").setParameter("resuelveId",resuelveId).list();
+    }
+    
+    @Override
+    @Transactional
+    public List<Solucion> getAllSolucionesByResuelves(List<Integer> resuelves){
+        if (resuelves.size() == 0) {
+            return new ArrayList<Solucion>();
+        }
+        String condition = "";
+        for (Integer r: resuelves) {
+            String id = r.toString();
+            String cond = "resuelve.id = " + id;
+            if (condition.equals("")) {
+                condition = cond;
+            }
+            else {
+                condition = condition + " OR " + cond;
+            }
+        }
+        condition = " WHERE " + condition;
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Solucion"+condition).list();
+    }
+    
+    @Override
+    @Transactional
+    public List<Solucion> getAllSolucionesWithTeorema(List<Teorema> teoremas){
+        if (teoremas.size() == 0) {
+            return new ArrayList<Solucion>();
+        }
+        String statements = "";
+        for (Teorema t: teoremas) {
+            String dem = t.getEnunciado();
+            String statement = "demostracion LIKE '%A^{" + dem + "}%'";
+            if (statements == "") {
+                statements = statement;
+            }
+            else {
+                statements = statements + " OR " + statement;
+            }
+        }
+        String queryStr = "FROM Solucion WHERE " + statements;
+        //System.out.println(queryStr);
+        return this.sessionFactory.getCurrentSession().createQuery(queryStr).list();
     }
     
     /**

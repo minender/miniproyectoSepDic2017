@@ -195,9 +195,9 @@ public class Var extends Term{
     
     @Override
     public String toStringInf(SimboloManager s,String numTeo) {
+        //System.out.println(indice);
         if(alias == null ) {
-            char ascii = (char) indice; 
-            return (indice>64?""+ascii:"x_{"+indice+"}");
+            return (indice > 64?""+(char) indice:"x_{"+indice+"}");
         }else {
             return alias;
         }
@@ -227,6 +227,7 @@ public class Var extends Term{
     
     @Override
     public String toStringWithInputs(SimboloManager s, String position, String rootId) {
+        System.out.println("\\FormInput{"+rootId + position+"}");
         if(alias == null ) {
             char ascii = (char) indice; 
             return "\\FormInput{"+rootId + position+"}";

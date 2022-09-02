@@ -33,6 +33,13 @@
   font-weight: bold;
 }
 
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
 .btn {
   background-image: none !important;
   color: #fff !important;

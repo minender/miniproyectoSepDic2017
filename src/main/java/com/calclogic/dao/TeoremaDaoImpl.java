@@ -72,6 +72,7 @@ public class TeoremaDaoImpl implements TeoremaDAO {
      * @param id Is the principal key of the theorem.
      */
     @Override
+    @Transactional
     public Teorema getTeorema(int id) {
         return (Teorema) this.sessionFactory.getCurrentSession().get(Teorema.class, id);
     }
@@ -92,6 +93,7 @@ public class TeoremaDaoImpl implements TeoremaDAO {
      * @param enunciado Is the statement used to filter the search.
      */
     @Override
+    @Transactional
     public Teorema getTeoremaByEnunciados(String enunciado) {
 
         String sql = "FROM Teorema WHERE enunciado = :enunciado";
@@ -103,6 +105,12 @@ public class TeoremaDaoImpl implements TeoremaDAO {
             return list.get(0);
         }
     }
+    
+    @Override
+    public List<Teorema> getAllTeoremasWithSimbolo(int idSimbolo) {
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Teorema WHERE enunciado LIKE '%c_{" + String.valueOf(idSimbolo) + "}%'").list();
+    }
+    
 //	@Override
 //	public List<Termino> getAllTeoremasByUser(String username)
 //        {

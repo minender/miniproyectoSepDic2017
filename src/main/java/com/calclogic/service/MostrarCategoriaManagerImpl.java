@@ -9,7 +9,10 @@ import com.calclogic.dao.MostrarCategoriaDAO;
 import com.calclogic.entity.Categoria;
 import com.calclogic.entity.MostrarCategoria;
 import com.calclogic.entity.Usuario;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +76,18 @@ public class MostrarCategoriaManagerImpl implements MostrarCategoriaManager {
     @Override
     @Transactional
     public List<MostrarCategoria> getAllMostrarCategoriasByUsuario(Usuario usuario){
-        return MostrarCategoriaDAO.getAllMostrarCategoriasByUsuario(usuario);
+        List<MostrarCategoria> mostrarCategorias = MostrarCategoriaDAO.getAllMostrarCategoriasByUsuario(usuario);
+        List<MostrarCategoria> mostrarCategoriasClean = new ArrayList<>();
+        Set<Integer> seen = new HashSet<>();
+        for (MostrarCategoria mc: mostrarCategorias) {
+            Integer id = mc.getCategoria().getId();
+            if (!seen.contains(id)) {
+                seen.add(id);
+                mostrarCategoriasClean.add(mc);
+            }
+        }
+        //return MostrarCategoriaDAO.getAllMostrarCategoriasByUsuario(usuario);
+        return mostrarCategoriasClean;
     }
     
     /**

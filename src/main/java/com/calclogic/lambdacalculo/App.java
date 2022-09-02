@@ -1075,7 +1075,7 @@ public class App extends Term{
             sym = s.getSimbolo(c.getId());
             opId = c.getId();
           }
-          nArgs = sym.getArgumentos();
+          nArgs = sym.getArgumentosQuantifier();
         }
         
         if ( j > nArgs) {
@@ -1111,8 +1111,15 @@ public class App extends Term{
          else {
            if (c!=null && c.getId()==0) 
                arg = arg.body();
-           if (arg instanceof Bracket)
-               values.put("v1",((Bracket)arg).x.toString()); 
+           if (arg instanceof Bracket) {
+               Term aux_arg = arg;
+               int index = 1;
+               while (aux_arg instanceof Bracket) {
+                   values.put("v"+index,((Bracket) aux_arg).x.toString());
+                   index++;
+                   aux_arg = ((Bracket) aux_arg).t;
+               }
+           }
            if (notation.contains("%(na"+i+")")) {
              arg.toStringInfAbrv(tStr,s,pm,"");
              values.put("na"+i,tStr.term);

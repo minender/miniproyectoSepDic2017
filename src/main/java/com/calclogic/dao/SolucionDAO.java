@@ -1,6 +1,7 @@
 package com.calclogic.dao;
 
 import com.calclogic.entity.Solucion;
+import com.calclogic.entity.Teorema;
 import java.util.List;
 
 /**
@@ -54,6 +55,10 @@ public interface SolucionDAO {
      * @param resuelveId Is the identifier of the Resuelve object used to filter the search.
      */
     public List<Solucion> getAllSolucionesByResuelve(int resuelveId);
+    
+    public List<Solucion> getAllSolucionesByResuelves(List<Integer> resuelveId);
+    
+    public List<Solucion> getAllSolucionesWithTeorema(List<Teorema> teoremas);
     
     /**
      * Method to get a list of the identifiers of all the entries of the table 

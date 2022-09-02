@@ -12,6 +12,7 @@ import com.calclogic.parse.TermUtilities;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -448,5 +449,47 @@ public class ResuelveManagerImpl implements ResuelveManager {
             resuel.setTeorema(teo);
         }
         return resuel;
+    }
+    
+    @Override
+    @Transactional
+    public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves){
+        HashMap<Integer, Resuelve> dependent = new HashMap<Integer, Resuelve>();
+        for (Resuelve r: resuelves) {
+            dependent.put(r.getId(), r);
+        }
+        int prevSize = 0;
+        //System.out.println(dependent.size());
+        while (prevSize != dependent.size()) {
+            prevSize = dependent.size();
+            List<Resuelve> current = new ArrayList<Resuelve>(dependent.values());
+            List<Resuelve> toAdd = resuelveDAO.getResuelveDependent(userLogin, current);
+            for (Resuelve r: toAdd) {
+                dependent.put(r.getId(), r);
+            }
+            //System.out.println(dependent.size());
+        }
+        return new ArrayList<Resuelve>(dependent.values());
+    }
+    
+    @Override
+    @Transactional
+    public List<Resuelve> getResuelveDependentGlobal(List<Resuelve> resuelves){
+        HashMap<Integer, Resuelve> dependent = new HashMap<Integer, Resuelve>();
+        for (Resuelve r: resuelves) {
+            dependent.put(r.getId(), r);
+        }
+        int prevSize = 0;
+        //System.out.println(dependent.size());
+        while (prevSize != dependent.size()) {
+            prevSize = dependent.size();
+            List<Resuelve> current = new ArrayList<Resuelve>(dependent.values());
+            List<Resuelve> toAdd = resuelveDAO.getResuelveDependentGlobal(current);
+            for (Resuelve r: toAdd) {
+                dependent.put(r.getId(), r);
+            }
+            //System.out.println(dependent.size());
+        }
+        return new ArrayList<Resuelve>(dependent.values());
     }
 }

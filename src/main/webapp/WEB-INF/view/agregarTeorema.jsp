@@ -19,7 +19,7 @@
         <tiles:insertDefinition name="style" />
     </head>--%>
     <body>
-        
+        <c:set var="urlPrefix" value="${navUrlPrefix}" scope="request"/>
         <tiles:insertDefinition name="nav" />
         <div class="row justify-content-center">
             <h1>Enter the theorem that you want to save</h1>

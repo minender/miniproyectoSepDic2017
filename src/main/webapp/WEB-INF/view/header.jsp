@@ -33,6 +33,20 @@
             </script>
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML"></script>
            <!--  <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+<!--             <script>
+                MathJax = {
+                    tex: {
+                        inlineMath: [['$', '$'], ['\\(', '\\)']]
+                    },
+                    svg: {
+                        fontCache: 'global'
+                    }
+                };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async
+                src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+            </script> -->
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferAjax.js"></script>
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/limpiar.js"></script>

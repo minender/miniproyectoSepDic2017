@@ -3,6 +3,7 @@ package com.calclogic.dao;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Teorema;
 import com.calclogic.lambdacalculo.Term;
+import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,6 +162,24 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE teorema.id = :teoremaID").setParameter("teoremaID",teoremaID).list();
     }
     
+    @Override
+    @Transactional
+    public List<Resuelve> getResuelveByTeoremas(List<Integer> teoremas){
+        if (teoremas.size() == 0)
+            return new ArrayList<Resuelve>();
+        String tuple = "";
+        for (Integer id: teoremas) {
+            if (tuple == "") {
+                tuple = "(" + id.toString();
+            }
+            else {
+                tuple = tuple + "," + id.toString();
+            }
+        }
+        tuple = tuple + ")";
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE teorema.id IN " + tuple).list();
+    }
+    
     /**
      * Method to get an entry that relates a user with a theorem, 
      * using the identifier of the theorem.
@@ -233,4 +252,40 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE categoria.id = :categoriaId").setParameter("categoriaId", categoriaId).list();
     }
         
+    
+    @Override
+    public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves) {
+        String enunciados = "";
+        for (Resuelve r: resuelves) {
+            String enunciado = "s.demostracion LIKE '%A^{" + r.getTeorema().getEnunciado() + "}%'";
+            if (enunciados.equals("")) {
+                enunciados = enunciado;
+            }
+            else {
+                enunciados = enunciados + " OR " + enunciado;
+            }
+        }
+        String queryStr = "FROM Resuelve r WHERE (r.usuario.login = :userLogin OR r.usuario.login = 'adminTeoremas') AND EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id) AND resuelto = 't' AND NOT EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id AND NOT ("+enunciados+"))";
+        //System.out.println(queryStr);
+        return this.sessionFactory.getCurrentSession().createQuery(queryStr).setParameter("userLogin",userLogin).list();
+    }
+    
+    @Override
+    public List<Resuelve> getResuelveDependentGlobal(List<Resuelve> resuelves) {
+        String enunciados = "";
+        for (Resuelve r: resuelves) {
+            String enunciado = "s.demostracion LIKE '%A^{" + r.getTeorema().getEnunciado() + "}%'";
+            if (enunciados.equals("")) {
+                enunciados = enunciado;
+            }
+            else {
+                enunciados = enunciados + " OR " + enunciado;
+            }
+        }
+        //System.out.println(enunciados);
+        String queryStr = "FROM Resuelve r WHERE resuelto = 't' AND EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id) AND NOT EXISTS (SELECT s.id FROM Solucion s WHERE s.resuelve.id = r.id AND NOT ("+enunciados+"))";
+        //System.out.println(queryStr);
+        return this.sessionFactory.getCurrentSession().createQuery(queryStr).list();
+    }
+    
 }

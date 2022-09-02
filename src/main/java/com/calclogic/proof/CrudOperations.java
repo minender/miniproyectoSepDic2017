@@ -1,10 +1,11 @@
 package com.calclogic.proof;
 
-import com.calclogic.lambdacalculo.Bracket;
+import com.calclogic.forms.GenericResponse;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
+import com.calclogic.service.ResuelveManager;
+import com.calclogic.service.DisponeManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,22 +13,19 @@ import java.util.List;
  * @author ronald
  */
 public interface CrudOperations {
-    
-    /**
-     * This function will create a hint for the current base method given the hint's elements.In case the elements don't make sense it will return null.
-     * @param theoremHint: theorem used on the hint
-     * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
-     * @param instantiationString: string that was used to parse instantiation
-     * @param leibniz: bracket that represents Leibniz on the hint
-     * @param leibnizString: string that was used to parse Leibniz
-     * @param theoremBeingProved: theorem that we are proving using this hint
-     * @param method: method used in the demonstration
-     * @return a hint for the direct method
-     * @throws com.calclogic.lambdacalculo.TypeVerificationException
-     */
+/*
     public Term createBaseMethodInfer(String user, Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
             Bracket leibniz, String leibnizString, Term theoremBeingProved, String method) 
-            throws TypeVerificationException;
+            throws TypeVerificationException;*/
+    
+    /**
+     * This function gives the corresponding class of the specified
+     * demonstration method
+     *
+     * @param method: Identifier of the method that will be created
+     * @return The object with all variables and functions related to the method
+     */
+    public GenericProofMethod createProofMethodObject(String method);
 
     /**
      * The statement that is needed to prove changes inside a sub proof. This method 
@@ -41,16 +39,6 @@ public interface CrudOperations {
      * @return Term that represent the statement to be proved in the current sub proof.
      */
     public Term initStatement(Term beginFormula, Term method);
-
-    /**
-     * The statement that is needed to prove changes inside a sub proof.
-     *  
-     * @param beginFormula: general statement to be proved, is the base to calculate 
-     *                      al de sub statement in the sub proofs.
-     * @param method: String that represents the current method.
-     * @return Term that represents the statement to be proved in the current sub proof.
-     */
-    public Term noRecursiveInitSt(Term beginFormula, String method);
 
     public Term currentMethod(Term method);
 
@@ -100,6 +88,33 @@ public interface CrudOperations {
     public List<Term> getFatherAndSubProof(Term typedTerm, Term method, List<Term> li);
 
     /**
+     * When in a demonstration we need to use a theorem or metatheorem as a hint 
+     * (for inference, instantiation or substitution), we need to get its 
+     * statement. This function does it.
+     *
+     * @param response: Entry-exit parameter. In case there is an error, we set
+     *                  that error here in the parameter and the caller must then
+     *                  inmediately return the updated response.
+     * @param nStatement: Number of the statement, as a string, that will be looked for.
+     * @param username: login of the user that made the request.
+     * @param resuelveManager
+     * @param disponeManager
+     * @return The statement of the theorem or metatheorem.
+     */
+    public Term findStatement(GenericResponse response, String nStatement, String username, 
+                                ResuelveManager resuelveManager, DisponeManager disponeManager);
+
+    /**
+     * It finds the id of the operator of a binary expression. 
+     * For example, if we have P == Q, the main operator is ==, and its id is 1
+     * 
+     * @param formula: Expression whose main operator id will be found.
+     * @param methodTerm: Tree of methods that the user has selected to do the proof
+     * @return The id of the main operator.
+     */
+    public int binaryOperatorId(Term formula, Term methodTerm);
+
+    /**
      * This method adds a proof method for currentMethod to get a new compose method. 
      * If currentMethod is of the form ...M1 (M2 (M3...Mn)), then the method return  
      * ...M1 (M2 (M3...(Mn newMethod))). If currentMethod is of the from 
@@ -120,12 +135,12 @@ public interface CrudOperations {
      * 
      * @param proof: Term that represents a proof
      * @param infer: Term that represents one step infer
-     * @param method: method used in the demonstration
+     * @param objectMethod: object with all the functions related to a method
      * @return new TypedTerm that represents a new derivation tree that 
      *         adds in the last line of proof the infer
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    public Term addInferToProof(String user, Term proof, Term infer, String method) throws TypeVerificationException;
+    public Term addInferToProof(String user, Term proof, Term infer, GenericProofMethod objectMethod) throws TypeVerificationException;
 
     /**
      * This method add 'formula' in one line sub proof for the current sub proof in 

@@ -1,7 +1,14 @@
 package com.calclogic.service;
 
+import com.calclogic.dao.ResuelveDAO;
 import com.calclogic.dao.SimboloDAO;
+import com.calclogic.dao.SolucionDAO;
+import com.calclogic.dao.TeoremaDAO;
+import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Simbolo;
+import com.calclogic.entity.Solucion;
+import com.calclogic.entity.Teorema;
+import java.sql.BatchUpdateException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +25,14 @@ public class SimboloManagerImpl implements SimboloManager {
        
     // @Autowired
     private SimboloDAO simboloDAO;
+    @Autowired
+    private SolucionDAO solucionDAO;
+    @Autowired
+    private TeoremaDAO teoremaDAO;
+    @Autowired
+    private ResuelveDAO resuelveDAO;
+    @Autowired
+    private ResuelveManager resuelveManager;
     private int propFunApp;
     private int termFunApp;
     Simbolo[] symbolsCache; 
@@ -26,9 +41,11 @@ public class SimboloManagerImpl implements SimboloManager {
     public SimboloManagerImpl(SimboloDAO simboloDAO) {
         this.simboloDAO = simboloDAO;
         List<Simbolo> l = simboloDAO.getAllSimbolo();
-        symbolsCache = new Simbolo[l.size()];
-        for (int i=0; i < l.size(); i++)
-            symbolsCache[i] = l.get(i);
+        Simbolo last = l.get(l.size()-1);
+        int lastIndex = last.getId();
+        symbolsCache = new Simbolo[lastIndex + 1];
+        for (Simbolo s: l)
+            symbolsCache[s.getId()] = s;
     }
     
     public int getPropFunApp() {
@@ -94,8 +111,65 @@ public class SimboloManagerImpl implements SimboloManager {
      */ 
     @Override
     @Transactional
-    public void deleteSimbolo(int id){
+    public String deleteSimbolo(int id, String username){
+        List<Teorema> orphans = teoremaDAO.getAllTeoremasWithSimbolo(id);
+        List<Integer> orphanIds = new ArrayList<Integer>();
+        for (Teorema t: orphans) {
+            orphanIds.add(t.getId());
+        }
+        List<Resuelve> resuelves = resuelveDAO.getResuelveByTeoremas(orphanIds);
+        List<Resuelve> resuelves_user = new ArrayList<>();
+        for (Resuelve r: resuelves) {
+            if (r.getUsuario().getLogin().equals(username)) {
+                resuelves_user.add(r);
+            }
+        }
+        //List<Resuelve> dependents_user = resuelveManager.getResuelveDependent(username, resuelves);
+        if (resuelves_user.size() > 0) {
+            String numsTeo = "";
+            for (Resuelve r: resuelves_user) {
+                System.out.println(r.getUsuario().getLogin());
+                if (numsTeo.equals("")) {
+                    numsTeo = r.getNumeroteorema();
+                }
+                else {
+                    numsTeo = numsTeo + ", " + r.getNumeroteorema();
+                }
+            }
+            return "Couldn't delete Symbol because the following theorems use it:\n" + numsTeo;
+        }
+        
+        List<Resuelve> dependents = resuelveManager.getResuelveDependentGlobal(resuelves);
+        List<Integer> dependentsIds = new ArrayList<>();
+        for (Resuelve r: dependents) {
+            dependentsIds.add(r.getId());
+        }
+        List<Solucion> soluciones = solucionDAO.getAllSolucionesByResuelves(dependentsIds);
+        
+        System.out.println("Borrando soluciones");
+        for (Solucion s: soluciones) {
+            solucionDAO.deleteSolucion(s.getId());
+        }
+        //System.out.println("Seteando resuelves a no resuelto");
+        for (Resuelve r: dependents) {
+            r.setResuelto(false);
+        }
+        //System.out.println("Borrando resuelves");
+        for (Resuelve r: dependents) {
+            resuelveDAO.deleteResuelve(r.getId());
+        }
+        //System.out.println("Borrando teoremas");
+        for (Teorema t: orphans) {
+            teoremaDAO.deleteTeorema(t.getId());
+        }
+        
+        //System.out.println(orphans.size());
+        //System.out.println(resuelves.size());
+        //System.out.println(dependents.size());
+        //System.out.println(soluciones.size());
+        
         simboloDAO.deleteSimbolo(id);
+        return "Symbol deleted";
     }
     
     /**
@@ -106,7 +180,7 @@ public class SimboloManagerImpl implements SimboloManager {
     @Transactional
     public Simbolo getSimbolo(int id){
         if (0 < id && id <= symbolsCache.length)
-            return symbolsCache[id-1];
+            return symbolsCache[id];
         else
             return null;
     }
@@ -119,8 +193,8 @@ public class SimboloManagerImpl implements SimboloManager {
     public List<Simbolo> getAllSimbolo(){
         List<Simbolo> list = new ArrayList<Simbolo>();
         for (int i= 0; i < symbolsCache.length; i++)
-            if (i >= 0)
-            list.add(symbolsCache[i]);
+            if (i >= 0 && symbolsCache[i] != null)
+                list.add(symbolsCache[i]);
         return list;
     }
     

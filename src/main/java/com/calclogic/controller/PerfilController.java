@@ -801,6 +801,7 @@ public class PerfilController {
         String teoInputs = teoTerm.toStringWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId);
         
+        map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
         map.addAttribute("agregarTeorema",new AgregarTeorema());
         map.addAttribute("modificar",new Integer(0));
@@ -854,6 +855,7 @@ public class PerfilController {
             
             if(bindingResult.hasErrors())
             {
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -908,10 +910,10 @@ public class PerfilController {
                 Teorema teorema = teoremaManager.getTeorema(intIdTeo);
                 if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
                   Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());
-                  if (null != test) {
+                  if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                   }
-                  teorema = teoremaManager.updateTeorema(intIdTeo, username, agregarTeorema.getTeorema());
+                  teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toStringFinal());
                   if (teorema == null) {
                       throw new CategoriaException("Couldn't edit theorem");
                   }
@@ -940,7 +942,8 @@ public class PerfilController {
                 
                 Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
                 Dispone dispone = disponeManager.addDispone(disponeAdd);*/
-                     
+                
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("guardarMenu","");
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
@@ -959,6 +962,7 @@ public class PerfilController {
             catch(NullPointerException e)
             {
                 e.printStackTrace();
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -978,6 +982,7 @@ public class PerfilController {
             }
             catch(CategoriaException e)
             {
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario",usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -998,6 +1003,7 @@ public class PerfilController {
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -1019,6 +1025,7 @@ public class PerfilController {
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("infer",new InfersForm());
                 map.addAttribute("mensaje", hdr+" "+msg);
@@ -1111,7 +1118,7 @@ public class PerfilController {
     		notacionVariables = simbolo.getNotacionVariables().toString();
     		notacionString = simbolo.getNotacion();
     		
-    		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + "}"; 
+    		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + ", notacionString: '" + notacionString + "'}"; 
     		result.append(idString+":  " + simboloString + ",");
 		}
     	
@@ -2064,6 +2071,20 @@ public class PerfilController {
         map.addAttribute("agregarSimbolo",new AgregarSimbolo());
         map.addAttribute("modificarSimbolo",new AgregarSimbolo());
         return "theories";
+    }
+    
+    @RequestMapping(value="/{username}/theo/deleteSymbol/{symbolId}", method=RequestMethod.GET)
+    @ResponseBody
+    public String DeleteSymbol(@PathVariable String username, @PathVariable String symbolId, ModelMap map) {
+        if (  
+            (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)
+                || !((Usuario)session.getAttribute("user")).isAdmin()
+            )
+        {
+            return "authentication failed";
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
+        return simboloManager.deleteSimbolo(Integer.parseInt(symbolId), username);
     }
     
     public void setUsuarioManager(UsuarioManager usuarioManager) 

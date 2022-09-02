@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
 import org.antlr.v4.parse.ANTLRParser.throwsSpec_return;
+import org.apache.commons.lang3.StringUtils;
 //import org.apache.naming.java.javaURLContextFactory;
 
 /**
@@ -87,6 +88,11 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
     public int getArgumentos() {
         return argumentos;
     }
+    
+    @Override
+    public int getArgs() {
+        return this.getArgumentos();
+    }
 
     public boolean isEsInfijo() {
         return esInfijo;
@@ -118,6 +124,14 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
 
     public Teoria getTeoria() {
         return teoria;
+    }
+    
+    public boolean isQuantifier() {
+        return notacion.contains("v");
+    }
+    
+    public int getArgumentosQuantifier() {
+        return argumentos + StringUtils.countMatches(notacion, "v");
     }
     
     
