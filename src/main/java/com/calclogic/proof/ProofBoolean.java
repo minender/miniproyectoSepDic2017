@@ -5,7 +5,11 @@ import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.lambdacalculo.Term;
+import com.calclogic.lambdacalculo.TypedA;
+import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
+import com.calclogic.lambdacalculo.TypedS;
+import com.calclogic.service.SimboloManager;
 
 /**
  *
@@ -23,56 +27,59 @@ public class ProofBoolean {
     public static boolean isWaitingMethod(Term method) {
         
         Term m1, m2 = null;
+        String methodStr;
         if (method instanceof Const && 
-            (
-             ((Const)method).getCon().equals("DM") ||
-             ((Const)method).getCon().equals("SS") ||   
-             ((Const)method).getCon().equals("TR") ||
-             ((Const)method).getCon().equals("WE") ||
-             ((Const)method).getCon().equals("ST")    
-            )
+                (
+                    (methodStr=((Const)method).getCon()).equals("DM") || 
+                    methodStr.equals("SS") || 
+                    methodStr.equals("TR") || 
+                    methodStr.equals("WE") || 
+                    methodStr.equals("ST")    
+                )
            ) 
         {
            return false;    
         }
         else if (method instanceof Const && 
-                 (
-                  ((Const)method).getCon().equals("ND") ||
-                  ((Const)method).getCon().equals("CO") ||   
-                  ((Const)method).getCon().equals("CR") ||
-                  ((Const)method).getCon().equals("AI") ||
-                  ((Const)method).getCon().equals("CA") ||
-                  ((Const)method).getCon().equals("WI")
-                 )
+                    (
+                        (methodStr=((Const)method).getCon()).equals("ND") || 
+                        methodStr.equals("CO") || 
+                        methodStr.equals("CR") || 
+                        methodStr.equals("AI") || 
+                        methodStr.equals("MI") || 
+                        methodStr.equals("CA") || 
+                        methodStr.equals("WI")
+                    )
                 ) 
         {
             return true;
         }
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
-                 (
-                  ((Const)m1).getCon().equals("ND") || 
-                  ((Const)m1).getCon().equals("CO") || 
-                  ((Const)m1).getCon().equals("CR") 
-                 )
+                    (
+                        (methodStr=((Const)m1).getCon()).equals("ND") || 
+                        methodStr.equals("CO") || 
+                        methodStr.equals("CR") ||
+                        methodStr.equals("MI")
+                    )
                 ) 
         {
             return isWaitingMethod(((App)method).q);
         }
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
-                 (
-                  ((Const)m1).getCon().equals("AI") || 
-                  ((Const)m1).getCon().equals("CA") 
-                 )
+                    (
+                        (methodStr=((Const)m1).getCon()).equals("AI") || 
+                        methodStr.equals("CA")
+                    )
                 )
         {
             return true;
         }
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof App &&
-                  (m2 = ((App)m1).p) instanceof Const &&
-                  (
-                   ((Const)m2).getCon().equals("AI") || 
-                   ((Const)m2).getCon().equals("CA") 
-                  )
+                    (m2 = ((App)m1).p) instanceof Const &&
+                    (
+                        (methodStr=((Const)m2).getCon()).equals("AI") || 
+                        methodStr.equals("CA")
+                    )
                 )
         {
             return isWaitingMethod(((App)method).q);
@@ -95,11 +102,12 @@ public class ProofBoolean {
             return false;
         }
         else{
-            return ((Const)method).getCon().equals("DM") || 
-                    ((Const)method).getCon().equals("SS") ||
-                    ((Const)method).getCon().equals("TR") ||
-                    ((Const)method).getCon().equals("WE") ||
-                    ((Const)method).getCon().equals("ST");
+            String methodStr;
+            return (methodStr=((Const)method).getCon()).equals("DM") || 
+                    methodStr.equals("SS") ||
+                    methodStr.equals("TR") ||
+                    methodStr.equals("WE") ||
+                    methodStr.equals("ST");
         }
     }
     
@@ -135,20 +143,22 @@ public class ProofBoolean {
      * @return True if and only if exists sub proof that is already started.
      */
     public static boolean isProofStarted(Term method) {
-        Term aux = method;
-        while (aux instanceof App) {
+        Term aux = method; //muy complicado. Es mas facil si solo se ve si ocurren en
+        while (aux instanceof App) {//method las constantes DM, SS, TR, WE o ST
             if (((App)aux).p instanceof App)
                 return true;
             else 
-               aux = ((App)aux).q;
+                aux = ((App)aux).q;
         }
+        String methodStr;
         return aux instanceof Const && 
-                       (((Const)aux).getCon().equals("DM") ||
-                        ((Const)aux).getCon().equals("SS") ||   
-                        ((Const)aux).getCon().equals("TR") ||
-                        ((Const)aux).getCon().equals("WE") ||
-                        ((Const)aux).getCon().equals("ST")
-                       );
+                (
+                    (methodStr=((Const)aux).getCon()).equals("DM") || 
+                    methodStr.equals("SS") ||   
+                    methodStr.equals("TR") ||
+                    methodStr.equals("WE") ||
+                    methodStr.equals("ST")
+                );
     }
 
     /**
@@ -206,22 +216,6 @@ public class ProofBoolean {
     }
     
     /**
-     * True if and only if method is an And Introduction proof and in the second sub proof 
-     * exists sub proof (can be the same second sub proof) that is already started.
-     * 
-     * @param method: Term that represents the current state of the proof method. This
-     *                term had the information about what is the current sub proof
-     * @return True if and only if method is an And Introduction proof and in the second sub proof 
-     * exists sub proof (can be the same second sub proof) that is already started.
-     */
-    public static boolean isAIProof2Started(Term method) {
-        String m = null;
-        return method instanceof App && ((App)method).p instanceof App && 
-               ((m=((App)((App)method).p).p.toStringFinal()).equals("AI") || m.equals("CA")) && 
-               isProofStarted(((App)method).q);
-    }
-    
-    /**
      * True if and only if the proof that represent typedTerm is an And Introduction 
      * proof with only one line in the second proof.
      *  
@@ -239,7 +233,65 @@ public class ProofBoolean {
     !(((Bracket)((TypedL)((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p).type()).t.occur(new Var(122)));
     }
 
+    public static boolean isIAA(Term root, SimboloManager s) {
+        
+        if(!(root instanceof App)) return false;
+        
+        Term leftSide = ((App)root).p.type();
+        
+        return ((App)root).q instanceof TypedA &&
+                ((App)root).p instanceof App &&
+                ((App)((App)root).p).p instanceof TypedI &&
+                ((App)((App)root).p).q instanceof TypedA &&
+                
+                leftSide instanceof App && ((App)leftSide).p instanceof App &&
+                (((App)((App)leftSide).p).p).toStringLaTeX(s, "").equals("\\Rightarrow") &&
+                ((App)leftSide).q.equals(((App)root).q.type());    
+    }
+    
+    public static boolean isIAIA(Term root, SimboloManager s) {
+        if(!(root instanceof App)) return false;
+        
+        Term leftSide = ((App)root).p.type();
+        
+        return ((App)root).q instanceof App &&
+                ((App)((App)root).q).p instanceof TypedI &&
+                ((App)((App)root).q).q instanceof TypedA &&
+                ((App)root).p instanceof App &&
+                ((App)((App)root).p).p instanceof TypedI &&
+                ((App)((App)root).p).q instanceof TypedA &&
+                
+                leftSide instanceof App && ((App)leftSide).p instanceof App &&
+                (((App)((App)leftSide).p).p).toStringLaTeX(s, "").equals("\\Rightarrow") &&
+                ((App)leftSide).q.equals(((App)root).q.type());         
+    }
+    
     /**
+     * This function checks if the given Term represents a modus ponens hint
+     * @param root root node of the hint 
+     * @param s
+     * @return "Nomodus" if is not modus ponens, another string depending on the case
+     */
+    public static String isModusPonens(Term root, SimboloManager s) {
+        
+        if(!(root instanceof App)) return "NoModus";
+        
+        // Case 1: IAA
+        if(isIAA(root, s)) return "IAA";
+        
+        // Case 2: IAIA
+        if(isIAIA(root, s)) return "IAIA";
+        
+        // Case 3: S(IAIA)
+        if( ((App)root).p instanceof TypedS && isIAIA(((App)root).q, s)) return "S(IAIA)";
+        
+        // Case 4: S(IAA)
+        if( ((App)root).p instanceof TypedS && isIAA(((App)root).q, s)) return "S(IAA)";
+        
+        return "NoModus";
+    }
+    
+     /**
      * Checks if the two arguments are of the form p op q and q op^{-1} p
      * 
      * @param t1: Term that represent a formula

@@ -10,7 +10,6 @@ import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedS;
-import com.calclogic.controller.InferController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -53,7 +52,7 @@ public class MetaTheorem {
           return typedTerm;
         }
         catch (TypeVerificationException e){
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(MetaTheorem.class.getName()).log(Level.SEVERE, null, e);
             return null;
         }
     }
@@ -83,7 +82,7 @@ public class MetaTheorem {
           return typedTerm;
         }
         catch (TypeVerificationException e){
-            Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(MetaTheorem.class.getName()).log(Level.SEVERE, null, e);
             return null;
         }
     }

@@ -338,7 +338,7 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
         for (Resuelve r: resuelves){
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
@@ -387,10 +387,10 @@ public class PerfilController {
            )
         {   
             JsonObject response = new JsonObject();
-            response.addProperty("error", "Debes estar logueado en el sistema");
+            response.addProperty("error", "You must be logged in the system");
             return response.toString();
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
         for (Resuelve r: resuelves)
         {
             Teorema t = r.getTeorema();
@@ -400,7 +400,7 @@ public class PerfilController {
         Usuario usuario = usuarioManager.getUsuario(answer.getUsername());
         Usuario currentUser = (Usuario)session.getAttribute("user");
         List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
-        List<Integer> categoriasIdListUser =  new LinkedList<Integer>();
+        List<Integer> categoriasIdListUser =  new LinkedList<>();
         for (MostrarCategoria mc: mostrarCategorias){
            categoriasIdListUser.add(mc.getCategoria().getId());
         }
@@ -437,16 +437,89 @@ public class PerfilController {
             resuelve.addProperty("numeroteorema", resuelves.get(i).getNumeroteorema());
             resuelve.addProperty("nombreteorema", resuelves.get(i).getNombreteorema());
             resuelve.addProperty("teoremaid", resuelves.get(i).getTeorema().getId());
-            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager,""));
-            resuelve.addProperty("stringNumero", resuelves.get(i).getTeorema().getTeoTerm().toStringInf(simboloManager, resuelves.get(i).getNumeroteorema()));
-            resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringInfFinal(simboloManager));
+            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringLaTeX(simboloManager,""));
+            resuelve.addProperty("stringNumero", resuelves.get(i).getTeorema().getTeoTerm().toStringLaTeX(simboloManager, resuelves.get(i).getNumeroteorema()));
+            resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringLaTeXFinal(simboloManager));
             resuelve.addProperty("demopendiente",resuelves.get(i).getDemopendiente());
             resuelve.addProperty("vars",resuelves.get(i).getTeorema().getTeoTerm().stFreeVars());
             resuelves1.add(resuelve);
         }
         response.add("categories", categories);
         response.add("resuelves", resuelves1);
+
         return response.toString();
+    }
+
+    /* 
+     * Used to store the new checked categories in the database and to show the then in the infer 
+     * view again (Ex: Equivalence and True, etc.)
+     *
+     * @return The "theoremsList" view, with the categories updated.
+     */
+    @RequestMapping(value="/{username}/theoremsList", method=RequestMethod.POST)
+    public String theoremsListController(@PathVariable String username, ModelMap map, @RequestBody MostrarCategoriaForm answer) {
+        if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
+           && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
+           )
+        {
+            return "redirect:/index";
+        }
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
+        for (Resuelve r: resuelves){
+            Teorema t = r.getTeorema();
+            t.setTeoTerm(t.getTeoTerm());
+            t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
+        }
+        Usuario currentUser = (Usuario)session.getAttribute("user");
+        Usuario usr = usuarioManager.getUsuario(username);        
+        List <Categoria> showCategorias = new LinkedList<Categoria>();
+        List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
+        List<Integer> categoriasIdListUser =  new LinkedList<Integer>();
+
+        for (MostrarCategoria mc: mostrarCategorias){
+           categoriasIdListUser.add(mc.getCategoria().getId());
+        }
+        // We add the new categories that were checked
+        for (int categoriaId :answer.getListaIdCategorias()){
+            if (!categoriasIdListUser.contains(categoriaId)){
+                Categoria categoria = categoriaManager.getCategoria(categoriaId);
+                MostrarCategoria mostrarCategoriaNew = new MostrarCategoria(categoria, currentUser);
+                mostrarCategoriaManager.addMostrarCategoria(mostrarCategoriaNew);
+            }
+        }
+        // We delete the categories that were unchecked
+        for (int categoriaId: categoriasIdListUser){
+            if (!answer.getListaIdCategorias().contains(categoriaId)){
+                Categoria categoria = categoriaManager.getCategoria(categoriaId);
+                MostrarCategoria mostrarCategoria = mostrarCategoriaManager.getMostrarCategoriaByCategoriaAndUsuario(categoria, currentUser);
+                mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria.getId());
+            }
+        }
+        
+        mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
+        for (int i = 0; i < mostrarCategorias.size(); i++ ){
+            showCategorias.add(mostrarCategorias.get(i).getCategoria());
+        }
+
+        map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
+        map.addAttribute("usuario", usr);
+        map.addAttribute("guardarMenu","");
+        map.addAttribute("listarTerminosMenu","");
+        map.addAttribute("perfilMenu","");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        //map.addAttribute("categorias",categoriaManager.getAllCategorias());
+        map.addAttribute("teoremas", resuelves);
+        map.addAttribute("resuelveManager",resuelveManager);
+        map.addAttribute("categoriaManager",categoriaManager);
+        map.addAttribute("simboloManager",simboloManager);
+        map.addAttribute("predicadoManager",predicadoManager);
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("selecTeo",true);
+        map.addAttribute("showCategorias",showCategorias);
+        map.addAttribute("resuelves", resuelves);
+
+        return "theoremsList";
     }
     
     @RequestMapping(value="/{username}/misTeoremas/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
@@ -454,7 +527,7 @@ public class PerfilController {
     {   
         //validar si esta el usuario en sesion
         teoremasSolucion response = new teoremasSolucion();
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid,false);
         Integer resuelveId = resuelve.getId();
         
         response.soluciones = solucionManager.getAllSolucionesIdByResuelve(resuelveId);
@@ -467,7 +540,7 @@ public class PerfilController {
     {   
         // validar que el usuario este en sesion
         InferResponse response = new InferResponse(crudOp);
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
         Term teorema = resuelve.getTeorema().getTeoTerm();
         String nTeo = resuelve.getNumeroteorema();
         Solucion solucion = solucionManager.getSolucion(idSol,username);
@@ -483,7 +556,7 @@ public class PerfilController {
     public @ResponseBody InferResponse buscarMetaFormula(@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {
         InferResponse response = new InferResponse(crudOp);
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
         Term teo = resuelve.getTeorema().getTeoTerm();
         Simbolo s = simboloManager.getSimbolo(1);
         Simbolo s2 = simboloManager.getSimbolo(8);
@@ -494,17 +567,17 @@ public class PerfilController {
                                      new App(new App(new Const(1,"c_{1}",!s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad()),new Var(113)),
                                                                new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad()))));
         Term A3 = new TypedA(teo);
-        List<Var> list1 = new ArrayList<Var>();
+        List<Var> list1 = new ArrayList<>();
         list1.add(new Var(112));
         list1.add(new Var(113));
-        List<Term> list2 = new ArrayList<Term>();
+        List<Term> list2 = new ArrayList<>();
         list2.add(teo);
         list2.add(new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad()));
         Term I1 = new TypedI(new Sust(list1,list2));
         
-        List<Var> lis1 = new ArrayList<Var>();
+        List<Var> lis1 = new ArrayList<>();
         lis1.add(new Var(113));
-        List<Term> lis2 = new ArrayList<Term>();
+        List<Term> lis2 = new ArrayList<>();
         lis2.add(teo);
         Term I2 = new TypedI(new Sust(lis1,lis2));
         Term typedTerm = null;
@@ -575,7 +648,7 @@ public class PerfilController {
             String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
             
             boolean nTheoExists = false;
-            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema()) != null)
+            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(),false) != null)
                 nTheoExists = true;
             
             if(nTheoExists || bindingResult.hasErrors())
@@ -639,7 +712,7 @@ public class PerfilController {
                     }
                     teoTerm = new App(new App(new Const(0,"="), arg2), teoTerm);
                 }
-                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());
+                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal(), false);
                 if (null != test) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                 }
@@ -788,9 +861,10 @@ public class PerfilController {
         Teorema teorema = teoremaManager.getTeorema(teoId);
         Term teoTerm = teorema.getTeoTerm();
         String teoC = teoTerm.toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
-        String teoInputs = teoTerm.toStringWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId);
+        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false);
         
+        map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
         map.addAttribute("agregarTeorema",new AgregarTeorema());
         map.addAttribute("modificar",new Integer(0));
@@ -836,14 +910,15 @@ public class PerfilController {
             predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
             String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
             int intIdTeo = Integer.parseInt(idTeo);
-            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, intIdTeo);
+            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, intIdTeo, false);
             
             boolean nTheoExists = false;
-            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema()) != null)
+            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(), false) != null)
                 nTheoExists = true;
             
             if(bindingResult.hasErrors())
             {
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -897,11 +972,11 @@ public class PerfilController {
                
                 Teorema teorema = teoremaManager.getTeorema(intIdTeo);
                 if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
-                  Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal());
-                  if (null != test) {
+                  Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal(), false);
+                  if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                   }
-                  teorema = teoremaManager.updateTeorema(intIdTeo, username, agregarTeorema.getTeorema());
+                  teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toStringFinal());
                   if (teorema == null) {
                       throw new CategoriaException("Couldn't edit theorem");
                   }
@@ -930,7 +1005,8 @@ public class PerfilController {
                 
                 Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
                 Dispone dispone = disponeManager.addDispone(disponeAdd);*/
-                     
+                
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("guardarMenu","");
                 map.addAttribute("categoria",categoriaManager.getAllCategorias());
@@ -949,6 +1025,7 @@ public class PerfilController {
             catch(NullPointerException e)
             {
                 e.printStackTrace();
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -968,6 +1045,7 @@ public class PerfilController {
             }
             catch(CategoriaException e)
             {
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario",usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -988,6 +1066,7 @@ public class PerfilController {
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("agregarTeorema",agregarTeorema);
                 map.addAttribute("modificar",new Integer(0));
@@ -1009,6 +1088,7 @@ public class PerfilController {
             {
                 String hdr = parser.getErrorHeader(e);
 		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                map.addAttribute("navUrlPrefix", "../");
                 map.addAttribute("usuario", usr);
                 map.addAttribute("infer",new InfersForm());
                 map.addAttribute("mensaje", hdr+" "+msg);
@@ -1101,7 +1181,7 @@ public class PerfilController {
     		notacionVariables = simbolo.getNotacionVariables().toString();
     		notacionString = simbolo.getNotacion();
     		
-    		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + "}"; 
+    		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + ", notacionString: '" + notacionString + "'}"; 
     		result.append(idString+":  " + simboloString + ",");
 		}
     	
@@ -1392,7 +1472,7 @@ public class PerfilController {
         for (String var : tk.getVars()) 
             aux=new App(aux,new Var(var.charAt(0)));
         aux = aux.evaluar();
-        String term=aux.toStringInf(simboloManager,"").replace("\\", "\\\\");
+        String term=aux.toStringLaTeX(simboloManager,"").replace("\\", "\\\\");
         //String termino;
         //termino = term.replace("\\","" ).replace("}", "").replaceAll("[_][{]", "");
         Usuario usr = usuarioManager.getUsuario(username);
@@ -2054,6 +2134,20 @@ public class PerfilController {
         map.addAttribute("agregarSimbolo",new AgregarSimbolo());
         map.addAttribute("modificarSimbolo",new AgregarSimbolo());
         return "theories";
+    }
+    
+    @RequestMapping(value="/{username}/theo/deleteSymbol/{symbolId}", method=RequestMethod.GET)
+    @ResponseBody
+    public String DeleteSymbol(@PathVariable String username, @PathVariable String symbolId, ModelMap map) {
+        if (  
+            (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)
+                || !((Usuario)session.getAttribute("user")).isAdmin()
+            )
+        {
+            return "authentication failed";
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
+        return simboloManager.deleteSimbolo(Integer.parseInt(symbolId), username);
     }
     
     public void setUsuarioManager(UsuarioManager usuarioManager) 

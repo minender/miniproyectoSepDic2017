@@ -110,42 +110,39 @@ public class TeoremaManagerImpl implements TeoremaManager {
     }
     
     public Teorema updateTeorema(int id, String username, String statement) {
-
-        // Si solo hay 1 usuario usandolo, entonces aplica teoremaDAO.deleteTeorema(id)
+        Teorema teorema = teoremaDAO.getTeorema(id);
+        
+        if (teorema.getEnunciado().equals(statement)) {
+            return teorema;
+        }
         List <Resuelve> resuelves = resuelveDAO.getResuelveByTeorema(id);
         if (resuelves.size() == 1) {
             Resuelve resuelve = resuelves.get(0);
             // Verificar que el resuelve pertenezca al usuario actual
             if (!resuelve.getUsuario().getLogin().equals(username)){
-                System.out.println("hola1");
                 return null;
             }
             // Evitar que se borre el resuelve si tiene soluciones
             if (solucionDAO.getAllSolucionesByResuelve(resuelve.getId()).size() > 0){
-                System.out.println("hola2");
                 return null;
             }
             if (resuelve.getUsuario().getLogin().equals(username)) {
-                System.out.println("hola3");
                 //resuelveDAO.deleteResuelve((resuelve.getId()));
-                Teorema teorema = teoremaDAO.getTeorema(id);
-                Teorema teorema2 = this.getTeoremaByEnunciados(statement);
+                //Teorema teorema = teoremaDAO.getTeorema(id);
+                Teorema teorema2 = teoremaDAO.getTeoremaByEnunciados(statement);
                 if (teorema2 == null) {
-                    System.out.println("hola4");
                     teorema.setEnunciado(statement);
                     teoremaDAO.updateTeorema(teorema);
                     return teorema;
                 }
                 else {
                     teoremaDAO.deleteTeorema(id);
-                    System.out.println("hola5");
                     return teorema2;
                 }
             }
         }
         // Si no, se borra solo el resuelve si no hay demostraciones
         else if (resuelves.size() > 1){
-            System.out.println("hola6");
             Iterator<Resuelve> resIter = resuelves.iterator();
             Resuelve resuelve = resIter.next();
             while (resIter.hasNext()
@@ -156,18 +153,15 @@ public class TeoremaManagerImpl implements TeoremaManager {
                 resuelve = resIter.next();
             }
             if (resuelve.getTeorema().getId() == id && resuelve.getUsuario().getLogin().equals(username)) {
-                System.out.println("hola7");
-               Teorema teorema = teoremaDAO.getTeorema(id);
+               //Teorema teorema = teoremaDAO.getTeorema(id);
                Teorema teorema2 = this.getTeoremaByEnunciados(statement);
                if (teorema2 == null) {
-                   System.out.println("hola8");
                     teorema.setEnunciado(statement);
                     teorema.setId(0);
                     teoremaDAO.addTeorema(teorema);
                     return teorema;
                }
                else {
-                   System.out.println("hola9");
                     return teorema2;
                }
             }

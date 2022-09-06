@@ -27,37 +27,10 @@
         <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
         <script type="text/javascript">
             
+            var clickInTheoremAllowed = true;
             $(function(){
                 
                 setForms(${elegirMetodo});
-                <%--<c:choose>
-                    <c:when test="${elegirMetodo=='1'}">
-                        $("#metodosDiv").show();
-                        $('#stSustLeibDiv').show();
-                        $('#jaxButtonsDiv').show();
-                        $('#BtnLimpiar').show();
-                        $('#BtnInferir').show();
-                        $("#inferForm").hide();
-                    </c:when>
-                    <c:when test="${elegirMetodo=='2'}">
-                        $("#metodosDiv").show();
-                        $("#inferForm").show();
-                        $('#BtnInferir').hide();
-                        $('#BtnLimpiar').hide();
-                        $('#jaxButtonsDiv').hide();
-                        $('#stSustLeibDiv').hide();
-                    </c:when>
-                    <c:otherwise>
-                        $("#selectTeoInicial").val("0");
-                        $('#stSustLeibDiv').show();
-                        $('#jaxButtonsDiv').show();
-                        $('#BtnLimpiar').show();
-                        $('#BtnInferir').show();
-                        $("#inferForm").show();
-                        $("#metodosDiv").hide();
-                        $("#currentTeo").hide();
-                    </c:otherwise>
-                </c:choose>--%>
                     
                 $("#metodosDemostracion").change(function(){
                     let commonPrefix = "Are you sure you want to use the";
@@ -72,16 +45,27 @@
                     }
                 });
                 
-                $('#formula').on('click','#teoremaMD',function(event){
-                    var selectTeoInicial = $("#selectTeoInicial").val();
-                    if (selectTeoInicial==="1"){
-                        proofMethodAjax("DM", "ST-${nTeo}");  
+                $('#formula').on('click','#teoremaMD',async function(event){
+                    if (clickInTheoremAllowed){
+                        clickInTheoremAllowed = false;
+                        var selectTeoInicial = $("#selectTeoInicial").val();
+                        if (selectTeoInicial==="1"){
+                            await proofMethodAjax("DM", "ST-${nTeo}");
+                            clickInTheoremAllowed = true;
+                        }
+                        else{
+                            clickInTheoremAllowed = true;
+                        }
                     }
                 });
                 
-                $('#formula').on('click','.teoremaClick',function(event){
-                    // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
-                    proofMethodAjax("SS", null, this.id);
+                $('#formula').on('click','.teoremaClick',async function(event){
+                    if (clickInTheoremAllowed){
+                        clickInTheoremAllowed = false;
+                        // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
+                        await proofMethodAjax("SS", null, this.id);
+                        clickInTheoremAllowed = true;
+                    }
                 });
                 
                 var p1=[];
@@ -136,22 +120,12 @@
                 }
 
                 $('#formula').on("mouseup",function(event){
-                    //Obtiene toda la expresion bien formada que se puede sustituir
+                    // This gets the entire well formed expression that can be substituted
                     var total_expression = $(".0");
                     var range = window.getSelection().getRangeAt(0);
-                    /*var _iterator = document.createNodeIterator(
-                        range.commonAncestorContainer,
-                        NodeFilter.SHOW_ALL, // pre-filter
-                        {
-                            // custom filter
-                            acceptNode: function (node) {
-                                return NodeFilter.FILTER_ACCEPT;
-                            }
-                        }
-                    );*/
                     var id = "";
                     var ancestor = range.commonAncestorContainer;
-                    if (total_expression && total_expression.find(ancestor).length){//window.getSelection().type === 'Range'){                        
+                    if (total_expression && total_expression.find(ancestor).length){                   
                         id = completeSelection(ancestor, range);
                         leibnizMouse(id,id);
                     }
@@ -179,92 +153,9 @@
                             leibnizMouse(id,id);
                         }
                     }
-                    /*_nodes = [];
-                    while (_iterator.nextNode()) {
-                        if (_nodes.length === 0 && _iterator.referenceNode !== range.startContainer) continue;
-                        _nodes.push(_iterator.referenceNode);                           
-                        if (_iterator.referenceNode === range.endContainer) break;
-                    }
-                    var index = 0;
-                    while (index < _nodes.length) {
-                        if (typeof(_nodes[index].className)!='undefined' && 
-                               _nodes[index].className.includes('terminoClick') && 
-                               typeof(_nodes[index].id)!='undefined' && 
-                               !isNaN(parseInt(_nodes[index].id)) 
-                           )
-                        index ++;
-                    }
-                    //Si esta expresion existe y lo seleccionado tiene un rango (no es un simple click):
-                        //Obtiene el primero y el ultimo elemento del subrayado
-                        var first_element = window.getSelection().getRangeAt(0).startContainer;
-                        if (first_element.nodeType !== 1) {
-                            first_element = first_element.parentNode;
-                        } 
-                        var last_element = window.getSelection().getRangeAt(0).endContainer
-                        if (last_element.nodeType !== 1) {
-                            last_element = last_element.parentNode;
-                        }*/
-                        /*
-                            //Si el primer elemento no es un parte de una subexpresion (digamos un parentesis),
-                            // entonces se convierte en el elemento siguiente (su hermano) y asi
-                            if (!$(first_element).hasClass("terminoClick") && !hasNumericClass(first_element)){
-                                while(!$(first_element).hasClass("terminoClick") && !hasNumericClass(first_element) && $(first_element).next().length > 0){
-                                    first_element = $(first_element).next()[0]
-                                }
-                            };
-                            if ($(first_element).hasClass("0")){
-                                while(!$(first_element).hasClass("terminoClick")){
-                                    first_element = $(first_element).children()[0]
-                                }
-                            }
-                            //Obtenemos el nivel del primer elemento
-                            var nivel_first_element = $(first_element).attr('class');
-                            if (nivel_first_element && nivel_first_element.length >= 2){
-                              nivel_first_element = nivel_first_element.split(" ")[1];
-                              //Obtenemos el id del primer elemento
-                              var id_first_element = $(first_element).attr("id");
-                              idt1=first_element.id;
-                              p1 = [id_first_element,nivel_first_element];  
-                            }
-                            //Si el ultimo elemento no es un parte de una subexpresion (digamos un parentesis),
-                            // entonces se convierte en el elemento anterior (su hermano) y asi
-                            if (!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element)){
-                                while(!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element) && $(last_element).prev().length > 0){
-                                    last_element = $(last_element).prev()[0]
-                                }
-                            };
-                            
-                            //Si aun asi el ultimo elemento no tiene ni terminoClick ni clase Numerica (se selecciono algo fuera del teorema sin saber)
-                            if (!$(last_element).hasClass("terminoClick") && !hasNumericClass(last_element)){
-                                last_element = $("#0")[0]
-                            }
-                            //Obtenemos el id del primer elemento
-                            idt2=last_element.id;
-                            //Si ambos id son iguales, se puede obtener la subexpresion
-                            if(idt1 === idt2){
-                            leibnizMouse(idt1,idt2)
-                            }
-                            //Si no, se usa leibnizMouse(para obtener el comun entre ellos)
-                            else{   
-                                    var nivel_last_element = $(last_element).attr('class');
-                                    if (nivel_last_element && nivel_last_element.length >= 2){
-                                        nivel_last_element = nivel_last_element.split(" ")[1];
-                                        var id_last_element = $(last_element).attr("id");
-                                        p2 = [id_last_element,nivel_last_element];
-                                        leibnizMouse(p1,p2)
-                                                                    
-                                }
-                                
-                            }
-                        */
-                    //}
                 });
             })
         </script>
-        <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">-->
-
-
-        <!--<title>Logic | Prove</title>-->
     </head>
     <body>
 
@@ -288,23 +179,11 @@
         <tiles:insertDefinition name="nav" />
 
         <input id="selectTeoInicial" value="" type="hidden"/>
-        <%--<input id="nTeorema" value="${nTeo}" type="hidden"/>
-        <input id="nSolucion" value="${nSol}" type="hidden"/>--%>
-        <%--<script>
-            function insertAtCursor(myField, myValue) 
-            {            
-                myValue+="";
-                parent.window.document.getElementById(myField).value = myValue;
-            }
-        </script>--%>
+
         <div class="row">
-            <!--<div style="width: 60%; height: 400px; overflow: scroll;">-->
             <div class="col-lg-7" style="padding-right: 0px;">
                 <article class="proof">
                     <div id="formulaInput" class="d-none">
-                        <%--<tiles:insertDefinition name="jaxButtons" />
-                        <c:set var="rootId" value="caseExpression" scope="request"/>
-                        <tiles:insertDefinition name="jaxDiv"/>--%>
                     </div>
                 <h5 id="formula" style="width:100%; height: 100%">${formula}</h5>
                 </article>
@@ -326,6 +205,7 @@
                         <option value="CO">Proof by contradiction</option>
                         <option value="CR">Counter-reciprocal</option>
                         <option value="AI">Conjunction by parts</option>
+                        <option value="MI">Mutual implication</option>
                         <option value="CA">Case analysis</option>
                         <option value="WI">Witness</option>
                     </select>
@@ -340,145 +220,8 @@
                     </div>
 
                     <ul style="padding-left: 20px;">
-                        <div id="misteoremasSpace">                                        
-                            <div id="misteoremas"> 
-                                <div id="showNoCategories">
-                                    <!--
-                                    El bloque siguiente es de la forma
-                                    for categorias
-                                        for resuelves
-                                            if categoria=resuelve.categoria
-                                                if !selecTeo
-                                                    if resu.isResuelto() || resu.getNumeroteorema().equals(nTeo)
-                                                        if resu.getNumeroteorema().equals(nTeo)
-                                                            algo
-                                                        else
-                                                            otra cosa
-                                                        fi;
-
-                                                        algo;
-
-                                                        if !resu.getNumeroteorema().equals(nTeo)
-                                                            algo
-                                                        fi
-                                                    fi
-                                                else
-                                                    if resu.isResuelto()
-                                                        algo
-                                                    else
-                                                        otra cosa
-                                                    fi;
-
-                                                    if !resu.isEsAxioma()
-                                                        algo
-                                                    else
-                                                        otra cosa
-                                                    fi
-                                                fi
-                                            fi
-                                    -->
-                                    <c:choose>
-                                        <c:when test="${showCategorias.size() == 0}">
-                                            You currently have no categories to display, adjust your settings
-                                        </c:when>
-                                    </c:choose>
-                                </div>
-
-                                <c:forEach items="${showCategorias}" var="cat"> 
-                                    <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href='#collapse-${cat.getNombre().replaceAll(" ","-")}' role="button" aria-expanded="false" aria-controls='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
-                                        <ul id='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse">
-                                            <c:forEach items="${resuelves}" var="resu">
-                                                <c:choose>
-                                                    <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
-                                                        <li ${!selecTeo && resu.getNumeroteorema().equals(nTeo)?"id=currentTeo":""} style="list-style: none;">
-                                                            <h6 style="color: #000;">
-                                                                <c:choose>
-                                                                    <c:when test="${!selecTeo}">
-                                                                        <c:choose>
-                                                                            <c:when test="${resu.isResuelto()}"> 
-                                                                                <%--|| resu.getNumeroteorema().equals(nTeo)}">--%>
-                                                                                <c:choose>
-                                                                                    <c:when test="${!resu.getNumeroteorema().equals(nTeo)}">
-                                                                                        <a onclick="expandMeta('metaTeo${resu.getNumeroteorema()}')" >
-                                                                                            <i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
-                                                                                        </a>
-                                                                                    </c:when>
-                                                                                    <%--<c:otherwise>
-                                                                                        <a >
-                                                                                            <i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>
-                                                                                        </a>
-                                                                                    </c:otherwise> --%>
-                                                                                </c:choose>                                    
-                                                                                <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,resu.getNumeroteorema())}$</span>
-
-                                                                                <script>clickTeoremaInicial('ST-${resu.getNumeroteorema()}');
-                                                                                        clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().stFreeVars()}');
-                                                                                </script>
-
-                                                                                <c:choose>
-                                                                                    <c:when test="${!resu.getNumeroteorema().equals(nTeo)}">
-                                                                                        <span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
-                                                                                            <br>
-                                                                                            <span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>                
-                                                                                            <%--
-                                                                                            <span id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta${resu.getNumeroteorema()}">$${resu.getTeorema().getMetateoTerm().toStringInf(simboloManager,"")}$</span>
-                                   
-                                                                                            <script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
-                                                                                                clickOperator('clickmeta${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().stFreeVars()}');
-                                                                                            </script>
-                                                                                                    
-                                                                                        </span>--%>
-                                                                                            <div id="metateoIdName{resu.getNumeroteorema()}" class="teoIdName">
-                                                                                            </div>
-                                                                                    </c:when>
-                                                                                </c:choose>
-                                                                            </c:when>
-                                                                        </c:choose>
-                                                                    </c:when>
-
-                                                                    <c:otherwise>
-                                                                        <c:choose>
-                                                                            <c:when test="${resu.isResuelto()}">
-                                                                                <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
-                                                                            </c:when>
-                                                                            <c:otherwise>
-                                                                                <i class="fa fa-lock" aria-hidden="true" style="margin-right: 15px;"></i>
-                                                                            </c:otherwise>
-                                                                        </c:choose>
-                                    
-                                                                        <c:choose>
-                                                                            <c:when test="${!resu.isEsAxioma()}">
-                                                                                <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "You are going to prove the theorem":"You have left an incomplete proof of the theorem"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". To be continued the proof from the point where you left it;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,mensaje)}$
-                                                                            </c:when>
-
-                                                                            <c:otherwise>
-                                                                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().toStringInf(simboloManager,"")}$    
-                                                                            </c:otherwise>
-                                                                        </c:choose>
-                                                                        <%--<span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
-                                                                            <br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                                                                            <c:choose>
-                                                                                <c:when test="${resu.isResuelto()}">
-                                                                                    <i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>
-                                                                                </c:when>
-                                                                                <c:otherwise>
-                                                                                    <i class="fa fa-lock" aria-hidden="true" style="margin-right: 10px;"></i>
-                                                                                </c:otherwise>
-                                                                            </c:choose>
-                                                                            (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringInfFinal()}$  
-                                                                            <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
-                                                                        </span>--%>
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </h6>
-                                                        </li>
-                                                    </c:when>
-                                                </c:choose>
-                                            </c:forEach>
-                                        </ul>
-                                    </li>
-                                </c:forEach> 
-                            </div>
+                        <div id="misteoremasSpace">
+                            <jsp:include page="theoremsList.jsp"/>
                         </div>
                     </ul>
                 </article> 
@@ -544,69 +287,61 @@
             </div>-->
         
             <script>
-                async function expandMeta(id) {
+                function getURLuntilUsername(){
+                    const currentURL = window.location.href; 
+                    const urlSplitted = currentURL.split("/");
+                    var stop = 0;
+                    for (i=0; i < urlSplitted.length; i++){
+                        // We are interested in that the URL of the AJAX preserves from the current one
+                        // until the username, and before that username it can only be the "infer" or the
+                        // "perfil" word.
+                        if ((urlSplitted[i] === "infer") || (urlSplitted[i] === "perfil")){
+                            stop = i+1; // The +1 is because we stop in the username (after current position)
+                            break;
+                        }
+                    }
+                    return urlSplitted.slice(0,stop+1).join("/");
+                }
+                function expandMeta(id) {
                     elem = document.getElementById("metateoIdName"+id);
-                    if (elem.style.display == "inline")
+                    elem2 = document.getElementById("metaTeo"+id);
+                    if (elem.style.display == "inline") {
                         elem.style.display = "none";
-                    else{
-                        // We need to know the username from the URL
-                        var currentURL = window.location.href;
-                        var urlSplitted = currentURL.split("/");
-                        var stop = 0;
-                        for (i=0; i < urlSplitted.length; i++){
-                            // We are interested in that the URL of the AJAX preserves from the current one
-                            // until the username, and before that username it can only be the "infer" or the
-                            // "perfil" word.
-                            if ((urlSplitted[i] === "infer") || (urlSplitted[i] === "perfil")){
-                                stop = i+1;
-                                break;
-                            }
+                        elem2.style.display = "none";
+                    } else{
+                        // Case when the metatheorems have not been generated yet
+                        if (elem.childElementCount==0) {
+                            $.ajax({
+                                type: 'POST',
+                                url: getURLuntilUsername() + "/metatheorem",
+                                dataType: "json",
+                                data: {nTheo: id},
+                                success: function(newData) {
+                                    let div = document.getElementById("metateoIdName"+id);
+                                    div.innerHTML = newData.string;
+                                    MathJax.Hub.Typeset();
+                                    elem.style.display = "inline";
+                                    elem2.style.display = "inline";
+                                }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                                    alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+                                }
+                            });   
                         }
-                        var urlBegin = "";
-                        for (i=0; i <= stop; i++){
-                            urlBegin += urlSplitted[i] + "/";
+                        // Case when the metatheorems had been generated previously, 
+                        // so we only need to show them again
+                        else {
+                            elem.style.display = "inline";
+                            elem2.style.display = "inline";
                         }
-alert(urlBegin);
-                        await $.ajax({
-                            type: 'POST',
-                            url: urlBegin + "metatheorem",
-                            dataType: 'json',
-                            //data: {nTheo: id.split("ST-")[1]},
-                            data: {nTheo: id},
-                            success: function(newData) {
-                                console.log("Entré en newData");
-                                let div = document.getElementById("metateoIdName"+id);
-                                div.innerHTML = `<span>`+newData.string+`</span>`;
-                                elem.style.display = "inline";
-                            }, error: function(XMLHttpRequest, textStatus, errorThrown) {
-                                console.log("Entré en error de ajax");
-                                alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/);
-                            }
-                        });        
                     }
                 };
-
-                
-                //function getMetateo(id) {
-                
-                //}
             </script>
         </div>
 
         <c:choose>
             <c:when test="${!selecTeo}">
                 <form id="inferForm" action="${pageContext.request.contextPath}/infer/${usuario.getLogin()}/${nTeo}/${nSol}" method="POST" style="display:none">
-                    <%--Paso anterior:<br><sf:input path="pasoAnt" id="pasoAnt_id" value="${pasoAnt}"/><sf:errors path="pasoAnt" cssClass="error" />--%>
                     <br>
-                    <!--<div class="nn-box-loading">
-                        <div class="loader">
-                            <i class="fa fa-paper-plane"></i>
-                        </div>
-                        <span translate>Loading</span>
-                    </div>
-                    -->
-
-                    <!--\cssId{eq}{\style{cursor:pointer;}{p\equiv q}}-->
               
                     <input name="nuevoMetodo" id="nuevoMetodo_id" value='' style="display: none;"/>
                     <div class="row justify-content-center">
@@ -624,11 +359,6 @@ alert(urlBegin);
                                         </div>
                                         <div id="stbox" class="card-body d-flex align-items-center justify-content-center"></div>
                                     </div>
-                                    <%--<select style="width: auto; height: auto; border: none;" class="form-control" id="mensaje" name="nStatement">
-                                        <c:forEach items="${teoremas}" var="cat">
-                                            <option value="${cat.getId()}" >${cat.getCategoria().getNombre()} - ${cat.getEnunciadoizq()} == ${cat.getEnunciadoder()}</option>
-                                        </c:forEach>  
-                                    </select>--%>
                                 </div>
                                 <!--<br>-->
                                 <script>
@@ -664,18 +394,14 @@ alert(urlBegin);
                             <br><br><input id="BtnLimpiar" class="btn btn-default" type="button" value="Clean"
                             onclick="cleanJax('leibnizSymbolsId'); cleanJaxSubstitution('substitutionButtonsId')">
                             <input id="Btn" type="hidden" name="submitBtn" value=""/>
-                            <%--<input type="hidden" id="teoremaInicial" name="teoremaInicial" value="${teoInicial}"/>
-                            <input type="hidden" id="nuevoMetodo" name="nuevoMetodo" value="0"/>--%>
                         </div>
                     </div>
                 </form>
             </c:when>
         </c:choose>
 
-        <a href="misTeoremas" id="linkDemostrar" style="display:none"></a>
-
         <script>
-            function guardarMostrarCategorias(){
+            async function guardarMostrarCategorias() {
                 allCategoriasSettings = document.getElementsByClassName("categoria-settings");
                 let categorias = {
                     listaIdCategorias:[],
@@ -687,159 +413,48 @@ alert(urlBegin);
                         let id = allCategoriasSettings.item(i).getAttribute("name");
                         categorias.listaIdCategorias.push(id);
                     }
-                    
                 };
                 $("#modalLoading").css('display','inline-block');
-                $.ajax({
-                    cache:false,
+                await $.ajax({
                     type: 'POST',
-                    url: "misTeoremas",
-                    data: JSON.stringify(categorias),
+                    url: "theoremsList", // This is located in PerfilController.java
                     contentType: "application/json",
-                    success:  function(data) { 
-                        var element = document.getElementById("misteoremas");
-                        element.parentNode.removeChild(element);                  
-                        var p = document.getElementById("misteoremasSpace");
-                        var newElement = document.createElement("div");
-                        newElement.setAttribute('id', "misteoremas");
-                        categories = data.categories;
-                        teoremas = data.resuelves;
-                        var script= document.createElement('script');
-                        script.type= 'text/javascript';
-                        script.innerHTML = '';
-
-                        if (categories.length == 0 ){
-                            newElement.innerHTML = "<div id='showNoCategories'>You currently have no categories to display, adjust your settings</div>"
-                        } else {
-                            newRows='';
-                            for (i=0;i<categories.length;i++){
-                                newRows = newRows + '<li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href="#collapse-' + categories[i].categoryname.split(" ").join("-") + '" role="button" aria-expanded="false" aria-controls="collapse-' + categories[i].categoryname.split(" ").join("-") + '" class="collapse-link">' + categories[i].categoryname + '</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4>';
-                                newRows = newRows + '<ul id="collapse-' + categories[i].categoryname.split(" ").join("-") + '" class="collapse">';
-                                for (j=0;j < teoremas.length ;j++){
-                                    if (teoremas[j].categoryid == categories[i].categoryid){
-                                        <c:choose>
-                                            <c:when test='${!nTeo.equals("")}'>
-                                                if  (${!selecTeo} && teoremas[j].numeroteorema == ${nTeo}){                  
-                                            </c:when>
-                                            <c:otherwise>
-                                                if  (${!selecTeo} && teoremas[j].numeroteorema == ""){                   
-                                            </c:otherwise>
-                                        </c:choose>
-                                        newRows = newRows + '<li id="currentTeo" style="list-style: none;">'
-                                    }else{
-                                        newRows = newRows + '<li style="list-style: none;">'
-                                    }
-                                    newRows = newRows + '<h6 style="color: #000;">'
-                                    if (${!selecTeo}){
-                                        <c:choose>
-                                            <c:when test='${!nTeo.equals("")}'>
-                                                if(teoremas[j].isResuelto || teoremas[j].numeroteorema == ${nTeo}){
-                                            </c:when>
-                                            <c:otherwise>
-                                                if(teoremas[j].isResuelto || teoremas[j].numeroteorema == ""){
-                                            </c:otherwise>
-                                        </c:choose>
-                                        <c:choose>
-                                            <c:when test='${!nTeo.equals("")}'>
-                                                if(teoremas[j].numeroteorema != ${nTeo}){
-                                            </c:when>
-                                            <c:otherwise>
-                                                if(teoremas[j].numeroteorema != ""){
-                                            </c:otherwise>
-                                        </c:choose>
-                                        newRows = newRows + '<a onclick="expandMeta(' + "'metaTeo" + teoremas[j].numeroteorema + "'" + ')" >';
-                                        newRows = newRows + '<i class="fa fa-plus-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>';
-                                        newRows = newRows + '</a>';
-                                    }/*else{
-                                        newRows = newRows + '<a>'
-                                        newRows = newRows + '<i class="fa fa-circle" aria-hidden="true"  style="margin-left: 10px; margin-right: 10px;"></i>'
-                                        newRows = newRows + '<a>'
-                                    }*/
-                                           
-                                    newRows = newRows + '<span id="teoIdName' + teoremas[j].numeroteorema + '" class="teoIdName">(' + teoremas[j].numeroteorema + ')'+ teoremas[j].nombreteorema + ':</span> &nbsp;<span id="click' + teoremas[j].numeroteorema + '">$' + teoremas[j].stringNumero + '$</span>';
-                                    //newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');';
-                                    //newRows = newRows + 'clickOperator(' + "'" + 'click' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ');<' + '/script>';                                            
-                                    var script1= document.createElement('script');
-                                    script.type= 'text/javascript';
-                                    script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'click' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'ST-' + teoremas[j].numeroteorema + "'" + ',' + "'" +teoremas[j].vars+ "'" +');';
-
-                                    <c:choose>
-                                        <c:when test='${!nTeo.equals("")}'>
-                                            if(teoremas[j].numeroteorema != ${nTeo}){
-                                        </c:when>
-                                        <c:otherwise>
-                                            if(teoremas[j].numeroteorema != ""){
-                                        </c:otherwise>
-                                    </c:choose>
-
-                                    newRows = newRows + '<span style="display: none;" id="metaTeo' + teoremas[j].numeroteorema + '">';
-                                    newRows = newRows + '<br><span  style="margin-left: 10px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
-                                    newRows = newRows + ' <span id="metateoIdName' + teoremas[j].numeroteorema + '" class="teoIdName">(' + teoremas[j].numeroteorema + ') with Metatheorem (3.7):</span> &nbsp; <span id="clickmeta' + teoremas[j].numeroteorema + '">$' + teoremas[j].metateoremastring + '$</span>  '
-                                    //newRows = newRows + '<script>clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ');'
-                                    //newRows = newRows + 'clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" +');';
-                                    //newRows = newRows + '</' + 'script>';
-                                    script.innerHTML= script.innerHTML + 'clickTeoremaInicial(' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + '); clickOperator(' + "'" + 'clickmeta' + teoremas[j].numeroteorema + "'" + ',' + "'" + 'nStatement_id' + "'" + ',' + "'" + 'MT-' + teoremas[j].numeroteorema + "'" + ',' + "'" +teoremas[j].vars+ "'" +');'
-                                    newRows = newRows + '</span>';
-                                }
-                            }
-                        }else{
-                            if (teoremas[j].isResuelto){
-                                newRows = newRows + '<i class="fa fa-unlock" aria-hidden="true" style="margin-right: 10px;"></i>';
-                            }else{
-                                newRows = newRows + '<i class="fa fa-lock" aria-hidden="true" style="margin-right: 15px;"></i>'
-                            }
-                            if (!teoremas[j].isAxioma){
-                                if(teoremas[j].demopendiente == -1){
-                                    newRows = newRows + '<a onclick="return confirm(' + "'" + 'You are going to prove the theorem' + teoremas[j].numeroteorema + "'" + ')" href="../../infer/${usuario.getLogin()}/' + teoremas[j].numeroteorema + '">(' + teoremas[j].numeroteorema + ')' +  teoremas[j].nombreteorema + ':</a> &nbsp; $' + teoremas[j].string + '$'
-                                }else{
-                                    newRows = newRows + '<a onclick="return confirm(' + "'" + 'You have left an incomplete proof of the theorem' + teoremas[j].numeroteorema + '. To be continued the proof from the point where you left it;' + "'" + ')" href="../../infer/${usuario.getLogin()}/' + teoremas[j].numeroteorema + '">(' + teoremas[j].numeroteorema + ')' +  teoremas[j].nombreteorema + ':</a> &nbsp; $' + teoremas[j].string + '$'         
-                                }
-                            }else{
-                                newRows = newRows + '(' + teoremas[j].numeroteorema + ') ' + teoremas[j].nombreteorema + ': &nbsp; $' + teoremas[j].string + '$'  
-                            }
+                    dataType: "text",
+                    data: JSON.stringify(categorias),
+                    success:  function(data) {
+                        let split = data.split("myTheorems");
+                        if (split.length > 1){
+                            let div = document.getElementById("misteoremasSpace");
+                            div.innerHTML = data;
+                            MathJax.Hub.Typeset();
                         }
-                        newRows = newRows + '</h6>';
-                        newRows = newRows + '</li>'
+                        // Case when the user is no longer active
+                        else {
+                            window.location = $("#linkCloseSession").attr("href");
+                        }
+                    }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                        alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
                     }
-                }
-                newRows = newRows + "</ul></li>"
+                });
+                $("#modalLoading").css('display','none'); 
             }
-            innerHTML = newRows
-            newElement.innerHTML = innerHTML;                        
-        }
-        p.appendChild(newElement);
-                     
-        MathJax.Hub.Queue(["Typeset",MathJax.Hub,"misteoremas"]);
-        terminoClick = document.getElementsByClassName("terminoClick")
-        if ($('#metodosDemostracion')[0].value && terminoClick.length == 0){
-            $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
-            $(".operator").css({"cursor":"","color":""});
-        }
-        if (terminoClick.length > 0){
-            $("#currentTeo").hide();
-        }
-        document.body.appendChild(script);
-        $("#modalLoading").css('display','none'); 
-        }
-    });
-        }
-        document.getElementById("saveConfig").onclick = function(){
-            guardarMostrarCategorias();
-        }
-          </script>
-                    <script>
-              $(".collapse-link").on("click",function(e){
-                  if($(this).next().hasClass("fa-chevron-down")){
-                      $(this).next().removeClass("fa-chevron-down");
-                      $(this).next().addClass("fa-chevron-up");
+            document.getElementById("saveConfig").onclick = function(){
+                guardarMostrarCategorias();
+            }
+          
+        </script>
+        <script>
+            $(".collapse-link").on("click",function(e){
+                if($(this).next().hasClass("fa-chevron-down")){
+                    $(this).next().removeClass("fa-chevron-down");
+                    $(this).next().addClass("fa-chevron-up");
                       
-                  }else if ($(this).next().hasClass("fa-chevron-up")){
-                      $(this).next().removeClass("fa-chevron-up");
-                      $(this).next().addClass("fa-chevron-down");
-                  }
-              })
-        
-          </script>
+                }else if ($(this).next().hasClass("fa-chevron-up")){
+                    $(this).next().removeClass("fa-chevron-up");
+                    $(this).next().addClass("fa-chevron-down");
+                }
+            })
+        </script>
     <%--<tiles:insertDefinition name="footer" /> --%>
     </body>
 </html>

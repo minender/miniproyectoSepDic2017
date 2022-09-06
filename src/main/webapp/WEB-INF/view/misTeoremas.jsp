@@ -64,14 +64,15 @@
               <c:choose>
                 <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
                   <c:choose>
-                    <c:when test="${!resu.isResuelto() && resu.getDemopendiente() < 1}">
+                    <c:when test="${(!resu.isResuelto()) && resu.getDemopendiente() < 1}">
                       <li >
                         <p >
                              <i class="fa fa-lock" aria-hidden="true" ></i>
-                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
+                          (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
                           <c:choose>
-                            <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas')}">
+                            <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas') || usuario.getLogin().equals('AdminTeoremas')}">
                                <a onclick="return confirm('Are you sure you want to delete the theorem?')" href="javascript:delTeo(${resu.getTeorema().getId()})"><i class="fa fa-trash" aria-hidden="true" ></i></a>
+                               <a onclick="return confirm('Do you want to edit this theorem?')" href="editarteo/${resu.getTeorema().getId()}"><i class="fa fa-pencil" aria-hidden="true" ></i></a>
                             </c:when>
                           </c:choose>
                         </p> 
@@ -95,16 +96,17 @@
                                     </c:otherwise>
                                 </c:choose>
 
-                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
+                                <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
                                 <span class="d-none" id="${resu.getTeorema().getId()}">
 
                                 <br><span class="metaitem"></span>
-                                <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) with Metatheorem (3.7): </a> &nbsp; ${resu.getTeorema().getMetateoTerm().toStringInfJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
+                                <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) with Metatheorem (3.7): </a> &nbsp; ${resu.getTeorema().getMetateoTerm().toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
                                 </span>
                             </c:when>
                             <c:otherwise>
                                 <i class="fa fa-unlock" aria-hidden="true" ></i>
-                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().toStringInfJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}                     
+                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}                     
+
                         
                             </c:otherwise>
                           </c:choose>
@@ -267,6 +269,7 @@
             guardarMostrarCategorias();
 
         }
+
 </script> 
     <%--<c:choose>
         <c:when test="${isDifferentUser.intValue()!=1}">

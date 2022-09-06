@@ -175,7 +175,7 @@ public class EvaluarController {
                 //TypedA A = new TypedA(teoTerm2);
                 map.addAttribute("id", id);
                 map.addAttribute("usuario", username);
-                map.addAttribute("alias", teoTerm2.toStringInfLabeled(simboloManager));//(new TypedApp(I, A)).type().toStringInfFinal());//teoTerm.toStringInfLabeled());
+                map.addAttribute("alias", teoTerm2.toStringLaTeXLabeled(simboloManager));//(new TypedApp(I, A)).type().toStringLaTeXFinal());//teoTerm.toStringLaTeXLabeled());
                 map.addAttribute("predserializado", categoriaManager.getAllCategorias().toString());
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
 

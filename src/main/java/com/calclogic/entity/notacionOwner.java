@@ -1,10 +1,18 @@
 package com.calclogic.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.antlr.v4.runtime.misc.Pair;
 
 public abstract class notacionOwner {
 	
 	private String notacion;
+        
+        public int getArgs() {
+            return 0; // Para no romper la clase Predicado
+        }
 	
 	public String getNotacion() {
 		return notacion;
@@ -67,6 +75,27 @@ public abstract class notacionOwner {
     	return result;
     }
     
+    public Pair<HashSet<Integer>, HashSet<Integer>> getNotacionVariablesQuantifier() {
+        Pattern pattern = Pattern.compile("[0-9]+");
+        ArrayList<String> notacionVars = getNotacionVariables();
+        HashSet<Integer> boundVars = new HashSet<Integer>();
+        HashSet<Integer> unboundVars = new HashSet<Integer>();
+        for (String var: notacionVars) {
+            Matcher matcher = pattern.matcher(var);
+            boolean matched = matcher.find();
+            if (matched) {
+                Integer varNum = Integer.parseInt(matcher.group());
+                if (var.contains("v")) {
+                    boundVars.add(varNum);
+                }
+                else {
+                    unboundVars.add(varNum);
+                }
+            }
+        }
+        return new Pair(boundVars, unboundVars);
+    }
+    
     /**
      * @author jean
      * @param newVariables string that with which you want to replace the variables
@@ -127,6 +156,7 @@ public abstract class notacionOwner {
     			
     			// Get the variable
     			currentVariable = notacionString.substring(variableStart, i+1);
+                        boolean isBound = currentVariable.contains("v");
     			
     			// If is an op we must get the latex notation of the symbol
     			if( currentVariable.equals("%(op)")) {
@@ -138,7 +168,11 @@ public abstract class notacionOwner {
     				
     				// In case we are seeing a forminput we must change its id
     				if(forminput) {
-    					newId = "{" + notacionString.charAt(i-1) + "}";
+                                        int id = Integer.parseInt(String.valueOf(notacionString.charAt(i-1)));
+                                        if (isBound) {
+                                            id = id + this.getArgs();
+                                        }
+    					newId = "{" + id + "}";
     					currentVariable = currentVariable.replaceFirst("\\{.*\\}", newId);
     				}
     			}
@@ -174,7 +208,6 @@ public abstract class notacionOwner {
     		
     		latexString = result.toString();
     	}
-    	
     	
     	return latexString;
     	

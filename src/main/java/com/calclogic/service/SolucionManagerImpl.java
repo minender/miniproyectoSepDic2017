@@ -6,11 +6,9 @@ import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Usuario;
-import com.calclogic.lambdacalculo.PasoInferencia;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.proof.CrudOperations;
-import com.calclogic.proof.FinishedProofMethod;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.SerializationUtils;
 
 /**
  * This class has the implementation of "SolucionManager" queries.
@@ -31,9 +28,8 @@ public class SolucionManagerImpl implements SolucionManager {
     @Autowired
     private SolucionDAO solucionDAO;
     @Autowired
-    private FinishedProofMethod finiPMeth;
-    @Autowired
     private CrudOperations crudOp;
+    @Autowired
     private ResuelveDAO resuelveDAO;
     
     //@Autowired
@@ -44,7 +40,6 @@ public class SolucionManagerImpl implements SolucionManager {
 	 * for the same theorem where already completed. It is not possible to work in new solutions
      * if there is an incomplete one.
      * @param sol The new Solucion object to be added.
-     * @return Nothing.
      */
     @Override
     @Transactional
@@ -73,7 +68,6 @@ public class SolucionManagerImpl implements SolucionManager {
 	 * has the structure established in this application.
      * @param solucionId Is the principal key of the Solucion object to be updated
 	 * @param typedTerm Is the Term object that will be added to the demonstration.
-     * @return Nothing.
      */   
     @Override
     @Transactional
@@ -86,7 +80,6 @@ public class SolucionManagerImpl implements SolucionManager {
     /**
      * Updates one of the Solucion objects of the table.
      * @param sol Is the Solucion object to be updated.
-     * @return Nothing.
      */   
     @Override
     @Transactional
@@ -97,7 +90,6 @@ public class SolucionManagerImpl implements SolucionManager {
     /**
      * Deletes one of the Solucion objects of the table.
      * @param id Is the principal key of the Solucion object to delete.
-     * @return Nothing.
      */ 
     @Override
     @Transactional
@@ -113,7 +105,7 @@ public class SolucionManagerImpl implements SolucionManager {
             Set<Solucion> li = resuelve.getSolucions();
             int nSol = li.size();
             if (nSol == 1) {
-                Resuelve resuelveAdmin = resuelveDAO.getResuelveByUserAndTeorema("AdminTeoremas", teorema.getId());
+                Resuelve resuelveAdmin = resuelveDAO.getResuelveByUserAndTeorema("AdminTeoremas", teorema.getId(),false);
                 if (resuelveAdmin != null) {
                     solucionDAO.deleteSolucion(id);
                     resuelveDAO.deleteResuelve(resuelve.getId());
@@ -137,14 +129,15 @@ public class SolucionManagerImpl implements SolucionManager {
                             solucionDAO.deleteSolucion(id);
                             resuelve.setResuelto(false);
                             resuelveDAO.updateResuelve(resuelve);
-                            break;
+                            return true;
                         }
                     }
                 }
+                solucionDAO.deleteSolucion(id);
+                return true;
             }
             return true;   
         }
-        
         return false;
     }
     
@@ -158,7 +151,6 @@ public class SolucionManagerImpl implements SolucionManager {
         Solucion solucion = solucionDAO.getSolucion(id);
         if (!solucion.getDemostracion().equals("")) {
             solucion.setTypedTerm(CombUtilities.getTerm(solucion.getDemostracion(),user));
-            solucion.setFinishedProofMethod(finiPMeth);
             solucion.setProofCrudOperations(crudOp);
         }
         else // case when all the proof was erased by the go back button

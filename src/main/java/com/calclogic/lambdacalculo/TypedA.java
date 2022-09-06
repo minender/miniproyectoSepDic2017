@@ -49,7 +49,7 @@ public class TypedA extends Const implements TypedTerm{
         super("A");
         type_ = type;
         combDBType_ = type.toStringFinal();
-        Resuelve r = rm_.getResuelveByUserAndTeorema(user, combDBType_);
+        Resuelve r = rm_.getResuelveByUserAndTeorema(user, combDBType_,true);
         if (r != null) {
            variables_ = r.getVariables();
            nSt_ = r.getNumeroteorema();
@@ -63,7 +63,7 @@ public class TypedA extends Const implements TypedTerm{
     public TypedA(String nTeo, String user)
     {
         super("A");
-        Resuelve r = rm_.getResuelveByUserAndTeoNum(user, nTeo);
+        Resuelve r = rm_.getResuelveByUserAndTeoNum(user, nTeo,true);
         type_ = r.getTeorema().getTeoTerm();
         combDBType_ = type_.toStringFinal();
         if (r != null) {
@@ -79,7 +79,7 @@ public class TypedA extends Const implements TypedTerm{
     public TypedA(int idTeo, String user)
     {
         super("A");
-        Resuelve r = rm_.getResuelveByUserAndTeorema(user, idTeo);
+        Resuelve r = rm_.getResuelveByUserAndTeorema(user, idTeo,true);
         type_ = r.getTeorema().getTeoTerm();
         combDBType_ = type_.toStringFinal();
         if (r != null) {
