@@ -8,7 +8,6 @@ import com.calclogic.entity.Simbolo;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -214,33 +213,9 @@ public class Const extends Term
         else
           return con+"^{"+((TypedTerm)this).getCombDBType()+"}";
     }
-   
-    /*@Override
-    public String toStringInFin() {
-        String res;
-        System.out.println(con);
-        if (con.startsWith("\\equiv")) {
-           res =" == ";
-        }else if (con.startsWith("\\Rightarrow")){
-            res =  " ==> ";
-        }else if (con.startsWith("\\Leftarrow")){
-            res = " <== ";
-        }else if (con.startsWith("\\vee")){
-            res = " \\/ ";
-        }else if (con.startsWith("\\wedge")){
-            res = " /\\ ";
-        }else if (con.startsWith("\\nequiv")){
-            res = " !== ";
-        }else if (con.startsWith("\\neg")){
-            res = "!";
-        }else{
-            res = con;
-        }
-        return res;
-    } */    
         
     @Override
-    public String toStringInf(SimboloManager s,String numTeo) {
+    public String toStringLaTeX(SimboloManager s,String numTeo) {
         Simbolo c1 = s.getSimbolo(this.id);
         if (c1 == null)
            return con;
@@ -249,7 +224,7 @@ public class Const extends Term
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
         Simbolo c1 = s.getSimbolo(this.id);
         String term;
@@ -280,20 +255,13 @@ public class Const extends Term
     }
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
+    public String toStringLaTeXWithInputs(SimboloManager s, String position, String rootId) {
         Simbolo c1 = s.getSimbolo(this.id);
         if (c1 == null)
            return con;
         else
            return c1.getNotacion_latex();
     }
-
-    /*public Tripla toStringInfLabeled(Id id, int nivel, Tripla tri){
-        id.id++;
-        tri.term = "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+con+"}}";
-        tri.valores.add("lambda z.z");
-        return tri;
-    }*/
     
     public ToString toStringAbrvV1(ToString toString)
     {
@@ -308,10 +276,10 @@ public class Const extends Term
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager pm,
+    public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm,
                                     String nTeo)
     {
-        toString.term=this.toStringInf(s,"");
+        toString.term=this.toStringLaTeX(s,"");
         return toString;
     }
 

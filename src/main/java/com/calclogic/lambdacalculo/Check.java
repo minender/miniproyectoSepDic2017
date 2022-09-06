@@ -18,12 +18,10 @@ import java.util.List;
              Term termAux = ((App) v).q;
              
              if (termAux instanceof Sust){
-                 System.out.println(t0.toStringInf());
                  System.out.println(true);
                  List<Var> varss = ((Sust) termAux).vars;
                  List<Term> termss = ((Sust) termAux).terms;             
                  t0 = t0.sustParall( (ArrayList<Var>) varss , (ArrayList<Term>) termss  );
-                 System.out.println(t0.toStringInf());
                  System.out.println("-----------------------------");
                  System.out.println(t0.toString());
              }

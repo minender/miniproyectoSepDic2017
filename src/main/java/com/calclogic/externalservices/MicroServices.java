@@ -59,8 +59,8 @@ public class MicroServices {
     }
 
     /**
-     * Calls an external server so it transforms the LaTex code inside a strng to HTML.
-     * @param latexFormula Is the string that has the LaTex code
+     * Calls an external server so it transforms the LaTeX code inside a string to HTML.
+     * @param latexFormula Is the string that has the LaTeX code
      * @return The transformed string with the HTML inside
      */
     public static String transformLaTexToHTML(String latexFormula){

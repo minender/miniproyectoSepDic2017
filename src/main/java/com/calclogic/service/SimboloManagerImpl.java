@@ -128,7 +128,6 @@ public class SimboloManagerImpl implements SimboloManager {
         if (resuelves_user.size() > 0) {
             String numsTeo = "";
             for (Resuelve r: resuelves_user) {
-                System.out.println(r.getUsuario().getLogin());
                 if (numsTeo.equals("")) {
                     numsTeo = r.getNumeroteorema();
                 }
@@ -146,28 +145,18 @@ public class SimboloManagerImpl implements SimboloManager {
         }
         List<Solucion> soluciones = solucionDAO.getAllSolucionesByResuelves(dependentsIds);
         
-        System.out.println("Borrando soluciones");
         for (Solucion s: soluciones) {
             solucionDAO.deleteSolucion(s.getId());
         }
-        //System.out.println("Seteando resuelves a no resuelto");
         for (Resuelve r: dependents) {
             r.setResuelto(false);
         }
-        //System.out.println("Borrando resuelves");
         for (Resuelve r: dependents) {
             resuelveDAO.deleteResuelve(r.getId());
         }
-        //System.out.println("Borrando teoremas");
         for (Teorema t: orphans) {
             teoremaDAO.deleteTeorema(t.getId());
         }
-        
-        //System.out.println(orphans.size());
-        //System.out.println(resuelves.size());
-        //System.out.println(dependents.size());
-        //System.out.println(soluciones.size());
-        
         simboloDAO.deleteSimbolo(id);
         return "Symbol deleted";
     }

@@ -29,7 +29,6 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
      * Adds a new MostrarCategoria object to the table.
      * This query is made using standard Hibernate library functions.
      * @param MostrarCategoria The new MostrarCategoria object to be added.
-     * @return Nothing.
      */
     @Override   
     @Transactional
@@ -41,7 +40,6 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
      * Deletes one of the MostrarCategoria objects of the table.
      * This query is made using standard Hibernate library functions.
      * @param id Is the principal key of the MostrarCategoria object to delete.
-     * @return Nothing.
      */ 
     @Override
     @Transactional
@@ -82,7 +80,7 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
     @Override
     @Transactional
     public List<MostrarCategoria> getAllMostrarCategoriasByUsuario(Usuario usuario){
-        return this.sessionFactory.getCurrentSession().createQuery("FROM MostrarCategoria WHERE usuariologin = :usuariologin OR usuariologin = 'AdminTeoremas' ORDER BY categoriaid").setParameter("usuariologin",usuario.getLogin()).list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM MostrarCategoria WHERE usuariologin = :usuariologin ORDER BY categoriaid").setParameter("usuariologin",usuario.getLogin()).list();
     }
     
     /**

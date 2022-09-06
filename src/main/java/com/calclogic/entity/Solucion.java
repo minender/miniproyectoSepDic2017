@@ -9,7 +9,6 @@ import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.ProofBoolean;
 import com.calclogic.parse.CombUtilities;
-import com.calclogic.proof.FinishedProofMethod;
 import com.calclogic.proof.GenericProofMethod;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +42,6 @@ public class Solucion implements java.io.Serializable {
     private boolean resuelto;
     private String demostracion;
     private String metodo;
-    private FinishedProofMethod finishedProofMethod;
     private CrudOperations proofCrudOperations;
 
 
@@ -101,10 +99,6 @@ public class Solucion implements java.io.Serializable {
 
     public void setResuelve(Resuelve resuelve) {
         this.resuelve = resuelve;
-    }
-    
-    public void setFinishedProofMethod(FinishedProofMethod finishedProofMethod) {
-        this.finishedProofMethod = finishedProofMethod;
     }
     
     public void setDemostracion(String demostracion) {

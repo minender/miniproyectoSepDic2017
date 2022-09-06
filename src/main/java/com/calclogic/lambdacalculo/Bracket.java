@@ -206,33 +206,17 @@ public class Bracket extends Term{
         if(t.alias == null)
             return "(\\lambda "+x.toString()+"."+t.toStringFinal()+")";
         else{
-            return "(\\lambda "+x.toStringInfFinal(null)+"."+t.alias +")";
+            return "(\\lambda "+x.toStringLaTeXFinal(null)+"."+t.alias +")";
             //return "(\\lambda "+x.toString()+"."+t.alias.split("@")[0].replace("_", "\\_") +")";
         }
     }
     
     @Override
-    public String toStringInf(SimboloManager s,String numTeo)
+    public String toStringLaTeX(SimboloManager s,String numTeo)
     {
-       /* if(t.alias == null) {
-            System.out.println(t instanceof App);
-            if (t instanceof App) {
-                if (((App) t).p instanceof App ) {
-                    return "(forall "+x.toStringInf()+"|"+t.toStringFinalInf()+")";
-                }
-                return "(forall "+x.toStringInf()+"|"+t.toStringFinalInf()+")";
-            }else{
-                //FALTA IMPLEMENTAR FINAL
-                //return "(\\lambda "+x.toStringInf()+"."+t.toStringFinalInf()+")";
-                return "(\\forall "+x.toStringInf()+"|:"+t.toStringFinalInf()+")";
-            }
-        }else {
-            //return "(\\lambda "+x.toStringInf()+"."+t.alias +")";
-            return "(forall "+x.toStringInf()+"|"+t.toStringFinalInf()+")";
-        }*/
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
-            return t.toStringInf(s,"");
+            return t.toStringLaTeX(s,"");
             //return t.toStringInf(s,numTeo);
         }
         else {
@@ -242,19 +226,19 @@ public class Bracket extends Term{
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
-        return this.t.toStringInfLabeled(s, z, t, leibniz, l2, id, nivel);
+        return this.t.toStringLaTeXLabeled(s, z, t, leibniz, l2, id, nivel);
         /*
         id.id++;
         leibniz.add(t.leibniz(z, this));
         l2.add(l2.remove(0)+id.id+",");
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
-            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal(null)+"."+t.toStringInfFinal(null)+")}}";
+            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringLaTeXFinal(null)+"."+t.toStringLaTeXFinal(null)+")}}";
         }
         else {
-            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringInfFinal(null)+"."+t.alias +")}}";
+            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringLaTeXFinal(null)+"."+t.alias +")}}";
         }
         */
     }
@@ -267,11 +251,12 @@ public class Bracket extends Term{
     }
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
+    public String toStringLaTeXWithInputs(SimboloManager s, String position, String rootId) {
         char ascii = (char) x.indice; 
-        return "(E^{"+ascii+"}:"+t.toStringWithInputs(s,position,rootId)+")";
+        return "(E^{"+ascii+"}:"+t.toStringLaTeXWithInputs(s,position,rootId)+")";
     }
     
+    @Override
     public ToString toStringAbrv(ToString toString)
     {
         if(t.alias == null)
@@ -290,18 +275,18 @@ public class Bracket extends Term{
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString,SimboloManager s, PredicadoManager p,String nTeo)
+    public ToString toStringLaTeXAbrv(ToString toString,SimboloManager s, PredicadoManager p,String nTeo)
     {
         if(t.alias == null)
         {
-            t.toStringInfAbrvFinal(toString,s,p,nTeo);
-            //toString.term= "(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
+            t.toStringLaTeXAbrvFinal(toString,s,p,nTeo);
+            //toString.term= "(\\lambda "+x.toStringLaTeX(s,"")+"."+toString.term+")";
             return toString;
         }
         else
         {
             toString.setNuevoAlias(t.alias, t);
-            //toString.term="(\\lambda "+x.toStringInf(s,"")+"."+toString.term+")";
+            //toString.term="(\\lambda "+x.toStringLaTeX(s,"")+"."+toString.term+")";
             return toString;
         }
         

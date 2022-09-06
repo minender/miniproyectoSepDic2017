@@ -9,7 +9,7 @@
             <li class="nav-item ${perfilMenu}"><a href="${urlPrefix}home" class="nav-link">Profile</a></li>
 	    <li class="nav-item ${guardarMenu}" ><a href="${urlPrefix}guardar" class="nav-link">Add Abbreviation</a></li>
             <li class="nav-item ${listarTerminosMenu}"><a href="${urlPrefix}listar?comb=n" class="nav-link">My Abbreviations</a></li>
-            <li class="nav-item ${misTeoremasMenu}"><a href="${urlPrefix}misTeoremas" class="nav-link">My Theorems</a></li>
+            <li class="nav-item ${misTeoremasMenu}"><a id="linkMyTheorems" href="${urlPrefix}misTeoremas" class="nav-link">My Theorems</a></li>
             <li class="nav-item ${agregarTeoremaMenu}"><a href="${urlPrefix}guardarteo" class="nav-link">Add Theorems</a></li>
             <li class="nav-item ${proveMenu}"><a href="${urlPrefix}${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Prove</a></li>
             <c:choose>
@@ -26,7 +26,7 @@
                 </c:when>
             </c:choose>
             <li class="nav-item ${helpMenu}" ><a href="help" class="nav-link">Help</a></li>
-            <li class="nav-item" ><a href="close" class="nav-link">Sign Out</a></li>
+            <li class="nav-item" ><a id="linkCloseSession" href="close" class="nav-link">Sign Out</a></li>
           </ul>
           </div>
         </nav>

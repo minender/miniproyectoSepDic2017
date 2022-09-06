@@ -12,7 +12,6 @@ import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
-import com.calclogic.parse.CombUtilities;
 import com.calclogic.service.DisponeManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -125,19 +124,19 @@ public class TransitivityMethod extends StartingOneSideMethod {
                     )
                )
             {
-                primExp = ((App)ultInfType).q.toStringInf(s,""); 
+                primExp = ((App)ultInfType).q.toStringLaTeX(s,""); 
                 newStep = stepTransOpInfer(user, ultInf, resuelveManager, disponeManager, s);
             }
             else if (ultInf == iter){ // ultInf is a =inference or opinference and the first one
-                    primExp = ((App)ultInfType).q.toStringInf(s,""); 
+                    primExp = ((App)ultInfType).q.toStringLaTeX(s,""); 
                     newStep = stepOneSideEq(user, ultInf, resuelveManager, disponeManager, s);
             } else if (i<firstOpInf){ // ultInf is a =inference and not the first one and  
                                     // after at least one no =inference
-                primExp = ((App)((App)((App)ultInfType).q).p).q.toStringInf(s,""); 
+                primExp = ((App)((App)((App)ultInfType).q).p).q.toStringLaTeX(s,""); 
                 newStep = stepTransEqInfer(user, ultInf, resuelveManager, disponeManager, s);
             } else { // ultInf is a =inference and not the first one
                    // and before the first no =inference
-                primExp = ((App)ultInfType).q.toStringInf(s,""); 
+                primExp = ((App)ultInfType).q.toStringLaTeX(s,""); 
                 newStep = stepOneSideEq(user, ultInf, resuelveManager, disponeManager, s);
             }
             historial = "~~~~~~" + primExp + " \\\\" + newStep + "\\\\" + historial;
@@ -147,12 +146,12 @@ public class TransitivityMethod extends StartingOneSideMethod {
         {
             Term last = (reversed?((App)typedTerm.type().setToPrint()).q:
                                      ((App)((App)typedTerm.type().setToPrint()).p).q);
-            lastline = (solved?last.toStringInf(s,"")+"$":last.toStringInfLabeled(s));
+            lastline = (solved?last.toStringLaTeX(s,"")+"$":last.toStringLaTeXLabeled(s));
         }
         else {
             Term last = (reversed?((TypedApp)typedTerm).q:typedTerm);
             last = ((App)((App)((App)((App)(lastEquan?((TypedApp)last).p:last).type().setToPrint()).p).q).p).q;
-            lastline = (solved?last.toStringInf(s,"")+"$":last.toStringInfLabeled(s));
+            lastline = (solved?last.toStringLaTeX(s,"")+"$":last.toStringLaTeXLabeled(s));
         }
         return historial + "~~~~~~" + lastline;  
     }
@@ -205,11 +204,11 @@ public class TransitivityMethod extends StartingOneSideMethod {
             }
         }
         step = stepOneSideEq(user, ultInf, resuelveManager, disponeManager, s);
-        step = ((App)((App)typedTerm.type().setToPrint()).p).p.toStringInf(s,"")+step.substring(step.indexOf("~"));
+        step = ((App)((App)typedTerm.type().setToPrint()).p).p.toStringLaTeX(s,"")+step.substring(step.indexOf("~"));
         if (leibniz.toStringFinal().equals("x_{122}") )
             return step;
         else
-            return step.substring(0, step.length()-7)+"~and~E:"+leibniz.toStringInf(s, "")+"\\rangle";
+            return step.substring(0, step.length()-7)+"~and~E:"+leibniz.toStringLaTeX(s, "")+"\\rangle";
     }
 
     /**

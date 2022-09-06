@@ -245,7 +245,7 @@ public class ProofBoolean {
                 ((App)((App)root).p).q instanceof TypedA &&
                 
                 leftSide instanceof App && ((App)leftSide).p instanceof App &&
-                (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") &&
+                (((App)((App)leftSide).p).p).toStringLaTeX(s, "").equals("\\Rightarrow") &&
                 ((App)leftSide).q.equals(((App)root).q.type());    
     }
     
@@ -262,7 +262,7 @@ public class ProofBoolean {
                 ((App)((App)root).p).q instanceof TypedA &&
                 
                 leftSide instanceof App && ((App)leftSide).p instanceof App &&
-                (((App)((App)leftSide).p).p).toStringInf(s, "").equals("\\Rightarrow") &&
+                (((App)((App)leftSide).p).p).toStringLaTeX(s, "").equals("\\Rightarrow") &&
                 ((App)leftSide).q.equals(((App)root).q.type());         
     }
     

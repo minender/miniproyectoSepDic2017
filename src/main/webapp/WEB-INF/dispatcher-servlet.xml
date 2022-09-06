@@ -135,7 +135,6 @@
     </bean>
     <bean id="proofTemplateDAO" class="com.calclogic.dao.ProofTemplateDaoImpl"></bean>
     <bean id="proofTemplateManager" class="com.calclogic.service.ProofTemplateManagerImpl"></bean>
-    <bean id="finiPMeth" class="com.calclogic.proof.FinishedProofMethodImpl"></bean>
     <bean id="crudOp" class="com.calclogic.proof.CrudOperationsImpl"></bean>
     <bean id="staticContextInitializer" class="com.calclogic.lambdacalculo.StaticContextInitializer"></bean>
  

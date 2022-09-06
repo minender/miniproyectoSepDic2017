@@ -50,10 +50,9 @@ public interface ResuelveDAO {
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      */
-    public List<Resuelve> getAllResuelveByUser(String userLogin);
-    
-    public List<Resuelve> getAllResuelveByUserOrAdmin(String userLogin);
+    public List<Resuelve> getAllResuelveByUser(String userLogin, Boolean orAdmin);
     
     /**
      * Method to get a list of all the theorems of a specific user that are axioms
@@ -61,19 +60,17 @@ public interface ResuelveDAO {
      * an argument.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoNum Is the number of the theorem, used to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      */
-    public List<Resuelve> getAllResuelveByUserWithoutAxiom(String userLogin, String teoNum);
-    
-    public List<Resuelve> getAllResuelveByUserOrAdminWithoutAxiom(String userLogin, String teoNum);
+    public List<Resuelve> getAllResuelveByUserWithoutAxiom(String userLogin, String teoNum, Boolean orAdmin);
     
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user
      * having solved the demonstration of a theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      */
-    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin);
-    
-    public List<Resuelve> getAllResuelveByUserOrAdminResuelto(String userLogin);
+    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin, Boolean orAdmin);
 
     /**
      * Method to get a list of all the entries of the table that correspond 
@@ -89,24 +86,27 @@ public interface ResuelveDAO {
      * using the identifier of the theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoremaID Is the principal key of the theorem used to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      */
-    public Resuelve getResuelveByUserAndTeorema(String userLogin,int teoremaID);
+    public Resuelve getResuelveByUserAndTeorema(String userLogin, int teoremaID, Boolean orAdmin);
     
     /**
      * Method to get an entry that relates a user with a theorem, 
      * using the statement of the theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teo Is the statement of the theorem used to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      */
-    public Resuelve getResuelveByUserAndTeorema(String userLogin,String teo);
+    public Resuelve getResuelveByUserAndTeorema(String userLogin, String teo, Boolean orAdmin);
 
     /**
      * Method to get an entry that relates a user with a theorem, 
      * using the number of the theorem.
      * @param userLogin Is the string with which the user logs in, and that we use to filter the search.
      * @param teoNum Is the number of the theorem used to filter the search.
+     * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      */
-    public Resuelve getResuelveByUserAndTeoNum(String userLogin,String teoNum);
+    public Resuelve getResuelveByUserAndTeoNum(String userLogin, String teoNum, Boolean orAdmin);
     
     /**
      * Method to get a list of all the entries of the table that correspond to a

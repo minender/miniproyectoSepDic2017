@@ -194,8 +194,7 @@ public class Var extends Term{
     }
     
     @Override
-    public String toStringInf(SimboloManager s,String numTeo) {
-        //System.out.println(indice);
+    public String toStringLaTeX(SimboloManager s,String numTeo) {
         if(alias == null ) {
             return (indice > 64?""+(char) indice:"x_{"+indice+"}");
         }else {
@@ -204,7 +203,7 @@ public class Var extends Term{
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
         leibniz.add(t.leibniz(z, this));
         l2.add(l2.size(),id.id+",");
@@ -226,8 +225,7 @@ public class Var extends Term{
     }
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
-        System.out.println("\\FormInput{"+rootId + position+"}");
+    public String toStringLaTeXWithInputs(SimboloManager s, String position, String rootId) {
         if(alias == null ) {
             char ascii = (char) indice; 
             return "\\FormInput{"+rootId + position+"}";
@@ -236,28 +234,13 @@ public class Var extends Term{
         }
     }
     
-    /*@Override
-    public String toStringInFin() {
-        if(alias == null ) {
-            char ascii = (char) indice; 
-            return ""+ascii;
-        }else {
-            return alias;
-        }
-    }*/
-    
+    @Override
     public ToString toStringAbrv(ToString toString)
     {
         if(alias == null)
             toString.term=this.toString();
         else
         {
-            /*toString.currentnAlias++;
-                int index=toString.aliasIndex.size();
-                toString.aliasIndex.put(alias, index);
-                toString.valores.add(this.toString());
-                toString.alias.add(alias);
-            toString.term="\\cssId{agru@alias@"+toString.currentnAlias+"}{\\style{cursor:pointer; color:blue;}{"+alias+"}}";*/
             String aux="0";
             String[] Aux = alias.split("@");
             if(Aux.length == 2)
@@ -278,11 +261,11 @@ public class Var extends Term{
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
+    public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
                                     String nTeo)
     {
         if(alias == null)
-            toString.term=this.toStringInf(s,"");
+            toString.term=this.toStringLaTeX(s,"");
         else
         {
             /*toString.currentnAlias++;

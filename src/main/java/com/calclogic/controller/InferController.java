@@ -39,10 +39,10 @@ import com.calclogic.service.MetateoremaManager;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.SimboloManager;
+import com.calclogic.externalservices.MicroServices;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.GenericProofMethod;
 import com.calclogic.proof.ProofBoolean;
-import com.calclogic.proof.InferenceIndex;
 import com.calclogic.proof.MetaTheorem;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -59,6 +59,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -107,7 +108,7 @@ public class InferController {
             return "redirect:/index";
         }
         
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSol(username);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username,true);
         
         for (Resuelve r: resuelves) // Este for debes mandarlo para el manager y quitar
         {                           // la construccion del metateorema del true
@@ -179,11 +180,11 @@ public class InferController {
         {
             return "redirect:/index";
         }
-        Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
 
         // Case when the user could only see the theorem but had not a Resuelve object associated to it
         if (resuel == null) {
-            resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo);
+            resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo,false);
             Usuario user = usuarioManager.getUsuario(username);
             resuel.setUsuario(user);
             resuel.setDemopendiente(-1);
@@ -196,12 +197,11 @@ public class InferController {
         String solId = "new";
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserOrAdminWithSolWithoutAxiom(username,nTeo); // Maybe: getAllResuelveByUserOrAdminResuelto
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSolWithoutAxiom(username,nTeo,true); // Maybe: getAllResuelveByUserResuelto
 
         // Usando algoritmo de punto fijo
         List<Resuelve> unResuelve = new ArrayList<Resuelve>();
         unResuelve.add(resuel);
-        //System.out.println(unResuelve.get(0).getNumeroteorema());
         List<Resuelve> depend = resuelveManager.getResuelveDependent(username, unResuelve);
         HashSet<Integer> dependIds = new HashSet<Integer>();
         List<String> dependNum = new ArrayList<String>();
@@ -209,20 +209,9 @@ public class InferController {
             dependIds.add(r.getId());
             dependNum.add(r.getNumeroteorema());
         }
-        //System.out.println(dependNum.toString());
         resuelves.removeIf(r -> dependIds.contains(r.getId()));
         //resuelves.removeAll(depend);
         //resuelves = new ArrayList<Resuelve>();
-
-        for (Resuelve r: resuelves){
-            Teorema t = r.getTeorema();
-            Term term = t.getTeoTerm();
-
-            if(r.isResuelto()==true){ // || r.getNumeroteorema().equals(nTeo)){
-                t.setTeoTerm(term);
-                t.setMetateoTerm(new App(new App(new Const(1,"\\cssId{clickmeta@"+r.getNumeroteorema()+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{\\equiv}}}",false,1,1),new Const("true ")), term));
-            }
-        }
 
         Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("usuario", usr);
@@ -236,14 +225,13 @@ public class InferController {
         map.addAttribute("leibniz","");
         
         if (solId.equals("new")){
-            map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");
+            map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"")+"$</center> Proof:");
             map.addAttribute("elegirMetodo","1");
             map.addAttribute("teoInicial", "");
         }
-        else
-        {
+        else{
             Solucion solucion = solucionManager.getSolucion(resuel.getDemopendiente(),username);
-            infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringInf(simboloManager,"")+"$</center> Proof:");  
+            infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"")+"$</center> Proof:");  
             InferResponse response = new InferResponse(crudOp);
             Term typedTerm = solucion.getTypedTerm();
 
@@ -341,11 +329,11 @@ public class InferController {
         }
         
         if (arr == null)
-            response.setInstantiation(statementTerm.toStringInf(simboloManager, ""));
+            response.setInstantiation(statementTerm.toStringLaTeX(simboloManager, ""));
         else {// (ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)
             try {
             TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
-            response.setInstantiation(new TypedApp(I,statementTerm).type().toStringInf(simboloManager, ""));
+            response.setInstantiation(new TypedApp(I,statementTerm).type().toStringLaTeX(simboloManager, ""));
             }
             catch (TypeVerificationException e) {
                 e.printStackTrace();
@@ -475,7 +463,7 @@ public class InferController {
                     int j = sust.getVars().indexOf(new Var(freeVars[i].toCharArray()[0]));
                     if (j != -1) {
                         sustFormatC[i] = sust.getTerms().get(j).toStringFormatC(simboloManager,"",0,"substitutionButtonsId."+freeVars[i]);
-                        sustLatex[i] = sust.getTerms().get(j).toStringWithInputs(simboloManager,"","substitutionButtonsId."+freeVars[i]);
+                        sustLatex[i] = sust.getTerms().get(j).toStringLaTeXWithInputs(simboloManager,"","substitutionButtonsId."+freeVars[i]);
                     }
                     else {
                         sustFormatC[i] = "";
@@ -490,28 +478,6 @@ public class InferController {
         response.setSustFormatC(null);
         response.setSustLatex(null);
         return response;
-    }
-    
-        /**
-     * Controller that responds to HTTP POST request encoded with JSON.Returns an InferResponse
-     * object with the selected metatheorem applied to the selected theorem, in latex format.
-     *
-     * @param username: login of the user that made the request. It is in the URL also.
-     * @param nTheo: code of statement of the theorem.
-     * @return InferResponse Object with the statement of the metatheorem, in latex format.
-     */
-    @RequestMapping(value="/{username}/metatheorem", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody StringResponse metatheoremController(@PathVariable String username,
-                                                      @RequestParam(value="nTheo") String nTheo
-                                                    )
-    {
-        Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo).getTeorema().getTeoTerm();
-
-        // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
-        Term metaTheo = MetaTheorem.metaTheorem(statement).type();
-
-        return new StringResponse(nTheo + " with MetaTheorem (" + "3.7" +") $" + metaTheo.toStringInf(simboloManager,"") + "$");
-
     }
     
     /**
@@ -562,13 +528,13 @@ public class InferController {
             }
         }   
 
-        Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
-        Term typedTerm = solucion.getTypedTerm();
-        Term formula = resuel.getTeorema().getTeoTerm().setToPrinting(resuel.getVariables());
+        Resuelve resuel     = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
+        Solucion solucion   = solucionManager.getSolucion(Integer.parseInt(nSol),username);
+        Term typedTerm      = solucion.getTypedTerm();
+        Term formula        = resuel.getTeorema().getTeoTerm().setToPrinting(resuel.getVariables());
         // CHECK formula pudiera ser una igualdad y pasar por equival trans usando arboles de derivacion
-        String metodo = solucion.getMetodo();
-        Term methodTerm = ProofMethodUtilities.getTerm(metodo);
+        String metodo       = solucion.getMetodo();
+        Term methodTerm     = ProofMethodUtilities.getTerm(metodo);
         Term methodTermIter = methodTerm;
         
         Stack<Term> methodStk       = new Stack<>();
@@ -769,7 +735,7 @@ public class InferController {
     {   
         InferResponse response = new InferResponse(crudOp);
 
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Solucion solucion = solucionManager.getSolucion(resuelve.getDemopendiente(),username);
         int respRetroceder;
         Term method = null;
@@ -845,8 +811,7 @@ public class InferController {
                                             @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse(crudOp);
-      
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm().setToPrinting(resuelve.getVariables());
         
@@ -1187,7 +1152,7 @@ public class InferController {
         boolean sideOrTransitive = ("SS".equals(newMethod) || "T".equals(groupMethod));
 
         InferResponse response = new InferResponse(crudOp);
-        Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
+        Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
 
         // This is the theorem statement but parsed as a binary tree. 
         // We call it as "previous" because it may change when the proof starts
@@ -1204,9 +1169,9 @@ public class InferController {
 
             if ("DM".equals(newMethod)){
                 if (teoid.substring(0, 3).equals("ST-")){
-                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()),false);
                     if (resuelve == null){
-                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()));
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()),false);
                     }
                     formulaTerm = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
                 }
@@ -1346,5 +1311,33 @@ public class InferController {
 
         return response;
     }
-    
+
+    /**
+     * Controller that responds to HTTP POST request, with data sent as a dictionary.
+     *
+     * @param username: login of the user that made the request. It is in the URL also.
+     * @param nTheo: code of statement of the theorem. 
+     * @return A JSON object with a property named "string" representing the formula 
+     * of a metatheorem applied to a selected theorem, written in LaTeX notation.
+     *
+     * The reason why we don't return the String directly is because doing it that way,
+     * the tokens of the form \cssId{num} are not processed later in the web page, but
+     * they remain as "?".
+     */
+    @RequestMapping(value="/{username}/metatheorem", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody // This lets the return value be written straight to the HTTP response body
+    public JSONObject metatheoremController( @PathVariable String username,
+                                             @RequestParam(value="nTheo") String nTheo
+                                            )
+    {
+        Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo,true).getTeorema().getTeoTerm();
+
+        // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
+        Term metaTheo = MetaTheorem.metaTheorem(statement).type();
+        String str = "<span>("+nTheo+")" + " with Metatheorem (" + "3.7" +"):$~~~" + metaTheo.toStringLaTeX(simboloManager,nTheo) + "$</span>";
+
+        JSONObject json = new JSONObject();
+        json.put("string", MicroServices.transformLaTexToHTML(str));
+        return json;
+    }
 }

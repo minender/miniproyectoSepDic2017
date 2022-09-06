@@ -5,11 +5,8 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.service.PredicadoManager;
-import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 /**
  *
@@ -176,17 +173,15 @@ public class Phi extends Term{
     }
     
     @Override
-    public String toStringInfLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
         String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{\\Phi_{"+ind.toString()+"}}}";
         leibniz.add(t.leibniz(z, this));
-//        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
-//        leibnizL.add(t.leibniz(z, this).toStringInf(s,"").replace("\\", "\\\\"));
         id.id++;
         return term;
     }
     
     @Override
-    public String toStringInf(SimboloManager s,String numTeo) {
+    public String toStringLaTeX(SimboloManager s,String numTeo) {
         return "\\Phi_{"+ind.toString()+"}";
     }
     
@@ -197,7 +192,7 @@ public class Phi extends Term{
     }
     
     @Override
-    public String toStringWithInputs(SimboloManager s, String position, String rootId) {
+    public String toStringLaTeXWithInputs(SimboloManager s, String position, String rootId) {
         return "\\Phi_{"+ind.toString()+"}";
     }
     
@@ -214,10 +209,10 @@ public class Phi extends Term{
     }
     
     @Override
-    public ToString toStringInfAbrv(ToString toString, SimboloManager s,PredicadoManager pm,
+    public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s,PredicadoManager pm,
                                     String nTeo)
     {
-        toString.term=this.toStringInf(s,"");
+        toString.term=this.toStringLaTeX(s,"");
         return toString;
     }
 
