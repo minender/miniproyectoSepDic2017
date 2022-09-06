@@ -511,16 +511,16 @@ public class App extends Term{
             nArgs = 0; // This is to later enter in the case j > nArgs
         }
         else {
-          c = (Const) aux;
-          if (c.getId()==0) {
-            sym = s.getSimbolo(1);
-            opId = 1;
-          }
-          else {
-            sym = s.getSimbolo(c.getId());
-            opId = c.getId();
-          }
-          nArgs = sym.getArgumentos();
+            c = (Const) aux;
+            if (c.getId()==0) {
+                sym = s.getSimbolo(1);
+                opId = 1;
+            }
+            else {
+                sym = s.getSimbolo(c.getId());
+                opId = c.getId();
+            }
+            nArgs = sym.getArgumentos();
         }
         
         // This can only occur when what we read previously is a functional variable
@@ -570,21 +570,21 @@ public class App extends Term{
             }
             else {
                 if (c!=null && c.getId()==0) 
-                  arg = arg.body();
+                    arg = arg.body();
                 if (arg instanceof Bracket) {
-                  Term aux_arg = arg;
-                  int index = 1;
-                  while (aux_arg instanceof Bracket) {
-                    values.put("v"+index,((Bracket) aux_arg).x.toString());
-                    index++;
-                    aux_arg = ((Bracket) aux_arg).t;
-                  }
+                    Term aux_arg = arg;
+                    int index = 1;
+                    while (aux_arg instanceof Bracket) {
+                        values.put("v"+index,((Bracket) aux_arg).x.toString());
+                        index++;
+                        aux_arg = ((Bracket) aux_arg).t;
+                    }
                 }
                  
                 if (notation.contains("%(na"+i+")")){
                     if ('A' == kind){
-                       arg.toStringLaTeXAbrv(tStr,s,pm,"");
-                       values.put("na"+i,tStr.term);
+                        arg.toStringLaTeXAbrv(tStr,s,pm,"");
+                        values.put("na"+i,tStr.term);
                     }
                     else{
                         values.put("na"+i,arg.toStringLaTeX(kind,s,"",position+i,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
