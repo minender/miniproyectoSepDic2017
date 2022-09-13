@@ -45,13 +45,13 @@ public class App extends Term{
     @Override
     public Term subterm(String position) {
         if (position.equals(""))
-           return this;
+            return this;
         else if (position.charAt(0) == '1')
-           return p.subterm(position.substring(1));
+            return p.subterm(position.substring(1));
         else if (position.charAt(0) == '2')
-           return q.subterm(position.substring(1));
+            return q.subterm(position.substring(1));
         else
-           return null;
+            return null;
     }
     
     public Term sust(Var x,Term t){
@@ -390,23 +390,23 @@ public class App extends Term{
     /**
      * Returns a string formatted with variables codification (x_{}) and
      * constants codification (c_{}) with all possible parentheses (that could be
-     * unnecesary, see toStringFinal method).
+     * unnecesary, see toString method).
      */
-    public String toString(){
+    public String toStringAll(){
         String izq;
         String der;
         
         if(p.alias == null){
             if(p instanceof App)
-                izq=p.toStringFinal();
-            else
                 izq=p.toString();
+            else
+                izq=p.toStringAll();
         }
         else
             izq = p.alias.split("@")[0].replace("_", "\\_");
         
         if(q.alias == null)
-            der=q.toString();
+            der=q.toStringAll();
         else
             der=q.alias.split("@")[0].replace("_","\\_");
         

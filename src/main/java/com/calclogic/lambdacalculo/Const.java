@@ -106,7 +106,7 @@ public class Const extends Term
    public void getAxioms(List<String> l)
    {
        if (this instanceof TypedA)
-           l.add(this.type().toStringFinal() );
+           l.add(this.type().toStringAll() );
    }
    
    public Term leibniz(int z, Term subterm)
@@ -190,13 +190,13 @@ public class Const extends Term
         return new App(new Const("K"),this);
     }
     
-    public String toString()
+    public String toStringAll()
     {
         Term typ = this.type();
         if (typ == null || con.equals("S") || con.equals("U"))
           return con;
         else
-          return con+"^{"+typ.toStringFinal()+"}";
+          return con+"^{"+typ.toString()+"}";
     } 
         
     @Override
@@ -250,13 +250,13 @@ public class Const extends Term
     
     public ToString toStringAbrvV1(ToString toString)
     {
-        toString.term=this.toString();
+        toString.term=this.toStringAll();
         return toString;
     }
     
     public ToString toStringAbrv(ToString toString)
     {
-        toString.term=this.toString();
+        toString.term=this.toStringAll();
         return toString;
     }
     

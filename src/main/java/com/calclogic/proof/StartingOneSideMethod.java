@@ -78,13 +78,13 @@ public class StartingOneSideMethod extends GenericProofMethod {
 
             // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
             if (((TypedApp)typedTerm).q instanceof TypedApp){
-                lastline = ((TypedApp)((TypedApp)typedTerm).q).q.type().toStringFinal();
+                lastline = ((TypedApp)((TypedApp)typedTerm).q).q.type().toString();
                 eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringLaTeX(s,"");
             }
             else {
                 // Note that here we have a less "q" respect of the previous case because in there 
                 // there was an additional tree representing the instantiation
-                lastline = ((TypedApp)typedTerm).q.type().toStringFinal();
+                lastline = ((TypedApp)typedTerm).q.type().toString();
             }
 
             // We get the Resuelve row associated to the demonstrated theorem in order that we can 
@@ -161,14 +161,14 @@ public class StartingOneSideMethod extends GenericProofMethod {
         if (ultInf instanceof App){
             if (((App)ultInf).q instanceof App){
                 if (((App)((App)ultInf).q).q instanceof App){
-                    teo = ((App)((App)((App)ultInf).q).q).q.type().toStringFinal();
+                    teo = ((App)((App)((App)ultInf).q).q).q.type().toString();
                     inst = ((App)((App)((App)ultInf).q).q).p.type().toStringLaTeX(s,"");
                     inst = "~\\text{with}~" + inst;
                     leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
                     leib = "~\\text{and}~" + leib;
                 }
                 else {
-                    teo = ((App)((App)ultInf).q).q.type().toStringFinal();
+                    teo = ((App)((App)ultInf).q).q.type().toString();
                     if (((App)ultInf).p instanceof TypedS){
                         if (((App)((App)ultInf).q).p instanceof TypedI){
                             inst = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
@@ -195,11 +195,11 @@ public class StartingOneSideMethod extends GenericProofMethod {
                     leib = "~\\text{and}~" + pType.toStringLaTeX(s,"");
                 }
                 // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
-                teo = ((App)ultInf).q.type().toStringFinal();
+                teo = ((App)ultInf).q.type().toString();
             }
         } else {
             Term aux = ultInf.type();
-            teo = aux.toStringFinal();
+            teo = aux.toString();
         } 
 
         int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 

@@ -29,7 +29,7 @@ public class Main {
         String s = sub.replace("\\neg %(a1)");
         System.out.println(s);
         Term t = new Bracket(new Var(32),new App(new App(new Const("c_{1}"),new Var(32)),new Const("c_{8}")));
-        System.out.println(t.traducBD().reducir().toStringFinal());
+        System.out.println(t.traducBD().reducir().toString());
         /*ArrayList<Object> lisObj = new ArrayList<Object>();
         ArrayList<Term> lisTerm = new ArrayList<Term>();
         ArrayList<Var> lisVar = new ArrayList<Var>();
@@ -46,7 +46,7 @@ public class Main {
         
        /*ArrayList<Object> arr =  mk.makeInsta("E := p\\/q");         
        t2 = t2.sustParall((ArrayList<Var>)arr.get(0),(ArrayList<Term>) arr.get(1));
-       System.out.println(t2.toString());
+       System.out.println(t2.toStringAll());
        
        System.out.println("++++++++++++++++++++++++++++++");
         System.out.println("++++++++++++++++++++++++++++++");

@@ -686,7 +686,7 @@ public class PerfilController {
             {
                 teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
 //                teoTerm.setAlias(0);
-                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal(), false);
+                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
                 if (null != test) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                 }
@@ -699,10 +699,10 @@ public class PerfilController {
                 // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
                 
                 String aliases = teoTerm.aliases("");
-                Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toStringFinal());
+                Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toString());
                 Teorema teorema;
                 if (teoremaAdd == null) 
-                 teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false,aliases)); 
+                 teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toString(),teoTerm,false,aliases)); 
                 else
                     teorema = teoremaAdd;
                 Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma(), categoria);
@@ -712,9 +712,9 @@ public class PerfilController {
                 // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
                 /*Metateorema metateorema;
                 Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
-                Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toStringFinal());
+                Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toString());
                 if (metateoremaAdd == null)
-                  metateorema = metateoremaManager.addMetateorema(new Metateorema(teorema.getId(),metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm)));
+                  metateorema = metateoremaManager.addMetateorema(new Metateorema(teorema.getId(),metateoTerm.traducBD().toString(),SerializationUtils.serialize(metateoTerm)));
                 else
                   metateorema = metateoremaAdd;
                 
@@ -935,21 +935,21 @@ public class PerfilController {
                 
                 /**
                 String aliases = teoTerm.aliases("");
-                Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toStringFinal());
+                Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toString());
                 Teorema teorema;
                 if (teoremaAdd == null) 
-                 teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false,aliases)); 
+                 teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toString(),teoTerm,false,aliases)); 
                 else
                     teorema = teoremaAdd;
                 */
                
                 Teorema teorema = teoremaManager.getTeorema(intIdTeo);
                 if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
-                  Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal(), false);
+                  Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
                   if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                   }
-                  teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toStringFinal());
+                  teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString());
                   if (teorema == null) {
                       throw new CategoriaException("Couldn't edit theorem");
                   }
@@ -970,9 +970,9 @@ public class PerfilController {
                 // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
                 /*Metateorema metateorema;
                 Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
-                Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toStringFinal());
+                Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toString());
                 if (metateoremaAdd == null)
-                  metateorema = metateoremaManager.addMetateorema(new Metateorema(teorema.getId(),metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm)));
+                  metateorema = metateoremaManager.addMetateorema(new Metateorema(teorema.getId(),metateoTerm.traducBD().toString(),SerializationUtils.serialize(metateoTerm)));
                 else
                   metateorema = metateoremaAdd;
                 
@@ -1265,7 +1265,7 @@ public class PerfilController {
                     String check  = comprobar.dfs(res);
                     String resultado;
                     if (check.equals("")) {
-                     predicado.setPredicado(res.toStringFinal());
+                     predicado.setPredicado(res.toString());
                      Predicado predicado2=predicadoManager.getPredicado(username, predicado.getPredicado());
                      if(predicado2 != null) 
                         throw new AlphaEquivalenceException(predicado2.getId().getAlias());
@@ -1605,7 +1605,7 @@ public class PerfilController {
                 String check  = comprobar.dfs(res);
                 String resultado;
                 if (check.equals("")) {
-                    predicado.setPredicado(res.toStringFinal());
+                    predicado.setPredicado(res.toString());
                     Predicado predicado2=predicadoManager.getPredicado(username, predicado.getPredicado());
                     if(predicado2 != null && !predicado2.getId().getAlias().equals(alias)) 
                         throw new AlphaEquivalenceException(predicado2.getId().getAlias());

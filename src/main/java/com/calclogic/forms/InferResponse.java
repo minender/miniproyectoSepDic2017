@@ -413,7 +413,7 @@ public class InferResponse extends GenericResponse{
         String strMethod = "   "; // We need substring(0,2) can always be applied
         if(methodTerm != null) {
             valid = valida;
-            strMethod = methodTerm.toStringFinal();
+            strMethod = methodTerm.toString();
         }
 
         strMethod = strMethod.substring(0, 2);

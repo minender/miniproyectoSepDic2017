@@ -87,7 +87,7 @@ public class CrudOperationsImpl implements CrudOperations {
             return beginFormula;
         }
         else{
-            String strMethod = ((App)method).p.toStringFinal().substring(0, 2);
+            String strMethod = ((App)method).p.toString().substring(0, 2);
             GenericProofMethod objectMethod = createProofMethodObject(strMethod);
 
             if (objectMethod.getIsRecursiveMethod()){
@@ -160,7 +160,7 @@ public class CrudOperationsImpl implements CrudOperations {
         Term auxMethod = method;
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
+                    ((App)((App)auxMethod).p).p.toString().equals("AI") && 
                     !ProofBoolean.isBranchedProof2Started(auxMethod)
                     ){
                 return null;// no deberia devolver this, no seria mas homogeneo?
@@ -199,7 +199,7 @@ public class CrudOperationsImpl implements CrudOperations {
         Term auxMethod = method;
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
+                    ((App)((App)auxMethod).p).p.toString().equals("AI") && 
                     !ProofBoolean.isProofStarted(((App)auxMethod).q)
                     ){
                 li.add(0,typedTerm);
@@ -368,8 +368,8 @@ public class CrudOperationsImpl implements CrudOperations {
             String op;
             String opInf;
             try {
-                op = ((App)((App)type).p).p.toStringFinal();
-                opInf = ((App)((App)typeInf).p).p.toStringFinal();
+                op = ((App)((App)type).p).p.toString();
+                opInf = ((App)((App)typeInf).p).p.toString();
             }
             catch (ClassCastException e) {
                 throw new TypeVerificationException();
@@ -452,16 +452,16 @@ public class CrudOperationsImpl implements CrudOperations {
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod)) {
                 Map<String,String> values1 = new HashMap<>();
-                values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
+                values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toString());
                 String aux;
-                values1.put("ST2", formula.toStringFinal());
+                values1.put("ST2", formula.toString());
                 StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
                 String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
                 String metaTheo = sub1.replace(metaTheoT);
                 Map<String,String> values2 = new HashMap<>();
                 values2.put("MT", metaTheo);
-                values2.put("T1Type", typedTerm.type().toStringFinal());
-                aux = typedTerm.toStringFinal();
+                values2.put("T1Type", typedTerm.type().toString());
+                aux = typedTerm.toString();
                 values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
                 StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
                 String template = "S (I^{[x_{112}:=%(T1Type)]} A^{c_{1} x_{112} (c_{5} c_{8} x_{112})}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";

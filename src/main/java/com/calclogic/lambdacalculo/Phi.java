@@ -144,7 +144,7 @@ public class Phi extends Term{
         return new App(new Const("K"),this);
     }
     
-    public String toString(){
+    public String toStringAll(){
         return "\\Phi_{"+ind.toString()+"}";
     }
     
@@ -168,7 +168,7 @@ public class Phi extends Term{
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId)
     {
-        return toString();
+        return toStringAll();
     }
     
     @Override
@@ -178,13 +178,13 @@ public class Phi extends Term{
     
     public ToString toStringAbrvV1(ToString toString)
     {
-        toString.term=this.toString();
+        toString.term=this.toStringAll();
         return toString;
     }
     
     public ToString toStringAbrv(ToString toString)
     {
-        toString.term=this.toString();
+        toString.term=this.toStringAll();
         return toString;
     }
     

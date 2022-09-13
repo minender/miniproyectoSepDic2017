@@ -144,7 +144,7 @@ public class I extends Term {
         return new App(new Const("K"),this);
     }
     
-    public String toString()
+    public String toStringAll()
     {
         return ""; //"|";
     }
@@ -162,7 +162,7 @@ public class I extends Term {
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId)
     {
-        return toString();
+        return toStringAll();
     }
     
     public String toStringInFin() {
@@ -180,13 +180,13 @@ public class I extends Term {
     
     public ToString toStringAbrvV1(ToString toString)
     {
-        toString.term=this.toString();
+        toString.term=this.toStringAll();
         return toString;
     }
     
     public ToString toStringAbrv(ToString toString)
     {
-        toString.term=this.toString();
+        toString.term=this.toStringAll();
         return toString;
     }
     
@@ -194,7 +194,7 @@ public class I extends Term {
     public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
                                     String nTeo)
     {
-        toString.term=this.toString();
+        toString.term=this.toStringAll();
         return toString;
     }
         

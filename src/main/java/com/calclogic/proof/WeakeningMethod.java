@@ -106,8 +106,8 @@ public class WeakeningMethod extends TransitivityMethod {
     private Term neg(Term p, Term q, Const op) {
         
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
+        String P = p.toString();
+        String Q = q.toString();
         String neg = "I^{[x_{112}, x_{113} := "+P+", "+Q+"]}A^{c_{1} ("+op2+" (c_{7} x_{113}) (c_{7} x_{112})) ("+op+" x_{113} x_{112})}";
         
         return CombUtilities.getTerm(neg);
@@ -132,9 +132,9 @@ public class WeakeningMethod extends TransitivityMethod {
      */
     private Term wsl1(Term p, Term q, Const op, Term r, Const op1) {
         
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
-        String R = r.toStringFinal();
+        String P = p.toString();
+        String Q = q.toString();
+        String R = r.toString();
         String wsl1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{114} x_{113}) ("+op1+" x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
         
         return CombUtilities.getTerm(wsl1);
@@ -159,9 +159,9 @@ public class WeakeningMethod extends TransitivityMethod {
     private Term wsl2(Term p, Term q, Const op, Term r) {
         
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
-        String R = r.toStringFinal();
+        String P = p.toString();
+        String Q = q.toString();
+        String R = r.toString();
         String wsl2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{2} x_{114} x_{113}) (c_{2} x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
         
         return CombUtilities.getTerm(wsl2);
@@ -185,9 +185,9 @@ public class WeakeningMethod extends TransitivityMethod {
      */
     private Term wsr1(Term p, Term q, Const op, Term r, Const op1) {
         
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
-        String R = r.toStringFinal();
+        String P = p.toString();
+        String Q = q.toString();
+        String R = r.toString();
         String wsr1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{113} x_{114}) ("+op1+" x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
         
         return CombUtilities.getTerm(wsr1);
@@ -211,9 +211,9 @@ public class WeakeningMethod extends TransitivityMethod {
     private Term wsr2(Term p, Term q, Const op, Term r) {
         
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
-        String P = p.toStringFinal();
-        String Q = q.toStringFinal();
-        String R = r.toStringFinal();
+        String P = p.toString();
+        String Q = q.toString();
+        String R = r.toString();
         String wsr2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{3} x_{113} x_{114}) (c_{3} x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
         
         return CombUtilities.getTerm(wsr2);
@@ -240,7 +240,7 @@ public class WeakeningMethod extends TransitivityMethod {
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
-        String arrow = ((App)((App)formulaBeingProved).p).p.toStringFinal();
+        String arrow = ((App)((App)formulaBeingProved).p).p.toString();
         Boolean rightArrow = arrow.equals("c_{2}"); // =>
         Boolean leftArrow = arrow.equals("c_{3}"); // <=
 
