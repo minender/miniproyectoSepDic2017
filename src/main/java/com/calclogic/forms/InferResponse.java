@@ -436,7 +436,7 @@ public class InferResponse extends GenericResponse{
             return;
         }
         if (typedTerm!=null && type == null && !valida && !recursive){
-            this.setHistorial(this.getHistorial()+header+this.centerBegin+"$"+typedTerm.toStringLaTeXLabeled(s)+MicroServices.transformLaTexToHTML("$\\text{No valid inference}$"));
+            this.setHistorial(this.getHistorial()+header+this.centerBegin+"$"+typedTerm.toStringLaTeXLabeled(s)+this.centerEnd+noValidInference());
             return;
         }
         if (typedTerm!=null && type == null && valida && !recursive) { // Case where what we want to print is the first line
@@ -484,8 +484,13 @@ public class InferResponse extends GenericResponse{
             historial = header + this.centerBegin + "$" + historial + this.centerEnd;
 
             if (!valida){
-                historial = historial + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$");
+                historial = historial + noValidInference();
             }
         }      
-    }  
+    }
+
+    // Returns a HTML block with the text "No valid inference"
+    private String noValidInference(){
+        return this.centerBegin + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$") + this.centerEnd;
+    }
 }

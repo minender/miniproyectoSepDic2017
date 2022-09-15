@@ -685,7 +685,7 @@ public class PerfilController {
             try //si la sintanxis no es correcta ocurre una Exception
             {
                 teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
-//                teoTerm.setAlias(0);
+//                  teoTerm.setAlias(0);
                 Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
                 if (null != test) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
