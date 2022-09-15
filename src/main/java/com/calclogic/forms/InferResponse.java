@@ -61,6 +61,10 @@ public class InferResponse extends GenericResponse{
     private final String centerBegin = "<center style='display:flex; flex-direction:row'><div style='flex-grow:1'></div>";
     private final String centerEnd = "<div style='flex-grow:1'></div></center>";
 
+    private String centeredBlock(String content){
+        return this.centerBegin + content + this.centerEnd;
+    }
+
     private final CrudOperations proofCrudOperations;
 
     public InferResponse(CrudOperations proofCrudOperations) {
@@ -180,8 +184,7 @@ public class InferResponse extends GenericResponse{
         Term newFormula = objectMethod.initFormula(formula);
         String statement;
         try {
-            statement = this.centerBegin + "$" + clickableST(newFormula, clickable, methodTerm, false, s) 
-                              + "$" + this.centerEnd;
+            statement = centeredBlock("$" + clickableST(newFormula, clickable, methodTerm, false, s) + "$");
         }
         catch (Exception e) {
             Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
@@ -228,8 +231,7 @@ public class InferResponse extends GenericResponse{
             String statement;
             Term newFormula = ((App)formula).q; // First branch
 
-            statement = this.centerBegin + "$" + clickableST(newFormula, clickable, methodTerm, false, s) 
-                        + "$" + this.centerEnd;
+            statement = centeredBlock("$" + clickableST(newFormula, clickable, methodTerm, false, s) + "$");
             header += objectMethod.header("") + objectMethod.subProofInit(statement);
 
             if (methodTerm instanceof Const){
@@ -249,8 +251,7 @@ public class InferResponse extends GenericResponse{
                         cambiarMetodo = "0"; 
                     }
                     newFormula = ((App)((App)formula).p).q; // Second branch
-                    statement = this.centerBegin + "$" + clickableST(newFormula, clickable, new Const("AI"), false, s) 
-                                + "$" + this.centerEnd;
+                    statement = centeredBlock("$" + clickableST(newFormula, clickable, new Const("AI"), false, s) + "$");
                     historial += objectMethod.subProofInit(statement);
                 }
             }
@@ -261,7 +262,7 @@ public class InferResponse extends GenericResponse{
                                  valida, labeled, ((App)((App)methodTerm).p).q, resuelveManager, disponeManager, 
                                  s, clickable, false);
                 newFormula = ((App)((App)formula).p).q;
-                statement = this.centerBegin + "$" + clickableST(newFormula, clickable, methodTerm, false, s) + "$" + this.centerEnd;
+                statement = centeredBlock("$" + clickableST(newFormula, clickable, methodTerm, false, s) + "$");
                 header = historial + objectMethod.subProofInit(statement);
                 historial = "";
 
@@ -400,8 +401,8 @@ public class InferResponse extends GenericResponse{
         if (isRootTeorem) {
             this.setHistorial("");
             try {
-                header = "Theorem " + nTeo + ":<br> "+ this.centerBegin + "$" + 
-                         clickableST(formula, clickable, methodTerm, isRootTeorem, s) + "$" + this.centerEnd +
+                header = "Theorem " + nTeo + ":<br> "+  
+                         centeredBlock("$" + clickableST(formula, clickable, methodTerm, isRootTeorem, s) + "$") +
                          "Proof:<br>";
             }
             catch (Exception e) {
@@ -432,21 +433,22 @@ public class InferResponse extends GenericResponse{
         Term type = typedTerm==null?null:typedTerm.type();
 
         if (typedTerm==null && methodTerm == null && !recursive){
-            this.setHistorial(this.getHistorial()+header);
+            this.setHistorial(this.getHistorial() + header);
             return;
         }
+        // This occurs when there is only one line in the demonstration and the first inference is invalid
         if (typedTerm!=null && type == null && !valida && !recursive){
-            this.setHistorial(this.getHistorial()+header+this.centerBegin+"$"+typedTerm.toStringLaTeXLabeled(s)+this.centerEnd+noValidInference());
+            this.setHistorial(this.getHistorial() + header + centeredBlock("$"+typedTerm.toStringLaTeXLabeled(s)) + noValidInference());
             return;
         }
         if (typedTerm!=null && type == null && valida && !recursive) { // Case where what we want to print is the first line
             String firstLine;
             if(naturalSide){
                 firstLine = ((App)((App)typedTerm).p).q.toStringLaTeXLabeled(s);  
-                this.setHistorial(this.getHistorial()+header+"<br>Assuming H1: $"+ ((App)typedTerm).q.toStringLaTeX(s, "")+"$"+this.centerBegin+"$"+firstLine+this.centerEnd);
+                this.setHistorial(this.getHistorial() + header + "<br>Assuming H1: $" + ((App)typedTerm).q.toStringLaTeX(s, "") + "$" + centeredBlock("$"+firstLine));
             }else {
                 firstLine = typedTerm.toStringLaTeXLabeled(s);
-                this.setHistorial(this.getHistorial()+header+this.centerBegin+"$"+firstLine+this.centerEnd);
+                this.setHistorial(this.getHistorial() + header + centeredBlock("$"+firstLine));
             }
             return;
         }
@@ -481,16 +483,17 @@ public class InferResponse extends GenericResponse{
                 this.getHistorial(), user, typedTerm, solved, resuelveManager, disponeManager, s
             ));
 
-            historial = header + this.centerBegin + "$" + historial + this.centerEnd;
+            historial = header + centeredBlock("$"+historial);
 
+            // This occurs when there is more than one line in the demonstration, and the next tried inference is invalid
             if (!valida){
                 historial = historial + noValidInference();
             }
         }      
     }
 
-    // Returns a HTML block with the text "No valid inference"
+    // Returns a HTML centered block with the text "No valid inference"
     private String noValidInference(){
-        return this.centerBegin + MicroServices.transformLaTexToHTML("$\\text{No valid inference}$") + this.centerEnd;
+        return centeredBlock(MicroServices.transformLaTexToHTML("$\\text{No valid inference}$"));
     }
 }

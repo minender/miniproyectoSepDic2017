@@ -14,11 +14,16 @@ import java.util.List;
 public class MostrarCategoriaForm {
     private List<Integer> listaIdCategorias;
     private String username;
+    private Boolean selecTeo;
 
     public MostrarCategoriaForm() {
     }
 
     public MostrarCategoriaForm(List<Integer> listaIdCategorias, String username) {
+        this.listaIdCategorias = listaIdCategorias;
+    }
+
+    public MostrarCategoriaForm(List<Integer> listaIdCategorias, String username, Boolean selecTeo) {
         this.listaIdCategorias = listaIdCategorias;
     }
 
@@ -37,6 +42,13 @@ public class MostrarCategoriaForm {
     public void setListaIdCategorias(List<Integer> listaIdCategorias) {
         this.listaIdCategorias = listaIdCategorias;
     }
-    
+
+    public void setSelecTeo(Boolean selecTeo) {
+        this.selecTeo = selecTeo;
+    }
+
+    public Boolean getSelecTeo() {
+        return selecTeo;
+    }
     
 }

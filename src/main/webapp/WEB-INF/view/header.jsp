@@ -24,15 +24,15 @@
         <c:when test='${!perfilMenu.equals("active")}'> <!-- Here we exclude the views which we don't want to import these configurations-->
             <script type="text/x-mathjax-config">
                 MathJax.Hub.Config({
-                    //extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"], // For version 2.3
-                    extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"], // For version 2.7.7
+                    extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"], // For version 2.3
+                    //extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"], // For version 2.7.7
                     jax: ["input/TeX","output/HTML-CSS"],
                     tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true,},
                     TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}
                 });
             </script>
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML"></script>
-           <!--  <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+            <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML"></script>-->
+            <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/mathjax-MathJax-v2.3-248-g60e0a8c/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 <!--             <script>
                 MathJax = {

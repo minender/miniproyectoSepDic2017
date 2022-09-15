@@ -8,18 +8,19 @@
                 You currently have no categories to display, adjust your settings with the gear button above
             </c:when>
         </c:choose>
+        <script type="text/javascript">console.log("Hola")</script>
     </div>
 
-    <c:forEach items="${showCategorias}" var="cat"> 
+    <c:forEach items="${showCategorias}" var="cat">
         <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href='#collapse-${cat.getNombre().replaceAll(" ","-")}' role="button" aria-expanded="false" aria-controls='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
             <ul id='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse">
                 <c:forEach items="${resuelves}" var="resu">
                     <c:choose>
-                        <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
+                        <c:when test="${resu.getCategoria().getId()==cat.getId()}">
                             <li ${!selecTeo && resu.getNumeroteorema().equals(nTeo)?"id=currentTeo":""} style="list-style: none;">
                                 <h6 style="color: #000;">
                                     <c:choose>
-                                        <c:when test="${!selecTeo}">
+                                        <c:when test="${!selecTeo}"> 
                                             <c:choose>
                                                 <c:when test="${resu.isResuelto()}"> 
                                                     <%--|| resu.getNumeroteorema().equals(nTeo)}">--%>
@@ -32,7 +33,7 @@
                                                     </c:choose>                                    
                                                     <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().toStringLaTeX(simboloManager,resu.getNumeroteorema())}$</span>
 
-                                                    <script>clickTeoremaInicial('ST-${resu.getNumeroteorema()}');
+                                                    <script type="text/javascript">clickTeoremaInicial('ST-${resu.getNumeroteorema()}');
                                                             clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().freeVars()}');
                                                     </script>
 
@@ -48,7 +49,7 @@
                                                                 <div id="metateoIdName${resu.getNumeroteorema()}" class="teoIdName">
                                                                 </div>
        
-                                                                <%--<script>clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
+                                                                <%--<script type="text/javascript">clickTeoremaInicial('MT-${resu.getNumeroteorema()}');
                                                                     clickOperator('clickmeta${resu.getNumeroteorema()}','nStatement_id','MT-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().freeVars()}');
                                                                 </script>--%>
                                                             </span>
@@ -88,7 +89,7 @@
                                                     </c:otherwise>
                                                 </c:choose>
                                                 (${resu.getNumeroteorema()}) Metatheorem: &nbsp; $${resu.getTeorema().getMetateoTerm().toStringLaTeXFinal()}$  
-                                                <script>clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
+                                                <script type="text/javascript">clickOperator('metaTeo${resu.getNumeroteorema()}','nStatement_id','${resu.getNumeroteorema()}');</script>
                                             </span>--%>
                                         </c:otherwise>
                                     </c:choose>

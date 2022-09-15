@@ -220,7 +220,7 @@
                     </div>
 
                     <ul style="padding-left: 20px;">
-                        <div id="misteoremasSpace">
+                        <div id="myTheoremsSpace">
                             <jsp:include page="theoremsList.jsp"/>
                         </div>
                     </ul>
@@ -405,7 +405,8 @@
                 allCategoriasSettings = document.getElementsByClassName("categoria-settings");
                 let categorias = {
                     listaIdCategorias:[],
-                    username: "${usuario.getLogin()}"
+                    username: "${usuario.getLogin()}",
+                    selecTeo: ${selecTeo},
                 };
                 for (let i = 0; i<allCategoriasSettings.length;i++){
                     cat = allCategoriasSettings.item(i);
@@ -424,8 +425,9 @@
                     success:  function(data) {
                         let split = data.split("myTheorems");
                         if (split.length > 1){
-                            let div = document.getElementById("misteoremasSpace");
-                            div.innerHTML = data;
+                            // NOTE: If we use document.getElementById("...").innerHTML = data,
+                            // the internal <scripts> that data can have will not be executed.
+                            $("#myTheoremsSpace").html(data);
                             MathJax.Hub.Typeset();
                         }
                         // Case when the user is no longer active
