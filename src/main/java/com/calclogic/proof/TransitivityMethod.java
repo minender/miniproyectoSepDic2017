@@ -53,7 +53,7 @@ public class TransitivityMethod extends StartingOneSideMethod {
                 t2 instanceof App && ((App)t2).p instanceof App &&
                 ((App)t1).q.equals(((App)((App)t2).p).q) && 
                ((App)((App)t1).p).q.equals(((App)t2).q) && 
-               ((App)((App)t2).p).p.toStringAll().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
+               ((App)((App)t2).p).p.toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
     }
 
     /**

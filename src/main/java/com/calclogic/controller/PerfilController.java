@@ -329,8 +329,8 @@ public class PerfilController {
         return "help";
     }
     
-    @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.GET)
-    public String misTeoremasView(@PathVariable String username, ModelMap map) {
+    @RequestMapping(value="/{username}/myTheorems", method=RequestMethod.GET)
+    public String myTheoremsView(@PathVariable String username, ModelMap map) {
         if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
            && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
            )
@@ -343,22 +343,14 @@ public class PerfilController {
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
         }
-        /*
-        List<Teorema> teoremas = usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username));
-        for (Teorema t: teoremas)
-        {
-            t.setTeoTerm(t.getTeoTerm());
-            t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),t.getTeoTerm()));
-        }*/
         Usuario currentUser = (Usuario)session.getAttribute("user");
         Usuario usr = usuarioManager.getUsuario(username);        
         List <Categoria> showCategorias = new LinkedList<Categoria>();
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
+        
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
-        //List<Resuelve> resuelvesAdmin = resuelveManager.getAllResuelveByUser(currentUser.getLogin());
-        //List<Teorema> teoremasAdmin = teoremaManager.getTeoremaByResuelveList(resuelvesAdmin);
         map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
         map.addAttribute("usuario", usr);
         map.addAttribute("guardarMenu","");
@@ -369,14 +361,14 @@ public class PerfilController {
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
         map.addAttribute("showCategorias",showCategorias);
-        map.addAttribute("teoremas", resuelves);
+        map.addAttribute("resuelves", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("categoriaManager",categoriaManager);
         map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("predicadoManager",predicadoManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
-        return "misTeoremas";
+        return "myTheorems";
     }
 
     /* 
@@ -436,7 +428,6 @@ public class PerfilController {
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("perfilMenu","");
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-        map.addAttribute("teoremas", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("categoriaManager",categoriaManager);
         map.addAttribute("simboloManager",simboloManager);
@@ -448,12 +439,12 @@ public class PerfilController {
         map.addAttribute("resuelves", resuelves);
         
         if ("prove".equals(answer.getCurrentView())){
-            return "theoremsListProve";
+            return "theoremsList/theoremsListProve";
         }
-        return "theoremsListMyTheorems";  
+        return "theoremsList/theoremsListMyTheorems";  
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/{username}/myTheorems/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody teoremasSolucion listaSoluciones( @RequestParam(value="teoid") int teoid, @PathVariable String username)
     {   
         //validar si esta el usuario en sesion
@@ -466,7 +457,7 @@ public class PerfilController {
         return response;
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/buscarFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/{username}/myTheorems/buscarFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
         // validar que el usuario este en sesion
@@ -483,7 +474,7 @@ public class PerfilController {
         return response;
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/buscarMetaFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/{username}/myTheorems/buscarMetaFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarMetaFormula(@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {
         InferResponse response = new InferResponse(crudOp);
@@ -2090,7 +2081,7 @@ public class PerfilController {
         }
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/deleteSol/{idSol:.+}", method=RequestMethod.POST)
+    @RequestMapping(value="/{username}/myTheorems/deleteSol/{idSol:.+}", method=RequestMethod.POST)
     @ResponseBody
     public String deleteSolucion(@PathVariable String username, @PathVariable String idSol, ModelMap map) {
         if ( (Usuario)session.getAttribute("user") == null 
@@ -2109,7 +2100,7 @@ public class PerfilController {
         }
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/deleteTeo/{idTeo:.+}", method=RequestMethod.POST)
+    @RequestMapping(value="/{username}/myTheorems/deleteTeo/{idTeo:.+}", method=RequestMethod.POST)
     @ResponseBody
     public String deleteTeoremaOrResuelve(@PathVariable String username, @PathVariable String idTeo, ModelMap map) {
         if ( (Usuario)session.getAttribute("user") == null 

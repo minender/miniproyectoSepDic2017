@@ -20,7 +20,7 @@ async function saveDisplayedCategories(currentView, selecTeo=null) {
             categorias.listaIdCategorias.push(id);
         }
     };
-    $("#modalLoading").css('display','inline-block');
+    $("#loadingModal").css('display','inline-block');
     await $.ajax({
         type: 'POST',
         url: "theoremsList", // This is located in PerfilController.java
@@ -43,5 +43,5 @@ async function saveDisplayedCategories(currentView, selecTeo=null) {
             alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
         }
     });
-    $("#modalLoading").css('display','none'); 
+    $("#loadingModal").css('display','none'); 
 }

@@ -14,19 +14,12 @@
             </c:when>
         </c:choose>
     <body>
-        <div id="modalLoading" class="modal" >
-            <center>
-                <div class="box-loading">
-                    <div class="lds-ring">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                    <center>Loading</center>
-                </div>
-            </center>
-        </div>
+        <!-- To show the word Loading in the center of the screen -->
+        <jsp:include page="modals/loadingModal.jsp"/>
+
+        <!-- For selecting the categories that will be displayed -->
+        <jsp:include page="modals/showCategoriesModal.jsp" />
+
         <c:choose>
             <c:when test="${isDifferentUser.intValue()==1}">
                 <div class="row flex align-items-center">
@@ -46,31 +39,25 @@
                 </div>
             </c:otherwise>
         </c:choose>
-        <div class="row">
-            <div id="myTheoremsSpace" class="col-lg-5">
-                <jsp:include page="theoremsListMyTheorems.jsp"/>
-            </div>
-            <div id="panelSoluciones" class="col-lg-2 d-none">
-                <center><h3 class="subtitle"> Proofs</h3></center>
-                <ul id="listaSoluciones"></ul>
-            </div>
-            <div class="col-lg-5" >
-                <h5 id="formula"></h5>
-            </div>
+        <div class="row" style="display:flex">
+            <article id="myTheoremsSpace" class="col-lg-5" style="height:600px; overflow:scroll">
+                <jsp:include page="theoremsList/theoremsListMyTheorems.jsp"/>
+            </article>
+            <article class="col-lg-7" style="display:flex; flex-direction:row; position:relative; height:600px; overflow:scroll">
+                <div id="panelSoluciones" class="col-lg-3 d-none">
+                    <h3 class="subtitle">Proofs</h3>
+                    <ul id="listaSoluciones"></ul>
+                </div>
+                <div class="col-lg-5" >
+                    <h5 id="formula"></h5>
+                </div>
+            </article>
         </div>
-                        
-        <!-- Include custom modal for selecting the categories that will be displayed -->
-        <jsp:include page="showCategoriesModal.jsp" />
 
         <script>
             document.getElementById("saveConfig").onclick = function(){
                 saveDisplayedCategories("myTheorems");
             }  
         </script>
-        <%--<c:choose>
-                <c:when test="${isDifferentUser.intValue()!=1}">
-                        <tiles:insertDefinition name="footer" />
-                </c:when>
-        </c:choose>--%>
     </body>
 </html>

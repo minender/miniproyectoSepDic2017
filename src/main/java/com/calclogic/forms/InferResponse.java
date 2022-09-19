@@ -334,9 +334,7 @@ public class InferResponse extends GenericResponse{
     public void generarHistorial(String user, Term formula, String nTeo, Term typedTerm, Boolean valida, Boolean labeled, 
                 Term methodTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s)
     {
-        privateGenerarHistorial(user, formula, "", nTeo, typedTerm, valida, labeled, 
-            methodTerm, resuelveManager, disponeManager, s, "n", true);
-        historial = MicroServices.transformLaTexToHTML(historial);
+        generarHistorial(user, formula, "", nTeo, typedTerm, valida, labeled, methodTerm, resuelveManager, disponeManager, s, "n", true); 
     }
 
     /**

@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<div id="myTheorems" >
+<div id="myTheorems">
     <div id="showNoCategories">
         <c:choose>
             <c:when test="${showCategorias.size() == 0}">
@@ -10,11 +10,11 @@
         </c:choose>
     </div>
 
-    <ul>
+    <ul style="list-style: none;">
         <c:forEach items="${showCategorias}" var="cat"> 
             <li id="category-${cat.getId()}"><h3 class="subtitle">${cat.getNombre()}</h3>
-                <ul>
-                    <c:forEach items="${teoremas}" var="resu">
+                <ul style="list-style: none;">
+                    <c:forEach items="${resuelves}" var="resu">
                         <c:choose>
                             <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
                                 <c:choose>

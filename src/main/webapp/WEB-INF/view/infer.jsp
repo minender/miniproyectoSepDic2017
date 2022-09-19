@@ -160,21 +160,13 @@
     <body>
 
         <!-- Include custom modal for confirmation -->
-        <jsp:include page="confirmationModal.jsp" />
+        <jsp:include page="modals/confirmationModal.jsp" />
 
-        <div id="modalLoading" class="modal" >
-            <center>
-                <div class="box-loading">
-                    <div class="lds-ring">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                    <center>Loading</center>
-                </div>
-            </center>
-        </div>
+        <!-- To show the word Loading in the center of the screen -->
+        <jsp:include page="modals/loadingModal.jsp"/>
+
+        <!-- For selecting the categories that will be displayed -->
+        <jsp:include page="modals/showCategoriesModal.jsp" />
 
         <tiles:insertDefinition name="nav" />
 
@@ -221,13 +213,10 @@
 
                     <ul style="padding-left: 20px;">
                         <div id="myTheoremsSpace">
-                            <jsp:include page="theoremsListProve.jsp"/>
+                            <jsp:include page="theoremsList/theoremsListProve.jsp"/>
                         </div>
                     </ul>
                 </article> 
-
-                <!-- Include custom modal for selecting the categories that will be displayed -->
-                <jsp:include page="showCategoriesModal.jsp" />
 
                 <!-- Modal to show the current instantiation of the theorem -->
                 <div class="modal fade" id="instantiationModal" tabindex="-1" role="dialog" aria-labelledby="instantiationModalLabel" aria-hidden="true">
@@ -246,13 +235,6 @@
                     </div>                 
                 </div>                 
             </div>
-            <!--<div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#" onclick="showInstantiation();" data-target="#instantiationModal" data-toggle="modal">show instantiation</a>
-                </div>
-            </div>-->
         
             <script>
                 function getURLuntilUsername(){
