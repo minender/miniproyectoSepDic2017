@@ -378,82 +378,12 @@ public class PerfilController {
         map.addAttribute("anchuraDiv","1200px");
         return "misTeoremas";
     }
-    
-    @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.POST,produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody String misTeoremasConfigView(@PathVariable String username, ModelMap map,@RequestBody MostrarCategoriaForm answer) {
-        if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
-           && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
-           )
-        {   
-            JsonObject response = new JsonObject();
-            response.addProperty("error", "You must be logged in the system");
-            return response.toString();
-        }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
-        for (Resuelve r: resuelves)
-        {
-            Teorema t = r.getTeorema();
-            t.setTeoTerm(t.getTeoTerm());
-            t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
-        }
-        Usuario usuario = usuarioManager.getUsuario(answer.getUsername());
-        Usuario currentUser = (Usuario)session.getAttribute("user");
-        List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
-        List<Integer> categoriasIdListUser =  new LinkedList<>();
-        for (MostrarCategoria mc: mostrarCategorias){
-           categoriasIdListUser.add(mc.getCategoria().getId());
-        }
-        for (int categoriaId :answer.getListaIdCategorias()){
-            if (!categoriasIdListUser.contains(categoriaId)){
-                Categoria categoria = categoriaManager.getCategoria(categoriaId);
-                MostrarCategoria mostrarCategoriaNew = new MostrarCategoria(categoria, currentUser);
-                mostrarCategoriaManager.addMostrarCategoria(mostrarCategoriaNew);
-            }
-        }
-        for (int categoriaId: categoriasIdListUser){
-            if (!answer.getListaIdCategorias().contains(categoriaId)){
-                Categoria categoria = categoriaManager.getCategoria(categoriaId);
-                MostrarCategoria mostrarCategoria = mostrarCategoriaManager.getMostrarCategoriaByCategoriaAndUsuario(categoria, currentUser);
-                mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria.getId());
-            }
-        }
-        List<MostrarCategoria> mostrarCategorias1 = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
-        JsonObject response = new JsonObject();
-        JsonArray categories = new JsonArray();
-        for (int i = 0; i < mostrarCategorias1.size(); i ++){
-            JsonObject category = new JsonObject();
-            category.addProperty("categoryid", mostrarCategorias1.get(i).getCategoria().getId());
-            category.addProperty("categoryname",mostrarCategorias1.get(i).getCategoria().getNombre());
-            categories.add(category);
-        }
-        JsonArray resuelves1 = new JsonArray();
-
-        for (int i = 0; i < resuelves.size(); i++){
-            JsonObject resuelve = new JsonObject();
-            resuelve.addProperty("categoryid", resuelves.get(i).getCategoria().getId());
-            resuelve.addProperty("isResuelto", resuelves.get(i).isResuelto());
-            resuelve.addProperty("isAxioma", resuelves.get(i).isEsAxioma());
-            resuelve.addProperty("numeroteorema", resuelves.get(i).getNumeroteorema());
-            resuelve.addProperty("nombreteorema", resuelves.get(i).getNombreteorema());
-            resuelve.addProperty("teoremaid", resuelves.get(i).getTeorema().getId());
-            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringLaTeX(simboloManager,""));
-            resuelve.addProperty("stringNumero", resuelves.get(i).getTeorema().getTeoTerm().toStringLaTeX(simboloManager, resuelves.get(i).getNumeroteorema()));
-            resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringLaTeXFinal(simboloManager));
-            resuelve.addProperty("demopendiente",resuelves.get(i).getDemopendiente());
-            resuelve.addProperty("vars",resuelves.get(i).getTeorema().getTeoTerm().freeVars());
-            resuelves1.add(resuelve);
-        }
-        response.add("categories", categories);
-        response.add("resuelves", resuelves1);
-
-        return response.toString();
-    }
 
     /* 
-     * Used to store the new checked categories in the database and to show the then in the infer 
-     * view again (Ex: Equivalence and True, etc.)
+     * Used to store the new checked categories in the database and to show them in the Prove 
+     * or in the My Theorems view again (Ex: Equivalence and True, etc.)
      *
-     * @return The "theoremsList" view, with the categories updated.
+     * @return The "theoremsListProve" or the "theoremsListMyTheorems" view, with the categories updated.
      */
     @RequestMapping(value="/{username}/theoremsList", method=RequestMethod.POST)
     public String theoremsListController(@PathVariable String username, ModelMap map, @RequestBody MostrarCategoriaForm answer) {
@@ -473,7 +403,7 @@ public class PerfilController {
         Usuario usr = usuarioManager.getUsuario(username);        
         List <Categoria> showCategorias = new LinkedList<Categoria>();
         List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
-        List<Integer> categoriasIdListUser =  new LinkedList<Integer>();
+        List<Integer> categoriasIdListUser =  new LinkedList<>();
 
         for (MostrarCategoria mc: mostrarCategorias){
            categoriasIdListUser.add(mc.getCategoria().getId());
@@ -506,7 +436,6 @@ public class PerfilController {
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("perfilMenu","");
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-        //map.addAttribute("categorias",categoriaManager.getAllCategorias());
         map.addAttribute("teoremas", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("categoriaManager",categoriaManager);
@@ -514,11 +443,14 @@ public class PerfilController {
         map.addAttribute("predicadoManager",predicadoManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
-        map.addAttribute("selecTeo",answer.getSelecTeo()); // MODIFICADO
+        map.addAttribute("selecTeo",answer.getSelecTeo());
         map.addAttribute("showCategorias",showCategorias);
         map.addAttribute("resuelves", resuelves);
         
-        return "theoremsList";
+        if ("prove".equals(answer.getCurrentView())){
+            return "theoremsListProve";
+        }
+        return "theoremsListMyTheorems";  
     }
     
     @RequestMapping(value="/{username}/misTeoremas/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)

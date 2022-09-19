@@ -5,10 +5,9 @@
     <div id="showNoCategories">
         <c:choose>
             <c:when test="${showCategorias.size() == 0}">
-                You currently have no categories to display, adjust your settings with the gear button above
+                You currently have no categories to display. Adjust your settings with the gear button above
             </c:when>
         </c:choose>
-        <script type="text/javascript">console.log("Hola")</script>
     </div>
 
     <c:forEach items="${showCategorias}" var="cat">

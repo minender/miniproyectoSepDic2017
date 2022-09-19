@@ -14,6 +14,7 @@ import java.util.List;
 public class MostrarCategoriaForm {
     private List<Integer> listaIdCategorias;
     private String username;
+    private String currentView;
     private Boolean selecTeo;
 
     public MostrarCategoriaForm() {
@@ -23,7 +24,7 @@ public class MostrarCategoriaForm {
         this.listaIdCategorias = listaIdCategorias;
     }
 
-    public MostrarCategoriaForm(List<Integer> listaIdCategorias, String username, Boolean selecTeo) {
+    public MostrarCategoriaForm(List<Integer> listaIdCategorias, String username, String currentView, Boolean selecTeo) {
         this.listaIdCategorias = listaIdCategorias;
     }
 
@@ -33,6 +34,14 @@ public class MostrarCategoriaForm {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setCurrentView(String currentView) {
+        this.currentView = currentView;
+    }
+
+    public String getCurrentView() {
+        return currentView;
     }
 
     public List<Integer> getListaIdCategorias() {

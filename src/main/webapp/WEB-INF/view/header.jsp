@@ -19,6 +19,7 @@
     <!--  <script src="${pageContext.request.contextPath}/static/js/jquery.min.js"></script> -->
     <script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/desplegar.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/saveDisplayedCategories.js"></script>
 
     <c:choose>
         <c:when test='${!perfilMenu.equals("active")}'> <!-- Here we exclude the views which we don't want to import these configurations-->

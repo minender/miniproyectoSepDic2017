@@ -159,7 +159,7 @@
     </head>
     <body>
 
-        <!-- Include custom modal -->
+        <!-- Include custom modal for confirmation -->
         <jsp:include page="confirmationModal.jsp" />
 
         <div id="modalLoading" class="modal" >
@@ -221,47 +221,15 @@
 
                     <ul style="padding-left: 20px;">
                         <div id="myTheoremsSpace">
-                            <jsp:include page="theoremsList.jsp"/>
+                            <jsp:include page="theoremsListProve.jsp"/>
                         </div>
                     </ul>
                 </article> 
 
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title" id="exampleModalLabel">Configurations</h4>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <h5>Show categories</h5>
-                                <ul>
-                                    <c:forEach items="${categorias}" var="categoria">
-                                        <div class="row flex align-items-center"> 
-                                            <li>${categoria.getNombre()}</li>
-                                            <c:choose>
-                                                <c:when test="${showCategorias.contains(categoria)}">
-                                                    <input type="checkbox" id="categoria-${categoria.getId()}" name="${categoria.getId()}" value="true" class="ml-2 categoria-settings" checked >
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <input type="checkbox" id="categoria-${categoria.getId()}" name="${categoria.getId()}" value="true" class="ml-2 categoria-settings">
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </c:forEach>
-                                </ul>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button id="saveConfig" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Include custom modal for selecting the categories that will be displayed -->
+                <jsp:include page="showCategoriesModal.jsp" />
 
+                <!-- Modal to show the current instantiation of the theorem -->
                 <div class="modal fade" id="instantiationModal" tabindex="-1" role="dialog" aria-labelledby="instantiationModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -401,49 +369,9 @@
         </c:choose>
 
         <script>
-            async function guardarMostrarCategorias() {
-                allCategoriasSettings = document.getElementsByClassName("categoria-settings");
-                let categorias = {
-                    listaIdCategorias:[],
-                    username: "${usuario.getLogin()}",
-                    selecTeo: ${selecTeo},
-                };
-                for (let i = 0; i<allCategoriasSettings.length;i++){
-                    cat = allCategoriasSettings.item(i);
-                    if (cat.checked === true){
-                        let id = allCategoriasSettings.item(i).getAttribute("name");
-                        categorias.listaIdCategorias.push(id);
-                    }
-                };
-                $("#modalLoading").css('display','inline-block');
-                await $.ajax({
-                    type: 'POST',
-                    url: "theoremsList", // This is located in PerfilController.java
-                    contentType: "application/json",
-                    dataType: "text",
-                    data: JSON.stringify(categorias),
-                    success:  function(data) {
-                        let split = data.split("myTheorems");
-                        if (split.length > 1){
-                            // NOTE: If we use document.getElementById("...").innerHTML = data,
-                            // the internal <scripts> that data can have will not be executed.
-                            $("#myTheoremsSpace").html(data);
-                            MathJax.Hub.Typeset();
-                        }
-                        // Case when the user is no longer active
-                        else {
-                            window.location = $("#linkCloseSession").attr("href");
-                        }
-                    }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                        alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-                    }
-                });
-                $("#modalLoading").css('display','none'); 
-            }
             document.getElementById("saveConfig").onclick = function(){
-                guardarMostrarCategorias();
-            }
-          
+                saveDisplayedCategories("prove", ${selecTeo});
+            }  
         </script>
         <script>
             $(".collapse-link").on("click",function(e){
@@ -460,4 +388,3 @@
     <%--<tiles:insertDefinition name="footer" /> --%>
     </body>
 </html>
-
