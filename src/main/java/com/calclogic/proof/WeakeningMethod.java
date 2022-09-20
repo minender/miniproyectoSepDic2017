@@ -107,8 +107,8 @@ public class WeakeningMethod extends TransitivityMethod {
         
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
         String P = p.toString();
-        String Q = q.toString();
-        String neg = "I^{[x_{112}, x_{113} := "+P+", "+Q+"]}A^{c_{1} ("+op2+" (c_{7} x_{113}) (c_{7} x_{112})) ("+op+" x_{113} x_{112})}";
+        String Q = q.toString();                      //= (\\Phi_{K} (\\Phi_{K} T)) (\\Phi_{c(ccbb,)} "+op+" c_{7} "+op2+" (\\Phi_{(bcbb,cb)} c_{1}) c_{7})
+        String neg = "I^{[x_{112}, x_{113} := "+P+", "+Q+"]}A^{= T (c_{1} ("+op2+" (c_{7} x_{113}) (c_{7} x_{112})) ("+op+" x_{113} x_{112}))}";
         
         return CombUtilities.getTerm(neg,null);
     }
@@ -134,8 +134,8 @@ public class WeakeningMethod extends TransitivityMethod {
         
         String P = p.toString();
         String Q = q.toString();
-        String R = r.toString();
-        String wsl1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{114} x_{113}) ("+op1+" x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
+        String R = r.toString();                         //"= (\\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\\Phi_{c(ccccb,)} "+op+" \\Phi_{cb(bcb,cb)} c_{2} "+op+" "+op1+" (\\Phi_{ccc(ccbcb,)} "+op1+"))"
+        String wsl1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op+" ("+op1+" x_{114} x_{113}) ("+op1+" x_{114} x_{112})) ("+op+" x_{113} x_{112}))}";
         
         return CombUtilities.getTerm(wsl1,null);
     }
@@ -161,8 +161,8 @@ public class WeakeningMethod extends TransitivityMethod {
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
         String P = p.toString();
         String Q = q.toString();
-        String R = r.toString();
-        String wsl2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{2} x_{114} x_{113}) (c_{2} x_{114} x_{112})) ("+op+" x_{113} x_{112})}";
+        String R = r.toString();                   //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccccb,)} "+op+" \\Phi_{cb(bcb,cb)} c_{2} "+op2+" c_{2} (\\Phi_{ccc(ccbcb,)} c_{2}))
+        String wsl2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op2+" (c_{2} x_{114} x_{113}) (c_{2} x_{114} x_{112})) ("+op+" x_{113} x_{112}))}";
         
         return CombUtilities.getTerm(wsl2,null);
     }
@@ -187,8 +187,8 @@ public class WeakeningMethod extends TransitivityMethod {
         
         String P = p.toString();
         String Q = q.toString();
-        String R = r.toString();
-        String wsr1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op+" ("+op1+" x_{113} x_{114}) ("+op1+" x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
+        String R = r.toString();                  //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccbb,)} "+op1+" "+op+" \\Phi_{cb(bb,b)} c_{2} "+op+" \\Phi_{c(ccbcb,b)} "+op1+")
+        String wsr1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op+" ("+op1+" x_{113} x_{114}) ("+op1+" x_{112} x_{114})) ("+op+" x_{113} x_{112}))}";
         
         return CombUtilities.getTerm(wsr1,null);
     }
@@ -213,8 +213,8 @@ public class WeakeningMethod extends TransitivityMethod {
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
         String P = p.toString();
         String Q = q.toString();
-        String R = r.toString();
-        String wsr2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{c_{2} ("+op2+" (c_{3} x_{113} x_{114}) (c_{3} x_{112} x_{114})) ("+op+" x_{113} x_{112})}";
+        String R = r.toString();               //\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccbb,)} c_{3} "+op+" \\Phi_{cb(bb,b)} c_{2} "+op2+" \\Phi_{c(ccbcb,b)} c_{3})
+        String wsr2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op2+" (c_{3} x_{113} x_{114}) (c_{3} x_{112} x_{114})) ("+op+" x_{113} x_{112}))}";
         
         return CombUtilities.getTerm(wsr2,null);
     }

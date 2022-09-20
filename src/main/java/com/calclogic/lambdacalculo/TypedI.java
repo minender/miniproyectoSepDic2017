@@ -18,7 +18,7 @@ public class TypedI extends Const implements TypedTerm{
     {
         super("I");
         instantiation_ = instantiation;
-        combDBType_ = instantiation.toStringFinal();
+        combDBType_ = instantiation.toString();
     }
 
    public Term type()

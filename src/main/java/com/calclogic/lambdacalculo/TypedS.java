@@ -49,6 +49,6 @@ public class TypedS extends Const implements TypedTerm{
     
     public String getCombDBType()
     {
-        return simetry_.toStringFinal();
+        return simetry_.toString();
     }
 }

@@ -18,7 +18,7 @@ public class TypedL extends Const implements TypedTerm{
     {
         super("L");
         lambda_ = lambda;
-        combDBType_ = lambda.toStringFinal();
+        combDBType_ = lambda.toString();
     }
     
     public Term type()

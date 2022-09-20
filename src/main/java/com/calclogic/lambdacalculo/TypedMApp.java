@@ -17,7 +17,7 @@ public class TypedMApp extends TypedApp implements TypedTerm{
     
     public TypedMApp(Term t) throws TypeVerificationException{
         super(((App)t).p,((App)t).q);
-        String l = ((App)((App)super.type()).p).q.body().toStringFinal();
+        String l = ((App)((App)super.type()).p).q.body().toString();
         Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{1} ("+l+") x_{122}}",null);
         aux = new TypedApp(aux,t);
         proof_ = CombUtilities.getTerm("I^{[x_{112}:="+l+"]} A^{= T (c_{1} x_{112} x_{112})}", null);

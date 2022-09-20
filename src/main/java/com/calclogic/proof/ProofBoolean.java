@@ -302,7 +302,7 @@ public class ProofBoolean {
         if ( !(t1 instanceof App) || !(((App)t1).p instanceof App)) {
             return false;
         }
-        String op1 = ((App)((App)t1).p).p.toStringFinal();
+        String op1 = ((App)((App)t1).p).p.toString();
         return (op1.equals("c_{2}") || op1.equals("c_{3}")) && 
                 t2 instanceof App && ((App)t2).p instanceof App &&
                 ((App)t1).q.equals(((App)((App)t2).p).q) && 

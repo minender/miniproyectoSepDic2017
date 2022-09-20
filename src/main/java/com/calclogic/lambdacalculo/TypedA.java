@@ -6,7 +6,6 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.entity.Resuelve;
-import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.TermUtilities;
 import com.calclogic.service.ResuelveManager;
 import java.util.List;
@@ -40,7 +39,7 @@ public class TypedA extends Const implements TypedTerm{
         super("A");
         variables_ = type.stFreeVars();
         type_ = type.abstractEq();
-        combDBType_ = type_.traducBD().toStringFinal();
+        combDBType_ = type_.traducBD().toString();
         nSt_ = "";
     }
     
@@ -48,7 +47,7 @@ public class TypedA extends Const implements TypedTerm{
     {
         super("A");
         type_ = type;
-        combDBType_ = type.toStringFinal();
+        combDBType_ = type.toString();
         Resuelve r = rm_.getResuelveByUserAndTeorema(user, combDBType_,true);
         if (r != null) {
            variables_ = r.getVariables();
@@ -65,7 +64,7 @@ public class TypedA extends Const implements TypedTerm{
         super("A");
         Resuelve r = rm_.getResuelveByUserAndTeoNum(user, nTeo,true);
         type_ = r.getTeorema().getTeoTerm();
-        combDBType_ = type_.toStringFinal();
+        combDBType_ = type_.toString();
         if (r != null) {
            variables_ = r.getVariables();
            nSt_ = r.getNumeroteorema();
@@ -81,7 +80,7 @@ public class TypedA extends Const implements TypedTerm{
         super("A");
         Resuelve r = rm_.getResuelveByUserAndTeorema(user, idTeo,true);
         type_ = r.getTeorema().getTeoTerm();
-        combDBType_ = type_.toStringFinal();
+        combDBType_ = type_.toString();
         if (r != null) {
            variables_ = r.getVariables();
            nSt_ = r.getNumeroteorema();

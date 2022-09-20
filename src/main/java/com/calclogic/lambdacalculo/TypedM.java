@@ -6,9 +6,6 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.parse.CombUtilities;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  *
@@ -24,7 +21,7 @@ public class TypedM extends TypedA implements TypedTerm {
         super(type, user);
         A = new TypedA(type, variables_, nSt_, combDBType_);
         Term lambType = A.type();
-        String arg2 = ((App)((App)lambType).p).q.body().toStringFinal();
+        String arg2 = ((App)((App)lambType).p).q.body().toString();
         Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{1} ("+arg2+") x_{122}}",user);
         aux = new TypedApp(aux,A);
         proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{1})}", user);
@@ -35,7 +32,7 @@ public class TypedM extends TypedA implements TypedTerm {
         super(type, user);
         //A = new TypedA(type, variables_, nSt_, combDBType_);
         Term lambType = type;
-        String arg2 = ((App)((App)lambType).p).q.body().toStringFinal();
+        String arg2 = ((App)((App)lambType).p).q.body().toString();
         Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{1} ("+arg2+") x_{122}}",user);
         aux = new TypedApp(aux,proof);
         proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{1})}", user);
@@ -63,7 +60,7 @@ public class TypedM extends TypedA implements TypedTerm {
     }
     
     public String getCombDBType() {
-        return type().traducBD().toStringFinal();
+        return type().traducBD().toString();
     }
     
     public String toString() {
