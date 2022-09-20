@@ -82,16 +82,16 @@ public class StartingOneSideMethod extends GenericProofMethod {
             String eqSust = ""; // Indicates the instantiation (if any) that was necessary to apply to the already proven theorem
 
             // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
-            /*if (((TypedApp)typedTerm).q instanceof TypedApp){
-                lastline = ((TypedApp)((TypedApp)typedTerm).q).q.type().toString();
+            if (((TypedApp)typedTerm).q instanceof TypedApp){
+                nTeo = ((TypedA)((TypedApp)((TypedApp)typedTerm).q).q).getNSt();
                 eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringLaTeX(s,"");
             }
-            else {*/
+            else {
                 // Note that here we have a less "q" respect of the previous case because in there 
                 // there was an additional tree representing the instantiation
-                //lastline = ((TypedApp)typedTerm).q.type().toString();    
-            //}
-            nTeo = ((TypedA)((TypedApp)typedTerm).q).getNSt();
+                nTeo = ((TypedA)((TypedApp)typedTerm).q).getNSt();  
+            }
+            
 
             // We get the Resuelve row associated to the demonstrated theorem in order that we can 
             // later get its current number (established by the user) to indicate that it is what
@@ -99,9 +99,9 @@ public class StartingOneSideMethod extends GenericProofMethod {
             Resuelve eqHintResuel = resuelveManager.getResuelveByUserAndTeorema(user, lastline, false);
 
             // Case when the user could only see the theorem but had not a Resuelve object associated to it
-            /*if (eqHintResuel == null){
-                eqHintResuel = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", lastline);
-            }*/
+            if (eqHintResuel == null){
+                eqHintResuel = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", lastline, false);
+            }
 
             equanimityHint = "~~~-~\\text{st}~("+nTeo+")"+eqSust;
 

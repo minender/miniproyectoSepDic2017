@@ -54,7 +54,7 @@ public class TypedA extends Const implements TypedTerm{
            nSt_ = r.getNumeroteorema();
         }
         else {
-           variables_ = "p,q,r";
+           variables_ = "";
            nSt_ = "";
         }
     }

@@ -552,7 +552,7 @@ function setInputValueOnParser(rootId){
 	if(parserString.length == 0){ prefix = '';}
 	textarea.val(prefix + parserString);
         console.log(parserString);
-        alert(parserString);
+        //alert(parserString);
 	return parserString;
 }
 
