@@ -59,7 +59,7 @@ public class Solucion implements java.io.Serializable {
     public void setTypedTerm(Term typedTerm)
     {
         this.typedTerm = typedTerm;
-        this.demostracion = (typedTerm!=null?typedTerm.toStringFinal():"");
+        this.demostracion = (typedTerm!=null?typedTerm.toString():"");
     }
     
     public Term getTypedTerm()
@@ -88,7 +88,7 @@ public class Solucion implements java.io.Serializable {
         this.resuelve = resuelve;
         this.resuelto = resuelto;
         this.typedTerm = typeTerm;
-        this.demostracion = (typeTerm != null?typeTerm.toStringFinal():"");
+        this.demostracion = (typeTerm != null?typeTerm.toString():"");
         this.metodo = metodo;
         this.proofCrudOperations = proofCrudOperations;
     }
@@ -123,8 +123,8 @@ public class Solucion implements java.io.Serializable {
     
     private Term branchedOneLineSubProof(Term formula,Term father) {
         Map<String,String> values1 = new HashMap<>();
-        values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
-        values1.put("ST2", formula.toStringFinal());
+        values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toString());
+        values1.put("ST2", formula.toString());
         StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
         String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
         String metaTheo = sub1.replace(metaTheoT);
@@ -176,8 +176,8 @@ public class Solucion implements java.io.Serializable {
         Term auxTypedTerm = li.get(0);
 
         if (ProofBoolean.isOneLineProof(auxTypedTerm)){
-            typedTerm= mergeSubProofs(null,li,objectMethod);
-            demostracion =(typedTerm==null?"":typedTerm.toStringFinal());
+            typedTerm= mergeSubProofs(null, li, objectMethod);
+            demostracion =(typedTerm==null?"":typedTerm.toString());
             return 0;
         }
         if ( (
@@ -224,12 +224,12 @@ public class Solucion implements java.io.Serializable {
                     typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q, li, objectMethod);
                 }
             }
-            demostracion = typedTerm.toStringFinal();
+            demostracion = typedTerm.toString();
             return 2;
         }
         else {
-            typedTerm = mergeSubProofs(((App)auxTypedTerm.type()).q,li,objectMethod);
-            demostracion = typedTerm.toStringFinal();
+            typedTerm = mergeSubProofs(((App)auxTypedTerm.type()).q, li, objectMethod);
+            demostracion = typedTerm.toString();
             return 1;
         }
     }

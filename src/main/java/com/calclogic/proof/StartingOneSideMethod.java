@@ -83,15 +83,15 @@ public class StartingOneSideMethod extends GenericProofMethod {
 
             // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
             /*if (((TypedApp)typedTerm).q instanceof TypedApp){
-                lastline = ((TypedApp)((TypedApp)typedTerm).q).q.type().toStringFinal();
+                lastline = ((TypedApp)((TypedApp)typedTerm).q).q.type().toString();
                 eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringLaTeX(s,"");
             }
             else {*/
                 // Note that here we have a less "q" respect of the previous case because in there 
                 // there was an additional tree representing the instantiation
-                //lastline = ((TypedApp)typedTerm).q.type().toStringFinal();
-                nTeo = ((TypedA)((TypedApp)typedTerm).q).getNSt();
+                //lastline = ((TypedApp)typedTerm).q.type().toString();    
             //}
+            nTeo = ((TypedA)((TypedApp)typedTerm).q).getNSt();
 
             // We get the Resuelve row associated to the demonstrated theorem in order that we can 
             // later get its current number (established by the user) to indicate that it is what
@@ -168,16 +168,16 @@ public class StartingOneSideMethod extends GenericProofMethod {
         if (ultInf instanceof App){
             if (((App)ultInf).q instanceof App){
                 if (((App)((App)ultInf).q).q instanceof App){
-                    //  Term aux = ((App)ultInf.type()).q;
+                    // Term aux = ((App)ultInf.type()).q;
                     // primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                    teo = ((App)((App)((App)ultInf).q).q).q.type().traducBD().toStringFinal();
+                    teo = ((App)((App)((App)ultInf).q).q).q.type().traducBD().toString();
                     inst = ((App)((App)((App)ultInf).q).q).p.type().toStringLaTeX(s,"");
                     inst = "~\\text{with}~" + inst;
                     leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
                     leib = "~\\text{and}~" + leib;
                 }
                 else {
-                    teo = ((App)((App)ultInf).q).q.type().traducBD().toStringFinal();
+                    teo = ((App)((App)ultInf).q).q.type().traducBD().toString();
                     if (((App)ultInf).p instanceof TypedS){
                         if (((App)((App)ultInf).q).p instanceof TypedI){
                             inst = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
@@ -204,11 +204,11 @@ public class StartingOneSideMethod extends GenericProofMethod {
                     leib = "~\\text{and}~" + pType.toStringLaTeX(s,"");
                 }
                 // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
-                teo = ((App)ultInf).q.type().traducBD().toStringFinal();
+                teo = ((App)ultInf).q.type().traducBD().toString();
             }
         } else {
             Term aux = ultInf.type().traducBD(); //CHECK se puede guardar el nTeo y no buscarlo
-            teo = aux.toStringFinal();
+            teo = aux.toString();
         } 
 
         int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 

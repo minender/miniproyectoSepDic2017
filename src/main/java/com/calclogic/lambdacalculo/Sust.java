@@ -171,15 +171,15 @@ public class Sust extends Term{
         return new App(new Const("K"),this);
     }
     
-    public String toString()
+    public String toStringAll()
     {
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toString()+",";
+            varss += v.toStringAll()+",";
         
         for (Term t : terms)
-            termss += t.toString()+",";
+            termss += t.toStringAll()+",";
         
         varss = varss.substring(0, varss.length()-1);
         termss = termss.substring(0, termss.length()-1);
@@ -224,7 +224,7 @@ public class Sust extends Term{
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId)
     {
-        return toString();
+        return toStringAll();
     }
 
     
@@ -246,13 +246,13 @@ public class Sust extends Term{
     
     public ToString toStringAbrvV1(ToString toString)
     {
-        toString.term=this.toString();
+        toString.term=this.toStringAll();
         return toString;
     }
     
     public ToString toStringAbrv(ToString toString)
     {
-        toString.term=this.toString();
+        toString.term=this.toStringAll();
         return toString;
     }
     

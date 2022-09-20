@@ -330,8 +330,8 @@ public class PerfilController {
         return "help";
     }
     
-    @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.GET)
-    public String misTeoremasView(@PathVariable String username, ModelMap map) {
+    @RequestMapping(value="/{username}/myTheorems", method=RequestMethod.GET)
+    public String myTheoremsView(@PathVariable String username, ModelMap map) {
         if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
            && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
            )
@@ -344,22 +344,14 @@ public class PerfilController {
             t.setTeoTerm(t.getTeoTerm());
             t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
         }
-        /*
-        List<Teorema> teoremas = usuarioManager.getAllTeoremas(usuarioManager.getUsuario(username));
-        for (Teorema t: teoremas)
-        {
-            t.setTeoTerm(t.getTeoTerm());
-            t.setMetateoTerm(new App(new App(new Const("\\equiv ",false,1,1),new Const("true ")),t.getTeoTerm()));
-        }*/
         Usuario currentUser = (Usuario)session.getAttribute("user");
         Usuario usr = usuarioManager.getUsuario(username);        
         List <Categoria> showCategorias = new LinkedList<Categoria>();
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
+        
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
-        //List<Resuelve> resuelvesAdmin = resuelveManager.getAllResuelveByUser(currentUser.getLogin());
-        //List<Teorema> teoremasAdmin = teoremaManager.getTeoremaByResuelveList(resuelvesAdmin);
         map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
         map.addAttribute("usuario", usr);
         map.addAttribute("guardarMenu","");
@@ -370,91 +362,22 @@ public class PerfilController {
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
         map.addAttribute("categorias",categoriaManager.getAllCategorias());
         map.addAttribute("showCategorias",showCategorias);
-        map.addAttribute("teoremas", resuelves);
+        map.addAttribute("resuelves", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("categoriaManager",categoriaManager);
         map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("predicadoManager",predicadoManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
-        return "misTeoremas";
-    }
-    
-    @RequestMapping(value="/{username}/misTeoremas", method=RequestMethod.POST,produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody String misTeoremasConfigView(@PathVariable String username, ModelMap map,@RequestBody MostrarCategoriaForm answer) {
-        if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
-           && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
-           )
-        {   
-            JsonObject response = new JsonObject();
-            response.addProperty("error", "You must be logged in the system");
-            return response.toString();
-        }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
-        for (Resuelve r: resuelves)
-        {
-            Teorema t = r.getTeorema();
-            t.setTeoTerm(t.getTeoTerm());
-            t.setMetateoTerm(new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),t.getTeoTerm()));
-        }
-        Usuario usuario = usuarioManager.getUsuario(answer.getUsername());
-        Usuario currentUser = (Usuario)session.getAttribute("user");
-        List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
-        List<Integer> categoriasIdListUser =  new LinkedList<>();
-        for (MostrarCategoria mc: mostrarCategorias){
-           categoriasIdListUser.add(mc.getCategoria().getId());
-        }
-        for (int categoriaId :answer.getListaIdCategorias()){
-            if (!categoriasIdListUser.contains(categoriaId)){
-                Categoria categoria = categoriaManager.getCategoria(categoriaId);
-                MostrarCategoria mostrarCategoriaNew = new MostrarCategoria(categoria, currentUser);
-                mostrarCategoriaManager.addMostrarCategoria(mostrarCategoriaNew);
-            }
-        }
-        for (int categoriaId: categoriasIdListUser){
-            if (!answer.getListaIdCategorias().contains(categoriaId)){
-                Categoria categoria = categoriaManager.getCategoria(categoriaId);
-                MostrarCategoria mostrarCategoria = mostrarCategoriaManager.getMostrarCategoriaByCategoriaAndUsuario(categoria, currentUser);
-                mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria.getId());
-            }
-        }
-        List<MostrarCategoria> mostrarCategorias1 = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
-        JsonObject response = new JsonObject();
-        JsonArray categories = new JsonArray();
-        for (int i = 0; i < mostrarCategorias1.size(); i ++){
-            JsonObject category = new JsonObject();
-            category.addProperty("categoryid", mostrarCategorias1.get(i).getCategoria().getId());
-            category.addProperty("categoryname",mostrarCategorias1.get(i).getCategoria().getNombre());
-            categories.add(category);
-        }
-        JsonArray resuelves1 = new JsonArray();
 
-        for (int i = 0; i < resuelves.size(); i++){
-            JsonObject resuelve = new JsonObject();
-            resuelve.addProperty("categoryid", resuelves.get(i).getCategoria().getId());
-            resuelve.addProperty("isResuelto", resuelves.get(i).isResuelto());
-            resuelve.addProperty("isAxioma", resuelves.get(i).isEsAxioma());
-            resuelve.addProperty("numeroteorema", resuelves.get(i).getNumeroteorema());
-            resuelve.addProperty("nombreteorema", resuelves.get(i).getNombreteorema());
-            resuelve.addProperty("teoremaid", resuelves.get(i).getTeorema().getId());
-            resuelve.addProperty("string", resuelves.get(i).getTeorema().getTeoTerm().toStringLaTeX(simboloManager,""));
-            resuelve.addProperty("stringNumero", resuelves.get(i).getTeorema().getTeoTerm().toStringLaTeX(simboloManager, resuelves.get(i).getNumeroteorema()));
-            resuelve.addProperty("metateoremastring", resuelves.get(i).getTeorema().getMetateoTerm().toStringLaTeXFinal(simboloManager));
-            resuelve.addProperty("demopendiente",resuelves.get(i).getDemopendiente());
-            resuelve.addProperty("vars",resuelves.get(i).getTeorema().getTeoTerm().stFreeVars());
-            resuelves1.add(resuelve);
-        }
-        response.add("categories", categories);
-        response.add("resuelves", resuelves1);
-
-        return response.toString();
+        return "myTheorems";
     }
 
     /* 
-     * Used to store the new checked categories in the database and to show the then in the infer 
-     * view again (Ex: Equivalence and True, etc.)
+     * Used to store the new checked categories in the database and to show them in the Prove 
+     * or in the My Theorems view again (Ex: Equivalence and True, etc.)
      *
-     * @return The "theoremsList" view, with the categories updated.
+     * @return The "theoremsListProve" or the "theoremsListMyTheorems" view, with the categories updated.
      */
     @RequestMapping(value="/{username}/theoremsList", method=RequestMethod.POST)
     public String theoremsListController(@PathVariable String username, ModelMap map, @RequestBody MostrarCategoriaForm answer) {
@@ -474,7 +397,7 @@ public class PerfilController {
         Usuario usr = usuarioManager.getUsuario(username);        
         List <Categoria> showCategorias = new LinkedList<Categoria>();
         List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
-        List<Integer> categoriasIdListUser =  new LinkedList<Integer>();
+        List<Integer> categoriasIdListUser =  new LinkedList<>();
 
         for (MostrarCategoria mc: mostrarCategorias){
            categoriasIdListUser.add(mc.getCategoria().getId());
@@ -507,22 +430,23 @@ public class PerfilController {
         map.addAttribute("listarTerminosMenu","");
         map.addAttribute("perfilMenu","");
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-        //map.addAttribute("categorias",categoriaManager.getAllCategorias());
-        map.addAttribute("teoremas", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
         map.addAttribute("categoriaManager",categoriaManager);
         map.addAttribute("simboloManager",simboloManager);
         map.addAttribute("predicadoManager",predicadoManager);
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
-        map.addAttribute("selecTeo",true);
+        map.addAttribute("selecTeo",answer.getSelecTeo());
         map.addAttribute("showCategorias",showCategorias);
         map.addAttribute("resuelves", resuelves);
-
-        return "theoremsList";
+        
+        if ("prove".equals(answer.getCurrentView())){
+            return "theoremsList/theoremsListProve";
+        }
+        return "theoremsList/theoremsListMyTheorems";  
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/{username}/myTheorems/listaSolucion", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody teoremasSolucion listaSoluciones( @RequestParam(value="teoid") int teoid, @PathVariable String username)
     {   
         //validar si esta el usuario en sesion
@@ -535,7 +459,7 @@ public class PerfilController {
         return response;
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/buscarFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/{username}/myTheorems/buscarFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
         // validar que el usuario este en sesion
@@ -552,7 +476,7 @@ public class PerfilController {
         return response;
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/buscarMetaFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/{username}/myTheorems/buscarMetaFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarMetaFormula(@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {
         InferResponse response = new InferResponse(crudOp);
@@ -632,218 +556,212 @@ public class PerfilController {
     @RequestMapping(value="/{username}/guardarteo", method=RequestMethod.POST)
     public String guardar(@Valid AgregarTeorema agregarTeorema, BindingResult bindingResult, @PathVariable String username, ModelMap map)
     {
-            if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        //Aqui hay que validar sintaxis se puede hacer como un aspecto con 
+        // un @Valid
+        //aqui se acomoda la estructura de la entidad Termino ya que en la
+        // vista lo que se construyo fue un TerminoId nada mas y se uso el 
+        // campo login para guardar el String combinador
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        
+        boolean nTheoExists = false;
+        if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(),false) != null)
+            nTheoExists = true;
+        
+        if(nTheoExists || bindingResult.hasErrors()){
+            map.addAttribute("usuario", usr);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "");
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            if (nTheoExists)
+                bindingResult.rejectValue("numeroTeorema","error.agregarTeorema","Theorem number already exists");
+            map.addAttribute("predicadoList", predicadoList); map.addAttribute("predicadoList", predicadoList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        
+        Usuario user = usuarioManager.getUsuario(username);
+        
+        PredicadoId predicadoid2 = new PredicadoId();
+        predicadoid2.setLogin(username);
+        
+        CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
+        TermLexer lexer = new TermLexer(in);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        TermParser parser = new TermParser(tokens);
+        Term teoTerm;
+        try{ //si la sintanxis no es correcta ocurre una Exception
+        
+            teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+            String variables = teoTerm.stFreeVars();
+            if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
+                ((App)((App)teoTerm).p).p instanceof Const && 
+                ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
+                  ((Const)((App)((App)teoTerm).p).p).getId()==13
+                )
+               ) 
             {
-                return "redirect:/index";
+                Term arg1, arg2;
+                arg1 = ((App)((App)teoTerm).p).q;
+                arg2 = ((App)teoTerm).q;
+                String[] vars = (variables.equals("")?new String[0]:variables.split(","));
+                for (int i=vars.length-1; 0<=i; i--) {
+                    arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
+                    arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
+                }
+                teoTerm = new App(new App(new Const(0,"="),arg1),arg2);
             }
-            //Aqui hay que validar sintaxis se puede hacer como un aspecto con 
-            // un @Valid
-            //aqui se acomoda la estructura de la entidad Termino ya que en la
-            // vista lo que se construyo fue un TerminoId nada mas y se uso el 
-            // campo login para guardar el String combinador
-            Usuario usr = usuarioManager.getUsuario(username);
-            List<Simbolo> simboloList = simboloManager.getAllSimbolo();
-            List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
-            predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
-            String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
-            
-            boolean nTheoExists = false;
-            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(),false) != null)
-                nTheoExists = true;
-            
-            if(nTheoExists || bindingResult.hasErrors())
-            {
-                map.addAttribute("usuario", usr);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("mensaje", "");
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                if (nTheoExists)
-                  bindingResult.rejectValue("numeroTeorema","error.agregarTeorema","Theorem number already exists");
-                map.addAttribute("predicadoList", predicadoList); map.addAttribute("predicadoList", predicadoList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
+            else {
+                Term arg2 = new Const(-1,"T");
+                String[] vars = (variables==null?new String[0]:variables.split(","));
+                for (int i=vars.length-1; 0<=i; i--) {
+                    teoTerm = new Bracket(new Var((int)vars[i].charAt(0)),teoTerm);
+                    arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
+                }
+                teoTerm = new App(new App(new Const(0,"="), arg2), teoTerm);
+            } 
+            Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
+            if (null != test) {
+                throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
             }
+            // ESTO DEBE MOSTRAR LAS CATEGORIAS
+            Categoria categoria;
+            categoria = categoriaManager.getCategoria(new Integer(agregarTeorema.getCategoriaSeleccionada()));
+            if (categoria == null) {
+                throw new CategoriaException("That category number does not exist");
+            }
+            // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
             
-            Usuario user = usuarioManager.getUsuario(username);
-            
-            PredicadoId predicadoid2=new PredicadoId();
-            predicadoid2.setLogin(username);
-            CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
-            TermLexer lexer = new TermLexer(in);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            TermParser parser = new TermParser(tokens);
-            Term teoTerm;
-            try //si la sintanxis no es correcta ocurre una Exception
-            {
-                teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
-                String variables = teoTerm.stFreeVars();
-                if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
-                    ((App)((App)teoTerm).p).p instanceof Const && 
-                    ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
-                      ((Const)((App)((App)teoTerm).p).p).getId()==13
-                    )
-                   ) 
-                {
-                    Term arg1, arg2;
-                    arg1 = ((App)((App)teoTerm).p).q;
-                    arg2 = ((App)teoTerm).q;
-                    String[] vars = (variables.equals("")?new String[0]:variables.split(","));
-                    for (int i=vars.length-1; 0<=i; i--) {
-                        arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
-                        arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
-                    }
-                    teoTerm = new App(new App(new Const(0,"="),arg1),arg2);
-                }
-                else {
-                    Term arg2 = new Const(-1,"T");
-                    String[] vars = (variables==null?new String[0]:variables.split(","));
-                    for (int i=vars.length-1; 0<=i; i--) {
-                        teoTerm = new Bracket(new Var((int)vars[i].charAt(0)),teoTerm);
-                        arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
-                    }
-                    teoTerm = new App(new App(new Const(0,"="), arg2), teoTerm);
-                }
-                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal(), false);
-                if (null != test) {
-                    throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
-                }
-                // ESTO DEBE MOSTRAR LAS CATEGORIAS
-                Categoria categoria;
-                categoria = categoriaManager.getCategoria(new Integer(agregarTeorema.getCategoriaSeleccionada()));
-                if (categoria == null) {
-                    throw new CategoriaException("Ese numero de categoria no existe");
-                }
-                // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
-                
-                String aliases = teoTerm.aliases("");
-                Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toStringFinal());
-                Teorema teorema;
-                if (teoremaAdd == null) 
-                 teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false,aliases)); 
-                else
-                    teorema = teoremaAdd;
-                Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),
-                                                 agregarTeorema.isAxioma(), categoria, variables);
-                Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
-                
+            String aliases = teoTerm.aliases("");
+            Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toString());
+            Teorema teorema;
+            if (teoremaAdd == null) 
+                teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toString(),teoTerm,false,aliases)); 
+            else
+                teorema = teoremaAdd;
+            Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),
+                                            agregarTeorema.isAxioma(), categoria, variables);
+            Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
 
-                // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
-                /*Metateorema metateorema;
-                Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
-                Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toStringFinal());
-                if (metateoremaAdd == null)
-                  metateorema = metateoremaManager.addMetateorema(new Metateorema(teorema.getId(),metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm)));
-                else
-                  metateorema = metateoremaAdd;
-                
-                Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
-                Dispone dispone = disponeManager.addDispone(disponeAdd);*/
-                     
-                map.addAttribute("usuario", usr);
-                map.addAttribute("guardarMenu","");
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("agregarTeoremaMenu","");
-                map.addAttribute("listarTerminosMenu","");
-                map.addAttribute("misTeoremasMenu","");        
-                map.addAttribute("agregarTeoremaMenu","");
-                map.addAttribute("perfilMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "perfil";
-            }
-            catch(NullPointerException e)
-            {
-                map.addAttribute("usuario", user);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("selected",agregarTeorema.getCategoria());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
-            }
-            catch(CategoriaException e)
-            {
-                map.addAttribute("usuario",user);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1100px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
-            }
-            catch(IsNotInDBException e)
-            {
-                String hdr = parser.getErrorHeader(e);
-		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("usuario", usr);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("guardarMenu","");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
-            }
-            catch(RecognitionException e)
-            {
-                String hdr = parser.getErrorHeader(e);
-		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("usuario", user);
-                map.addAttribute("infer",new InfersForm());
-                map.addAttribute("mensaje", hdr+" "+msg);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
-            }
+            // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
+            /*Metateorema metateorema;
+            Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
+            Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toString());
+            if (metateoremaAdd == null)
+              metateorema = metateoremaManager.addMetateorema(new Metateorema(teorema.getId(),metateoTerm.traducBD().toString(),SerializationUtils.serialize(metateoTerm)));
+            else
+              metateorema = metateoremaAdd;
+            
+            Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
+            Dispone dispone = disponeManager.addDispone(disponeAdd);*/
+                 
+            map.addAttribute("usuario", usr);
+            map.addAttribute("guardarMenu","");
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("agregarTeoremaMenu","");
+            map.addAttribute("listarTerminosMenu","");
+            map.addAttribute("misTeoremasMenu","");        
+            map.addAttribute("agregarTeoremaMenu","");
+            map.addAttribute("perfilMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "perfil";
+        }
+        catch(NullPointerException e){
+            map.addAttribute("usuario", user);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch(CategoriaException e){
+            map.addAttribute("usuario",user);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1100px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch(IsNotInDBException e){
+            String hdr = parser.getErrorHeader(e);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+            map.addAttribute("usuario", usr);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("guardarMenu","");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch(RecognitionException e){
+            String hdr = parser.getErrorHeader(e);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+            map.addAttribute("usuario", user);
+            map.addAttribute("infer",new InfersForm());
+            map.addAttribute("mensaje", hdr+" "+msg);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
     }
-    
     
     @RequestMapping(value="/{username}/editarteo/{idTeo:.+}", method=RequestMethod.GET)
     public String editarTeoView(@PathVariable String username, @PathVariable String idTeo, ModelMap map) {
@@ -895,217 +813,213 @@ public class PerfilController {
                             @PathVariable String idTeo,
                             ModelMap map)
     {
-            if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
-            {
-                return "redirect:/index";
-            }
-            //Aqui hay que validar sintaxis se puede hacer como un aspecto con 
-            // un @Valid
-            //aqui se acomoda la estructura de la entidad Termino ya que en la
-            // vista lo que se construyo fue un TerminoId nada mas y se uso el 
-            // campo login para guardar el String combinador
-            Usuario usr = usuarioManager.getUsuario(username);
-            List<Simbolo> simboloList = simboloManager.getAllSimbolo();
-            List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
-            predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
-            String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
-            int intIdTeo = Integer.parseInt(idTeo);
-            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, intIdTeo, false);
-            
-            boolean nTheoExists = false;
-            if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(), false) != null)
-                nTheoExists = true;
-            
-            if(bindingResult.hasErrors())
-            {
-                map.addAttribute("navUrlPrefix", "../");
-                map.addAttribute("usuario", usr);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("mensaje", "");
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                if (nTheoExists)
-                  bindingResult.rejectValue("numeroTeorema","error.agregarTeorema","Theorem number already exists");
-                map.addAttribute("predicadoList", predicadoList); map.addAttribute("predicadoList", predicadoList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
-            }
-            
-            PredicadoId predicadoid2=new PredicadoId();
-            predicadoid2.setLogin(username);
-            
-            CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
-            TermLexer lexer = new TermLexer(in);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            TermParser parser = new TermParser(tokens);
-            Term teoTerm;
-            try //si la sintanxis no es correcta ocurre una Exception
-            {
-                teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
-//                teoTerm.setAlias(0);
-                
-                // ESTO DEBE MOSTRAR LAS CATEGORIAS
-                Categoria categoria;
-                categoria = categoriaManager.getCategoria(new Integer(agregarTeorema.getCategoriaSeleccionada()));
-                if (categoria == null) {
-                    throw new CategoriaException("Ese numero de categoria no existe");
-                }
-                // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
-                
-                /**
-                String aliases = teoTerm.aliases("");
-                Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toStringFinal());
-                Teorema teorema;
-                if (teoremaAdd == null) 
-                 teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toStringFinal(),teoTerm,false,aliases)); 
-                else
-                    teorema = teoremaAdd;
-                */
-               
-                Teorema teorema = teoremaManager.getTeorema(intIdTeo);
-                if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
-                  Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toStringFinal(), false);
-                  if (null != test && test.getId() != resuelve.getId()) {
-                    throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
-                  }
-                  teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toStringFinal());
-                  if (teorema == null) {
-                      throw new CategoriaException("Couldn't edit theorem");
-                  }
-                  intIdTeo = teorema.getId();
-                }
-          
-                resuelve.setTeorema(teorema);
-                resuelve.setNombreteorema(agregarTeorema.getNombreTeorema());
-                resuelve.setNumeroteorema(agregarTeorema.getNumeroTeorema());
-                resuelve.setEsAxioma(agregarTeorema.isAxioma());
-                resuelve.setCategoria(categoria);
-                resuelveManager.updateResuelve(resuelve);
-                
-                //Resuelve resuelveAdd = new Resuelve(usr,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma(), categoria);
-                //Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
-                
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        //Aqui hay que validar sintaxis se puede hacer como un aspecto con 
+        // un @Valid
+        //aqui se acomoda la estructura de la entidad Termino ya que en la
+        // vista lo que se construyo fue un TerminoId nada mas y se uso el 
+        // campo login para guardar el String combinador
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        int intIdTeo = Integer.parseInt(idTeo);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, intIdTeo, false);
+        
+        boolean nTheoExists = false;
+        if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(), false) != null)
+            nTheoExists = true;
+        
+        if(bindingResult.hasErrors()){
+            map.addAttribute("navUrlPrefix", "../");
+            map.addAttribute("usuario", usr);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "");
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            if (nTheoExists)
+                bindingResult.rejectValue("numeroTeorema","error.agregarTeorema","Theorem number already exists");
+            map.addAttribute("predicadoList", predicadoList); map.addAttribute("predicadoList", predicadoList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        
+        PredicadoId predicadoid2=new PredicadoId();
+        predicadoid2.setLogin(username);
+        
+        CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
+        TermLexer lexer = new TermLexer(in);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        TermParser parser = new TermParser(tokens);
+        Term teoTerm;
 
-                // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
-                /*Metateorema metateorema;
-                Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
-                Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toStringFinal());
-                if (metateoremaAdd == null)
-                  metateorema = metateoremaManager.addMetateorema(new Metateorema(teorema.getId(),metateoTerm.traducBD().toStringFinal(),SerializationUtils.serialize(metateoTerm)));
-                else
-                  metateorema = metateoremaAdd;
-                
-                Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
-                Dispone dispone = disponeManager.addDispone(disponeAdd);*/
-                
-                map.addAttribute("navUrlPrefix", "../");
-                map.addAttribute("usuario", usr);
-                map.addAttribute("guardarMenu","");
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("agregarTeoremaMenu","");
-                map.addAttribute("listarTerminosMenu","");
-                map.addAttribute("misTeoremasMenu","");        
-                map.addAttribute("agregarTeoremaMenu","");
-                map.addAttribute("perfilMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "perfil";
+        try{ //si la sintanxis no es correcta ocurre una Exception
+        
+            teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+//                teoTerm.setAlias(0);
+            
+            // ESTO DEBE MOSTRAR LAS CATEGORIAS
+            Categoria categoria;
+            categoria = categoriaManager.getCategoria(new Integer(agregarTeorema.getCategoriaSeleccionada()));
+            if (categoria == null) {
+                throw new CategoriaException("Ese numero de categoria no existe");
             }
-            catch(NullPointerException e)
-            {
-                e.printStackTrace();
-                map.addAttribute("navUrlPrefix", "../");
-                map.addAttribute("usuario", usr);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("selected",agregarTeorema.getCategoria());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
+            // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
+            
+            /**
+            String aliases = teoTerm.aliases("");
+            Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toString());
+            Teorema teorema;
+            if (teoremaAdd == null) 
+             teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toString(),teoTerm,false,aliases)); 
+            else
+                teorema = teoremaAdd;
+            */
+           
+            Teorema teorema = teoremaManager.getTeorema(intIdTeo);
+            if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
+                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
+                if (null != test && test.getId() != resuelve.getId()) {
+                    throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
+                }
+                teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString());
+                if (teorema == null) {
+                    throw new CategoriaException("Couldn't edit theorem");
+                }
+                intIdTeo = teorema.getId();
             }
-            catch(CategoriaException e)
-            {
-                map.addAttribute("navUrlPrefix", "../");
-                map.addAttribute("usuario",usr);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1100px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
-            }
-            catch(IsNotInDBException e)
-            {
-                String hdr = parser.getErrorHeader(e);
-		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("navUrlPrefix", "../");
-                map.addAttribute("usuario", usr);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("guardarMenu","");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
-            }
-            catch(RecognitionException e)
-            {
-                String hdr = parser.getErrorHeader(e);
-		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("navUrlPrefix", "../");
-                map.addAttribute("usuario", usr);
-                map.addAttribute("infer",new InfersForm());
-                map.addAttribute("mensaje", hdr+" "+msg);
-                map.addAttribute("agregarTeorema",agregarTeorema);
-                map.addAttribute("modificar",new Integer(0));
-                map.addAttribute("teorema",agregarTeorema.getTeorema());
-                map.addAttribute("categoria",categoriaManager.getAllCategorias());
-                map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-                map.addAttribute("admin","AdminTeoremas");
-                map.addAttribute("agregarTeoremaMenu","active");
-                map.addAttribute("overflow","hidden");
-                map.addAttribute("anchuraDiv","1200px");
-                map.addAttribute("simboloList", simboloList);
-                map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-                return "agregarTeorema";
-            }
+      
+            resuelve.setTeorema(teorema);
+            resuelve.setNombreteorema(agregarTeorema.getNombreTeorema());
+            resuelve.setNumeroteorema(agregarTeorema.getNumeroTeorema());
+            resuelve.setEsAxioma(agregarTeorema.isAxioma());
+            resuelve.setCategoria(categoria);
+            resuelveManager.updateResuelve(resuelve);
+            
+            //Resuelve resuelveAdd = new Resuelve(usr,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma(), categoria);
+            //Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
+            
+
+            // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
+            /*Metateorema metateorema;
+            Term metateoTerm = new App(new App(new Const(1,"\\equiv ",false,1,1),new Const("true")),teoTerm);
+            Metateorema metateoremaAdd = metateoremaManager.getMetateoremaByEnunciados(metateoTerm.traducBD().toString());
+            if (metateoremaAdd == null)
+              metateorema = metateoremaManager.addMetateorema(new Metateorema(teorema.getId(),metateoTerm.traducBD().toString(),SerializationUtils.serialize(metateoTerm)));
+            else
+              metateorema = metateoremaAdd;
+            
+            Dispone disponeAdd = new Dispone(resuelve.getId(),user,metateorema,agregarTeorema.getNumeroTeorema(),false);
+            Dispone dispone = disponeManager.addDispone(disponeAdd);*/
+            
+            map.addAttribute("navUrlPrefix", "../");
+            map.addAttribute("usuario", usr);
+            map.addAttribute("guardarMenu","");
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("agregarTeoremaMenu","");
+            map.addAttribute("listarTerminosMenu","");
+            map.addAttribute("misTeoremasMenu","");        
+            map.addAttribute("agregarTeoremaMenu","");
+            map.addAttribute("perfilMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "perfil";
+        }
+        catch(NullPointerException e){
+            e.printStackTrace();
+            map.addAttribute("navUrlPrefix", "../");
+            map.addAttribute("usuario", usr);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch(CategoriaException e){
+            map.addAttribute("navUrlPrefix", "../");
+            map.addAttribute("usuario",usr);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1100px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch(IsNotInDBException e){
+            String hdr = parser.getErrorHeader(e);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+            map.addAttribute("navUrlPrefix", "../");
+            map.addAttribute("usuario", usr);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("guardarMenu","");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch(RecognitionException e){
+            String hdr = parser.getErrorHeader(e);
+            String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+            map.addAttribute("navUrlPrefix", "../");
+            map.addAttribute("usuario", usr);
+            map.addAttribute("infer",new InfersForm());
+            map.addAttribute("mensaje", hdr+" "+msg);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
     }
         
         
@@ -1161,7 +1075,7 @@ public class PerfilController {
      * @param simboloList symbol list to make the dictionary
      * @return string in dictionary format
      */
-    public static String simboloDictionaryCode(List<Simbolo> simboloList, 	List<Predicado> predicadoList) {
+    public static String simboloDictionaryCode(List<Simbolo> simboloList, List<Predicado> predicadoList) {
     	
     	// List of char where we'll store the answer
     	StringBuilder result = new StringBuilder("{");
@@ -1188,7 +1102,6 @@ public class PerfilController {
     	precedenceString = "100";
     	//Add every alias to the dictionary
     	for(Predicado alias : predicadoList) {
-    		
     		idString = alias.getId().getAlias();
     		argumentsString = String.valueOf(alias.getArgumentos().split(",").length);
     		notacionVariables = alias.getNotacionVariables().toString();
@@ -1292,7 +1205,7 @@ public class PerfilController {
                     String check  = comprobar.dfs(res);
                     String resultado;
                     if (check.equals("")) {
-                     predicado.setPredicado(res.toStringFinal());
+                     predicado.setPredicado(res.toString());
                      Predicado predicado2=predicadoManager.getPredicado(username, predicado.getPredicado());
                      if(predicado2 != null) 
                         throw new AlphaEquivalenceException(predicado2.getId().getAlias());
@@ -1379,7 +1292,7 @@ public class PerfilController {
             catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+        String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario",user);
                 map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                 map.addAttribute("modificar",new Integer(0));
@@ -1404,7 +1317,7 @@ public class PerfilController {
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+        String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario",user);
                 map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                 map.addAttribute("modificar",new Integer(0));
@@ -1632,7 +1545,7 @@ public class PerfilController {
                 String check  = comprobar.dfs(res);
                 String resultado;
                 if (check.equals("")) {
-                    predicado.setPredicado(res.toStringFinal());
+                    predicado.setPredicado(res.toString());
                     Predicado predicado2=predicadoManager.getPredicado(username, predicado.getPredicado());
                     if(predicado2 != null && !predicado2.getId().getAlias().equals(alias)) 
                         throw new AlphaEquivalenceException(predicado2.getId().getAlias());
@@ -1672,7 +1585,7 @@ public class PerfilController {
             catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+        String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("terminoid",new TerminoId());
                 map.addAttribute("usuario",usr);                
                 map.addAttribute("modificar",new Integer(1));
@@ -1688,7 +1601,7 @@ public class PerfilController {
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-		String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+        String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("terminoid",new TerminoId());
                 map.addAttribute("usuario",usr);                
                 map.addAttribute("modificar",new Integer(1));
@@ -2194,7 +2107,7 @@ public class PerfilController {
         }
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/deleteSol/{idSol:.+}", method=RequestMethod.POST)
+    @RequestMapping(value="/{username}/myTheorems/deleteSol/{idSol:.+}", method=RequestMethod.POST)
     @ResponseBody
     public String deleteSolucion(@PathVariable String username, @PathVariable String idSol, ModelMap map) {
         if ( (Usuario)session.getAttribute("user") == null 
@@ -2213,7 +2126,7 @@ public class PerfilController {
         }
     }
     
-    @RequestMapping(value="/{username}/misTeoremas/deleteTeo/{idTeo:.+}", method=RequestMethod.POST)
+    @RequestMapping(value="/{username}/myTheorems/deleteTeo/{idTeo:.+}", method=RequestMethod.POST)
     @ResponseBody
     public String deleteTeoremaOrResuelve(@PathVariable String username, @PathVariable String idTeo, ModelMap map) {
         if ( (Usuario)session.getAttribute("user") == null 

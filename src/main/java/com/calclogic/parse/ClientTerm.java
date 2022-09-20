@@ -53,7 +53,7 @@ public class ClientTerm {
 		// Try to parse
 		try {		
 			//System.out.println(parser.expr().value.toString()) ;
-			System.out.println(parser.start_rule(predicadoid2,null,null).value.toStringFinal()) ;
+			System.out.println(parser.start_rule(predicadoid2,null,null).value.toString()) ;
 		// Catch the error and show it to the user
 		}catch(Exception e) {
 			e.printStackTrace();

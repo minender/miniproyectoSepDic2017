@@ -183,7 +183,7 @@ public class Var extends Term{
             return new App(new Const("K"),this);
     }
     
-    public String toString()
+    public String toStringAll()
     {
         if(alias == null )
             return "x_{"+indice+"}";
@@ -238,7 +238,7 @@ public class Var extends Term{
     public ToString toStringAbrv(ToString toString)
     {
         if(alias == null)
-            toString.term=this.toString();
+            toString.term=this.toStringAll();
         else
         {
             String aux="0";
@@ -252,7 +252,7 @@ public class Var extends Term{
                 toString.alias.add(alias.replace("_", "\\\\_"));
             aux="\\cssId{agru@alias@"+aux+"}{\\style{cursor:pointer; color:blue;}{"+alias.replace("_", "\\_") +"}}";
             toString.currentnAlias++;
-            toString.valores.add(this.toString().replace(alias.replace("_", "\\_"), "x_{"+indice+"}").replace("\\", "\\\\"));
+            toString.valores.add(this.toStringAll().replace(alias.replace("_", "\\_"), "x_{"+indice+"}").replace("\\", "\\\\"));
             
             toString.term=aux;
         }
@@ -271,7 +271,7 @@ public class Var extends Term{
             /*toString.currentnAlias++;
                 int index=toString.aliasIndex.size();
                 toString.aliasIndex.put(alias, index);
-                toString.valores.add(this.toString());
+                toString.valores.add(this.toStringAll());
                 toString.alias.add(alias);
             toString.term="\\cssId{agru@alias@"+toString.currentnAlias+"}{\\style{cursor:pointer; color:blue;}{"+alias+"}}";*/
             String aux="0";
@@ -285,7 +285,7 @@ public class Var extends Term{
                 toString.alias.add(alias.replace("_", "\\\\_"));
             aux="\\cssId{agru@alias@"+aux+"}{\\style{cursor:pointer; color:blue;}{"+alias.replace("_", "\\_") +"}}";
             toString.currentnAlias++;
-            toString.valores.add(this.toString().replace(alias.replace("_", "\\_"), "x_{"+indice+"}").replace("\\", "\\\\"));
+            toString.valores.add(this.toStringAll().replace(alias.replace("_", "\\_"), "x_{"+indice+"}").replace("\\", "\\\\"));
             
             toString.term=aux;
         }
@@ -296,13 +296,13 @@ public class Var extends Term{
     public ToString toStringAbrvV1(ToString toString)
     {
         if(alias == null)
-            toString.term=this.toString();
+            toString.term=this.toStringAll();
         else
         {
             /*toString.currentnAlias++;
                 int index=toString.aliasIndex.size();
                 toString.aliasIndex.put(alias, index);
-                toString.valores.add(this.toString());
+                toString.valores.add(this.toStringAll());
                 toString.alias.add(alias);
             toString.term="\\cssId{agru@alias@"+toString.currentnAlias+"}{\\style{cursor:pointer; color:blue;}{"+alias+"}}";*/
             String aux="0";
@@ -313,7 +313,7 @@ public class Var extends Term{
                 toString.alias.add(alias.replace("_", "\\\\_"));
             aux="\\cssId{agru@alias@"+toString.currentnAlias+"}{\\style{cursor:pointer; color:blue;}{"+alias.replace("_", "\\_") +"}}";
             toString.currentnAlias++;
-            toString.valores.add(this.toString().replace(alias.replace("_", "\\_"), "x_{"+indice+"}").replace("\\", "\\\\"));
+            toString.valores.add(this.toStringAll().replace(alias.replace("_", "\\_"), "x_{"+indice+"}").replace("\\", "\\\\"));
             
             toString.term=aux;
         }

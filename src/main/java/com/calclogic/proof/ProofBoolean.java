@@ -184,7 +184,7 @@ public class ProofBoolean {
         String methodStr;
         return method instanceof App && ((App)method).p instanceof App && 
                 (
-                    (methodStr=((App)((App)method).p).p.toStringFinal()).equals("AI") ||
+                    (methodStr=((App)((App)method).p).p.toString()).equals("AI") ||
                     methodStr.equals("CA")
                 )
                 && isProofStarted(((App)method).q);
@@ -208,7 +208,7 @@ public class ProofBoolean {
         if (aux instanceof App)
            return ((App)aux).p instanceof App && 
                    (
-                    (methodStr=((App)((App)aux).p).p.toStringFinal()).equals("AI") ||
+                    (methodStr=((App)((App)aux).p).p.toString()).equals("AI") ||
                      methodStr.equals("CA")
                    ) && isProofStarted(((App)aux).q);
         else

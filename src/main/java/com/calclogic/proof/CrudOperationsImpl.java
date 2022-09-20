@@ -90,7 +90,7 @@ public class CrudOperationsImpl implements CrudOperations {
             return beginFormula;
         }
         else{
-            String strMethod = ((App)method).p.toStringFinal().substring(0, 2);
+            String strMethod = ((App)method).p.toString().substring(0, 2);
             GenericProofMethod objectMethod = createProofMethodObject(strMethod);
 
             if (objectMethod.getIsRecursiveMethod()){
@@ -164,7 +164,7 @@ public class CrudOperationsImpl implements CrudOperations {
         String m = null;
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((App)((App)auxMethod).p).p.toStringFinal().equals("AI") && 
+                    ((App)((App)auxMethod).p).p.toString().equals("AI") && 
                     !ProofBoolean.isBranchedProof2Started(auxMethod)
                     ){
                 return null;// no deberia devolver this, no seria mas homogeneo?
@@ -205,7 +205,7 @@ public class CrudOperationsImpl implements CrudOperations {
         String m = null;
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((m=((App)((App)auxMethod).p).p.toStringFinal()).equals("AI")||m.equals("CA")) && 
+                    ((m=((App)((App)auxMethod).p).p.toString()).equals("AI")||m.equals("CA")) && 
                     !ProofBoolean.isProofStarted(((App)auxMethod).q)
                     ){
                 li.add(0,typedTerm);
@@ -377,10 +377,10 @@ public class CrudOperationsImpl implements CrudOperations {
             String op;
             String opInf;
             try {
-                op = (type.containT()?((App)((App)((App)type).q.body()).p).p.toStringFinal()
-                                       :((App)((App)type).p).p.toStringFinal());
-                opInf = (typeInf.containT()?((App)((App)((App)typeInf).q.body()).p).p.toStringFinal()
-                                       :((App)((App)typeInf).p).p.toStringFinal());
+                op = (type.containT()?((App)((App)((App)type).q.body()).p).p.toString()
+                                       :((App)((App)type).p).p.toString());
+                opInf = (typeInf.containT()?((App)((App)((App)typeInf).q.body()).p).p.toString()
+                                       :((App)((App)typeInf).p).p.toString());
             }
             catch (ClassCastException e) {
                 throw new TypeVerificationException();
@@ -469,9 +469,10 @@ public class CrudOperationsImpl implements CrudOperations {
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod)) {
                 Map<String,String> values1 = new HashMap<>();
-                //values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toStringFinal());
+                //values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toString());
+
                 String aux;
-                values1.put("ST2", formula.toStringFinal());
+                values1.put("ST2", formula.toString());
                 StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
                 //String fLineEncode = "L^{\\lambda x_{122}."+formula.toStringFinal()+"} A^{= x_{113} x_{113}}";
                 //String l = ((App)((App)CombUtilities.getTerm(fLineEncode,null).type()).p).q.body().toStringFinal();
@@ -481,8 +482,8 @@ public class CrudOperationsImpl implements CrudOperations {
                 String metaTheo = sub1.replace(metaTheoT);
                 Map<String,String> values2 = new HashMap<>();
                 values2.put("MT", metaTheo);
-                values2.put("T1Type", typedTerm.type().setToPrint().toStringFinal());
-                aux = typedTerm.toStringFinal();
+                values2.put("T1Type", typedTerm.type().setToPrint().toString());
+                aux = typedTerm.toString();
                 values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
                 StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
                 String template = "S (I^{[x_{112}:=%(T1Type)]} A^{= \\Phi_{} (\\Phi_{b} (c_{5} c_{8}))}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";

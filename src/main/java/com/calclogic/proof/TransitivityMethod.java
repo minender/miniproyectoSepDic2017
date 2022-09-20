@@ -48,7 +48,7 @@ public class TransitivityMethod extends StartingOneSideMethod {
         if ( !(t1 instanceof App) || !(((App)t1).p instanceof App)) {
             return false;
         }
-        String op1 = ((App)((App)t1).p).p.toStringFinal();
+        String op1 = ((App)((App)t1).p).p.toString();
         return (op1.equals("c_{2}") || op1.equals("c_{3}")) && 
                 t2 instanceof App && ((App)t2).p instanceof App &&
                 ((App)t1).q.equals(((App)((App)t2).p).q) && 
@@ -83,7 +83,8 @@ public class TransitivityMethod extends StartingOneSideMethod {
                                                                          typedTerm.type().setToPrint());
         iter = (reversed?((TypedApp)typedTerm).q:typedTerm);
         boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
-                      ((TypedApp)iter).q.type().setToPrint().toStringFinal().equals("c_{8}");
+                      ((TypedApp)iter).q.type().setToPrint().toString().equals("c_{8}");
+
         iter = (lastEquan?((TypedApp)iter).p:iter);
         int i = 0;
         int firstOpInf = transFirstOpInferIndex(iter, true);
@@ -119,8 +120,8 @@ public class TransitivityMethod extends StartingOneSideMethod {
             // if ultInf is a no =inference do this
             Term ultInfType = ultInf.type().setToPrint();
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
-                   !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{20}")
+                   !(((App)((App)ultInfType).p).p.toString().equals("c_{1}") ||
+                     ((App)((App)ultInfType).p).p.toString().equals("c_{20}")
                     )
                )
             {
@@ -205,7 +206,7 @@ public class TransitivityMethod extends StartingOneSideMethod {
         }
         step = stepOneSideEq(user, ultInf, resuelveManager, disponeManager, s);
         step = ((App)((App)typedTerm.type().setToPrint()).p).p.toStringLaTeX(s,"")+step.substring(step.indexOf("~"));
-        if (leibniz.toStringFinal().equals("x_{122}") )
+        if (leibniz.toString().equals("x_{122}") )
             return step;
         else
             return step.substring(0, step.length()-7)+"~and~E:"+leibniz.toStringLaTeX(s, "")+"\\rangle";
@@ -305,8 +306,8 @@ public class TransitivityMethod extends StartingOneSideMethod {
             i++;
             Term ultInfType = ultInf.type();
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
-                   !(((App)((App)ultInfType).p).p.toStringFinal().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toStringFinal().equals("c_{20}")
+                   !(((App)((App)ultInfType).p).p.toString().equals("c_{1}") ||
+                     ((App)((App)ultInfType).p).p.toString().equals("c_{20}")
                     )
                )
                 firstOpInf = i;

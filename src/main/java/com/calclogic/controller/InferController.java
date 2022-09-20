@@ -415,7 +415,7 @@ public class InferController {
             if (lastLine == null)
                 lastLine = typedTerm;
             else {
-                method = crudOp.currentMethod(methodTerm).toStringFinal();
+                method = crudOp.currentMethod(methodTerm).toString();
                 GenericProofMethod objectMethod = crudOp.createProofMethodObject(method);
 
                 if (objectMethod.getGroupMethod().equals("T")){
@@ -551,7 +551,7 @@ public class InferController {
 
             if (
                   ((App)methodTermIter).p instanceof App &&
-                  ("B".equals(crudOp.createProofMethodObject( ((App)((App)methodTermIter).p).p.toStringFinal() ).getGroupMethod())) &&
+                  ("B".equals(crudOp.createProofMethodObject( ((App)((App)methodTermIter).p).p.toString() ).getGroupMethod())) &&
                   (ProofBoolean.isBranchedProof2Started(methodTermIter))         
                )
             {
@@ -564,7 +564,7 @@ public class InferController {
     
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROOF TYPE
         Term infer;
-        String strMethodTermIter = methodTermIter.toStringFinal();
+        String strMethodTermIter = methodTermIter.toString();
         GenericProofMethod objectMethod = crudOp.createProofMethodObject(strMethodTermIter);
         
         try {
@@ -653,7 +653,7 @@ public class InferController {
 
         while (!methodStk.isEmpty()){
             Term methodTermAux = methodStk.pop();
-            String strMethodTermAux = methodTermAux.toStringFinal();
+            String strMethodTermAux = methodTermAux.toString();
             objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
 
             if (isFinalSolution && methodTermAux instanceof Const) {
@@ -674,7 +674,7 @@ public class InferController {
             // This part ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App){
                 Term m = ((App)methodTermAux).p;
-                String strM = m.toStringFinal();
+                String strM = m.toString();
                 if (m != null){
                     objectMethod = crudOp.createProofMethodObject(strM);
                     if ("B".equals(objectMethod.getGroupMethod())){
@@ -752,12 +752,12 @@ public class InferController {
                 respRetroceder = 0;
             }
             else {
-                GenericProofMethod objectMethod = crudOp.createProofMethodObject(currentMethod.toStringFinal());
+                GenericProofMethod objectMethod = crudOp.createProofMethodObject(currentMethod.toString());
                 respRetroceder = solucion.retrocederPaso(username,method,objectMethod);
             }
             if (respRetroceder == 0) {
                method = crudOp.eraseMethod(solucion.getMetodo());
-               solucion.setMetodo((method == null?"":method.toStringFinal()));
+               solucion.setMetodo((method == null?"":method.toString()));
             }
             
             solucionManager.updateSolucion(solucion);
@@ -1224,7 +1224,7 @@ public class InferController {
                 }
 
                 // We save in the database the concatenation of the previous list of methods with the new one
-                solucion.setMetodo(methodTerm.toStringFinal());
+                solucion.setMetodo(methodTerm.toString());
 
                 if (sideOrTransitive){
                     formulaTerm = crudOp.initStatement(formulaTerm,methodTerm);

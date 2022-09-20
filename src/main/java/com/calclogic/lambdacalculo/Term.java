@@ -149,10 +149,9 @@ public abstract class Term implements Cloneable, Serializable{
     /**
      * Returns a string formatted with variables codification (x_{}) and
      * constants codification (c_{}) with all possible parentheses (that could be
-     * unnecesary, see toStringFinal method).
+     * unnecesary, see toString method).
      */
-    @Override
-    public abstract String toString();
+    public abstract String toStringAll();
 
     /**
       * @param kind Type of string that we want to generate
@@ -351,9 +350,10 @@ public abstract class Term implements Cloneable, Serializable{
      * Executes toString method asuming that every node associates to left. 
      * @return String without unnecesary parentheses 
      */
-    public String toStringFinal(){
+    @Override
+    public String toString(){
         String term;
-        String aux= this.toString();
+        String aux= this.toStringAll();
         if(aux.startsWith("(")){
             term=aux.substring(1, aux.length()-1);
         } else{

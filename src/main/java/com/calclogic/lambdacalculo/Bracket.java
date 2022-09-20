@@ -201,10 +201,10 @@ public class Bracket extends Term{
         return new Bracket(x,t.invBDOneStep());
     }
     
-    public String toString()
+    public String toStringAll()
     {   
         if(t.alias == null)
-            return "(\\lambda "+x.toString()+"."+t.toStringFinal()+")";
+            return "(\\lambda "+x.toStringAll()+"."+t.toString()+")";
         else{
             return "(\\lambda "+x.toStringLaTeXFinal(null)+"."+t.alias +")";
             //return "(\\lambda "+x.toString()+"."+t.alias.split("@")[0].replace("_", "\\_") +")";

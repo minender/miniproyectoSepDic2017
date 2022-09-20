@@ -159,22 +159,14 @@
     </head>
     <body>
 
-        <!-- Include custom modal -->
-        <jsp:include page="confirmationModal.jsp" />
+        <!-- Include custom modal for confirmation -->
+        <jsp:include page="modals/confirmationModal.jsp" />
 
-        <div id="modalLoading" class="modal" >
-            <center>
-                <div class="box-loading">
-                    <div class="lds-ring">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                    <center>Loading</center>
-                </div>
-            </center>
-        </div>
+        <!-- To show the word Loading in the center of the screen -->
+        <jsp:include page="modals/loadingModal.jsp"/>
+
+        <!-- For selecting the categories that will be displayed -->
+        <jsp:include page="modals/showCategoriesModal.jsp" />
 
         <tiles:insertDefinition name="nav" />
 
@@ -220,48 +212,13 @@
                     </div>
 
                     <ul style="padding-left: 20px;">
-                        <div id="misteoremasSpace">
-                            <jsp:include page="theoremsList.jsp"/>
+                        <div id="myTheoremsSpace">
+                            <jsp:include page="theoremsList/theoremsListProve.jsp"/>
                         </div>
                     </ul>
                 </article> 
 
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title" id="exampleModalLabel">Configurations</h4>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <h5>Show categories</h5>
-                                <ul>
-                                    <c:forEach items="${categorias}" var="categoria">
-                                        <div class="row flex align-items-center"> 
-                                            <li>${categoria.getNombre()}</li>
-                                            <c:choose>
-                                                <c:when test="${showCategorias.contains(categoria)}">
-                                                    <input type="checkbox" id="categoria-${categoria.getId()}" name="${categoria.getId()}" value="true" class="ml-2 categoria-settings" checked >
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <input type="checkbox" id="categoria-${categoria.getId()}" name="${categoria.getId()}" value="true" class="ml-2 categoria-settings">
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </c:forEach>
-                                </ul>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button id="saveConfig" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- Modal to show the current instantiation of the theorem -->
                 <div class="modal fade" id="instantiationModal" tabindex="-1" role="dialog" aria-labelledby="instantiationModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -278,13 +235,6 @@
                     </div>                 
                 </div>                 
             </div>
-            <!--<div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#" onclick="showInstantiation();" data-target="#instantiationModal" data-toggle="modal">show instantiation</a>
-                </div>
-            </div>-->
         
             <script>
                 function getURLuntilUsername(){
@@ -401,47 +351,9 @@
         </c:choose>
 
         <script>
-            async function guardarMostrarCategorias() {
-                allCategoriasSettings = document.getElementsByClassName("categoria-settings");
-                let categorias = {
-                    listaIdCategorias:[],
-                    username: "${usuario.getLogin()}"
-                };
-                for (let i = 0; i<allCategoriasSettings.length;i++){
-                    cat = allCategoriasSettings.item(i);
-                    if (cat.checked === true){
-                        let id = allCategoriasSettings.item(i).getAttribute("name");
-                        categorias.listaIdCategorias.push(id);
-                    }
-                };
-                $("#modalLoading").css('display','inline-block');
-                await $.ajax({
-                    type: 'POST',
-                    url: "theoremsList", // This is located in PerfilController.java
-                    contentType: "application/json",
-                    dataType: "text",
-                    data: JSON.stringify(categorias),
-                    success:  function(data) {
-                        let split = data.split("myTheorems");
-                        if (split.length > 1){
-                            let div = document.getElementById("misteoremasSpace");
-                            div.innerHTML = data;
-                            MathJax.Hub.Typeset();
-                        }
-                        // Case when the user is no longer active
-                        else {
-                            window.location = $("#linkCloseSession").attr("href");
-                        }
-                    }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                        alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
-                    }
-                });
-                $("#modalLoading").css('display','none'); 
-            }
             document.getElementById("saveConfig").onclick = function(){
-                guardarMostrarCategorias();
-            }
-          
+                saveDisplayedCategories("prove", ${selecTeo});
+            }  
         </script>
         <script>
             $(".collapse-link").on("click",function(e){
@@ -458,4 +370,3 @@
     <%--<tiles:insertDefinition name="footer" /> --%>
     </body>
 </html>
-

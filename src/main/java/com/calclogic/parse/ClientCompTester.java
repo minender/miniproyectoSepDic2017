@@ -47,7 +47,7 @@ public class ClientCompTester {
 					Term t = parser.start_rule(null).value;
                                         System.out.println();
 					System.out.print(Integer.toString(line_no).concat(" GOOD"));
-                                        System.out.println(" "+t.invBD().toStringFinal());
+                                        System.out.println(" "+t.invBD().toString());
 				// Catch the error and show it to the user
 				}catch(Exception e) {
 					System.out.println(Integer.toString(line_no).concat(" BAD"));

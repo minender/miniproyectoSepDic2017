@@ -72,7 +72,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
     };
     var form = $('#inferForm');
     var completeSuccess = true;
-    var clickable = (method.split(" ").pop() == "Clickable");
+    var clickable = (method.split(" ").pop() === "Clickable");
 
     await $.ajax({
         type: 'POST',
@@ -142,12 +142,12 @@ function instantiationAjax(operation){
         var action = $('#inferForm').attr('action');
         let url;
 
-        if (opNum == 0){ // Show instantiation
+        if (opNum === 0){ // Show instantiation
             data["nStatement"] = $('#nStatement_id').val();
             data["instanciacion"] = setSubstitutionOnInput('substitutionButtonsId');
         }
 
-        if (opNum == 2){ // Auntomatic substitution. (This is NOT an else if)
+        if (opNum === 2){ // Auntomatic substitution. (This is NOT an else if)
             data["nStatement"] = $('#nStatement_id').val();
             data["leibniz"] = setInputValueOnParser('leibnizSymbolsId');
             data["freeV"] = window["substitutionButtonsId._variables"].toString();
@@ -187,14 +187,14 @@ function instantiationAjax(operation){
                             break;
 
                         case 2: // Automatic substitution
-                            if (newData.sustFormatC != null){
+                            if (newData.sustFormatC !== null){
                                 let string, freeVars = window["substitutionButtonsId._variables"];
 
                                 for (k=0; k < freeVars.length; k++){
                                     string = "substitutionButtonsId." + freeVars[k];
                                     cleanMathJax(string);
 
-                                    if (newData.sustFormatC[k] != "")
+                                    if (newData.sustFormatC[k] !== "")
                                         inferRecoverC(newData.sustFormatC[k], newData.sustLatex[k], string);
                                     else
                                         cleanParserString(string);
@@ -250,7 +250,7 @@ function clickOperator(Math1,myField,teoid,vars){
             event = window.event;
         };
         var target = event.toElement || event.target;
-        while (target && (!target.id || target.id !=targetString)) {
+        while (target && (!target.id || target.id !==targetString)) {
             target = target.parentNode;
         };
         if(target){

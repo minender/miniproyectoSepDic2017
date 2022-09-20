@@ -14,11 +14,17 @@ import java.util.List;
 public class MostrarCategoriaForm {
     private List<Integer> listaIdCategorias;
     private String username;
+    private String currentView;
+    private Boolean selecTeo;
 
     public MostrarCategoriaForm() {
     }
 
     public MostrarCategoriaForm(List<Integer> listaIdCategorias, String username) {
+        this.listaIdCategorias = listaIdCategorias;
+    }
+
+    public MostrarCategoriaForm(List<Integer> listaIdCategorias, String username, String currentView, Boolean selecTeo) {
         this.listaIdCategorias = listaIdCategorias;
     }
 
@@ -30,6 +36,14 @@ public class MostrarCategoriaForm {
         return username;
     }
 
+    public void setCurrentView(String currentView) {
+        this.currentView = currentView;
+    }
+
+    public String getCurrentView() {
+        return currentView;
+    }
+
     public List<Integer> getListaIdCategorias() {
         return listaIdCategorias;
     }
@@ -37,6 +51,13 @@ public class MostrarCategoriaForm {
     public void setListaIdCategorias(List<Integer> listaIdCategorias) {
         this.listaIdCategorias = listaIdCategorias;
     }
-    
+
+    public void setSelecTeo(Boolean selecTeo) {
+        this.selecTeo = selecTeo;
+    }
+
+    public Boolean getSelecTeo() {
+        return selecTeo;
+    }
     
 }
