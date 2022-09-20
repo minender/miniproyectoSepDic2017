@@ -329,7 +329,7 @@ public class InferController {
         }
         
         if (arr == null)
-            response.setInstantiation(statementTerm.toStringLaTeX(simboloManager, ""));
+            response.setInstantiation(statementTerm.type().toStringLaTeX(simboloManager, ""));
         else {// (ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)
             try {
             TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
@@ -396,6 +396,7 @@ public class InferController {
         predicadoid.setLogin(username);
         
         Term statementTerm = crudOp.findStatement(response, nStatement, username, resuelveManager, disponeManager);
+        statementTerm = statementTerm.type();
         if (response.getError() != null){
             return response;
         }

@@ -279,6 +279,7 @@ public class CrudOperationsImpl implements CrudOperations {
         else {
             response.setError("statement format error");
         }
+
         return statementTerm;
     }
 
