@@ -60,7 +60,6 @@ public class Solucion implements java.io.Serializable {
     {
         this.typedTerm = typedTerm;
         this.demostracion = (typedTerm!=null?typedTerm.toString():"");
-        System.out.println("demostracion = "+demostracion);
     }
     
     public Term getTypedTerm()

@@ -418,11 +418,11 @@ public class App extends Term{
         q.getAxioms(l);
     }
     
-    public Term leibniz(int z, Term subterm){
-        if (this == subterm)
+    public Term leibniz(int z, String subtermId, String thisId){
+        if (thisId.equals(subtermId))
             return new Var(z);
         else
-            return new App(p.leibniz(z, subterm),q.leibniz(z, subterm));
+            return new App(p.leibniz(z, subtermId, thisId+"0"),q.leibniz(z, subtermId, thisId+"1"));
     }
     
     /**
@@ -695,8 +695,11 @@ public class App extends Term{
         if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
             && ((App)p).q.containT() )
             return q.toStringLaTeXLabeled(s, z, t, l1, l2, id, nivel);
-        else
+        else{
             return privateToStringLaTeX('L',s,null,null,null,z,t,l1,l2,id,nivel,null,null).x3;
+        }
+
+            //return privateToStringLaTeX('L',s,null,null,null,z,t,l1,l2,id,nivel,null,null).x3;
     }
 
     @Override
