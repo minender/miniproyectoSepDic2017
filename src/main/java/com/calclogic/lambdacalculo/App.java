@@ -685,7 +685,7 @@ public class App extends Term{
      * @param s
      * @param z
      * @param t
-     * @param l1
+     * @param l1: List of all possible Leibniz
      * @param l2
      * @param id
      * @param nivel
