@@ -1,7 +1,6 @@
 package com.calclogic.proof;
 
 import com.calclogic.controller.InferController;
-import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Dispone;
 import com.calclogic.forms.GenericResponse;
 import com.calclogic.lambdacalculo.App;
@@ -14,7 +13,6 @@ import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.lambdacalculo.TypedM;
-import com.calclogic.lambdacalculo.TypedMApp;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.service.ResuelveManager;

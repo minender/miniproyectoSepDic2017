@@ -144,7 +144,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract void getAxioms(List<String> l);
     
-    public abstract Term leibniz(int z, Term subterm);
+    public abstract Term leibniz(int z, String subtermId, String thisId);
     
     /**
      * Returns a string formatted with variables codification (x_{}) and
@@ -288,15 +288,8 @@ public abstract class Term implements Cloneable, Serializable{
         
         if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
             List<Var> li = TermUtilities.arguments(variables);
-            li.addAll(li);
-            /*String[] vars = variables.split(",");
-            for (int i=0; i<vars.length; i++) {
-                arg1 = new App(arg1,new Var((int)vars[i].trim().charAt(0)));
-                arg2 = new App(arg2,new Var((int)vars[i].trim().charAt(0)));
-            }
-            arg1 = arg1.evaluar();
-            arg2 = arg2.evaluar();
-            */
+            List<Var> li2 = TermUtilities.arguments(variables);
+            li.addAll(li2);
             this.evaluar(li);
         }
         Term arg2;
@@ -308,7 +301,7 @@ public abstract class Term implements Cloneable, Serializable{
             Term arg1 = ((App)((App)this).p).q;
             t = new App(new App(new Const(1,"c_{1}"),arg1.body()),arg2.body());
         }
-	return t;
+        return t;
     }
     
     public Term setToPrint() {

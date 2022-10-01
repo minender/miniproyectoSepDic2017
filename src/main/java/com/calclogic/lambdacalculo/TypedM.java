@@ -19,13 +19,19 @@ public class TypedM extends TypedA implements TypedTerm {
     
     public TypedM(Term type, String user) throws TypeVerificationException {
         super(type, user);
-        A = new TypedA(type, variables_, nSt_, combDBType_);
-        Term lambType = A.type();
-        String arg2 = ((App)((App)lambType).p).q.body().toString();
-        Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{1} ("+arg2+") x_{122}}",user);
-        aux = new TypedApp(aux,A);
-        proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{1})}", user);
-        proof_ = new TypedApp(aux,proof_);
+        if (((App)((App)type).p).q.containT()){
+            proof_ = new TypedA(type,user);
+            A = (TypedA)proof_;
+        }
+        else{
+            A = new TypedA(type, variables_, nSt_, combDBType_);
+            Term lambType = A.type();
+            String arg2 = ((App)((App)lambType).p).q.body().toString();
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{1} ("+arg2+") x_{122}}",user);
+            aux = new TypedApp(aux,A);
+            proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{1})}", user);
+            proof_ = new TypedApp(aux,proof_);          
+        }
     }
     
     public TypedM(Term proof, Term type, String user) throws TypeVerificationException {
@@ -64,6 +70,7 @@ public class TypedM extends TypedA implements TypedTerm {
     }
     
     public String toString() {
+        System.out.println("    Entré al toString de TypedM");
         return "M^{"+A.getCombDBType()+"}";
     }
 }

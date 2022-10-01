@@ -121,10 +121,10 @@ public class GenericProofMethod {
     }
 
     /**
-     * This function will create a hint for the current method if it is basic, given the hint's elements.
-     * In case the elements don't make sense it will return null.
-     * 
-     * @param theoremHint: theorem used on the hint
+     * This function will create a hint for the current method if it is basic, given the hint's elements.In case the elements don't make sense it will return null.
+     *
+     * @param user 
+     * @param A: theorem used on the hint
      * @param instantiation: instantiation used on the hint in the form of arrays of variables and terms
      * @param instantiationString: string that was used to parse instantiation
      * @param leibniz: bracket that represents Leibniz on the hint
@@ -134,13 +134,13 @@ public class GenericProofMethod {
      * @return a hint for the direct method
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    public Term createBaseMethodInfer(String user,Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
+    public Term createBaseMethodInfer(String user,Term A, ArrayList<Object> instantiation, String instantiationString, 
             Bracket leibniz, String leibnizString, Term formulaBeingProved) throws TypeVerificationException
     {
         Term infer = null;
         TypedI I;
-        TypedA A = new TypedA(theoremHint,user);
-        TypedL L = new TypedL(leibniz);
+        Term theoremHint = A.type().setToPrint();
+        TypedL L;
         Boolean noInstantiation = instantiationString.equals("");
         Boolean noLeibniz = leibnizString.equals("");
 
@@ -157,6 +157,7 @@ public class GenericProofMethod {
 
                     infer = parityLeibniz(leibniz, A);
                 }else {
+                    L = new TypedL(leibniz);
                     infer = new TypedApp(L,A);
                 } 
             }
@@ -178,7 +179,6 @@ public class GenericProofMethod {
             }
         }
         // Assume the antecedent case should be here
-
         return infer;
     }
 
@@ -284,7 +284,7 @@ public class GenericProofMethod {
     public Term finishedBaseMethodProof(Term formulaBeingProved, Term proof, String username, 
         ResuelveManager resuelveManager, SimboloManager simboloManager)
     {
-        Term expr = proof.type(); // The root of the proof tree, which is the last line
+        Term expr = proof.type().setToPrint(); // The root of the proof tree, which is the last line
         Term initialExpr = ((App)expr).q; // The expression (could be a theorem) from which the user started the demonstration
         Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
 

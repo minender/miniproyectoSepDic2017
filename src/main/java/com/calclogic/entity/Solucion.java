@@ -228,7 +228,7 @@ public class Solucion implements java.io.Serializable {
             return 2;
         }
         else {
-            typedTerm = mergeSubProofs(((App)auxTypedTerm.type()).q, li, objectMethod);
+            typedTerm = mergeSubProofs(((App)auxTypedTerm.type().setToPrint()).q, li, objectMethod);
             demostracion = typedTerm.toString();
             return 1;
         }

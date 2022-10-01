@@ -10,6 +10,7 @@ import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
@@ -64,28 +65,29 @@ public class DirectMethod extends StartingOneSideMethod {
             Term theorem, mt;
             Term equanimityExpr = null; // Expression with which equanimity will be applied
 
-            for(Resuelve resu: resuelves){ 
+            for(Resuelve resu: resuelves){
                 theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
+                Term noEqTheo = ((Term)theorem.clone2()).setToPrinting(resu.getVariables()); 
                 mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem); // theorem == true
-
+                
                 // We don't want to unify with the formulaBeingProved itself if it was already demonstrated
-                if (theorem.equals(formulaBeingProved)){
+                if (noEqTheo.equals(formulaBeingProved)){
                     ;
                 }
                 // If the current theorem or theorem==true matches the final expression
-                else if(theorem.equals(finalExpr) || mt.equals(finalExpr)){
-                    equanimityExpr = new TypedA(finalExpr);
+                else if(noEqTheo.equals(finalExpr) || mt.equals(finalExpr)){
+                    equanimityExpr = new TypedM(theorem,username);
                 } 
                 else {
                     // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
                     // >>> It would not work if we did it backwards: (finalExpr, theorem)
-                    Equation eq = new Equation(theorem, finalExpr);
+                    Equation eq = new Equation(noEqTheo, finalExpr);
                     Sust sust = eq.mgu(simboloManager);
 
                     // Case whe lanst line is an instantiation of the compared theorem
                     if (sust != null){
                         // The equanimity is applied with the instantiated theorem, not with the last line instantiated
-                        equanimityExpr = new TypedApp(new TypedI(sust), new TypedA(theorem)); 
+                        equanimityExpr = new TypedApp(new TypedI(sust), new TypedM(theorem, username)); 
                     }   
                 }
                 if (equanimityExpr != null){
@@ -94,9 +96,20 @@ public class DirectMethod extends StartingOneSideMethod {
             }
         }
         // Case when we started from another theorem
-        else if(finalExpr.equals(formulaBeingProved)) {
-            return new TypedApp(proof, new TypedA(initialExpr));
+        else if(finalExpr.equals(formulaBeingProved)) { 
+            Term aux = new App(new App(new Const(0,"="),new Const(-1,"T")),initialExpr).abstractEq();
+            TypedA A = new TypedA(aux.traducBD(),username);
+
+            if (A.getNSt().equals("")) { 
+                initialExpr= new App(new App(new Const(0,"="),((App)((App)initialExpr).p).q),((App)initialExpr).q);
+                initialExpr = initialExpr.abstractEq().traducBD(); 
+                Term M = new TypedM(initialExpr,username); 
+                return new TypedApp(proof, M);
+            }
+            else 
+                return new TypedApp(proof, A);
         }
-        return proof;
-    }
+        return proof; 
+    } 
+    
 }

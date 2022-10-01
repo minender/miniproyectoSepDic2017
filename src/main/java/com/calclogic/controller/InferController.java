@@ -396,7 +396,7 @@ public class InferController {
         predicadoid.setLogin(username);
         
         Term statementTerm = crudOp.findStatement(response, nStatement, username, resuelveManager, disponeManager);
-        statementTerm = statementTerm.type();
+        statementTerm = statementTerm.type().setToPrint();
         if (response.getError() != null){
             return response;
         }
@@ -569,7 +569,7 @@ public class InferController {
         
         try {
             infer = objectMethod.createBaseMethodInfer(username,statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
-        } 
+        }
         catch(TypeVerificationException e) { // If something went wrong building the new step of the proof
             response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
             return response;
@@ -641,7 +641,7 @@ public class InferController {
         Term finalProof = newProof;
 
         if (!objectMethod.getIsRecursiveMethod()){
-            finalProof = objectMethod.finishedBaseMethodProof(formulaBeingProved, newProof, username, resuelveManager, simboloManager);
+            finalProof = objectMethod.finishedBaseMethodProof(formulaBeingProved, newProof, username, resuelveManager, simboloManager);        
         }
         
         // Get the complete method in case it was not atomic
@@ -814,18 +814,22 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm().setToPrinting(resuelve.getVariables());
+        Term term = t.getTeoTerm();
+
+        System.out.println("term = "+term);
         
         Term methodTerm, typedTerm;
         methodTerm = typedTerm = null;
         
-        if (((App)((App)term).p).q.containT()){
-            response.setErrorParser1(true);
-            return response;
-        }
-        else if ("SS".equals(newMethod)){
+        if ("SS".equals(newMethod)){
+            if (((App)((App)term).p).q.containT()){
+                response.setErrorParser1(true);
+                return response;
+            }
             response.setLado("1");
         }
+        term = term.setToPrinting(resuelve.getVariables());
+        System.out.println(((App)term).q == ((App)((App)term).p).q );
         
         // When the proof already exists in the DB, we obtain the solution from it.
         if (!nSol.equals("new")){       
@@ -855,288 +859,6 @@ public class InferController {
         );
         return response;
     }
-
-    /**
-     * Controller that responds to HTTP POST request encoded with JSON. Returns an InferResponse
-     * Object with the proof, in latex format, with only the expression selected for the 
-     * user (a complete statement or a side of the equation) in the first line of the current sub proof.
-     *
-     * @param teoid: Identifier of the theorem that the user selects to start the proof. It is a 
-     *               HTTP POST parameter encode with JSON.
-     * @param lado: String that encodes the side of the equation selected for the user. It is a 
-     *              HTTP POST parameter encoded with JSON.
-     * @param newMethod: Proof method that will be introduced in the proof.
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the url also.
-     * @param username: login of the user that made the request. It is in the URL also.
-     * @param nTeo: code of statement that the user is proving. It is in the URL also .
-     * @return InferResponse Object with the the proof, in latex format, with only the statement 
-     *         selected for the user in the first line of the current sub proof.
-     */
-    /*@RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialMD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialMD(@RequestParam(value="teoid") String teoid, 
-                                                        @PathVariable String nSol, 
-                                                        @PathVariable String username, 
-                                                        @PathVariable String nTeo) //Jean throws TypeVerificationException
-    {   
-        String nuevoMetodo = "DM";
-        InferResponse response = new InferResponse(crudOp);
-
-        // Jean response.setLado("1");
-        Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        String variables = resuelveAnterior.getVariables();
-        Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().setToPrinting(variables);
-        
-        //String formula = "";
-        Term formulaTerm = null;
-        if (teoid.substring(0, 3).equals("ST-")){
-            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()));
-            if (resuelve == null){
-                resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()));
-            }
-            //String formula = resuelve.getTeorema().getTeoTerm().toStringInfFinal();
-            formulaTerm = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
-            //formula = formulaTerm.toStringInfLabeled();
-        }
-        else if (teoid.substring(0, 3).equals("MT-")){
-            Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
-            formulaTerm = dispone.getMetateorema().getTeoTerm();
-            //formula = formulaTerm.toStringInfLabeled();
-        }
-        
-        Term metodoTerm = null;
-        Term typedTerm = null;
-        if (nSol.equals("new")){
-            typedTerm = formulaTerm;
-            Solucion solucion = new Solucion(resuelveAnterior,false,formulaTerm, nuevoMetodo, 
-                                             finiPMeth, crudOp);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-            metodoTerm = new Const(nuevoMetodo);
-        }
-        else{
-            // Obtains the solution from DB.
-            Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);     
-            String method = solucion.getMetodo();
-            
-            metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
-            if (teoid.substring(3,teoid.length()).equals(nTeo)) {
-               formulaTerm = crudOp.initStatement(formulaTerm, metodoTerm);
-               typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
-               solucion.setTypedTerm(typedTerm);
-            } else {
-               typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
-               solucion.setTypedTerm(typedTerm);
-            }
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        response.generarHistorial(
-            username,
-            formulaAnterior, 
-            nTeo,
-            typedTerm,
-            true,
-            true,
-            metodoTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager 
-        );
-        //String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        //response.setHistorial(historial);
-        response.setCambiarMetodo("0");
-
-        return response;
-    }*/
-
-    /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
-     * Object with the proof, in latex format, with only the expression selected (right or left 
-     * side of the equation) for the user in the first line of the current sub proof.
-     *
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
-     * @param lado: String that encode the side of the equation selected for the user. It is a 
-     *              HTTP POST parameter encode with JSON
-     * @param username: login of the user that make the request. It is in the URL also
-     * @param nTeo: code of statement that the user is proving. It is in the URL also 
-     * @return InferResponse Object with the the proof, in latex format, with only the expression 
-     *         selected (right or left side of the equation) for the user in the first line of the 
-     *         current sub proof.
-     */
-    /*@RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialPL", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialPL(@PathVariable String nSol, 
-                                                        @RequestParam(value="lado") String lado, 
-                                                        @PathVariable String username, 
-                                                        @PathVariable String nTeo)
-    {
-        String nuevoMetodo = "SS";
-        InferResponse response = new InferResponse(crudOp);
-    */    
-        /* Jean
-        boolean naturalSide = nuevoMetodo.equals("Natural Deduction,one-sided");
-        Term H = null;
-        */
-        
-        /*Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
-        Term formulaTerm = (Term)formulaAnterior.clone2();*/
-        /* Jean
-        if(naturalSide) {
-+               H = ((App)formulaAnterior).q;
-+               formulaAnterior = ((App)((App)formulaAnterior).p).q;
-+        }
-        */
-        
-        /* Jean
-        // In natural dededuction case add H /\ to the start
-+        if(naturalSide) {
-+               formulaTerm = new App(new App(new Const("c_{5}"), formulaTerm), H);
-        */
-        /*Solucion solucion = null;
-        Term metodoTerm = null;
-        Term typedTerm = null;
-        if (nSol.equals("new")){
-            solucion = new Solucion(resuelve,false,null, nuevoMetodo,finiPMeth, crudOp);
-            metodoTerm = new Const(nuevoMetodo);
-        }
-        else{
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
-            String method = solucion.getMetodo();
-            metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
-            formulaTerm = crudOp.initStatement(formulaTerm,metodoTerm);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-        }
-        if(lado.equals("d")){
-            //formula = ((App)((App)resuelve.getTeorema().getTeoTerm()).p).q.toStringInfFinal();
-            formulaTerm = ((App)((App)formulaTerm).p).q;
-            //Jean formulaTerm = ((App)((App)formulaAnterior).p).q;
-        }
-        else if(lado.equals("i")){
-            //formula = ((App)resuelve.getTeorema().getTeoTerm()).q.toStringInfFinal();
-            formulaTerm = ((App)formulaTerm).q;
-            // Jean formulaTerm = ((App)formulaAnterior).q;
-        }
-        
-        if (nSol.equals("new")) {
-            typedTerm = formulaTerm;
-            solucion.setTypedTerm(formulaTerm);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        }
-        else {
-            typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
-            solucion.setTypedTerm(typedTerm);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        response.generarHistorial(
-            username,
-            formulaAnterior, 
-            nTeo,
-            typedTerm,
-            true,
-            true,
-            metodoTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager 
-        );*/
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial); */
-        /*response.setCambiarMetodo("0");
-
-        return response;
-    }*/
-    
-    /**
-     * Controller that respond to HTTP POST request encoded with JSON. Return an InferResponse
-     * Object with the proof, in latex format, with only the antecedent of the current statement 
-     * in the first line of the current sub proof.
-     *
-     * @param nSol: id of the solution of nTeo that the user is editing. It is in the URL also
-     * @param username: login of the user that make the request. It is in the URL also
-     * @param nTeo: code of statement that the user is proving. It is in the URL also 
-     * @return InferResponse Object with the the proof, in latex format, with only the antecedent 
-     *         of the current statement in the first line of the current sub proof.
-     */
-    /*@RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/teoremaInicialD", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody InferResponse teoremaInicialD(@PathVariable String nSol, 
-                                                       @PathVariable String username, 
-                                                       @PathVariable String nTeo)
-    {   
-        String nuevoMetodo = "WE";
-        InferResponse response = new InferResponse(crudOp);
-        
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo);
-        Term formulaAnterior = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
-        
-        //Teorema t = resuelve.getTeorema();
-        //Term term = t.getTeoTerm();
-        
-        //String formula = "";
-        Term formulaTerm = formulaAnterior;
-        
-        Term metodoTerm = null;
-        Solucion solucion = null;
-        Term typedTerm = null;
-        if (nSol.equals("new")){
-            solucion = new Solucion(resuelve,false,null, nuevoMetodo,finiPMeth, crudOp);
-            metodoTerm = new Const(nuevoMetodo);
-        }
-        else{
-            solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
-            String method = solucion.getMetodo();
-            metodoTerm = crudOp.updateMethod(method, nuevoMetodo);
-            formulaTerm = crudOp.initStatement(formulaTerm, metodoTerm);
-            nuevoMetodo = metodoTerm.toStringFinal();
-            solucion.setMetodo(nuevoMetodo);
-        }
-        
-        String operador = ((Const)((App)((App)formulaTerm).p).p).getCon();
-        switch (operador) {
-            case "c_{3}":
-                response.setLado("d");
-                formulaTerm = ((App)((App)formulaTerm).p).q;
-                break;
-            case "c_{2}":
-                response.setLado("i");
-                formulaTerm = ((App)formulaTerm).q;
-                break;
-            default:
-                response.setErrorParser1(true);
-                break;
-        }
-        
-        if (nSol.equals("new")) {
-            typedTerm = formulaTerm;
-            solucion.setTypedTerm(formulaTerm);
-            solucionManager.addSolucion(solucion);
-            response.setnSol(solucion.getId()+"");
-        } else {
-            typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), metodoTerm);
-            solucion.setTypedTerm(typedTerm);
-            solucionManager.updateSolucion(solucion);
-        }
-        
-        solucionManager.addSolucion(solucion);
-        response.generarHistorial(
-            username,
-            formulaAnterior, 
-            nTeo,
-            typedTerm,
-            true,
-            true,
-            metodoTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager 
-        );*/
-        /*String historial = "Theorem "+nTeo+":<br> <center>$"+formulaAnterior+"$</center> Proof:<br><center>$"+formula+"</center>";
-        response.setHistorial(historial);  */
-        //response.setCambiarMetodo("0");
 
     @RequestMapping(value="/{username}/{nTeo:.+}/{nSol}/iniStatement", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse iniStatementController(
