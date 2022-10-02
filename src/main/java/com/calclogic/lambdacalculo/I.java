@@ -75,9 +75,9 @@ public class I extends Term {
        ;
    }
    
-   public Term leibniz(int z, Term subterm)
+   public Term leibniz(int z, String subtermId, String thisId)
    {
-       if (this == subterm)
+       if (thisId.equals(subtermId))
            return new Var(z);
        else
            return this;

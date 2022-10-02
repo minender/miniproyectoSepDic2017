@@ -537,7 +537,7 @@ public class App extends Term{
             }
             if ('L' == kind){
                 IntXIntXString result = newTerm.privateToStringLaTeX(kind,s,numTeo,position,rootId,z,t,l,l2,id,nivel,tStr,pm);
-                l.add(t.leibniz(z, this));
+                l.add(t.leibniz(z, "", "")); //revisar ten cuidado
                 return result;
             }
             return newTerm.privateToStringLaTeX(kind,s,numTeo,position,rootId,z,t,l,l2,id,nivel,tStr,pm);
@@ -631,7 +631,7 @@ public class App extends Term{
             //l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
             //l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
             if (opId != s.getPropFunApp() && opId != s.getTermFunApp()){
-                l.add(t.leibniz(z, this));
+                l.add(t.leibniz(z, setVar+id.id, ""));
             }
             id.id++;       
         }

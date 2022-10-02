@@ -91,9 +91,9 @@ public class Var extends Term{
         ;
     }
     
-    public Term leibniz(int z, Term subterm)
+    public Term leibniz(int z, String subtermId, String thisId)
     {
-       if (this == subterm)
+       if (thisId.equals(subtermId))
            return new Var(z);
        else
            return this;
@@ -205,7 +205,7 @@ public class Var extends Term{
     @Override
     public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
-        leibniz.add(t.leibniz(z, this));
+        leibniz.add(t.leibniz(z, l2.get(l2.size()-1), ""));
         l2.add(l2.size(),id.id+",");
         id.id++;
 //        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
