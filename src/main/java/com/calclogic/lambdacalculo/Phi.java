@@ -173,9 +173,9 @@ public class Phi extends Term{
     }
     
     @Override
-    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
         String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{\\Phi_{"+ind.toString()+"}}}";
-        leibniz.add(t.leibniz(z, leibnizL.get(leibnizL.size()-1), ""));
+        leibniz.add(t.leibniz(z, appPosition, ""));
         id.id++;
         return term;
     }

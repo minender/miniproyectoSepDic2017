@@ -203,9 +203,9 @@ public class Var extends Term{
     }
     
     @Override
-    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
-        leibniz.add(t.leibniz(z, l2.get(l2.size()-1), ""));
+        leibniz.add(t.leibniz(z, appPosition, ""));
         l2.add(l2.size(),id.id+",");
         id.id++;
 //        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));

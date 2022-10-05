@@ -172,7 +172,7 @@ public class I extends Term {
     }     
     
     @Override
-    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> l, List<String> l2, Id id, int nivel){
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> l, List<String> l2, Id id, int nivel){
             return ""; //"|";
     }
         

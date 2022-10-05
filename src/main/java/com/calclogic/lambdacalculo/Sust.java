@@ -204,7 +204,7 @@ public class Sust extends Term{
     }
     
     @Override
-    public String toStringLaTeXLabeled(SimboloManager s,int z, Term init, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term init, String appPosition, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
         id.id++;
         String varss = "";
         String termss = "";
