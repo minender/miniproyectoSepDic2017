@@ -14,7 +14,6 @@ import com.calclogic.forms.AutoSustResponse;
 import com.calclogic.forms.InferResponse;
 import com.calclogic.forms.InfersForm;
 import com.calclogic.forms.InstResponse;
-import com.calclogic.forms.StringResponse;
 import com.calclogic.forms.SubstResponse;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Bracket;
@@ -107,7 +106,6 @@ public class InferController {
         {
             return "redirect:/index";
         }
-        
         List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username,true);
         
         for (Resuelve r: resuelves) // Este for debes mandarlo para el manager y quitar

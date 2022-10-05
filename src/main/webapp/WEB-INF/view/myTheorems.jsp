@@ -33,7 +33,7 @@
             </c:when>
             <c:otherwise>
                 <tiles:insertDefinition name="nav" />
-                <div class="row flex align-items-center">
+                <div id="myTheorems-text-container" class="row flex align-items-center">
                     <h1>My Theorems</h1>
                     <a data-target="#exampleModal" data-toggle="modal">            
                         <i id="cate-cog" class="fa fa-cog ml-2" aria-hidden="true"></i>                
@@ -41,11 +41,12 @@
                 </div>
             </c:otherwise>
         </c:choose>
-        <div class="row" style="display:flex">
-            <article id="myTheoremsSpace" class="col-lg-5" style="height:600px; overflow:scroll">
+
+        <div id="listAndProofs" class="row" style="display:flex">
+            <article id="myTheoremsSpace" class="col-lg-5" style="height:100%; overflow:scroll">
                 <jsp:include page="theoremsList/theoremsListMyTheorems.jsp"/>
             </article>
-            <article class="col-lg-7" style="display:flex; flex-direction:row; position:relative; height:600px; overflow:scroll">
+            <article class="col-lg-7" style="display:flex; flex-direction:row; position:relative; height:100%; overflow:scroll">
                 <div id="panelSoluciones" class="col-lg-3 d-none">
                     <h3 class="subtitle">Proofs</h3>
                     <ul id="listaSoluciones"></ul>
@@ -59,7 +60,26 @@
         <script>
             document.getElementById("saveConfig").onclick = function(){
                 saveDisplayedCategories("myTheorems");
-            }  
+            }
+            // This is to make the container-fluid fill all the view
+            let containerFluidDiv = document.getElementsByClassName("container-fluid")[0];
+            containerFluidDiv.style.height = "100%";
+            containerFluidDiv.style.position = "absolute";
+
+            let navbar = document.getElementsByTagName("nav")[0];
+            let myTheoremsTextContainer = document.getElementById("myTheorems-text-container");
+            let listAndProofs = document.getElementById("listAndProofs");
+
+            let getCurrentHeight = (element) => {
+                return parseFloat(window.getComputedStyle(element).height);
+            }
+
+            // We want the "listAndProofs" div to fill the remaining height of the screen
+            let adjustListAndProofsHeight = () => {
+                listAndProofs.style.height = getCurrentHeight(containerFluidDiv) - getCurrentHeight(navbar) - getCurrentHeight(myTheoremsTextContainer) + "px";
+            }
+            adjustListAndProofsHeight();
+            window.addEventListener('resize', adjustListAndProofsHeight);
         </script>
     </body>
 </html>
