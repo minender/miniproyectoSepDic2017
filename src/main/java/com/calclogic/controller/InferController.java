@@ -813,8 +813,6 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();
-
-        System.out.println("term = "+term);
         
         Term methodTerm, typedTerm;
         methodTerm = typedTerm = null;
@@ -827,7 +825,6 @@ public class InferController {
             response.setLado("1");
         }
         term = term.setToPrinting(resuelve.getVariables());
-        System.out.println(((App)term).q == ((App)((App)term).p).q );
         
         // When the proof already exists in the DB, we obtain the solution from it.
         if (!nSol.equals("new")){       

@@ -698,8 +698,6 @@ public class App extends Term{
         else{
             return privateToStringLaTeX('L',s,null,null,null,z,t,l1,l2,id,nivel,null,null).x3;
         }
-
-            //return privateToStringLaTeX('L',s,null,null,null,z,t,l1,l2,id,nivel,null,null).x3;
     }
 
     @Override
