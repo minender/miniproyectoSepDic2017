@@ -1,35 +1,35 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div class="container-fluid">
-        <nav class="row navbar navbar-expand-lg navbar-dark bg-blue">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#options">
-                <span class="navbar-toggler-icon"></span>    
-            </button>
-          <div class="collapse navbar-collapse" id="options">
-          <ul class="navbar-nav nav-fill w-100">
-            <li class="nav-item ${perfilMenu}"><a href="${urlPrefix}home" class="nav-link">Profile</a></li>
-	    <li class="nav-item ${guardarMenu}" ><a href="${urlPrefix}guardar" class="nav-link">Add Abbreviation</a></li>
-            <li class="nav-item ${listarTerminosMenu}"><a href="${urlPrefix}listar?comb=n" class="nav-link">My Abbreviations</a></li>
-            <li class="nav-item ${misTeoremasMenu}"><a id="linkMyTheorems" href="${urlPrefix}myTheorems" class="nav-link">My Theorems</a></li>
-            <li class="nav-item ${agregarTeoremaMenu}"><a href="${urlPrefix}guardarteo" class="nav-link">Add Theorems</a></li>
-            <li class="nav-item ${proveMenu}"><a href="${urlPrefix}${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Prove</a></li>
-            <c:choose>
-                <c:when test="${isAdmin.intValue()==1}">
-                    <li class="nav-item ${students}" ><a href="students" class="nav-link">Students</a></li>
-                </c:when>    
-                <c:otherwise>
-                
-                </c:otherwise>
-            </c:choose>
-            <c:choose>
-                <c:when test="${isAdmin.intValue()==1}">
-                    <li class="nav-item ${theoMenu}" ><a href="theo" class="nav-link">Theories</a></li>
-                </c:when>
-            </c:choose>
-            <li class="nav-item ${helpMenu}" ><a href="help" class="nav-link">Help</a></li>
-            <li class="nav-item" ><a id="linkCloseSession" href="close" class="nav-link">Sign Out</a></li>
-          </ul>
-          </div>
-        </nav>
+    <nav class="row navbar navbar-expand-lg navbar-dark bg-blue">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#options">
+            <span class="navbar-toggler-icon"></span>    
+        </button>
+        <div class="collapse navbar-collapse" id="options">
+            <ul class="navbar-nav nav-fill w-100">
+                <li class="nav-item ${perfilMenu}"><a href="${urlPrefix}home" class="nav-link">Profile</a></li>
+                <li class="nav-item ${guardarMenu}" ><a href="${urlPrefix}guardar" class="nav-link">Add Abbreviation</a></li>
+                <li class="nav-item ${listarTerminosMenu}"><a href="${urlPrefix}listar?comb=n" class="nav-link">My Abbreviations</a></li>
+                <li class="nav-item ${misTeoremasMenu}"><a id="linkMyTheorems" href="${urlPrefix}myTheorems" class="nav-link">My Theorems</a></li>
+                <li class="nav-item ${agregarTeoremaMenu}"><a href="${urlPrefix}guardarteo" class="nav-link">Add Theorems</a></li>
+                <li class="nav-item ${proveMenu}"><a href="${urlPrefix}${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Prove</a></li>
+                <c:choose>
+                    <c:when test="${isAdmin.intValue()==1}">
+                        <li class="nav-item ${students}" ><a href="students" class="nav-link">Students</a></li>
+                    </c:when>    
+                    <c:otherwise>
+                    
+                    </c:otherwise>
+                </c:choose>
+                <c:choose>
+                    <c:when test="${isAdmin.intValue()==1}">
+                        <li class="nav-item ${theoMenu}" ><a href="theo" class="nav-link">Theories</a></li>
+                    </c:when>
+                </c:choose>
+                <li class="nav-item ${helpMenu}" ><a href="help" class="nav-link">Help</a></li>
+                <li class="nav-item" ><a id="linkCloseSession" href="close" class="nav-link">Sign Out</a></li>
+            </ul>
+        </div>
+    </nav>
 
 <%--
 <div class="page-header">

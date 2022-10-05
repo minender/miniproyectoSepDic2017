@@ -607,7 +607,7 @@ public class App extends Term{
                             if ( (tuple.x1 == 25) && (opId == 21 || opId == 22 || opId == 23))
                                 values.put(prefix + i, parenthesizedTuple);       
                             else
-                                values.put(prefix + i, (tuple.x2 > sym.getPr()) ? tuple.x3 : parenthesizedTuple);
+                                values.put(prefix + i, (tuple.x2 > sym.getPr() || (conditionalParentheses && tuple.x1 == opId)) ? tuple.x3 : parenthesizedTuple);
                         }
                         else
                             values.put(prefix + i,arg.toStringLaTeX(kind, s,"",position+i,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
