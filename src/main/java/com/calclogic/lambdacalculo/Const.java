@@ -119,9 +119,9 @@ public class Const extends Term
            l.add(this.type().toString());
    }
    
-   public Term leibniz(int z, Term subterm)
+   public Term leibniz(int z, String subterm, String thisId)
    {
-       if (this == subterm)
+       if (thisId.equals(subterm))
            return new Var(z);
        else
            return this;
@@ -224,7 +224,7 @@ public class Const extends Term
     }
     
     @Override
-    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, 
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
         Simbolo c1 = s.getSimbolo(this.id);
         String term;
@@ -233,7 +233,7 @@ public class Const extends Term
         else 
            term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}"; 
 
-        leibniz.add(t.leibniz(z, this));
+        leibniz.add(t.leibniz(z, appPosition, ""));
         l2.add(l2.size(),id.id+",");
 //        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
 //        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));

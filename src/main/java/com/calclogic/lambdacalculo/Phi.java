@@ -71,9 +71,9 @@ public class Phi extends Term{
         ;
     }
     
-    public Term leibniz(int z, Term subterm)
+    public Term leibniz(int z, String subtermId, String thisId)
    {
-       if (this == subterm)
+       if (thisId.equals(subtermId))
            return new Var(z);
        else
            return this;
@@ -173,9 +173,9 @@ public class Phi extends Term{
     }
     
     @Override
-    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
         String term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{\\Phi_{"+ind.toString()+"}}}";
-        leibniz.add(t.leibniz(z, this));
+        leibniz.add(t.leibniz(z, appPosition, ""));
         id.id++;
         return term;
     }

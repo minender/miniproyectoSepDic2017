@@ -422,7 +422,7 @@ public class App extends Term{
         if (thisId.equals(subtermId))
             return new Var(z);
         else
-            return new App(p.leibniz(z, subtermId, thisId+"0"),q.leibniz(z, subtermId, thisId+"1"));
+            return new App(p.leibniz(z, subtermId, thisId+"1"),q.leibniz(z, subtermId, thisId+"2"));
     }
     
     /**
@@ -483,17 +483,26 @@ public class App extends Term{
       * @param pm
       * @return String representation in LaTeX Format.
       */
-    private IntXIntXString privateToStringLaTeX(Character kind, SimboloManager s, String numTeo, String position, String rootId, int z, Term t, 
+    private IntXIntXString privateToStringLaTeX(Character kind, SimboloManager s, String numTeo, String position, String appPosition, String rootId, int z, Term t, 
                                                 List<Term> l, List<String> l2, Id id, int nivel, ToString tStr, PredicadoManager pm)
     {
         Boolean simpleOrAbrv = ('S' == kind || 'A' == kind);
         String setVar = ""; // Only used in the "labeled" case
-
         Stack<Term> stk = new Stack<>();
+        Stack<String> stkS = new Stack<>();
+        String appId = "";
         stk.push(q);
         Term aux = p;
+        if ('L' == kind) {
+           stkS.push(appPosition+"2");
+           appId = appPosition+"1";
+        }
         int j = 1;
         while ( aux instanceof App ){
+            if ('L' == kind) {
+               stkS.push(appId+"2");
+               appId += "1";
+            }
             stk.push(((App)aux).q);
             aux = ((App)aux).p;
             j++;
@@ -536,11 +545,11 @@ public class App extends Term{
                 newTerm = new App(new App(new Const(s.getTermFunApp(), "c_{"+s.getTermFunApp()+"}"),p),q);
             }
             if ('L' == kind){
-                IntXIntXString result = newTerm.privateToStringLaTeX(kind,s,numTeo,position,rootId,z,t,l,l2,id,nivel,tStr,pm);
-                l.add(t.leibniz(z, this));
+                IntXIntXString result = newTerm.privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
+                l.add(t.leibniz(z, appPosition, "")); //revisar ten cuidado
                 return result;
             }
-            return newTerm.privateToStringLaTeX(kind,s,numTeo,position,rootId,z,t,l,l2,id,nivel,tStr,pm);
+            return newTerm.privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
         }
 
         // This is to later replace the placeholders with StrSubstitutor
@@ -562,6 +571,7 @@ public class App extends Term{
         int i = 1;
         while (!stk.empty()) {//int i=0; i < sym.getArgumentos(); i++)
             Term arg = stk.pop();
+            if ('L' == kind) { appId = stkS.pop();}
             if (('A' == kind) && (arg.alias != null)){
                 tStr.setNuevoAlias(arg.alias, arg, s, pm, numTeo);
                 values.put("na"+i,tStr.term);
@@ -587,7 +597,7 @@ public class App extends Term{
                         values.put("na"+i,tStr.term);
                     }
                     else{
-                        values.put("na"+i,arg.toStringLaTeX(kind,s,"",position+i,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                        values.put("na"+i,arg.toStringLaTeX(kind,s,"",position+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
                         if ('L' == kind){
                             setVar += l2.get(l2.size()-1);
                         }
@@ -601,16 +611,16 @@ public class App extends Term{
                         String prefix = alwaysParentheses ? "a" : "aa";
 
                         if (arg instanceof App){
-                            IntXIntXString tuple = ((App) arg).privateToStringLaTeX(kind,s,"",position+i,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
+                            IntXIntXString tuple = ((App) arg).privateToStringLaTeX(kind,s,"",position+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
                             String parenthesizedTuple = ('L' == kind) ? addParentheses(tuple.x3) : ("("+tuple.x3+")");
 
                             if ( (tuple.x1 == 25) && (opId == 21 || opId == 22 || opId == 23))
                                 values.put(prefix + i, parenthesizedTuple);       
                             else
-                                values.put(prefix + i, (tuple.x2 > sym.getPr() || (conditionalParentheses && tuple.x1 == opId)) ? tuple.x3 : parenthesizedTuple);
+                                values.put(prefix + i, (tuple.x2 > sym.getPr() || (conditionalParentheses && tuple.x1==opId)) ? tuple.x3 : parenthesizedTuple);
                         }
                         else
-                            values.put(prefix + i,arg.toStringLaTeX(kind, s,"",position+i,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                            values.put(prefix + i,arg.toStringLaTeX(kind, s,"",position+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
 
                         if ('L' == kind)
                             setVar += l2.get(l2.size()-1);
@@ -627,11 +637,12 @@ public class App extends Term{
 
         if ('L' == kind){
             term = "\\cssId{"+id.id+"}{"+term+"}";
+            
             l2.add(l2.size(),setVar+id.id+",");
             //l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
             //l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
             if (opId != s.getPropFunApp() && opId != s.getTermFunApp()){
-                l.add(t.leibniz(z, this));
+                l.add(t.leibniz(z, appPosition, ""));
             }
             id.id++;       
         }
@@ -642,10 +653,10 @@ public class App extends Term{
     }
 
     @Override
-    public String toStringLaTeX(char kind, SimboloManager s, String numTeo, String position, String rootId, int z, Term t, 
+    public String toStringLaTeX(char kind, SimboloManager s, String numTeo, String position, String appPosition, String rootId, int z, Term t, 
                                                 List<Term> l, List<String> l2, Id id, int nivel, ToString tStr, PredicadoManager pm)
     {
-        return privateToStringLaTeX(kind,s,numTeo,position,rootId,z,t,l,l2,id,nivel,tStr,pm).x3;
+        return privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm).x3;
     }
 
     /**
@@ -660,7 +671,7 @@ public class App extends Term{
             && ((App)p).q.containT() )
             return q.toStringLaTeX(s,numTeo);
         else
-            return privateToStringLaTeX('S',s,numTeo,null,null,0,null,null,null,null,0,null,null).x3;
+            return privateToStringLaTeX('S',s,numTeo,"","",null,0,null,null,null,null,0,null,null).x3;
     }
 
     /**
@@ -676,7 +687,7 @@ public class App extends Term{
             && ((App)p).q.containT() )
             return q.toStringLaTeXWithInputs(s, position, rootId);
         else
-            return privateToStringLaTeX('I',s,null,position,rootId,0,null,null,null,null,0,null,null).x3;
+            return privateToStringLaTeX('I',s,null,position,"",rootId,0,null,null,null,null,0,null,null).x3;
     }
 
     /**
@@ -691,12 +702,13 @@ public class App extends Term{
      * @param nivel
      * @return String representation in LaTeX format with span HTML tags for Mathjax.
      */
-    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> l1, List<String> l2, Id id, int nivel){
+    @Override
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> l1, List<String> l2, Id id, int nivel){
         if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
             && ((App)p).q.containT() )
-            return q.toStringLaTeXLabeled(s, z, t, l1, l2, id, nivel);
+            return q.toStringLaTeXLabeled(s, z, t, appPosition, l1, l2, id, nivel);
         else{
-            return privateToStringLaTeX('L',s,null,null,null,z,t,l1,l2,id,nivel,null,null).x3;
+            return privateToStringLaTeX('L',s,null,"",appPosition,null,z,t,l1,l2,id,nivel,null,null).x3;
         }
     }
 
@@ -706,7 +718,7 @@ public class App extends Term{
             && ((App)p).q.containT() )
             q.toStringLaTeXAbrv(toString, s, pm, numTeo);
         else
-            privateToStringLaTeX('A',s,numTeo,null,null,0,null,null,null,null,0,toString,pm);
+            privateToStringLaTeX('A',s,numTeo,"","",null,0,null,null,null,null,0,toString,pm);
         return toString;
     } 
     

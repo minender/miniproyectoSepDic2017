@@ -80,15 +80,15 @@ public class Sust extends Term{
         ;
     }
     
-    public Term leibniz(int z, Term subterm)
+    public Term leibniz(int z, String subtermId, String thisId)
     {
-       if (this == subterm)
+       if (thisId.equals(subtermId))
            return new Var(z);
        else
        {
            List<Term> list = new ArrayList();
            for (Term t: terms)
-               list.add(t.leibniz(z, subterm));
+               list.add(t.leibniz(z, subtermId, thisId));
            return new Sust(vars,list);
        }
     }
@@ -204,7 +204,7 @@ public class Sust extends Term{
     }
     
     @Override
-    public String toStringLaTeXLabeled(SimboloManager s,int z, Term init, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term init, String appPosition, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
         id.id++;
         String varss = "";
         String termss = "";
@@ -216,7 +216,7 @@ public class Sust extends Term{
         
         varss = varss.substring(0, varss.length()-1);
         termss = termss.substring(0, termss.length()-1);
-        leibniz.add(init.leibniz(z, this));
+        leibniz.add(init.leibniz(z, leibnizL.get(leibnizL.size()-1), ""));
         
         return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{["+varss+" := "+termss+"]}}";
     }

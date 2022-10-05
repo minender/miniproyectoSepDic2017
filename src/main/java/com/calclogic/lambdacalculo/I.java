@@ -75,9 +75,9 @@ public class I extends Term {
        ;
    }
    
-   public Term leibniz(int z, Term subterm)
+   public Term leibniz(int z, String subtermId, String thisId)
    {
-       if (this == subterm)
+       if (thisId.equals(subtermId))
            return new Var(z);
        else
            return this;
@@ -172,7 +172,7 @@ public class I extends Term {
     }     
     
     @Override
-    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, List<Term> l, List<String> l2, Id id, int nivel){
+    public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> l, List<String> l2, Id id, int nivel){
             return ""; //"|";
     }
         

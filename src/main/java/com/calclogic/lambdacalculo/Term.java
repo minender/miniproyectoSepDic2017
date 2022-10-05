@@ -173,7 +173,7 @@ public abstract class Term implements Cloneable, Serializable{
       * @param pm
       * @return String representation in LaTeX Format.
       */
-    public String toStringLaTeX(char kind, SimboloManager s, String numTeo, String position, String rootId, int z, Term t, 
+    public String toStringLaTeX(char kind, SimboloManager s, String numTeo, String position, String appPosition, String rootId, int z, Term t, 
                                 List<Term> l, List<String> l2, Id id, int nivel, ToString tStr, PredicadoManager pm)
     {
         switch (kind){
@@ -182,7 +182,7 @@ public abstract class Term implements Cloneable, Serializable{
             case 'I':
                 return toStringLaTeXWithInputs(s, position, rootId);
             case 'L':
-                return toStringLaTeXLabeled(s,z,t,l,l2,id,nivel);
+                return toStringLaTeXLabeled(s,z,t,appPosition,l,l2,id,nivel);
             case 'A':
                 return toStringLaTeXAbrv(tStr,s,pm,numTeo).term;
             default:
@@ -211,7 +211,7 @@ public abstract class Term implements Cloneable, Serializable{
      * @param nivel
      * @return String representation in LaTeX format with span HTML tags for Mathjax.
      */
-    public abstract String toStringLaTeXLabeled(SimboloManager s,int z, Term initTerm, List<Term> leibniz, List<String> leibnizL, Id id, int nivel);
+    public abstract String toStringLaTeXLabeled(SimboloManager s,int z, Term initTerm, String appPosition, List<Term> leibniz, List<String> leibnizL, Id id, int nivel);
     
     /**
      * Creates a non curryfied format that doesn't allow wrong syntax formulas.
@@ -373,7 +373,7 @@ public abstract class Term implements Cloneable, Serializable{
         int z = this.maxVar()+1;
         if (z <= 122)
             z = 122;
-        String st = this.toStringLaTeXLabeled(s,z,this,l1,l2,new Id(),0)+"$\n";
+        String st = this.toStringLaTeXLabeled(s,z,this,"",l1,l2,new Id(),0)+"$\n";
         String st2 = "";
         st+="<script>\nvar leibniz=[";
         for(Term it: l1) {
@@ -392,7 +392,7 @@ public abstract class Term implements Cloneable, Serializable{
     // Deprecated
     public String toStringLaTeXLabeledFinal(SimboloManager s,int z, Term initTerm, List<Term> leibniz, List<String> leibnizL, Id id, int nivel){
         String term;
-        String aux= this.toStringLaTeXLabeled(s,z, initTerm, leibniz, leibnizL, id, nivel);
+        String aux= this.toStringLaTeXLabeled(s,z, initTerm, "", leibniz, leibnizL, id, nivel);
         int i = 9;
         while  (aux.charAt(i)!='{')
             i++;
