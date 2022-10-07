@@ -1,8 +1,8 @@
 function setForms(elegirMetodo) {
-
-    // The value '1' is for when the user is still selecting demonstration methods because the first one
-    // was not atomic. At that point, the buttons "Infer", "Go back" and "Clean" appear.
+    // The value '1' is for when the user must select a demonstration method, so the list of theorems
+    // must not be rendered
     if (elegirMetodo=='1') {
+        $("#teoremas").hide();
         $("#metodosDemostracion").val("0");
         $("#metodosDiv").show();
         $('#stSustLeibDiv').show();
@@ -12,9 +12,10 @@ function setForms(elegirMetodo) {
         $("#inferForm").hide();
         $("#selectTeoInicial").val("1"); 
     } 
-    // The value '2' is for when the demonstration is starting, so the user may select the demonstration
-    // method but the buttons "Infer", "Go back" and "Clean" do not appear.
+    // The value '2' is for when the user has selected a demostration method but still has to select another
+    // one because the previous was not atomic. 
     else if (elegirMetodo=='2') {
+        $("#teoremas").hide();
         $("#metodosDemostracion").val("0");
         $("#metodosDiv").show();
         $("#inferForm").show();
@@ -24,9 +25,11 @@ function setForms(elegirMetodo) {
         $('#stSustLeibDiv').hide();
         $("#selectTeoInicial").val("1");
     } 
-    // The rest is for when the demonstration is advanced, so he can make inferences, can go back
-    // a step, and does not need to select a demonstration method.
+    // The rest is for when the user still has to select the theorem to be proved or when the
+    // demostration is advanced, so he can make inferences, can go back a step, and does not 
+    // need to select a demonstration method.
     else {
+        $("#teoremas").show();
         $("#selectTeoInicial").val("0");
         $('#stSustLeibDiv').show();
         $('#jaxButtonsDiv').show();

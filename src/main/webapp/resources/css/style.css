@@ -306,13 +306,13 @@ article.publicos{
     outline: none;
 }
 article.teoremas{
-    height:350px;
+    height: 50vh;
     outline: none;
     overflow: scroll;
 }
 article.proof{
     padding-left: 5px;
-    height:350px;
+    height: 50vh;
     outline: none;
     overflow: scroll;
 }
