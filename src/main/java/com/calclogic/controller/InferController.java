@@ -813,7 +813,6 @@ public class InferController {
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();
-        
         Term methodTerm, typedTerm;
         methodTerm = typedTerm = null;
         
@@ -824,8 +823,7 @@ public class InferController {
             }
             response.setLado("1");
         }
-        term = term.setToPrinting(resuelve.getVariables());
-        
+
         // When the proof already exists in the DB, we obtain the solution from it.
         if (!nSol.equals("new")){       
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
@@ -870,6 +868,7 @@ public class InferController {
         boolean sideOrTransitive = ("SS".equals(newMethod) || "T".equals(groupMethod));
 
         InferResponse response = new InferResponse(crudOp);
+
         Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
 
         // This is the theorem statement but parsed as a binary tree. 
@@ -880,7 +879,6 @@ public class InferController {
         Solucion solucion = null;
         Term methodTerm, typedTerm;
         methodTerm = typedTerm = null;
-
         try{
             // ---- In this section we determine the value of "formulaTerm" -----
             Term formulaTerm = "T".equals(groupMethod) ? formulaAnterior : null;

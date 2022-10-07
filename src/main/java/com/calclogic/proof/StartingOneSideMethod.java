@@ -174,7 +174,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
                     inst = ((App)((App)((App)ultInf).q).q).p.type().toStringLaTeX(s,"");
                     inst = "~\\text{with}~" + inst;
                     leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
-                    leib = "~\\text{and}~" + leib;
+                    leib = "~\\text{and}~"+"E^{z}:" + leib;
                 }
                 else {
                     teo = ((App)((App)ultInf).q).q.type().traducBD().toString();
@@ -185,13 +185,13 @@ public class StartingOneSideMethod extends GenericProofMethod {
                         }
                         else {
                             leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
-                            leib = "~\\text{and}~" + leib;
+                            leib = "~\\text{and}~"+"E^{z}:" + leib;
                         }
                     } else {
                         inst = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
                         inst = "~\\text{with}~" + inst;
                         leib = ((App)ultInf).p.type().toStringLaTeX(s,"");
-                        leib = "~\\text{and}~" + leib;
+                        leib = "~\\text{and}~"+"E^{z}:" + leib;
                     }
                 }
             } else {
@@ -201,7 +201,7 @@ public class StartingOneSideMethod extends GenericProofMethod {
                     inst = "~\\text{with}~" + inst;
                 }
                 else if (((App)ultInf).p instanceof TypedL){
-                    leib = "~\\text{and}~" + pType.toStringLaTeX(s,"");
+                    leib = "~\\text{and}~"+"E^{z}:" + pType.toStringLaTeX(s,"");
                 }
                 // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
                 teo = ((App)ultInf).q.type().traducBD().toString();
