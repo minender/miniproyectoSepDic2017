@@ -55,7 +55,6 @@
     }
     
     var selectedMethod = null; // Currently selected proof method.
-    var acceptAvailable = true; // Determines if the Accept button can be activated or not
 
     // Lets the current method be shown as a whole phrase to the user
     var methodPhrase = {
@@ -121,8 +120,8 @@
         on the proog method previously selected.
     */
     async function accept() {
-        if (acceptAvailable){
-            acceptAvailable = false;
+        if (buttonsEnabled){
+            buttonsEnabled = false;
 
             $("#selectTeoInicial").val("0");
             let message = null;
@@ -188,7 +187,7 @@
     // Hides the modal 
     function closeModal() {
         $('#confirmationModal').modal('hide');
-        acceptAvailable = true;
+        buttonsEnabled = true;
     }
 
     // Closes modal and adds formula inputs for proof by cases

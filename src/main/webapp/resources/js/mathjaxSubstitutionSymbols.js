@@ -57,7 +57,10 @@ function setJaxSubstitutionVariables(newVariables, rootId){
 		
 	}
 	
-	MathJax.Hub.Queue(['Typeset', MathJax.Hub, varsDivId]);
+    buttonsEnabled = false;
+	MathJax.Hub.Queue(['Typeset', MathJax.Hub, varsDivId], function(){
+        buttonsEnabled = true;
+    });
 	
 }
 
