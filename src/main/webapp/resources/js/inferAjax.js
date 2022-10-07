@@ -75,7 +75,8 @@ async function proofMethodAjax(method, teoid=null, lado=null){
     };
     var form = $('#inferForm');
     var completeSuccess = true;
-    var clickable = (method.split(" ").pop() === "Clickable");
+    var methodSeparated = method.split(" ");
+    var clickable = (methodSeparated.pop() === "Clickable");
 
     await $.ajax({
         type: 'POST',
@@ -125,6 +126,10 @@ async function proofMethodAjax(method, teoid=null, lado=null){
                         url = url.substring(0,url.length-3) + newData.nSol;
                         $(form).attr('action',url);
                     }
+                }
+                // In the direct method case we want to show again the theorems list so the user can select one of them
+                else if (methodSeparated[0] === "DM") {
+                    $("#teoremas").show();
                 }
             }
         }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
