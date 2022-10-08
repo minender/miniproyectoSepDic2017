@@ -343,10 +343,8 @@
                             </div>
                         </div>
                         <div class="col-l-1">
-                            <!-- Note: This is not all the logic of the onclick functions for these buttons. 
-                                 Most of it is in InferForm.js -->
-                            <input id ="BtnInferir" class="btn btn-default" type="submit" name="submitBtnI" value="Infer"
-                            onclick="if (buttonsEnabled){setInputValueOnParser('leibnizSymbolsId'); setSubstitutionOnInput('substitutionButtonsId')}"/>
+                            <!-- Note: The logic of the onclick functions for these buttons is in InferForm.js -->
+                            <input id ="BtnInferir" class="btn btn-default" type="submit" name="submitBtnI" value="Infer"/>
                             <br><br><input id ="BtnRetroceder" class="btn btn-default" name="submitBtnR" type="submit" value="Go back"> 
                             <br><br><input id="BtnLimpiar" class="btn btn-default" type="button" value="Clean"
                             onclick="cleanJax('leibnizSymbolsId'); cleanJaxSubstitution('substitutionButtonsId')">

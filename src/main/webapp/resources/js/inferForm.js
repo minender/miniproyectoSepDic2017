@@ -1,8 +1,10 @@
 $(function() {
     var form = $('#inferForm');
     
-    $("#BtnInferir").click(function(ev){ 
-        if (buttonsEnabled){     
+    $("#BtnInferir").click(async function(ev){ 
+        if (buttonsEnabled){
+            await setInputValueOnParser('leibnizSymbolsId');
+            await setSubstitutionOnInput('substitutionButtonsId');  
             ev.preventDefault();
             $("#Btn").val("Inferir");
             var formData = form.serialize();
