@@ -161,7 +161,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
     var newMathJax = originalMathJax.replace(parentBox, "\\ {" + leftPar + newNotation + rightPar + "}\\ " );// Finally we replace the old box with the whole new notation 
     
     // refresh the mathjax div
-    buttonsEnabled = provisional = false;
+    buttonsEnabled = false;
     MathJax.Hub.Queue(["Text",math,newMathJax], function(){
         // LOAD THE OLD INPUT IN THE RESPECTIVE BOXES
         loadMathJaxFormContent(id, saveDictionary);
@@ -381,7 +381,7 @@ function deleteOperator(FormId, rootId){
     }
     
     // Render the new text, also set the new input box attributes
-    buttonsEnabled = provisional = false;
+    buttonsEnabled = false;
     MathJax.Hub.Queue(["Text",math,result], function(){
         //LOAD OLD INPUT BOXES CONTENT
         loadMathJaxFormContent(id, saveDictionary);
@@ -573,7 +573,7 @@ function cleanMathJax(rootId){
     var startText = "{" + window[rootId + 'prefixMathJax'] + "\\FormInput{" + rootId + "}}";
 
     // We need to wait for MathJax in order to let the user make any other operation
-    buttonsEnabled = provisional = false;
+    buttonsEnabled = false;
     MathJax.Hub.Queue(["Text",math,startText], function(){
         buttonsEnabled = true;
     });
@@ -702,7 +702,7 @@ function inferRecoverC(cNotation, latexNotation, rootId){
     // Update the jax expression
     var math = MathJax.Hub.getAllJax(rootId + 'MathJaxDiv')[0];
 
-    buttonsEnabled = provisional = false;
+    buttonsEnabled = false;
     MathJax.Hub.Queue(["Text",  math, "{" +latexNotation + "}"], function(){
         // Load the variables on the input boxes
         loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);
