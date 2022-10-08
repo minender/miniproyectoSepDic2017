@@ -29,6 +29,7 @@
             
             var clickInTheoremAllowed = true;
             var buttonsEnabled = true; // Determines if certain buttons of this view can be activated or not.
+            var provisional = true;
             $(function(){
                 
                 setForms(${elegirMetodo});

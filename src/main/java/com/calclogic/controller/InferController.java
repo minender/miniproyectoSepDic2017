@@ -235,7 +235,7 @@ public class InferController {
 
             response.generarHistorial(
                 username,
-                formula, 
+                formula.setToPrint(), 
                 nTeo, 
                 typedTerm, 
                 true,
@@ -823,6 +823,7 @@ public class InferController {
             }
             response.setLado("1");
         }
+        term = new TypedA(term,username).type().setToPrint();
 
         // When the proof already exists in the DB, we obtain the solution from it.
         if (!nSol.equals("new")){       

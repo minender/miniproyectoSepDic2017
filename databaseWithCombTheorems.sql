@@ -699,7 +699,7 @@ COPY userdb.resuelve (id, nombreteorema, numeroteorema, resuelto, loginusuario, 
 7	Identity of $\\equiv$	3.3.a	t	AdminTeoremas	7	1	q
 8	Identity of $\\equiv$	3.3.b	f	AdminTeoremas	8	1	q
 9		3.4	f	AdminTeoremas	9	1	
-10	Reflexivity of $\\equiv$	3.5	f	AdminTeoremas	10	1	p
+10	Reflexivity of $\\equiv$	3.5	t	AdminTeoremas	10	1	p
 11	Definition of $false$	3.8	t	AdminTeoremas	11	2	
 12	Distributivity of $\\neg$ over $\\equiv$	3.9	t	AdminTeoremas	12	2	p,q
 13	Definition of $\\not\\equiv$	3.10	t	AdminTeoremas	13	2	p,q

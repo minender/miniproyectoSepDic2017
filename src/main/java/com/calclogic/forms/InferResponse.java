@@ -289,17 +289,18 @@ public class InferResponse extends GenericResponse{
      */
     private String clickableST(String user, Term newTerm, String clickable, Term method, boolean isRootTeorem, 
                                 SimboloManager s) throws Exception {
-        Term noComNewTerm = new TypedA(newTerm,user).type();
+        //Term newTerm = new TypedA(newTerm,user).type();
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // en plena recursion
-            return noComNewTerm.toStringLaTeX(s,"");}
+            return newTerm.toStringLaTeX(s,"");
+        }
         else if ("DM".equals(clickable))  // End of the impression
-            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ noComNewTerm.toStringLaTeX(s,"") + "}}";
+            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringLaTeX(s,"") + "}}";
         else if ("SS".equals(clickable)) { // End of the impression
-            String formulaDer = ((App)((App)noComNewTerm).p).q.body().toStringLaTeX(s,"");
-            String formulaIzq = ((App)noComNewTerm).q.body().toStringLaTeX(s,"");
-            Term operatorTerm = ((App)((App)noComNewTerm).p).p;//resuelve.getTeorema().getOperador();
+            String formulaDer = ((App)((App)newTerm).p).q.body().toStringLaTeX(s,"");
+            String formulaIzq = ((App)newTerm).q.body().toStringLaTeX(s,"");
+            Term operatorTerm = ((App)((App)newTerm).p).p;//resuelve.getTeorema().getOperador();
             String operator = operatorTerm.toStringLaTeX(s,"");
-            if(!operatorTerm.toString().startsWith("=") || ((App)((App)noComNewTerm).p).q.containT())
+            if(!operatorTerm.toString().startsWith("=") || ((App)((App)newTerm).p).q.containT())
                throw new Exception();
             
             formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
