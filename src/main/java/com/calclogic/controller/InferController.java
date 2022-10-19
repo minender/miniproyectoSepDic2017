@@ -433,6 +433,7 @@ public class InferController {
             Sust sust = null;
             Equation eq;
             boolean zUnifiable = true;
+
             if (!leibniz.equals("")){
                 leibnizTerm =TermUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
                 eq = new Equation(leibnizTerm,lastLine);

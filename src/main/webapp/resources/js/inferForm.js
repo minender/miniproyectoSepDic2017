@@ -103,12 +103,24 @@ $(function() {
         }
     });
     
-    $('#BtnLimpiar').click(function(){
-        $('#nStatement_id').val("");
-        $('#instanciacion_id').val("");
-        $('#leibniz_id').val("");
-        $('#stbox').text("");
+    $('#BtnLimpiar').click(async function(e, callback=null){
+        await cleanJax('leibnizSymbolsId'); 
+        await cleanJaxSubstitution('substitutionButtonsId');
+        await $('#nStatement_id').val("");
+        await $('#instanciacion_id').val("");
+        await $('#leibniz_id').val("");
+        
         document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = "Substitution:";
+
+        if (typeof callback === "function"){
+            callback();
+        }
+        // Only when the callback is null we want to clean the box that has the theorem number,
+        // because otherwise a theorem had already been selected and we don't want to make it disappear,
+        // even if it is going to be just for a moment
+        else {
+            $('#stbox').text("");
+        }
     });
     
 });
@@ -124,20 +136,38 @@ function hasNumericClass(element){
             }
         }
     }
-    return isNumeric
-    
+    return isNumeric  
 }
 
 function leibnizMouse(p1,p2){
-
     if (p1===p2) {
-        $('#leibniz_id').val(inferRecoverC(leibniz[p1-0], leibnizLatex[p1-0],'leibnizSymbolsId_'));
-        if (window['auto']){
-            instantiationAjax("automaticSubst");
-        }
-        return;
-    }
+        let selectedFormula = $('#stbox').text();
+        $('#BtnLimpiar').trigger("click", function(){
+            $('#leibniz_id').val(inferRecoverC(leibniz[p1-0], leibnizLatex[p1-0],'leibnizSymbolsId_'));
 
+            // Case when there was already a selected theorem and the automatic substitution is activated
+            if (window['auto'] && (selectedFormula !== "")){
+                // The MathJax.Hub.Queue is to make sure that all the necessary form inputs were filled before exectuting this
+                MathJax.Hub.Queue(function(){
+                    // The following simulates as if the user were clicking again the theorem
+                    // that had selected previously
+                    let splitST = selectedFormula.split("ST-");
+                    let splitMT = selectedFormula.split("MT-");
+
+                    if (splitST.length === 2){
+                        document.getElementById('click'+splitST[1]).click();
+                    }
+                    else if (splitMT.length === 2){
+                        document.getElementById('clickmeta'+splitMT[1]).click();
+                    }
+                })
+            }
+        })
+    }
+}
+
+
+// This was part of leibnizMouse originally 
     /*var resp;
     var nivel;
     var padres = [];
@@ -186,5 +216,5 @@ function leibnizMouse(p1,p2){
     // Modify notation properly and set it to the view
     $('#leibniz_id').val(inferRecoverC(leibniz[resp], leibnizLatex[resp]));
     
-    return;*/
-}
+    return;  
+}*/

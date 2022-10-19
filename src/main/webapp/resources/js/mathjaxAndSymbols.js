@@ -550,14 +550,13 @@ function setInputValueOnParser(rootId){
  * @param rootId id of the jaxDiv
  * @returns nothing
  */
-function cleanJax(rootId){
-    
+async function cleanJax(rootId){
     rootId += '_';
      
     var textareaId = window[rootId + '_InputForm'];
     
-    cleanMathJax(rootId);// Reset math jax div
-    cleanParserString(rootId);// Reset Parser string
+    await cleanMathJax(rootId);// Reset math jax div
+    await cleanParserString(rootId);// Reset Parser string
     $('#' + textareaId).val("");// Make input be empty
     
 }
@@ -567,14 +566,14 @@ function cleanJax(rootId){
  * @param rootId id of the jaxDiv with '_' appended to the end
  * @returns
  */
-function cleanMathJax(rootId){
+async function cleanMathJax(rootId){
     var jaxDivId = rootId + "MathJaxDiv";
     var math = MathJax.Hub.getAllJax(jaxDivId)[0]; // get the jax alement from the div
     var startText = "{" + window[rootId + 'prefixMathJax'] + "\\FormInput{" + rootId + "}}";
 
     // We need to wait for MathJax in order to let the user make any other operation
     buttonsEnabled = false;
-    MathJax.Hub.Queue(["Text",math,startText], function(){
+    await MathJax.Hub.Queue(["Text",math,startText], function(){
         buttonsEnabled = true;
     });
     return startText;
@@ -703,9 +702,9 @@ function inferRecoverC(cNotation, latexNotation, rootId){
     var math = MathJax.Hub.getAllJax(rootId + 'MathJaxDiv')[0];
 
     buttonsEnabled = false;
-    MathJax.Hub.Queue(["Text",  math, "{" +latexNotation + "}"], function(){
+    MathJax.Hub.Queue(["Text",  math, "{" +latexNotation + "}"], ()=>{
         // Load the variables on the input boxes
-        loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);
+        loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);        
         buttonsEnabled = true;
     });
 

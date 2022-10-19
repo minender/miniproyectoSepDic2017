@@ -27,18 +27,6 @@ public class MutualImplicationMethod extends GenericProofMethod {
     }
 
     /**
-     * Indicates the header that a proof that starts with mutual implication
-     * method must have.
-     *  
-     * @param statement: New statement that needs to be proved according to this method
-     * @return The header message to be added to the proof
-     */
-    @Override
-    public String header(String statement){
-        return "By mutual implication method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
-    }
-
-    /**
      * The statement that is needed to be proven may change inside a sub proof,
      * so this function calculates which that new statement is.
      *  
@@ -57,6 +45,18 @@ public class MutualImplicationMethod extends GenericProofMethod {
 
         // [newLeftSide /\ newRightSide]  written as  [(/\ newRightSide) newLeftSide]
         return new App(new App(new Const(5,"c_{5}"), newRightSide), newLeftSide);
+    }
+
+    /**
+     * Indicates the header that a proof that starts with mutual implication
+     * method must have.
+     *  
+     * @param statement: New statement that needs to be proved according to this method
+     * @return The header message to be added to the proof
+     */
+    @Override
+    public String header(String statement){
+        return "By mutual implication method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
     /**

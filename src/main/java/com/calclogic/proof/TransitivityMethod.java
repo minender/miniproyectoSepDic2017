@@ -239,34 +239,6 @@ public class TransitivityMethod extends StartingOneSideMethod {
     }
 
     /**
-     * Auxiliar method for "finishedBaseMethodProof" that implements the corresponding
-     * logic according to the transitivity method.It assumes we have a proof that so far has proved A == ...== F
-     * 
-     * 
-     * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof
-     * @param proof: The proof tree so far
-     * @param username: name of the user doing the proof
-     * @param resuelveManager
-     * @param simboloManager
-     * @param expr: The root of the proof tree, which is the last line
-     * @param initialExpr: The expression (could be a theorem) from which the user started the demonstration
-     * @param finalExpr: The last line in the demonstration that the user has made
-     * @return new proof if finished, else returns the same proof
-     * @throws com.calclogic.lambdacalculo.TypeVerificationException
-     */
-    @Override
-    protected Term auxFinBaseMethodProof(Term formulaBeingProved, Term proof, String username,
-                ResuelveManager resuelveManager, SimboloManager simboloManager, 
-                Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
-    {
-        // If at least one opInference was made and reaches the goal
-        if(transFirstOpInferIndex(proof,true)!=0 && ((App)((App)expr).p).q.equals(formulaBeingProved) ){ 
-            return new TypedApp(proof,new TypedA(new Const("c_{8}"))); // true
-        }
-        return proof;
-    }
-    
-    /**
      * Returns the index of the first inference that is not a 
      * equiv or = in a Transitivity method
      * 
@@ -316,4 +288,32 @@ public class TransitivityMethod extends StartingOneSideMethod {
             firstOpInf = i+1-firstOpInf;
         return firstOpInf;
     } 
+
+    /**
+     * Auxiliar method for "finishedBaseMethodProof" that implements the corresponding
+     * logic according to the transitivity method.It assumes we have a proof that so far has proved A == ...== F
+     * 
+     * 
+     * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof
+     * @param proof: The proof tree so far
+     * @param username: name of the user doing the proof
+     * @param resuelveManager
+     * @param simboloManager
+     * @param expr: The root of the proof tree, which is the last line
+     * @param initialExpr: The expression (could be a theorem) from which the user started the demonstration
+     * @param finalExpr: The last line in the demonstration that the user has made
+     * @return new proof if finished, else returns the same proof
+     * @throws com.calclogic.lambdacalculo.TypeVerificationException
+     */
+    @Override
+    protected Term auxFinBaseMethodProof(Term formulaBeingProved, Term proof, String username,
+                ResuelveManager resuelveManager, SimboloManager simboloManager, 
+                Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
+    {
+        // If at least one opInference was made and reaches the goal
+        if(transFirstOpInferIndex(proof,true)!=0 && ((App)((App)expr).p).q.equals(formulaBeingProved) ){ 
+            return new TypedApp(proof,new TypedA(new Const("c_{8}"))); // true
+        }
+        return proof;
+    }
 }

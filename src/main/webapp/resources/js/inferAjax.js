@@ -142,7 +142,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
 
 // Method to show the instantiation used of an already proven theorem, get a substitution
 // of it, or set if the substitution is made automatically or not.
-function instantiationAjax(operation){
+async function instantiationAjax(operation){
     let opNum = instantiationDict[operation];
 
     if ((opNum !== 2) || ($('#nStatement_id').val() != "")){
@@ -152,12 +152,12 @@ function instantiationAjax(operation){
 
         if (opNum === 0){ // Show instantiation
             data["nStatement"] = $('#nStatement_id').val();
-            data["instanciacion"] = setSubstitutionOnInput('substitutionButtonsId');
+            data["instanciacion"] = await setSubstitutionOnInput('substitutionButtonsId');
         }
 
-        if (opNum === 2){ // Auntomatic substitution. (This is NOT an else if)
+        if (opNum === 2){ // Automatic substitution. (This is NOT an else if)
             data["nStatement"] = $('#nStatement_id').val();
-            data["leibniz"] = setInputValueOnParser('leibnizSymbolsId');
+            data["leibniz"] = await setInputValueOnParser('leibnizSymbolsId');
             data["freeV"] = window["substitutionButtonsId._variables"].toString();
 
             url = action; 
@@ -172,7 +172,7 @@ function instantiationAjax(operation){
         url += urlTermination[operation];
         $("#modalLoading").css('display','inline-block');
 
-        $.ajax({
+        await $.ajax({
             type: 'POST',
             dataType: 'json',
             url,
@@ -257,10 +257,11 @@ function clickOperator(Math1,myField,teoid,vars){
         if (!event){
             event = window.event;
         };
-        var target = event.toElement || event.target;
-        while (target && (!target.id || target.id !==targetString)) {
-            target = target.parentNode;
-        };
+        // var target = event.toElement || event.target;
+        // while (target && (!target.id || target.id !==targetString)) {
+        //     target = target.parentNode;
+        // };
+        var target = document.getElementById(targetString);
         if(target){
             var metodo = document.getElementById('metodosDemostracion').value;
             var check =  "";
@@ -279,7 +280,7 @@ function clickOperator(Math1,myField,teoid,vars){
                                         <a class=\"dropdown-item\" href=\"#\" onclick=\"instantiationAjax('showInstantiation');\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a>
                                         <a id=\"auto-sust-op\" class=\"dropdown-item\" href=\"#\" onclick=\"instantiationAjax('setAutomaticSubst');\" data-toggle=\"modal\">automatic substitution`+check+`</a>
                                     </div>
-                                </div>
+         click                       </div>
                             </td>
                         </tr>
                     </table>
