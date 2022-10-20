@@ -413,7 +413,7 @@ public class InferResponse extends GenericResponse{
         }
 
         strMethod = strMethod.substring(0, 2);
-        GenericProofMethod objectMethod = proofCrudOperations.createProofMethodObject(strMethod);
+        GenericProofMethod objectMethod = proofCrudOperations.returnProofMethodObject(strMethod);
 
         boolean recursive = objectMethod.getIsRecursiveMethod();
 

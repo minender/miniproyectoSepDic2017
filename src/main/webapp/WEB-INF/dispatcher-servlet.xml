@@ -135,7 +135,20 @@
     </bean>
     <bean id="proofTemplateDAO" class="com.calclogic.dao.ProofTemplateDaoImpl"></bean>
     <bean id="proofTemplateManager" class="com.calclogic.service.ProofTemplateManagerImpl"></bean>
+
     <bean id="crudOp" class="com.calclogic.proof.CrudOperationsImpl"></bean>
+    <bean id="genericMethod" class="com.calclogic.proof.GenericProofMethodImpl"></bean>
+    <bean id="andIntroduction" class="com.calclogic.proof.AndIntroductionMethodImpl"></bean>
+    <bean id="caseAnalysis" class="com.calclogic.proof.CaseAnalysisMethodImpl"></bean>
+    <bean id="contradiction" class="com.calclogic.proof.ContradictionMethodImpl"></bean>
+    <bean id="counterReciprocal" class="com.calclogic.proof.CounterReciprocalMethodImpl"></bean>
+    <bean id="directMethod" class="com.calclogic.proof.DirectMethodImpl"></bean>
+    <bean id="mutualImplication" class="com.calclogic.proof.MutualImplicationMethodImpl"></bean>
+    <bean id="startingOneSide" class="com.calclogic.proof.StartingOneSideMethodImpl"></bean>
+    <bean id="strengthening" class="com.calclogic.proof.StrengtheningMethodImpl"></bean>
+    <bean id="transitivity" class="com.calclogic.proof.TransitivityMethodImpl"></bean>
+    <bean id="weakening" class="com.calclogic.proof.WeakeningMethodImpl"></bean>
+
     <bean id="staticContextInitializer" class="com.calclogic.lambdacalculo.StaticContextInitializer"></bean>
  
     <tx:annotation-driven />
