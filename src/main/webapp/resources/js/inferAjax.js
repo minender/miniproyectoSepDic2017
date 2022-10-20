@@ -190,7 +190,7 @@ async function instantiationAjax(operation){
                             break;
 
                         case 1: // Set automatic substitution
-                            $('#auto-sust-op').html("automatic substitution" + (newData.auto ? "<i class=\"fa fa-check\"></i>" : "") );
+                            $('#auto-sust-op').html("automatic substitution" + (newData.auto ? `<i class="fa fa-check"></i>` : "") );
                             window['auto'] = newData.auto;
                             break;
 
@@ -266,7 +266,7 @@ function clickOperator(Math1,myField,teoid,vars){
             var metodo = document.getElementById('metodosDemostracion').value;
             var check =  "";
             if (window['auto']){
-                check = "<i class=\"fa fa-check\"></i>";
+                check = `<i class="fa fa-check"></i>`;
             }
             var div = 
                 `<center>
@@ -274,13 +274,13 @@ function clickOperator(Math1,myField,teoid,vars){
                         <tr>
                             <td>Substitution:</td>
                             <td>
-                                <div class=\"dropdown\">
-                                    <button style=\"padding:.05rem .1rem;\" class=\"btn btn-secondary btn-sm dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"></button>
-                                    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\">
-                                        <a class=\"dropdown-item\" href=\"#\" onclick=\"instantiationAjax('showInstantiation');\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a>
-                                        <a id=\"auto-sust-op\" class=\"dropdown-item\" href=\"#\" onclick=\"instantiationAjax('setAutomaticSubst');\" data-toggle=\"modal\">automatic substitution`+check+`</a>
+                                <div class="dropdown">
+                                    <button style="padding:.05rem .1rem;" class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="#" onclick="instantiationAjax('showInstantiation');" data-target="#instantiationModal" data-toggle="modal">show instantiation</a>
+                                        <a id="auto-sust-op" class="dropdown-item" href="#" onclick="instantiationAjax('setAutomaticSubst');" data-toggle="modal">automatic substitution`+check+`</a>
                                     </div>
-         click                       </div>
+                                </div>
                             </td>
                         </tr>
                     </table>

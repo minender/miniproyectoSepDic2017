@@ -140,28 +140,28 @@ function hasNumericClass(element){
 }
 
 function leibnizMouse(p1,p2){
-    if (p1===p2) {
+    if (buttonsEnabled && (p1===p2)) {
         let selectedFormula = $('#stbox').text();
-        $('#BtnLimpiar').trigger("click", function(){
-            $('#leibniz_id').val(inferRecoverC(leibniz[p1-0], leibnizLatex[p1-0],'leibnizSymbolsId_'));
-
+        let auxFunction = (selectedFormula) => {
             // Case when there was already a selected theorem and the automatic substitution is activated
             if (window['auto'] && (selectedFormula !== "")){
-                // The MathJax.Hub.Queue is to make sure that all the necessary form inputs were filled before exectuting this
-                MathJax.Hub.Queue(function(){
-                    // The following simulates as if the user were clicking again the theorem
-                    // that had selected previously
-                    let splitST = selectedFormula.split("ST-");
-                    let splitMT = selectedFormula.split("MT-");
 
-                    if (splitST.length === 2){
-                        document.getElementById('click'+splitST[1]).click();
-                    }
-                    else if (splitMT.length === 2){
-                        document.getElementById('clickmeta'+splitMT[1]).click();
-                    }
-                })
+                // The following simulates as if the user were clicking again the theorem
+                // that had selected previously
+                let splitST = selectedFormula.split("ST-");
+                let splitMT = selectedFormula.split("MT-");
+
+                if (splitST.length === 2){
+                    document.getElementById('click'+splitST[1]).click();
+                }
+                else if (splitMT.length === 2){
+                    document.getElementById('clickmeta'+splitMT[1]).click();
+                }
             }
+        }
+
+        $('#BtnLimpiar').trigger("click", function(){
+            $('#leibniz_id').val(inferRecoverC(leibniz[p1-0], leibnizLatex[p1-0],'leibnizSymbolsId_', ()=>{auxFunction(selectedFormula)}));
         })
     }
 }

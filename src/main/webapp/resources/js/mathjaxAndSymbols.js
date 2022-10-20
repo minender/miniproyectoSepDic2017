@@ -614,7 +614,7 @@ function stringToIntString(string){
  * @param latexNotation latex notation to display
  * @returns
  */
-function inferRecoverC(cNotation, latexNotation, rootId){
+function inferRecoverC(cNotation, latexNotation, rootId, callback=null){
     
     var n = cNotation.length;
     const error = "Wrong Input, missing closing } or a , ";
@@ -704,8 +704,12 @@ function inferRecoverC(cNotation, latexNotation, rootId){
     buttonsEnabled = false;
     MathJax.Hub.Queue(["Text",  math, "{" +latexNotation + "}"], ()=>{
         // Load the variables on the input boxes
-        loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);        
+        loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);      
         buttonsEnabled = true;
+
+        if (typeof callback === "function"){
+            callback();
+        }
     });
 
     return newParserString;
