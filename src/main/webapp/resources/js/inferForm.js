@@ -103,24 +103,15 @@ $(function() {
         }
     });
     
-    $('#BtnLimpiar').click(async function(e, callback=null){
+    $('#BtnLimpiar').click(async function(){
         await cleanJax('leibnizSymbolsId'); 
         await cleanJaxSubstitution('substitutionButtonsId');
-        await $('#nStatement_id').val("");
-        await $('#instanciacion_id').val("");
-        await $('#leibniz_id').val("");
+        $('#nStatement_id').val("");
+        $('#instanciacion_id').val("");
+        $('#leibniz_id').val("");
+        $('#stbox').text("");
         
         document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = "Substitution:";
-
-        if (typeof callback === "function"){
-            callback();
-        }
-        // Only when the callback is null we want to clean the box that has the theorem number,
-        // because otherwise a theorem had already been selected and we don't want to make it disappear,
-        // even if it is going to be just for a moment
-        else {
-            $('#stbox').text("");
-        }
     });
     
 });
@@ -132,89 +123,21 @@ function hasNumericClass(element){
         clases = clases.split(" ");
         for (let i = 0; i<clases.length;i++){
             if ($.isNumeric(clases[i])){
-                isNumeric = true
+                isNumeric = true;
             }
         }
     }
-    return isNumeric  
+    return isNumeric;  
 }
 
 function leibnizMouse(p1,p2){
-    if (buttonsEnabled && (p1===p2)) {
-        let selectedFormula = $('#stbox').text();
-        let auxFunction = (selectedFormula) => {
-            // Case when there was already a selected theorem and the automatic substitution is activated
-            if (window['auto'] && (selectedFormula !== "")){
-
-                // The following simulates as if the user were clicking again the theorem
-                // that had selected previously
-                let splitST = selectedFormula.split("ST-");
-                let splitMT = selectedFormula.split("MT-");
-
-                if (splitST.length === 2){
-                    document.getElementById('click'+splitST[1]).click();
-                }
-                else if (splitMT.length === 2){
-                    document.getElementById('clickmeta'+splitMT[1]).click();
-                }
+    if (p1===p2) {
+        // To be executed inside inferRecoverC
+        let auxiliarFunction = (variablesSaved) => {
+            if (window['auto']){
+                instantiationAjax("automaticSubst", variablesSaved);
             }
         }
-
-        $('#BtnLimpiar').trigger("click", function(){
-            $('#leibniz_id').val(inferRecoverC(leibniz[p1-0], leibnizLatex[p1-0],'leibnizSymbolsId_', ()=>{auxFunction(selectedFormula)}));
-        })
+        $('#leibniz_id').val(inferRecoverC(leibniz[p1], leibnizLatex[p1],'leibnizSymbolsId_', auxiliarFunction));
     }
 }
-
-
-// This was part of leibnizMouse originally 
-    /*var resp;
-    var nivel;
-    var padres = [];
-    if(p1[0] == p2[0]){
-    	resp = p1[0];
-        
-    	// Modify notation properly and set it to the view
-        $('#leibniz_id').val(inferRecoverC(leibniz[resp], leibnizLatex[resp]));
-        return;
-    }  
-    if(p1[1] <= p2[1]){
-    	nivel = p1[1];
-        padres[0] = p1[0];
-    	padres[1] = $("#" + p2[0]).parents("." + nivel).attr("id");
-    }
-    else{
-        
-    	nivel = p2[1];
-        padres[0] = $("#" + p1[0]).parents("." + nivel).attr("id");
-    	padres[1] = p2[0];
-    }
-    if(padres[0] == padres[1]){
-    	resp = padres[0];
-    }
-    else{
-        closestCommonAncestor = $("#" + p1[0]).parents().has($("#" + p2[0])).first()[0];
-        if (closestCommonAncestor){
-            if (hasNumericClass(closestCommonAncestor)){
-                resp = $(closestCommonAncestor).attr("id")
-            }else{
-                current = closestCommonAncestor
-                while ($(current).parent().length > 0 && !hasNumericClass(current)){
-                    current = $(current).parent()[0]
-                }
-                if (!hasNumericClass(current)){
-                    resp = $(".0").attr("id")
-                }else{
-                    resp = $(current).attr("id")
-                }
-            }
-        }else{
-            resp = $("#" + padres[0]).parent().attr("id");      
-        }
-    }
-    
-    // Modify notation properly and set it to the view
-    $('#leibniz_id').val(inferRecoverC(leibniz[resp], leibnizLatex[resp]));
-    
-    return;  
-}*/

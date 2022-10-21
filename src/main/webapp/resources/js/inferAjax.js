@@ -142,7 +142,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
 
 // Method to show the instantiation used of an already proven theorem, get a substitution
 // of it, or set if the substitution is made automatically or not.
-async function instantiationAjax(operation){
+async function instantiationAjax(operation, variablesSaved=null){
     let opNum = instantiationDict[operation];
 
     if ((opNum !== 2) || ($('#nStatement_id').val() != "")){
@@ -157,7 +157,7 @@ async function instantiationAjax(operation){
 
         if (opNum === 2){ // Automatic substitution. (This is NOT an else if)
             data["nStatement"] = $('#nStatement_id').val();
-            data["leibniz"] = await setInputValueOnParser('leibnizSymbolsId');
+            data["leibniz"] = await setInputValueOnParser('leibnizSymbolsId', variablesSaved);
             data["freeV"] = window["substitutionButtonsId._variables"].toString();
 
             url = action; 
@@ -170,7 +170,7 @@ async function instantiationAjax(operation){
         }
 
         url += urlTermination[operation];
-        $("#modalLoading").css('display','inline-block');
+        $("loadingModal").css('display','inline-block');
 
         await $.ajax({
             type: 'POST',
@@ -214,7 +214,7 @@ async function instantiationAjax(operation){
                     }
                 }
             }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                $("#modalLoading").css('display','none');
+                $("#loadingModal").css('display','none');
                 alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
             }
         });
@@ -257,11 +257,14 @@ function clickOperator(Math1,myField,teoid,vars){
         if (!event){
             event = window.event;
         };
-        // var target = event.toElement || event.target;
-        // while (target && (!target.id || target.id !==targetString)) {
-        //     target = target.parentNode;
-        // };
-        var target = document.getElementById(targetString);
+        var target = event.toElement || event.target;
+
+        // This is to avoid that the user selects the theorem by clicking any part of it that is
+        // not the main operator. If they click another part, this while will look for the parents
+        // until there are no more, so the value will be null, and therefore we will not enter the if.
+        while (target && (!target.id || target.id !==targetString)) {
+            target = target.parentNode;
+        };
         if(target){
             var metodo = document.getElementById('metodosDemostracion').value;
             var check =  "";

@@ -173,7 +173,6 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
     });
     
 };
-
 /**
  * This function sets the mathjax form 
    to the correct attributes
@@ -518,19 +517,24 @@ function deleteOperatorParserString(formId, rootId){
  * @param rootId id of the jaxDiv
  * @returns
  */
-function setInputValueOnParser(rootId){
+function setInputValueOnParser(rootId, variablesSaved=null){
     rootId += '_';
     
     var textareaId = window[rootId + '_InputForm'];
-    
-    // Get all input boxes from the div
-    var inputs = $('#' + rootId + 'MathJaxDiv' + ' .MathJax_Input').toArray();
     var parserString = window[rootId + 'parserString'];
     var simboloDic = window[rootId + 'simboloDic'];
-    
-    // Key will be the id of the form, the value its content
-    inputs.forEach(element => parserString = parserString.replace("Input{" + element.id + '}', element.value));
-    
+
+    if (variablesSaved){
+        // Key will be the id of the form, the value its content
+        Object.keys(variablesSaved).forEach(element => parserString = parserString.replace("Input{" + element + '}', variablesSaved[element]));
+    }
+    else {
+        // Get all input boxes from the div
+        var inputs = $('#' + rootId + 'MathJaxDiv' + ' .MathJax_Input').toArray();
+        
+        // Key will be the id of the form, the value its content
+        inputs.forEach(element => parserString = parserString.replace("Input{" + element.id + '}', element.value));
+    }
     
     //Change C form of the aliases to their actual name 
     parserString = setCtoAliases(parserString, rootId);
@@ -697,6 +701,10 @@ function inferRecoverC(cNotation, latexNotation, rootId, callback=null){
     
     // Update the global parser string 
     window[rootId + 'parserString'] = newParserString;
+
+    if (typeof callback === "function"){
+        callback(variablesSaved);
+    }
     
     // Update the jax expression
     var math = MathJax.Hub.getAllJax(rootId + 'MathJaxDiv')[0];
@@ -706,10 +714,6 @@ function inferRecoverC(cNotation, latexNotation, rootId, callback=null){
         // Load the variables on the input boxes
         loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);      
         buttonsEnabled = true;
-
-        if (typeof callback === "function"){
-            callback();
-        }
     });
 
     return newParserString;
