@@ -72,7 +72,7 @@ public class Resuelve  implements java.io.Serializable {
     }
 
     public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, 
-                    Categoria categoria, String variables) {
+                    Categoria categoria, String variables, Teoria teoria) {
         this.usuario = usuario;
         this.teorema = teorema;
         this.nombreteorema = nombreteorema;
@@ -81,10 +81,11 @@ public class Resuelve  implements java.io.Serializable {
         this.demopendiente = -1;
         this.categoria = categoria;
         this.variables = variables;
+        this.teoria = teoria;
     }
     
     public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, 
-                    boolean resuelto, Categoria categoria, String variables) {
+                    boolean resuelto, Categoria categoria, String variables, Teoria teoria) {
         this.usuario = usuario;
         this.teorema = teorema;
         this.nombreteorema = nombreteorema;
@@ -93,6 +94,7 @@ public class Resuelve  implements java.io.Serializable {
         this.demopendiente = -1;
         this.categoria = categoria;
         this.variables = variables;
+        this.teoria = teoria;
     }
 
     public int getId() {

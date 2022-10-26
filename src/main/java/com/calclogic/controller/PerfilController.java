@@ -676,7 +676,7 @@ public class PerfilController {
             else
                 teorema = teoremaAdd;
             Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),
-                                            agregarTeorema.isAxioma(), categoria, variables);
+                                            agregarTeorema.isAxioma(), categoria, variables, usr.getTeoria());
             Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
 
             // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
@@ -2027,7 +2027,9 @@ public class PerfilController {
             {
                 return "redirect:/index";
             }
-        Teoria teoria = teoriaManager.getTeoria(agregarSimbolo.getTeoriaid());
+        //Teoria teoria = teoriaManager.getTeoria(agregarSimbolo.getTeoriaid());
+        Usuario usr = usuarioManager.getUsuario(username);
+        Teoria teoria = usr.getTeoria();
         
         if (!agregarSimbolo.isModificar()){
             Simbolo simbolo = new Simbolo(agregarSimbolo.getNotacion_latex(),agregarSimbolo.getArgumentos(),agregarSimbolo.isEsInfijo(),
@@ -2046,7 +2048,6 @@ public class PerfilController {
         }
         
 
-        Usuario usr = usuarioManager.getUsuario(username);
         List<Simbolo> listaSimbolos = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Teoria> listaTeorias = teoriaManager.getAllTeoria();
         map.addAttribute("usuario", usr);
