@@ -138,6 +138,7 @@ public class PerfilController {
             return "redirect:/index";
         }
         Usuario usr = usuarioManager.getUsuario(username);
+        List<Teoria> teorias = teoriaManager.getAllTeoria();
         
         map.addAttribute("usuario", usr);
         map.addAttribute("mensaje","");
@@ -151,8 +152,27 @@ public class PerfilController {
         map.addAttribute("helpMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
+        map.addAttribute("teorias", teorias);
+        map.addAttribute("ausilio", "perro");
 
         return "perfil";
+    }
+    
+    @ResponseBody
+    @RequestMapping(value="/{username}/home/changeTheory/{teoriaid}", method=RequestMethod.POST)
+    public String changeTeoria(@PathVariable String username, @PathVariable String teoriaid, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "Session expired, login again";
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
+        
+        int tid = Integer.parseInt(teoriaid);
+        Teoria teoria = teoriaManager.getTeoria(tid);
+        usr.setTeoria(teoria);
+        usuarioManager.updateUsuario(usr);
+
+        return "Theory changed to "+teoria.getNombre();
     }
     
     @RequestMapping(value="/{username}/students", method=RequestMethod.GET)
@@ -528,7 +548,7 @@ public class PerfilController {
         }
         
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
@@ -566,7 +586,7 @@ public class PerfilController {
         // vista lo que se construyo fue un TerminoId nada mas y se uso el 
         // campo login para guardar el String combinador
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
@@ -771,7 +791,7 @@ public class PerfilController {
         }
         
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
@@ -823,7 +843,7 @@ public class PerfilController {
         // vista lo que se construyo fue un TerminoId nada mas y se uso el 
         // campo login para guardar el String combinador
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
@@ -1036,11 +1056,11 @@ public class PerfilController {
             return "redirect:/index";
         }
         
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
-        Usuario usr = usuarioManager.getUsuario(username);
         
         map.addAttribute("usuario", usr);
         map.addAttribute("usuarioGuardar",new UsuarioGuardar());
@@ -1123,7 +1143,7 @@ public class PerfilController {
             }
 
             Usuario usr = usuarioManager.getUsuario(username);
-            List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+            List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
             List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
             predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
             String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
@@ -1975,7 +1995,7 @@ public class PerfilController {
             return "redirect:/index";
         }
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> listaSimbolos = simboloManager.getAllSimbolo();
+        List<Simbolo> listaSimbolos = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Teoria> listaTeorias = teoriaManager.getAllTeoria();
         
         map.addAttribute("usuario", usr);
@@ -2027,7 +2047,7 @@ public class PerfilController {
         
 
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> listaSimbolos = simboloManager.getAllSimbolo();
+        List<Simbolo> listaSimbolos = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Teoria> listaTeorias = teoriaManager.getAllTeoria();
         map.addAttribute("usuario", usr);
         map.addAttribute("mensaje","");

@@ -34,6 +34,7 @@ public class Resuelve  implements java.io.Serializable {
      private String variables;
      private int demopendiente;
      private Set solucions = new HashSet(0);
+     private Teoria teoria;
 
     public Categoria getCategoria() {
         return categoria;
@@ -115,6 +116,14 @@ public class Resuelve  implements java.io.Serializable {
     
     public void setTeorema(Teorema teorema) {
         this.teorema = teorema;
+    }
+    
+    public Teoria getTeoria() {
+        return this.teoria;
+    }
+    
+    public void setTeoria(Teoria teoria) {
+        this.teoria = teoria;
     }
 
     public String getNombreteorema() {
