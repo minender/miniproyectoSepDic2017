@@ -9,12 +9,16 @@ $(function() {
             $("#Btn").val("Inferir");
             var formData = form.serialize();
             $("#loadingModal").css('display','inline-block');
+
+            start = performance.now();
+
             $.ajax({
                 url: $(form).attr('action'),
                 type: 'POST',
                 dataType: 'json',
                 data: formData,
                 success: function(data) {
+
                     $("#loadingModal").css('display','none');
                     if(data.errorParser2 !== null){
                         alert(data.Parser2);
@@ -24,7 +28,12 @@ $(function() {
                     }
                     else{
                         $('#formula').html(data.historial);
-                        MathJax.Hub.Typeset();
+                        console.log("Tiempo regreso = ", performance.now() - start);
+                        
+                        MathJax.Hub.Queue(["Typeset",MathJax.Hub], function(){
+                            console.log("Tiempo typeset = ", performance.now() - start);
+                        });
+                        //MathJax.Hub.Typeset();
                         var proof = $('.proof');
                         proof.scrollTop(proof[0].scrollHeight);
                         /*var nSol = $('#nSolucion').val();

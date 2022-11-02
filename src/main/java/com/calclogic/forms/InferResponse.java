@@ -358,7 +358,7 @@ public class InferResponse extends GenericResponse{
     { 
         privateGenerarHistorial(user, formula, header, nTeo, typedTerm, valida, labeled, 
             methodTerm, resuelveManager, disponeManager, s, clickable, isRootTeorem);
-        historial = MicroServices.transformLaTexToHTML(historial);
+        //historial = MicroServices.transformLaTexToHTML(historial);
     }
 
     /**
