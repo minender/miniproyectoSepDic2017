@@ -153,7 +153,6 @@ public class PerfilController {
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
         map.addAttribute("teorias", teorias);
-        map.addAttribute("ausilio", "perro");
 
         return "perfil";
     }
@@ -630,32 +629,7 @@ public class PerfilController {
         
             teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
             String variables = teoTerm.stFreeVars();
-            if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
-                ((App)((App)teoTerm).p).p instanceof Const && 
-                ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
-                  ((Const)((App)((App)teoTerm).p).p).getId()==13
-                )
-               ) 
-            {
-                Term arg1, arg2;
-                arg1 = ((App)((App)teoTerm).p).q;
-                arg2 = ((App)teoTerm).q;
-                String[] vars = (variables.equals("")?new String[0]:variables.split(","));
-                for (int i=vars.length-1; 0<=i; i--) {
-                    arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
-                    arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
-                }
-                teoTerm = new App(new App(new Const(0,"="),arg1),arg2);
-            }
-            else {
-                Term arg2 = new Const(-1,"T");
-                String[] vars = (variables==null?new String[0]:variables.split(","));
-                for (int i=vars.length-1; 0<=i; i--) {
-                    teoTerm = new Bracket(new Var((int)vars[i].charAt(0)),teoTerm);
-                    arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
-                }
-                teoTerm = new App(new App(new Const(0,"="), arg2), teoTerm);
-            } 
+            teoTerm = teoTerm.toEquality(variables);
             Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
             if (null != test) {
                 throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
@@ -798,9 +772,9 @@ public class PerfilController {
         int teoId = Integer.parseInt(idTeo);
         Teorema teorema = teoremaManager.getTeorema(teoId);
         Term teoTerm = teorema.getTeoTerm();
-        String teoC = teoTerm.toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
-        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false);
+        String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
+        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         
         map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
@@ -914,7 +888,9 @@ public class PerfilController {
                 if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                 }
-                teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString());
+                String vars = teoTerm.stFreeVars();;
+                teoTerm = teoTerm.toEquality(vars);
+                teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString(), teoTerm, vars);
                 if (teorema == null) {
                     throw new CategoriaException("Couldn't edit theorem");
                 }
@@ -2033,7 +2009,7 @@ public class PerfilController {
         
         if (!agregarSimbolo.isModificar()){
             Simbolo simbolo = new Simbolo(agregarSimbolo.getNotacion_latex(),agregarSimbolo.getArgumentos(),agregarSimbolo.isEsInfijo(),
-            agregarSimbolo.getAsociatividad(),agregarSimbolo.getPrecedencia(),agregarSimbolo.getNotacion(), teoria);
+            agregarSimbolo.getAsociatividad(),agregarSimbolo.getPrecedencia(),agregarSimbolo.getNotacion(), teoria, agregarSimbolo.getTipo());
             simboloManager.addSimbolo(simbolo);
         }else{
             Simbolo simbolo = simboloManager.getSimbolo(agregarSimbolo.getId());
@@ -2044,6 +2020,7 @@ public class PerfilController {
             simbolo.setPrecedencia(agregarSimbolo.getPrecedencia());
             simbolo.setTeoria(teoria);
             simbolo.setNotacion(agregarSimbolo.getNotacion());
+            simbolo.setTipo(agregarSimbolo.getTipo());
             simboloManager.updateSimbolo(simbolo);
         }
         

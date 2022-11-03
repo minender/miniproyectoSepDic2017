@@ -246,14 +246,16 @@ public class Bracket extends Term{
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId)
     {
-        char ascii = (char) x.indice; 
-        return "(\\lambda "+ascii+"."+t.toStringFormatC(s,pos,id,rootId)+")";
+        //char ascii = (char) x.indice; 
+        //return "(\\lambda "+ascii+"."+t.toStringFormatC(s,pos,id,rootId)+")";
+        return t.toStringFormatC(s,pos,id,rootId);
     }
     
     @Override
     public String toStringLaTeXWithInputs(SimboloManager s, String position, String rootId) {
-        char ascii = (char) x.indice; 
-        return "(E^{"+ascii+"}:"+t.toStringLaTeXWithInputs(s,position,rootId)+")";
+        //char ascii = (char) x.indice; 
+        //return "(E^{"+ascii+"}:"+t.toStringLaTeXWithInputs(s,position,rootId)+")";
+        return t.toStringLaTeXWithInputs(s,position,rootId);
     }
     
     @Override

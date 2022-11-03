@@ -1188,4 +1188,36 @@ public abstract class Term implements Cloneable, Serializable{
 		}
     	
     };
+    
+    public Term toEquality(String variables) {
+        
+        Term teoTerm = this;
+        if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
+            ((App)((App)teoTerm).p).p instanceof Const && 
+            ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
+              ((Const)((App)((App)teoTerm).p).p).getId()==13
+            )
+           ) 
+        {
+            Term arg1, arg2;
+            arg1 = ((App)((App)teoTerm).p).q;
+            arg2 = ((App)teoTerm).q;
+            String[] vars = (variables.equals("")?new String[0]:variables.split(","));
+            for (int i=vars.length-1; 0<=i; i--) {
+                arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
+                arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
+            }
+            teoTerm = new App(new App(new Const(0,"="),arg1),arg2);
+        }
+        else {
+            Term arg2 = new Const(-1,"T");
+            String[] vars = (variables==null?new String[0]:variables.split(","));
+            for (int i=vars.length-1; 0<=i; i--) {
+                teoTerm = new Bracket(new Var((int)vars[i].charAt(0)),teoTerm);
+                arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
+            }
+            teoTerm = new App(new App(new Const(0,"="), arg2), teoTerm);
+        }
+        return teoTerm;
+    }
 }

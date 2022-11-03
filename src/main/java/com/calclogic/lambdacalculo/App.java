@@ -733,6 +733,10 @@ public class App extends Term{
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId) {
         
+        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
+            && ((App)p).q.containT() )
+            return q.toStringFormatC(s, pos, id, rootId);
+        
         Stack<Term> stk = new Stack<Term>();
         String term;
         stk.push(q);

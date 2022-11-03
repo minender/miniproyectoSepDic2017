@@ -82,9 +82,13 @@ public class SimboloManagerImpl implements SimboloManager {
     public Simbolo addSimbolo(Simbolo simbolo){
         simboloDAO.addSimbolo(simbolo);
         List<Simbolo> l = simboloDAO.getAllSimbolo();
-        symbolsCache = new Simbolo[l.size()];
-        for (int i=0; i < l.size(); i++)
-            symbolsCache[i] = l.get(i);
+        Simbolo last = l.get(l.size()-1);
+        int lastIndex = last.getId();
+        symbolsCache = new Simbolo[lastIndex + 1];
+        for (Simbolo s: l)
+            symbolsCache[s.getId()] = s;
+        //for (int i=0; i < l.size(); i++)
+        //    symbolsCache[i] = l.get(i);
         return simbolo;
     }
     
@@ -97,7 +101,7 @@ public class SimboloManagerImpl implements SimboloManager {
     @Override   
     @Transactional
     public void updateSimbolo(Simbolo simbolo){
-        int id = simbolo.getId()-1;
+        int id = simbolo.getId();
         if (0 < id && id <= symbolsCache.length) {
             symbolsCache[id] = simbolo;
         }
