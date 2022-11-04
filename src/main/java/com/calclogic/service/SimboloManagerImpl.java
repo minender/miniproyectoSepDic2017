@@ -196,7 +196,7 @@ public class SimboloManagerImpl implements SimboloManager {
     public List<Simbolo> getAllSimboloByTeoria(int teoriaid){
         List<Simbolo> list = new ArrayList<Simbolo>();
         for (int i= 0; i < symbolsCache.length; i++)
-            if (i >= 0 && symbolsCache[i] != null && symbolsCache[i].getTeoria().getId() == teoriaid)
+            if (i >= 0 && symbolsCache[i] != null && (symbolsCache[i].getTeoria().getId() == teoriaid || symbolsCache[i].getTeoria().getId() == 1))
                 list.add(symbolsCache[i]);
         return list;
     }

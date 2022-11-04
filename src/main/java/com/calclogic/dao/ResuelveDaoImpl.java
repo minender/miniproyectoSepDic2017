@@ -33,8 +33,8 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     private String resuelveOnlyUserQuery = " r.usuario.login = :userLogin ";
     private String resuelveUserOrAdminQuery = " (r.usuario.login = :userLogin OR r.usuario.login = 'AdminTeoremas') ";
     
-    private String teoriaQuery = " teoria IN (SELECT teoria FROM Usuario u WHERE u.login = :userLogin) ";
-    private String resuelveTeoriaQuery = " r.teoria IN (SELECT teoria FROM Usuario u WHERE u.login = :userLogin) ";
+    private String teoriaQuery = " (teoria IN (SELECT teoria FROM Usuario u WHERE u.login = :userLogin) OR teoria.id = 1) ";
+    private String resuelveTeoriaQuery = " (r.teoria IN (SELECT teoria FROM Usuario u WHERE u.login = :userLogin) OR teoria.id = 1) ";
     
     /** 
      * Adds a new Resuelve object to the table.
