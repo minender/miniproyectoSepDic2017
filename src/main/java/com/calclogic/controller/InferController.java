@@ -766,16 +766,17 @@ public class InferController {
         Term formula = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
 
         response.generarHistorial(
-               username,
-               formula, 
-               nTeo, 
-               nSol.equals("new")?null:solucion.getTypedTerm(), 
-               true, 
-               true, 
-               method,
-               resuelveManager, 
-               disponeManager, 
-               simboloManager);
+            username,
+            formula, 
+            nTeo, 
+            nSol.equals("new")?null:solucion.getTypedTerm(), 
+            true, 
+            true, 
+            method,
+            resuelveManager, 
+            disponeManager, 
+            simboloManager
+        );
         
         // estos set se podrían calcular dentro de generar historial
         if(respRetroceder==0 && method != null){
