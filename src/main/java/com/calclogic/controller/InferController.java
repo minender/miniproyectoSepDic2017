@@ -567,7 +567,7 @@ public class InferController {
         GenericProofMethod objectMethod = crudOp.returnProofMethodObject(strMethodTermIter);
         
         try {
-            infer = objectMethod.createBaseMethodInfer(username,statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+            infer = objectMethod.createOneStepInfer(username,statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
         }
         catch(TypeVerificationException e) { // If something went wrong building the new step of the proof
             response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
