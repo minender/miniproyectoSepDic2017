@@ -341,10 +341,10 @@ public class Const extends Term
     @Override
     public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
         if (id == 0) {
-            return "t->t->b";
+            return "*->*->b";
         }
         else if (id == -1) {
-            return "t";
+            return "*";
         }
         else {
             Simbolo sim = simboloManager.getSimbolo(id);

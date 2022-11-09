@@ -915,15 +915,17 @@ public class App extends Term{
             }
             else {
                 type_q = D.get(qvar.indice);
+                if (type_q.equals("*") && !param_type.equals("*")) {
+                    D.put(qvar.indice, param_type);
+                }
             }
         }
         else {
             type_q = q.getType(D, simboloManager);
         }
-        if (!type_q.equals(param_type)) {
+        if (!type_q.equals(param_type) && !param_type.equals("*")) {
             throw new TypeVerificationException();
         }
-
         return type_p.substring(param_type.length()+2);
     }
 }
