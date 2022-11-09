@@ -11,6 +11,7 @@ import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -277,6 +278,9 @@ public abstract class Term implements Cloneable, Serializable{
         for (int j=i; j<58; j++)
             if (set[j] != 0)
                 st += ","+((char)set[j]);
+        
+        if (st == null)
+            return "";
         
         return st;    
         //return hset.toString().replaceAll("[\\s\\[\\]]", "");
@@ -1202,7 +1206,7 @@ public abstract class Term implements Cloneable, Serializable{
             Term arg1, arg2;
             arg1 = ((App)((App)teoTerm).p).q;
             arg2 = ((App)teoTerm).q;
-            String[] vars = (variables.equals("")?new String[0]:variables.split(","));
+            String[] vars = (variables==null || variables.equals("")?new String[0]:variables.split(","));
             for (int i=vars.length-1; 0<=i; i--) {
                 arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
                 arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
@@ -1211,7 +1215,7 @@ public abstract class Term implements Cloneable, Serializable{
         }
         else {
             Term arg2 = new Const(-1,"T");
-            String[] vars = (variables==null?new String[0]:variables.split(","));
+            String[] vars = (variables==null || variables.equals("")?new String[0]:variables.split(","));
             for (int i=vars.length-1; 0<=i; i--) {
                 teoTerm = new Bracket(new Var((int)vars[i].charAt(0)),teoTerm);
                 arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
@@ -1219,5 +1223,15 @@ public abstract class Term implements Cloneable, Serializable{
             teoTerm = new App(new App(new Const(0,"="), arg2), teoTerm);
         }
         return teoTerm;
+    }
+    
+    public String getType(SimboloManager simboloManager) throws TypeVerificationException {
+        HashMap<Integer, String> D = new HashMap<Integer, String>();
+        return getType(D, simboloManager);
+    }
+    
+    //public abstract String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException;
+    public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
+        throw new TypeVerificationException();
     }
 }

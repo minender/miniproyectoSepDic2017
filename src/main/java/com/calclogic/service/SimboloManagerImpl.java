@@ -172,7 +172,7 @@ public class SimboloManagerImpl implements SimboloManager {
     @Override
     @Transactional
     public Simbolo getSimbolo(int id){
-        if (0 < id && id <= symbolsCache.length)
+        if (0 < id && id < symbolsCache.length)
             return symbolsCache[id];
         else
             return null;

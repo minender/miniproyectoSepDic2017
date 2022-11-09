@@ -7,6 +7,7 @@ package com.calclogic.lambdacalculo;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -377,11 +378,16 @@ public class Bracket extends Term{
     }
     
     @Override
-	public String aliases(String position) {
-		
-		return "";
-	}
+    public String aliases(String position) {
+
+            return "";
+    }
+    
+    @Override
+    public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
+        return t.getType(D, simboloManager);
+    }
 
     
-    }
+}
 
