@@ -1,6 +1,7 @@
 $(function() {
     var form = $('#inferForm');
     
+    // "Infer" button
     $("#BtnInferir").click(async function(ev){ 
         if (buttonsEnabled){
             await setInputValueOnParser('leibnizSymbolsId');
@@ -55,7 +56,6 @@ $(function() {
                             cleanJaxSubstitution('substitutionButtonsId');
                         }
                     }
-                    
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) { 
                     $("#loadingModal").css('display','none');
@@ -65,6 +65,7 @@ $(function() {
         }
     });
     
+    // "Go back" button
     $("#BtnRetroceder").click(function(ev){
         if (buttonsEnabled){    
             ev.preventDefault();
@@ -88,16 +89,17 @@ $(function() {
                     $('#stbox').text("");
                     cleanJax('leibnizSymbolsId');
                     cleanJaxSubstitution('substitutionButtonsId');
-                    setForms(data.cambiarMetodo);                    
+                    setViewState(data.cambiarMetodo);                    
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                  $("#loadingModal").css('display','none');
-                  alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+                    $("#loadingModal").css('display','none');
+                    alert("Status: " + textStatus); alert("Error: " + errorThrown); 
                 }
             });
         }
     });
     
+    // "Clean" button
     $('#BtnLimpiar').click(async function(){
         await cleanJax('leibnizSymbolsId'); 
         await cleanJaxSubstitution('substitutionButtonsId');
@@ -111,20 +113,7 @@ $(function() {
     
 });
 
-function hasNumericClass(element){
-    let clases = $(element).attr("class");
-    isNumeric = false;
-    if (clases){
-        clases = clases.split(" ");
-        for (let i = 0; i<clases.length;i++){
-            if ($.isNumeric(clases[i])){
-                isNumeric = true;
-            }
-        }
-    }
-    return isNumeric;  
-}
-
+// This is activated when the user highlights part of the last line of the demonstration
 function leibnizMouse(p1,p2){
     if (p1===p2) {
         // To be executed inside inferRecoverC
