@@ -44,6 +44,7 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoria = teoria;
+        this.tipo = tipo;
     }
 
     public Simbolo(String notacion_latex, int argumentos, boolean esInfijo, int precedencia, String notacion, Teoria teoria, String tipo) {
@@ -53,6 +54,7 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoria = teoria;
+        this.tipo = tipo;
     }
 
     public Simbolo(String notacion_latex, boolean esInfijo, int asociatividad, int precedencia, String notacion, Teoria teoria, String tipo) {
@@ -62,6 +64,7 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoria = teoria;
+        this.tipo = tipo;
     }
 
     public Simbolo(String notacion_latex, int argumentos, boolean esInfijo, int asociatividad, int precedencia, String notacion, Teoria teoria, String tipo) {
@@ -72,6 +75,7 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoria = teoria;
+        this.tipo = tipo;
     }
 
 

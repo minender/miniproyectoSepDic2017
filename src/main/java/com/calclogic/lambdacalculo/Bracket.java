@@ -385,7 +385,13 @@ public class Bracket extends Term{
     
     @Override
     public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
-        return t.getType(D, simboloManager);
+        HashMap<Integer, String> D2 = (HashMap<Integer, String>) D.clone();
+        D2.remove(x.indice);
+        String type_t = t.getType(D2, simboloManager);
+        String type_x = D2.get(x.indice);
+        D2.remove(x.indice);
+        D.putAll(D2);
+        return type_t;
     }
 
     

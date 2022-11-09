@@ -162,6 +162,7 @@ public class SimboloManagerImpl implements SimboloManager {
             teoremaDAO.deleteTeorema(t.getId());
         }
         simboloDAO.deleteSimbolo(id);
+        symbolsCache[id] = null;
         return "Symbol deleted";
     }
     

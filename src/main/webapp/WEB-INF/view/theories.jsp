@@ -386,7 +386,7 @@
                                 <label>Type (*)</label>
                                 <sf:input path="tipo" type="text" class="form-control"/>
                             </div>
-                            <!--div class="form-group">
+                            <div class="form-group">
                                 <div style="width:100%">
                                     <label>Theory (*)</label>                                                   
                                 </div>
@@ -397,7 +397,7 @@
                                         </c:forEach>
                                     </form:select>                                                        
                                 </div>                          
-                            </div-->
+                            </div>
                             <label>All fields with (*) are required</label>
                         </div>
                         <div class="modal-footer">
@@ -464,11 +464,7 @@
                                 <label>Notation (*)</label>
                                 <sf:input path="notacion" type="text" class="form-control" id="notacion-edit"/>
                             </div>
-                            <div class="form-group" id="notacion-box-edit">
-                                <label>Type (*)</label>
-                                <sf:input path="tipo" type="text" class="form-control" id="tipo-edit"/>
-                            </div>
-                            <!--div class="form-group">
+                            <div class="form-group">
                                 <div style="width:100%">
                                     <label>Teoría (*)</label>                                                   
                                 </div>
@@ -479,7 +475,7 @@
                                         </c:forEach>
                                     </form:select>                                                        
                                 </div>                        
-                            </div-->
+                            </div>
                             <label>All fields with (*) are required</label>
                         </div>               
                         <div class="modal-footer">

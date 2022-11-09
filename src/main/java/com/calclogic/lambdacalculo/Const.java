@@ -344,7 +344,7 @@ public class Const extends Term
             return "*->*->b";
         }
         else if (id == -1) {
-            return "*";
+            return "b";
         }
         else {
             Simbolo sim = simboloManager.getSimbolo(id);

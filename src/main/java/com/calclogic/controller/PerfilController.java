@@ -891,12 +891,13 @@ public class PerfilController {
             */
            
             Teorema teorema = teoremaManager.getTeorema(intIdTeo);
+            String vars = null;
             if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
                 Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
                 if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                 }
-                String vars = teoTerm.stFreeVars();;
+                vars = teoTerm.stFreeVars();;
                 teoTerm = teoTerm.toEquality(vars);
                 teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString(), teoTerm, vars);
                 if (teorema == null) {
@@ -910,6 +911,9 @@ public class PerfilController {
             resuelve.setNumeroteorema(agregarTeorema.getNumeroTeorema());
             resuelve.setEsAxioma(agregarTeorema.isAxioma());
             resuelve.setCategoria(categoria);
+            if (vars != null) {
+                resuelve.setVariables(vars);
+            }
             resuelveManager.updateResuelve(resuelve);
             
             //Resuelve resuelveAdd = new Resuelve(usr,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma(), categoria);
@@ -2011,9 +2015,10 @@ public class PerfilController {
             {
                 return "redirect:/index";
             }
-        //Teoria teoria = teoriaManager.getTeoria(agregarSimbolo.getTeoriaid());
+        Teoria teoria = teoriaManager.getTeoria(agregarSimbolo.getTeoriaid());
         Usuario usr = usuarioManager.getUsuario(username);
-        Teoria teoria = usr.getTeoria();
+        //Teoria teoria = usr.getTeoria();
+        System.out.println(agregarSimbolo.getTipo());
         
         if (!agregarSimbolo.isModificar()){
             Simbolo simbolo = new Simbolo(agregarSimbolo.getNotacion_latex(),agregarSimbolo.getArgumentos(),agregarSimbolo.isEsInfijo(),
@@ -2028,7 +2033,7 @@ public class PerfilController {
             simbolo.setPrecedencia(agregarSimbolo.getPrecedencia());
             simbolo.setTeoria(teoria);
             simbolo.setNotacion(agregarSimbolo.getNotacion());
-            simbolo.setTipo(agregarSimbolo.getTipo());
+            //simbolo.setTipo(agregarSimbolo.getTipo());
             simboloManager.updateSimbolo(simbolo);
         }
         
