@@ -139,11 +139,8 @@ public class TeoremaManagerImpl implements TeoremaManager {
                     return teorema;
                 }
                 else {
-                    System.out.println("perro0");
-                    System.out.println(resuelve.getVariables());
                     resuelve.setTeorema(teorema2);
                     resuelveDAO.updateResuelve(resuelve);
-                    System.out.println("perro0.5");
                     //teoremaDAO.deleteTeorema(id);
                     return teorema2;
                 }
@@ -160,11 +157,8 @@ public class TeoremaManagerImpl implements TeoremaManager {
                   ) {
                 resuelve = resIter.next();
             }
-            System.out.println("perro1");
             resuelve.setVariables(vars);
-            System.out.println(resuelve.getVariables());
             resuelveDAO.updateResuelve(resuelve);
-            System.out.println("perro2");
             if (resuelve.getTeorema().getId() == id && resuelve.getUsuario().getLogin().equals(username)) {
                //Teorema teorema = teoremaDAO.getTeorema(id);
                Teorema teorema2 = this.getTeoremaByEnunciados(statement);
