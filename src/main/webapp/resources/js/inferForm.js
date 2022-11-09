@@ -10,8 +10,6 @@ $(function() {
             var formData = form.serialize();
             $("#loadingModal").css('display','inline-block');
 
-            start = performance.now();
-
             $.ajax({
                 url: $(form).attr('action'),
                 type: 'POST',
@@ -28,22 +26,11 @@ $(function() {
                     }
                     else{
                         $('#formula').html(data.historial);
-                        console.log("Tiempo regreso = ", performance.now() - start);
-                        
-                        MathJax.Hub.Queue(["Typeset",MathJax.Hub], function(){
-                            console.log("Tiempo typeset = ", performance.now() - start);
-                        });
-                        //MathJax.Hub.Typeset();
+                        MathJax.Hub.Typeset();
+
                         var proof = $('.proof');
                         proof.scrollTop(proof[0].scrollHeight);
-                        /*var nSol = $('#nSolucion').val();
-                        if(nSol==="new"){
-                            $('#nSolucion').val(data.nSol);
-                            nSol = $('#nSolucion').val();
-                            var url = $(form).attr('action');
-                            url = url.replace("new",nSol);
-                            $(form).attr('action',url);
-                        }*/
+
                         if(data.resuelto === "1"){
                             alert("Congratulations you have found a proof of the theorem!!");
                             window.location = $("#linkMyTheorems").attr("href");
@@ -67,7 +54,6 @@ $(function() {
                             cleanJax('leibnizSymbolsId');
                             cleanJaxSubstitution('substitutionButtonsId');
                         }
-                        //$("#nuevoMetodo").val("0");
                     }
                     
                 },
