@@ -304,7 +304,7 @@ public class InferResponse extends GenericResponse{
 
             // THIS IS NOT USED BECAUSE generarHistorial always receives the formula as in the previous version
             //if(!operatorTerm.toString().startsWith("=") || ((App)((App)newTerm).p).q.containT()){ 
-            if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{20}")){
+            if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{13}")){ // c_{20}
                 throw new Exception();
             }
             

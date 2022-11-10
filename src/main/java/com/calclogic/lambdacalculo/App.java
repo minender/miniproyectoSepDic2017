@@ -474,7 +474,7 @@ public class App extends Term{
       * @param position
       * @param rootId
       * @param z
-      * @param t
+      * @param t: The father of all the string that is going to be printed. We need to remember it in all recursive calls.
       * @param l
       * @param l2
       * @param id
