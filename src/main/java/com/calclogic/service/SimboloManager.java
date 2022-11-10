@@ -52,5 +52,7 @@ public interface SimboloManager {
      * Method to get a list of all the entries of the table.
      */
     public List<Simbolo> getAllSimbolo();
+    
+    public List<Simbolo> getAllSimboloByTeoria(int teoriaid);
 
 }

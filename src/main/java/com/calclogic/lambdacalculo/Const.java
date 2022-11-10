@@ -7,7 +7,11 @@ package com.calclogic.lambdacalculo;
 import com.calclogic.entity.Simbolo;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
+import com.calclogic.service.SimboloManagerImpl;
+import com.calclogic.dao.SimboloDAO;
+import com.calclogic.dao.SimboloDaoImpl;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -100,7 +104,7 @@ public class Const extends Term
    
    public int nPhi()
    {
-       return 0;
+       return (con.equals("\\Phi_{K}")) ? 1 : 0;
    }
    
    public boolean containTypedA()
@@ -324,17 +328,31 @@ public class Const extends Term
     }
     
     @Override
-	public String aliases(String position) {
-		
-		String currentAlias = "";
-		if( this.alias != null) {
-			currentAlias =  this.alias + ':' + position;
-		}
-		
-		return currentAlias;
-	}
+    public String aliases(String position) {
 
-    
-   
+            String currentAlias = "";
+            if( this.alias != null) {
+                    currentAlias =  this.alias + ':' + position;
+            }
+
+            return currentAlias;
+    }
+
+    @Override
+    public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
+        if (id == 0) {
+            return "*->*->b";
+        }
+        else if (id == -1) {
+            return "b";
+        }
+        else {
+            Simbolo sim = simboloManager.getSimbolo(id);
+            if (sim == null) {
+                throw new TypeVerificationException();
+            }
+            return sim.getTipo();
+        }
+    }
    
 }

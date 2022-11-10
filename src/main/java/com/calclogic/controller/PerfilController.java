@@ -138,6 +138,7 @@ public class PerfilController {
             return "redirect:/index";
         }
         Usuario usr = usuarioManager.getUsuario(username);
+        List<Teoria> teorias = teoriaManager.getAllTeoria();
         
         map.addAttribute("usuario", usr);
         map.addAttribute("mensaje","");
@@ -151,8 +152,26 @@ public class PerfilController {
         map.addAttribute("helpMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
+        map.addAttribute("teorias", teorias);
 
         return "perfil";
+    }
+    
+    @ResponseBody
+    @RequestMapping(value="/{username}/home/changeTheory/{teoriaid}", method=RequestMethod.POST)
+    public String changeTeoria(@PathVariable String username, @PathVariable String teoriaid, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "Session expired, login again";
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
+        
+        int tid = Integer.parseInt(teoriaid);
+        Teoria teoria = teoriaManager.getTeoria(tid);
+        usr.setTeoria(teoria);
+        usuarioManager.updateUsuario(usr);
+
+        return "Theory changed to "+teoria.getNombre();
     }
     
     @RequestMapping(value="/{username}/students", method=RequestMethod.GET)
@@ -528,7 +547,7 @@ public class PerfilController {
         }
         
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
@@ -566,7 +585,7 @@ public class PerfilController {
         // vista lo que se construyo fue un TerminoId nada mas y se uso el 
         // campo login para guardar el String combinador
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
@@ -607,35 +626,16 @@ public class PerfilController {
         TermParser parser = new TermParser(tokens);
         Term teoTerm;
         try{ //si la sintanxis no es correcta ocurre una Exception
-        
-            teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
-            String variables = teoTerm.stFreeVars();
-            if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
-                ((App)((App)teoTerm).p).p instanceof Const && 
-                ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
-                  ((Const)((App)((App)teoTerm).p).p).getId()==13
-                )
-               ) 
-            {
-                Term arg1, arg2;
-                arg1 = ((App)((App)teoTerm).p).q;
-                arg2 = ((App)teoTerm).q;
-                String[] vars = (variables.equals("")?new String[0]:variables.split(","));
-                for (int i=vars.length-1; 0<=i; i--) {
-                    arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
-                    arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
-                }
-                teoTerm = new App(new App(new Const(0,"="),arg1),arg2);
-            }
-            else {
-                Term arg2 = new Const(-1,"T");
-                String[] vars = (variables==null?new String[0]:variables.split(","));
-                for (int i=vars.length-1; 0<=i; i--) {
-                    teoTerm = new Bracket(new Var((int)vars[i].charAt(0)),teoTerm);
-                    arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);
-                }
-                teoTerm = new App(new App(new Const(0,"="), arg2), teoTerm);
-            } 
+            
+            String[] boundVars = {""};
+            String freeVars;
+            teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
+            freeVars = teoTerm.stFreeVars();
+            System.out.println(teoTerm);
+            String variables = boundVars[0] + ";" + freeVars;
+            System.out.println(variables);
+            teoTerm = teoTerm.toEquality(freeVars);
+            System.out.println(teoTerm);
             Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
             if (null != test) {
                 throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
@@ -656,7 +656,7 @@ public class PerfilController {
             else
                 teorema = teoremaAdd;
             Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),
-                                            agregarTeorema.isAxioma(), categoria, variables);
+                                            agregarTeorema.isAxioma(), categoria, variables, usr.getTeoria());
             Resuelve resuelve = resuelveManager.addResuelve(resuelveAdd);
 
             // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
@@ -771,16 +771,24 @@ public class PerfilController {
         }
         
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
         int teoId = Integer.parseInt(idTeo);
         Teorema teorema = teoremaManager.getTeorema(teoId);
         Term teoTerm = teorema.getTeoTerm();
-        String teoC = teoTerm.toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
-        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false);
+        try {
+            Term testTerm = teoTerm.evaluar(resuelve.getVariables());
+            System.out.println(testTerm);
+            System.out.println(testTerm.getType(simboloManager));
+        } catch (TypeVerificationException ex) {
+            System.out.println("error de tipo");
+        }
+        
+        String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
+        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         
         map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
@@ -823,7 +831,7 @@ public class PerfilController {
         // vista lo que se construyo fue un TerminoId nada mas y se uso el 
         // campo login para guardar el String combinador
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
@@ -867,7 +875,8 @@ public class PerfilController {
 
         try{ //si la sintanxis no es correcta ocurre una Exception
         
-            teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+            String[] boundVars = {""};
+            teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
 //                teoTerm.setAlias(0);
             
             // ESTO DEBE MOSTRAR LAS CATEGORIAS
@@ -889,12 +898,15 @@ public class PerfilController {
             */
            
             Teorema teorema = teoremaManager.getTeorema(intIdTeo);
+            String vars = null;
             if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
                 Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
                 if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                 }
-                teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString());
+                vars = teoTerm.stFreeVars();;
+                teoTerm = teoTerm.toEquality(vars);
+                teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString(), teoTerm, vars);
                 if (teorema == null) {
                     throw new CategoriaException("Couldn't edit theorem");
                 }
@@ -906,6 +918,9 @@ public class PerfilController {
             resuelve.setNumeroteorema(agregarTeorema.getNumeroTeorema());
             resuelve.setEsAxioma(agregarTeorema.isAxioma());
             resuelve.setCategoria(categoria);
+            if (vars != null) {
+                resuelve.setVariables(vars);
+            }
             resuelveManager.updateResuelve(resuelve);
             
             //Resuelve resuelveAdd = new Resuelve(usr,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),agregarTeorema.isAxioma(), categoria);
@@ -1036,11 +1051,11 @@ public class PerfilController {
             return "redirect:/index";
         }
         
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
-        Usuario usr = usuarioManager.getUsuario(username);
         
         map.addAttribute("usuario", usr);
         map.addAttribute("usuarioGuardar",new UsuarioGuardar());
@@ -1123,7 +1138,7 @@ public class PerfilController {
             }
 
             Usuario usr = usuarioManager.getUsuario(username);
-            List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+            List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
             List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
             predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
             String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
@@ -1189,7 +1204,8 @@ public class PerfilController {
                 if(predicadoEnBD == null)
                 {
                     //System.out.println(terminoManager.getTermino(terminoid));
-                    term=parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+                    String[] boundVars = {""};
+                    term=parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
                     predicado.setAliases(term.aliases(""));
                     
                     //term.setAlias(predicadoid.getAlias());
@@ -1534,7 +1550,8 @@ public class PerfilController {
             Term term;
             try //si la sintanxis no es correcta ocurre una Exception
             {
-                term=parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+                String[] boundVars = {""};
+                term=parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
                 //term.alias=alias;
                 //aqui se traduce y luego se llama a toString para tener el
                 //combinador en String
@@ -1975,7 +1992,7 @@ public class PerfilController {
             return "redirect:/index";
         }
         Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> listaSimbolos = simboloManager.getAllSimbolo();
+        List<Simbolo> listaSimbolos = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Teoria> listaTeorias = teoriaManager.getAllTeoria();
         
         map.addAttribute("usuario", usr);
@@ -2008,10 +2025,13 @@ public class PerfilController {
                 return "redirect:/index";
             }
         Teoria teoria = teoriaManager.getTeoria(agregarSimbolo.getTeoriaid());
+        Usuario usr = usuarioManager.getUsuario(username);
+        //Teoria teoria = usr.getTeoria();
+        System.out.println(agregarSimbolo.getTipo());
         
         if (!agregarSimbolo.isModificar()){
             Simbolo simbolo = new Simbolo(agregarSimbolo.getNotacion_latex(),agregarSimbolo.getArgumentos(),agregarSimbolo.isEsInfijo(),
-            agregarSimbolo.getAsociatividad(),agregarSimbolo.getPrecedencia(),agregarSimbolo.getNotacion(), teoria);
+            agregarSimbolo.getAsociatividad(),agregarSimbolo.getPrecedencia(),agregarSimbolo.getNotacion(), teoria, agregarSimbolo.getTipo());
             simboloManager.addSimbolo(simbolo);
         }else{
             Simbolo simbolo = simboloManager.getSimbolo(agregarSimbolo.getId());
@@ -2022,12 +2042,12 @@ public class PerfilController {
             simbolo.setPrecedencia(agregarSimbolo.getPrecedencia());
             simbolo.setTeoria(teoria);
             simbolo.setNotacion(agregarSimbolo.getNotacion());
+            //simbolo.setTipo(agregarSimbolo.getTipo());
             simboloManager.updateSimbolo(simbolo);
         }
         
 
-        Usuario usr = usuarioManager.getUsuario(username);
-        List<Simbolo> listaSimbolos = simboloManager.getAllSimbolo();
+        List<Simbolo> listaSimbolos = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Teoria> listaTeorias = teoriaManager.getAllTeoria();
         map.addAttribute("usuario", usr);
         map.addAttribute("mensaje","");

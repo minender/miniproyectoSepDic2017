@@ -124,7 +124,7 @@ public class InferController {
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
         
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = PerfilController.simboloDictionaryCode(simboloList, predicadoList);
@@ -258,7 +258,7 @@ public class InferController {
             showCategorias.add(mostrarCategoria.get(i).getCategoria());
         }
         
-        List<Simbolo> simboloList = simboloManager.getAllSimbolo();
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(resuel.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = PerfilController.simboloDictionaryCode(simboloList, predicadoList);

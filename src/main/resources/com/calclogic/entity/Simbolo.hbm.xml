@@ -30,5 +30,8 @@
     <many-to-one class="com.calclogic.entity.Teoria" fetch="select" lazy="false" name="teoria">
       <column name="teoriaid" not-null="true"/>
     </many-to-one>
+    <property name="tipo" type="string">
+      <column name="tipo" not-null="false"/>
+    </property>
   </class>
 </hibernate-mapping>

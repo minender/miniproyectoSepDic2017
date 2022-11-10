@@ -9,12 +9,12 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import com.calclogic.lambdacalculo.TypeVerificationException;
 
 /**
  *
@@ -585,7 +585,7 @@ public class App extends Term{
                     Term aux_arg = arg;
                     int index = 1;
                     while (aux_arg instanceof Bracket) {
-                        values.put("v"+index,((Bracket) aux_arg).x.toString());
+                        values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s, numTeo));
                         index++;
                         aux_arg = ((Bracket) aux_arg).t;
                     }
@@ -733,6 +733,10 @@ public class App extends Term{
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId) {
         
+        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
+            && ((App)p).q.containT() )
+            return q.toStringFormatC(s, pos, id, rootId);
+        
         Stack<Term> stk = new Stack<Term>();
         String term;
         stk.push(q);
@@ -871,29 +875,57 @@ public class App extends Term{
         return ter;
     }
 
-	@Override
-	public String aliases(String position) {
-		// Get aliases from childred
-		String aliases1 = p.aliases(position.concat("1"));
-		String aliases2 = q.aliases(position.concat("2"));
-		
-		
-		// Check if we have an alias right now and create a proper format string if so
-		String currentAlias = "";
-		if( this.alias != null) {
-			currentAlias = this.alias + ':' + position;	
-			if(!aliases1.equals("") || !aliases2.equals("") ) {
-				currentAlias = ", " + currentAlias;
-			}
-		}
-		
-		// Check if we actually need a comma between alias1 and alias2
-		String commaString = ", ";
-		if( aliases1.equals("") || aliases2.equals("")) {
-			commaString = "";
-		}
-		
-		// Return formated string
-		return aliases1 + commaString + aliases2 + currentAlias;
-	}
+    @Override
+    public String aliases(String position) {
+            // Get aliases from childred
+            String aliases1 = p.aliases(position.concat("1"));
+            String aliases2 = q.aliases(position.concat("2"));
+
+
+            // Check if we have an alias right now and create a proper format string if so
+            String currentAlias = "";
+            if( this.alias != null) {
+                    currentAlias = this.alias + ':' + position;	
+                    if(!aliases1.equals("") || !aliases2.equals("") ) {
+                            currentAlias = ", " + currentAlias;
+                    }
+            }
+
+            // Check if we actually need a comma between alias1 and alias2
+            String commaString = ", ";
+            if( aliases1.equals("") || aliases2.equals("")) {
+                    commaString = "";
+            }
+
+            // Return formated string
+            return aliases1 + commaString + aliases2 + currentAlias;
+    }
+        
+    @Override
+    public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
+        String type_p = p.getType(D, simboloManager);
+        String[] type_p_split = type_p.split("->"); // cambiar por un parser
+        String param_type = type_p_split[0];
+        String type_q;
+        if (q instanceof Var) {
+            Var qvar = (Var) q;
+            if (!D.containsKey(qvar.indice)) {
+                type_q = param_type;
+                D.put(qvar.indice, param_type);
+            }
+            else {
+                type_q = D.get(qvar.indice);
+                if (type_q.equals("*") && !param_type.equals("*")) {
+                    D.put(qvar.indice, param_type);
+                }
+            }
+        }
+        else {
+            type_q = q.getType(D, simboloManager);
+        }
+        if (!type_q.equals(param_type) && !param_type.equals("*")) {
+            throw new TypeVerificationException();
+        }
+        return type_p.substring(param_type.length()+2);
+    }
 }

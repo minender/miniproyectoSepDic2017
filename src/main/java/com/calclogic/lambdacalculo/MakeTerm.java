@@ -39,7 +39,8 @@ public class MakeTerm {
         Term term;
                
         try{  
-            term = parser.start_rule(terminoid,terminoManager,simboloManager).value; 
+            String[] boundVars = {""};
+            term = parser.start_rule(terminoid,terminoManager,simboloManager,boundVars).value; 
             return term;
         }
         catch(IsNotInDBException e)
@@ -95,7 +96,8 @@ public class MakeTerm {
         ArrayList<Object> listObj;
                
         try{  
-            listObj = parser.instantiate(terminoid,terminoManager,simboloManager).value; 
+            String[] boundVars = {""};
+            listObj = parser.instantiate(terminoid,terminoManager,simboloManager,boundVars).value; 
             return listObj;
         }
         catch(IsNotInDBException e)

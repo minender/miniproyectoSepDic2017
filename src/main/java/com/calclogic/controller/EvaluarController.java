@@ -105,9 +105,11 @@ public class EvaluarController {
             try //si la sintanxis no es correcta ocurre una Exception
             {
 
-                teoTerm = parser.instantiate(predicadoid2, predicadoManager,simboloManager).value;
+                String[] boundVars = {""};
+                teoTerm = parser.instantiate(predicadoid2, predicadoManager,simboloManager,boundVars).value;
 //                teoTerm.setAlias(0);
-                teoTerm2 = parser2.start_rule(predicadoid2, predicadoManager,simboloManager).value;
+                String[] boundVars2 = {""};
+                teoTerm2 = parser2.start_rule(predicadoid2, predicadoManager,simboloManager,boundVars2).value;
 //                teoTerm2.setAlias(0);
                 // inicializando pa q no ladille java
                 /*Term izq = null;
@@ -267,8 +269,8 @@ public class EvaluarController {
         Term term;
         try //si la sintanxis no es correcta ocurre una Exception
         {
-
-            term = parser.start_rule(predicadoid, predicadoManager, simboloManager).value;
+            String[] boundVars = {""};
+            term = parser.start_rule(predicadoid, predicadoManager, simboloManager, boundVars).value;
 //            term.setAlias(0);
 
         } /*catch (IsNotInDBException e) {

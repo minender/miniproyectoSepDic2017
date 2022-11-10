@@ -34,36 +34,40 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
      private int asociatividad;
      private int precedencia;
      private String notacion;
+     private String tipo;
      private Teoria teoria;
 
 
-    public Simbolo(String notacion_latex, boolean esInfijo, int precedencia, String notacion, Teoria teoria) {
+    public Simbolo(String notacion_latex, boolean esInfijo, int precedencia, String notacion, Teoria teoria, String tipo) {
         this.notacion_latex = notacion_latex;
         this.esInfijo = esInfijo;
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoria = teoria;
+        this.tipo = tipo;
     }
 
-    public Simbolo(String notacion_latex, int argumentos, boolean esInfijo, int precedencia, String notacion, Teoria teoria) {
+    public Simbolo(String notacion_latex, int argumentos, boolean esInfijo, int precedencia, String notacion, Teoria teoria, String tipo) {
         this.notacion_latex = notacion_latex;
         this.argumentos = argumentos;
         this.esInfijo = esInfijo;
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoria = teoria;
+        this.tipo = tipo;
     }
 
-    public Simbolo(String notacion_latex, boolean esInfijo, int asociatividad, int precedencia, String notacion, Teoria teoria) {
+    public Simbolo(String notacion_latex, boolean esInfijo, int asociatividad, int precedencia, String notacion, Teoria teoria, String tipo) {
         this.notacion_latex = notacion_latex;
         this.esInfijo = esInfijo;
         this.asociatividad = asociatividad;
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoria = teoria;
+        this.tipo = tipo;
     }
 
-    public Simbolo(String notacion_latex, int argumentos, boolean esInfijo, int asociatividad, int precedencia, String notacion, Teoria teoria) {
+    public Simbolo(String notacion_latex, int argumentos, boolean esInfijo, int asociatividad, int precedencia, String notacion, Teoria teoria, String tipo) {
         this.notacion_latex = notacion_latex;
         this.argumentos = argumentos;
         this.esInfijo = esInfijo;
@@ -71,6 +75,7 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoria = teoria;
+        this.tipo = tipo;
     }
 
 
@@ -121,6 +126,10 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
     public String getNotacion() {
         return notacion;
     }
+    
+    public String getTipo() {
+        return tipo;
+    }
 
     public Teoria getTeoria() {
         return teoria;
@@ -161,6 +170,10 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
 
     public void setNotacion(String notacion) {
         this.notacion = notacion;
+    }
+    
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public void setTeoria(Teoria teoria) {
