@@ -626,10 +626,16 @@ public class PerfilController {
         TermParser parser = new TermParser(tokens);
         Term teoTerm;
         try{ //si la sintanxis no es correcta ocurre una Exception
-        
-            teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
-            String variables = teoTerm.stFreeVars();
-            teoTerm = teoTerm.toEquality(variables);
+            
+            String[] boundVars = {""};
+            String freeVars;
+            teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
+            freeVars = teoTerm.stFreeVars();
+            System.out.println(teoTerm);
+            String variables = boundVars[0] + ";" + freeVars;
+            System.out.println(variables);
+            teoTerm = teoTerm.toEquality(freeVars);
+            System.out.println(teoTerm);
             Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
             if (null != test) {
                 throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
@@ -869,7 +875,8 @@ public class PerfilController {
 
         try{ //si la sintanxis no es correcta ocurre una Exception
         
-            teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+            String[] boundVars = {""};
+            teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
 //                teoTerm.setAlias(0);
             
             // ESTO DEBE MOSTRAR LAS CATEGORIAS
@@ -1197,7 +1204,8 @@ public class PerfilController {
                 if(predicadoEnBD == null)
                 {
                     //System.out.println(terminoManager.getTermino(terminoid));
-                    term=parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+                    String[] boundVars = {""};
+                    term=parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
                     predicado.setAliases(term.aliases(""));
                     
                     //term.setAlias(predicadoid.getAlias());
@@ -1542,7 +1550,8 @@ public class PerfilController {
             Term term;
             try //si la sintanxis no es correcta ocurre una Exception
             {
-                term=parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+                String[] boundVars = {""};
+                term=parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
                 //term.alias=alias;
                 //aqui se traduce y luego se llama a toString para tener el
                 //combinador en String

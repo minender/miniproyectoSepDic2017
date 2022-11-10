@@ -104,7 +104,7 @@ public class Const extends Term
    
    public int nPhi()
    {
-       return 0;
+       return (con.equals("\\Phi_{K}")) ? 1 : 0;
    }
    
    public boolean containTypedA()

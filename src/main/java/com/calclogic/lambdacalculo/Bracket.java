@@ -359,7 +359,7 @@ public class Bracket extends Term{
     
     @Override
     public void freeVars(int[] set) {
-        if (set[x.indice-65] != 0) {//(!set.contains(x)) 
+        if (set[x.indice-65] == 0) {//(!set.contains(x)) 
           t.freeVars(set);
           set[x.indice-65] = 0; // set.remove(x);
         } else 

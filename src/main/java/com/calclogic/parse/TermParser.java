@@ -110,17 +110,19 @@ public class TermParser extends Parser {
 		public PredicadoId id;
 		public PredicadoManager pm;
 		public SimboloManager sm;
+		public String[] st;
 		public Term value;
 		public EqContext eq;
 		public EqContext eq() {
 			return getRuleContext(EqContext.class,0);
 		}
 		public Start_ruleContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Start_ruleContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+		public Start_ruleContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st) {
 			super(parent, invokingState);
 			this.id = id;
 			this.pm = pm;
 			this.sm = sm;
+			this.st = st;
 		}
 		@Override public int getRuleIndex() { return RULE_start_rule; }
 		@Override
@@ -133,14 +135,14 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final Start_ruleContext start_rule(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
-		Start_ruleContext _localctx = new Start_ruleContext(_ctx, getState(), id, pm, sm);
+	public final Start_ruleContext start_rule(PredicadoId id,PredicadoManager pm,SimboloManager sm,String[] st) throws RecognitionException {
+		Start_ruleContext _localctx = new Start_ruleContext(_ctx, getState(), id, pm, sm, st);
 		enterRule(_localctx, 0, RULE_start_rule);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(14);
-			((Start_ruleContext)_localctx).eq = eq(id, pm, sm);
+			((Start_ruleContext)_localctx).eq = eq(id, pm, sm, st);
 			 ((Start_ruleContext)_localctx).value = ((Start_ruleContext)_localctx).eq.value;
 			}
 		}
@@ -159,6 +161,7 @@ public class TermParser extends Parser {
 		public PredicadoId id;
 		public PredicadoManager pm;
 		public SimboloManager sm;
+		public String[] st;
 		public Term value;
 		public Token NUMBER;
 		public ExplistContext explist;
@@ -173,11 +176,12 @@ public class TermParser extends Parser {
 		public TerminalNode CAPITALLETTER() { return getToken(TermParser.CAPITALLETTER, 0); }
 		public TerminalNode LETTER() { return getToken(TermParser.LETTER, 0); }
 		public EqContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public EqContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+		public EqContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st) {
 			super(parent, invokingState);
 			this.id = id;
 			this.pm = pm;
 			this.sm = sm;
+			this.st = st;
 		}
 		@Override public int getRuleIndex() { return RULE_eq; }
 		@Override
@@ -190,8 +194,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final EqContext eq(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
-		EqContext _localctx = new EqContext(_ctx, getState(), id, pm, sm);
+	public final EqContext eq(PredicadoId id,PredicadoManager pm,SimboloManager sm,String[] st) throws RecognitionException {
+		EqContext _localctx = new EqContext(_ctx, getState(), id, pm, sm, st);
 		enterRule(_localctx, 2, RULE_eq);
 		try {
 			setState(34);
@@ -207,7 +211,7 @@ public class TermParser extends Parser {
 				setState(19);
 				match(T__1);
 				setState(20);
-				((EqContext)_localctx).explist = explist(id,pm,sm);
+				((EqContext)_localctx).explist = explist(id,pm,sm,st);
 				setState(21);
 				match(T__2);
 				Term aux;
@@ -241,6 +245,10 @@ public class TermParser extends Parser {
 				                                                    for (Term base_term: unboundVars) {
 				                                                        Term t = base_term;
 				                                                        for (Term var: boundVars) {
+				                                                            if (st[0].equals(""))
+				                                                                st[0] = "" + ((char) ((Var) var).indice);
+				                                                            else
+				                                                                st[0] = st[0] + "," + ((char) ((Var) var).indice);
 				                                                            t = new Bracket((Var) var, t);
 				                                                        }
 				                                                        abstractedTerms.add(t);
@@ -273,7 +281,7 @@ public class TermParser extends Parser {
 				setState(25);
 				match(T__1);
 				setState(26);
-				((EqContext)_localctx).explist = explist(id,pm,sm);
+				((EqContext)_localctx).explist = explist(id,pm,sm,st);
 				setState(27);
 				match(T__2);
 				id.setAlias((((EqContext)_localctx).WORD!=null?((EqContext)_localctx).WORD.getText():null)); 
@@ -328,6 +336,7 @@ public class TermParser extends Parser {
 		public PredicadoId id;
 		public PredicadoManager pm;
 		public SimboloManager sm;
+		public String[] st;
 		public ArrayList<Term> value;
 		public EqContext eq;
 		public ExplisttailContext explisttail;
@@ -338,11 +347,12 @@ public class TermParser extends Parser {
 			return getRuleContext(ExplisttailContext.class,0);
 		}
 		public ExplistContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ExplistContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+		public ExplistContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st) {
 			super(parent, invokingState);
 			this.id = id;
 			this.pm = pm;
 			this.sm = sm;
+			this.st = st;
 		}
 		@Override public int getRuleIndex() { return RULE_explist; }
 		@Override
@@ -355,8 +365,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final ExplistContext explist(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
-		ExplistContext _localctx = new ExplistContext(_ctx, getState(), id, pm, sm);
+	public final ExplistContext explist(PredicadoId id,PredicadoManager pm,SimboloManager sm,String[] st) throws RecognitionException {
+		ExplistContext _localctx = new ExplistContext(_ctx, getState(), id, pm, sm, st);
 		enterRule(_localctx, 4, RULE_explist);
 		try {
 			setState(41);
@@ -369,9 +379,9 @@ public class TermParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(36);
-				((ExplistContext)_localctx).eq = eq(id,pm,sm);
+				((ExplistContext)_localctx).eq = eq(id,pm,sm,st);
 				setState(37);
-				((ExplistContext)_localctx).explisttail = explisttail(id,pm,sm);
+				((ExplistContext)_localctx).explisttail = explisttail(id,pm,sm,st);
 				ArrayList<Term> aux = ((ExplistContext)_localctx).explisttail.value;
 				                                               aux.add(0,((ExplistContext)_localctx).eq.value);
 				                                               ((ExplistContext)_localctx).value =  aux;
@@ -404,6 +414,7 @@ public class TermParser extends Parser {
 		public PredicadoId id;
 		public PredicadoManager pm;
 		public SimboloManager sm;
+		public String[] st;
 		public ArrayList<Term> value;
 		public EqContext eq;
 		public ExplisttailContext tail7;
@@ -414,11 +425,12 @@ public class TermParser extends Parser {
 			return getRuleContext(ExplisttailContext.class,0);
 		}
 		public ExplisttailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ExplisttailContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+		public ExplisttailContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st) {
 			super(parent, invokingState);
 			this.id = id;
 			this.pm = pm;
 			this.sm = sm;
+			this.st = st;
 		}
 		@Override public int getRuleIndex() { return RULE_explisttail; }
 		@Override
@@ -431,8 +443,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final ExplisttailContext explisttail(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
-		ExplisttailContext _localctx = new ExplisttailContext(_ctx, getState(), id, pm, sm);
+	public final ExplisttailContext explisttail(PredicadoId id,PredicadoManager pm,SimboloManager sm,String[] st) throws RecognitionException {
+		ExplisttailContext _localctx = new ExplisttailContext(_ctx, getState(), id, pm, sm, st);
 		enterRule(_localctx, 6, RULE_explisttail);
 		try {
 			setState(49);
@@ -444,9 +456,9 @@ public class TermParser extends Parser {
 				setState(43);
 				match(T__3);
 				setState(44);
-				((ExplisttailContext)_localctx).eq = eq(id,pm,sm);
+				((ExplisttailContext)_localctx).eq = eq(id,pm,sm,st);
 				setState(45);
-				((ExplisttailContext)_localctx).tail7 = explisttail(id,pm,sm);
+				((ExplisttailContext)_localctx).tail7 = explisttail(id,pm,sm,st);
 				ArrayList<Term> aux = ((ExplisttailContext)_localctx).tail7.value;
 				                                               aux.add(0,((ExplisttailContext)_localctx).eq.value);
 				                                               ((ExplisttailContext)_localctx).value = aux;
@@ -479,6 +491,7 @@ public class TermParser extends Parser {
 		public PredicadoId id;
 		public PredicadoManager pm;
 		public SimboloManager sm;
+		public String[] st;
 		public Term value;
 		public Token LETTER;
 		public EqContext eq;
@@ -487,11 +500,12 @@ public class TermParser extends Parser {
 			return getRuleContext(EqContext.class,0);
 		}
 		public LambdaContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public LambdaContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+		public LambdaContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st) {
 			super(parent, invokingState);
 			this.id = id;
 			this.pm = pm;
 			this.sm = sm;
+			this.st = st;
 		}
 		@Override public int getRuleIndex() { return RULE_lambda; }
 		@Override
@@ -504,8 +518,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final LambdaContext lambda(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
-		LambdaContext _localctx = new LambdaContext(_ctx, getState(), id, pm, sm);
+	public final LambdaContext lambda(PredicadoId id,PredicadoManager pm,SimboloManager sm,String[] st) throws RecognitionException {
+		LambdaContext _localctx = new LambdaContext(_ctx, getState(), id, pm, sm, st);
 		enterRule(_localctx, 8, RULE_lambda);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -517,7 +531,7 @@ public class TermParser extends Parser {
 			setState(53);
 			match(T__5);
 			setState(54);
-			((LambdaContext)_localctx).eq = eq(id,pm,sm);
+			((LambdaContext)_localctx).eq = eq(id,pm,sm,st);
 			Var v=new Var((new Integer((((LambdaContext)_localctx).LETTER!=null?((LambdaContext)_localctx).LETTER.getText():null).charAt(0))).intValue());
 			                                                            ((LambdaContext)_localctx).value =  new Bracket(v,((LambdaContext)_localctx).eq.value);
 			                                                           
@@ -538,6 +552,7 @@ public class TermParser extends Parser {
 		public PredicadoId id;
 		public PredicadoManager pm;
 		public SimboloManager sm;
+		public String[] st;
 		public ArrayList<Object> value;
 		public ArgumentsContext arguments;
 		public ExplistContext explist;
@@ -548,11 +563,12 @@ public class TermParser extends Parser {
 			return getRuleContext(ExplistContext.class,0);
 		}
 		public InstantiateContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public InstantiateContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+		public InstantiateContext(ParserRuleContext parent, int invokingState, PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st) {
 			super(parent, invokingState);
 			this.id = id;
 			this.pm = pm;
 			this.sm = sm;
+			this.st = st;
 		}
 		@Override public int getRuleIndex() { return RULE_instantiate; }
 		@Override
@@ -565,8 +581,8 @@ public class TermParser extends Parser {
 		}
 	}
 
-	public final InstantiateContext instantiate(PredicadoId id,PredicadoManager pm,SimboloManager sm) throws RecognitionException {
-		InstantiateContext _localctx = new InstantiateContext(_ctx, getState(), id, pm, sm);
+	public final InstantiateContext instantiate(PredicadoId id,PredicadoManager pm,SimboloManager sm,String[] st) throws RecognitionException {
+		InstantiateContext _localctx = new InstantiateContext(_ctx, getState(), id, pm, sm, st);
 		enterRule(_localctx, 10, RULE_instantiate);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -576,7 +592,7 @@ public class TermParser extends Parser {
 			setState(58);
 			match(T__6);
 			setState(59);
-			((InstantiateContext)_localctx).explist = explist(id,pm,sm);
+			((InstantiateContext)_localctx).explist = explist(id,pm,sm,st);
 			ArrayList<Object> arr=new ArrayList<Object>();
 			                                               if (((InstantiateContext)_localctx).arguments.value.size() != ((InstantiateContext)_localctx).explist.value.size())
 			                                                 throw new NoViableAltException(this);

@@ -10,6 +10,7 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -292,9 +293,16 @@ public abstract class Term implements Cloneable, Serializable{
         
         if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
             List<Var> li = TermUtilities.arguments(variables);
-            List<Var> li2 = TermUtilities.arguments(variables);
-            li.addAll(li2);
-            this.evaluar(li);
+            //List<Var> li2 = TermUtilities.arguments(variables);
+            //li.addAll(li2);
+            int nVar1 = ((App)((App) this).p).q.nPhi();
+            int nVar2 = ((App) this).q.nPhi();
+            List<Var> li2 = li.subList(nVar1+nVar2,li.size());
+            li2.addAll(li.subList(0, nVar1));
+            li2.addAll(li.subList(nVar1+nVar2,li.size()));
+            li2.addAll(li.subList(nVar1,nVar2));
+            //this.evaluar(li);
+            this.evaluar(li2);
         }
         Term arg2;
         arg2 = ((App)this).q;
@@ -1121,11 +1129,34 @@ public abstract class Term implements Cloneable, Serializable{
     }
     
     public Term evaluar(String vars) {
-        if ("".equals(vars))
+        if (";".equals(vars))
             return this;
         else {
-            vars = vars + ", "+ vars;
-            return evaluar(TermUtilities.arguments(vars));
+            //vars = vars + ", "+ vars;
+            String[] split_vars = vars.split(";");
+            String bound_vars = split_vars[0];
+            String free_vars = split_vars[1];
+            List<Var> li_bound;
+            List<Var> li_free;
+            if (bound_vars.equals("")) {
+                li_bound = new ArrayList<Var>();
+            }
+            else {
+                li_bound = TermUtilities.arguments(bound_vars);
+            }
+            if (free_vars.equals("")) {
+                li_free = new ArrayList<Var>();
+            }
+            else {
+                li_free = TermUtilities.arguments(free_vars);
+            }
+            int nVar1 = ((App)((App) this).p).q.nPhi() - li_free.size();
+            int nVar2 = ((App) this).q.nPhi() - li_free.size();
+            List<Var> li2 = li_free;
+            li2.addAll(li_bound.subList(0, nVar1));
+            li2.addAll(li_free);
+            li2.addAll(li_bound.subList(nVar1,nVar2));
+            return evaluar(li2);
         }
     }
     

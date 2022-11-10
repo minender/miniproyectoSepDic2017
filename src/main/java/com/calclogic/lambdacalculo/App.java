@@ -585,7 +585,7 @@ public class App extends Term{
                     Term aux_arg = arg;
                     int index = 1;
                     while (aux_arg instanceof Bracket) {
-                        values.put("v"+index,((Bracket) aux_arg).x.toString());
+                        values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s, numTeo));
                         index++;
                         aux_arg = ((Bracket) aux_arg).t;
                     }
