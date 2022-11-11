@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import com.calclogic.lambdacalculo.TypeVerificationException;
+import java.util.Collections;
 
 /**
  *
@@ -592,7 +593,10 @@ public class App extends Term{
                     Term aux_arg = arg;
                     int index = 1;
                     while (aux_arg instanceof Bracket) {
-                        values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s, numTeo));
+                        if (kind != 'I')
+                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s, numTeo));
+                        else
+                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(kind,s,"",position+(index+nArgs),appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
                         index++;
                         aux_arg = ((Bracket) aux_arg).t;
                     }
@@ -755,18 +759,21 @@ public class App extends Term{
            j++;
         }
         int nArgs;
+        boolean isQuantifier;
         if (aux instanceof Var) {
             if (aux.occur(new Var('E')))
                 id = s.getPropFunApp();
             else
                 id = s.getTermFunApp();
             nArgs = 0;
+            isQuantifier = false;
         }
         else {
             Const c = (Const) aux;
             Simbolo sym = s.getSimbolo(c.getId());
             id = sym.getId();
             nArgs = sym.getArgumentos();
+            isQuantifier = sym.isQuantifier();
         }
         if ( j > nArgs) {
             Simbolo sym;
@@ -786,13 +793,29 @@ public class App extends Term{
         else*/
         term = "C"+id;
         int i=1;
+        List<Var> boundVars = null;
         while (!stk.empty()) {
             Term arg = stk.pop();
+            if (arg instanceof Bracket && isQuantifier && boundVars == null) {
+                boundVars = new ArrayList<Var>();
+                Term aux_arg = arg;
+                while (aux_arg instanceof Bracket) {
+                    Bracket br = (Bracket) aux_arg;
+                    boundVars.add(br.x);
+                    aux_arg = br.t;
+                }
+            }
             /*if (i > nArgs)
              term = "C29("+term+"),"+arg.toStringFormatC(s,pos+i,0);
             else*/
             term += (i == 1/* && id != 29*/?"(":",")+arg.toStringFormatC(s,pos+i,id,rootId);
             i++;
+        }
+        if (boundVars != null) {
+            for(Var v: boundVars) {
+                term += (i == 1 ? "(" : ",") + v.toStringFormatC(s,pos+i,id,rootId);
+                i++;
+            }
         }
         return term+")";
     }
