@@ -501,6 +501,7 @@ public class App extends Term{
         String appId = "";
         stk.push(q);
         Term aux = p;
+        position = position+"-";
         if ('L' == kind) {
            stkS.push(appPosition+"2");
            appId = appPosition+"1";
@@ -748,6 +749,7 @@ public class App extends Term{
             && ((App)p).q.containT() )
             return q.toStringFormatC(s, pos, id, rootId);
         
+        pos = pos+"-";
         Stack<Term> stk = new Stack<Term>();
         String term;
         stk.push(q);
