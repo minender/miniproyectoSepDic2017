@@ -1155,7 +1155,7 @@ public abstract class Term implements Cloneable, Serializable{
             List<Var> li2 = li_free;
             li2.addAll(li_bound.subList(0, nVar1));
             li2.addAll(li_free);
-            li2.addAll(li_bound.subList(nVar1,nVar2));
+            li2.addAll(li_bound.subList(nVar1,nVar1+nVar2));
             return evaluar(li2);
         }
     }

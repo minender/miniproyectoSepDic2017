@@ -787,6 +787,7 @@ public class App extends Term{
             term += (i == 1/* && id != 29*/?"(":",")+arg.toStringFormatC(s,pos+i,id,rootId);
             i++;
         }
+        System.out.println("Ya lo que voy a retornar es: "+term+")");
         return term+")";
     }
     
