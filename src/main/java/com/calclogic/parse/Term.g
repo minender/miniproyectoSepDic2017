@@ -56,7 +56,7 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st] returns 
                                                             if (st[0].equals(""))
                                                                 st[0] = "" + ((char) ((Var) var).indice);
                                                             else
-                                                                st[0] = st[0] + "," + ((char) ((Var) var).indice);
+                                                                st[0] = ((char) ((Var) var).indice) + "," + st[0];
                                                             t = new Bracket((Var) var, t);
                                                         }
                                                         abstractedTerms.add(t);

@@ -126,7 +126,7 @@ public class Var extends Term{
     
     public int fresh(int n)
     {
-        return (n>indice?n:indice+1);
+        return (n!=indice?n:indice+1);
     }
     
     public Term traducBD()

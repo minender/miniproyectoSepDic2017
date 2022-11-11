@@ -1135,7 +1135,13 @@ public abstract class Term implements Cloneable, Serializable{
             //vars = vars + ", "+ vars;
             String[] split_vars = vars.split(";");
             String bound_vars = split_vars[0];
-            String free_vars = split_vars[1];
+            String free_vars;
+            if (split_vars.length == 1) {
+                free_vars = "";
+            }
+            else {
+                free_vars = split_vars[1];
+            }
             List<Var> li_bound;
             List<Var> li_free;
             if (bound_vars.equals("")) {

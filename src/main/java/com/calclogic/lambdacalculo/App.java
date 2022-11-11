@@ -240,7 +240,14 @@ public class App extends Term{
     
     public int fresh(int n)
     {
-        return q.fresh(p.fresh(n));
+        // (x2 x1).fresh(1)
+        int i = p.fresh(n);
+        int j = q.fresh(n);
+        if (i == j && j == n)
+            return n;
+        else
+            return this.maxVar()+1;
+        //return q.fresh(p.fresh(n));
     }
     
     public Term traducBD()
