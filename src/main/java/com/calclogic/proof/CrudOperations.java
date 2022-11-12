@@ -13,10 +13,6 @@ import java.util.List;
  * @author ronald
  */
 public interface CrudOperations {
-/*
-    public Term createBaseMethodInfer(String user, Term theoremHint, ArrayList<Object> instantiation, String instantiationString, 
-            Bracket leibniz, String leibnizString, Term theoremBeingProved, String method) 
-            throws TypeVerificationException;*/
     
     /**
      * This function gives the corresponding class of the specified
@@ -25,7 +21,7 @@ public interface CrudOperations {
      * @param method: Identifier of the method that will be created
      * @return The object with all variables and functions related to the method
      */
-    public GenericProofMethod createProofMethodObject(String method);
+    public GenericProofMethod returnProofMethodObject(String method);
 
     /**
      * The statement that is needed to prove changes inside a sub proof. This method 

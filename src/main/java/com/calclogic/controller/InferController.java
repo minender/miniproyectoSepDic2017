@@ -414,7 +414,7 @@ public class InferController {
                 lastLine = typedTerm;
             else {
                 method = crudOp.currentMethod(methodTerm).toString();
-                GenericProofMethod objectMethod = crudOp.createProofMethodObject(method);
+                GenericProofMethod objectMethod = crudOp.returnProofMethodObject(method);
 
                 if (objectMethod.getGroupMethod().equals("T")){
                     int index = objectMethod.transFirstOpInferIndex(typedTerm,false);
@@ -433,6 +433,7 @@ public class InferController {
             Sust sust = null;
             Equation eq;
             boolean zUnifiable = true;
+
             if (!leibniz.equals("")){
                 leibnizTerm =TermUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
                 eq = new Equation(leibnizTerm,lastLine);
@@ -549,7 +550,7 @@ public class InferController {
 
             if (
                   ((App)methodTermIter).p instanceof App &&
-                  ("B".equals(crudOp.createProofMethodObject( ((App)((App)methodTermIter).p).p.toString() ).getGroupMethod())) &&
+                  ("B".equals(crudOp.returnProofMethodObject( ((App)((App)methodTermIter).p).p.toString() ).getGroupMethod())) &&
                   (ProofBoolean.isBranchedProof2Started(methodTermIter))         
                )
             {
@@ -563,7 +564,7 @@ public class InferController {
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROOF TYPE
         Term infer;
         String strMethodTermIter = methodTermIter.toString();
-        GenericProofMethod objectMethod = crudOp.createProofMethodObject(strMethodTermIter);
+        GenericProofMethod objectMethod = crudOp.returnProofMethodObject(strMethodTermIter);
         
         try {
             infer = objectMethod.createBaseMethodInfer(username,statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
@@ -647,12 +648,12 @@ public class InferController {
         // CHECK puede ser una igualdad y pasar por equivalencia, esto hay que transformarlo usando arboles de deriv
 
         // We need this because in branched recursive methods we use And Introduction structure anyway
-        GenericProofMethod aiObject = crudOp.createProofMethodObject("AI");
+        GenericProofMethod aiObject = crudOp.returnProofMethodObject("AI");
 
         while (!methodStk.isEmpty()){
             Term methodTermAux = methodStk.pop();
             String strMethodTermAux = methodTermAux.toString();
-            objectMethod = crudOp.createProofMethodObject(strMethodTermAux);
+            objectMethod = crudOp.returnProofMethodObject(strMethodTermAux);
 
             if (isFinalSolution && methodTermAux instanceof Const) {
                 // Recursive branched method
@@ -674,7 +675,7 @@ public class InferController {
                 Term m = ((App)methodTermAux).p;
                 String strM = m.toString();
                 if (m != null){
-                    objectMethod = crudOp.createProofMethodObject(strM);
+                    objectMethod = crudOp.returnProofMethodObject(strM);
                     if ("B".equals(objectMethod.getGroupMethod())){
                         finalProof = aiObject.finishedBranchedRecursiveMethodProof(username,fatherProofs.pop(), finalProof);
                         if (isFinalSolution && !("AI".equals(strM))){
@@ -750,7 +751,7 @@ public class InferController {
                 respRetroceder = 0;
             }
             else {
-                GenericProofMethod objectMethod = crudOp.createProofMethodObject(currentMethod.toString());
+                GenericProofMethod objectMethod = crudOp.returnProofMethodObject(currentMethod.toString());
                 respRetroceder = solucion.retrocederPaso(username,method,objectMethod);
             }
             if (respRetroceder == 0) {
@@ -863,7 +864,7 @@ public class InferController {
                                             @PathVariable String username, 
                                             @PathVariable String nTeo)
     {
-        GenericProofMethod objectMethod = crudOp.createProofMethodObject(newMethod);
+        GenericProofMethod objectMethod = crudOp.returnProofMethodObject(newMethod);
         Boolean isRecursive = objectMethod.getIsRecursiveMethod();
         String groupMethod = objectMethod.getGroupMethod();
         boolean sideOrTransitive = ("SS".equals(newMethod) || "T".equals(groupMethod));

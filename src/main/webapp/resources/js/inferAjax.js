@@ -142,7 +142,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
 
 // Method to show the instantiation used of an already proven theorem, get a substitution
 // of it, or set if the substitution is made automatically or not.
-function instantiationAjax(operation){
+async function instantiationAjax(operation, variablesSaved=null){
     let opNum = instantiationDict[operation];
 
     if ((opNum !== 2) || ($('#nStatement_id').val() != "")){
@@ -152,12 +152,12 @@ function instantiationAjax(operation){
 
         if (opNum === 0){ // Show instantiation
             data["nStatement"] = $('#nStatement_id').val();
-            data["instanciacion"] = setSubstitutionOnInput('substitutionButtonsId');
+            data["instanciacion"] = await setSubstitutionOnInput('substitutionButtonsId');
         }
 
-        if (opNum === 2){ // Auntomatic substitution. (This is NOT an else if)
+        if (opNum === 2){ // Automatic substitution. (This is NOT an else if)
             data["nStatement"] = $('#nStatement_id').val();
-            data["leibniz"] = setInputValueOnParser('leibnizSymbolsId');
+            data["leibniz"] = await setInputValueOnParser('leibnizSymbolsId', variablesSaved);
             data["freeV"] = window["substitutionButtonsId._variables"].toString();
 
             url = action; 
@@ -170,9 +170,9 @@ function instantiationAjax(operation){
         }
 
         url += urlTermination[operation];
-        $("#modalLoading").css('display','inline-block');
+        $("loadingModal").css('display','inline-block');
 
-        $.ajax({
+        await $.ajax({
             type: 'POST',
             dataType: 'json',
             url,
@@ -190,7 +190,7 @@ function instantiationAjax(operation){
                             break;
 
                         case 1: // Set automatic substitution
-                            $('#auto-sust-op').html("automatic substitution" + (newData.auto ? "<i class=\"fa fa-check\"></i>" : "") );
+                            $('#auto-sust-op').html("automatic substitution" + (newData.auto ? `<i class="fa fa-check"></i>` : "") );
                             window['auto'] = newData.auto;
                             break;
 
@@ -214,7 +214,7 @@ function instantiationAjax(operation){
                     }
                 }
             }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                $("#modalLoading").css('display','none');
+                $("#loadingModal").css('display','none');
                 alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
             }
         });
@@ -258,6 +258,10 @@ function clickOperator(Math1,myField,teoid,vars){
             event = window.event;
         };
         var target = event.toElement || event.target;
+
+        // This is to avoid that the user selects the theorem by clicking any part of it that is
+        // not the main operator. If they click another part, this while will look for the parents
+        // until there are no more, so the value will be null, and therefore we will not enter the if.
         while (target && (!target.id || target.id !==targetString)) {
             target = target.parentNode;
         };
@@ -265,7 +269,7 @@ function clickOperator(Math1,myField,teoid,vars){
             var metodo = document.getElementById('metodosDemostracion').value;
             var check =  "";
             if (window['auto']){
-                check = "<i class=\"fa fa-check\"></i>";
+                check = `<i class="fa fa-check"></i>`;
             }
             var div = 
                 `<center>
@@ -273,11 +277,11 @@ function clickOperator(Math1,myField,teoid,vars){
                         <tr>
                             <td>Substitution:</td>
                             <td>
-                                <div class=\"dropdown\">
-                                    <button style=\"padding:.05rem .1rem;\" class=\"btn btn-secondary btn-sm dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"></button>
-                                    <div class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton\">
-                                        <a class=\"dropdown-item\" href=\"#\" onclick=\"instantiationAjax('showInstantiation');\" data-target=\"#instantiationModal\" data-toggle=\"modal\">show instantiation</a>
-                                        <a id=\"auto-sust-op\" class=\"dropdown-item\" href=\"#\" onclick=\"instantiationAjax('setAutomaticSubst');\" data-toggle=\"modal\">automatic substitution`+check+`</a>
+                                <div class="dropdown">
+                                    <button style="padding:.05rem .1rem;" class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" href="#" onclick="instantiationAjax('showInstantiation');" data-target="#instantiationModal" data-toggle="modal">show instantiation</a>
+                                        <a id="auto-sust-op" class="dropdown-item" href="#" onclick="instantiationAjax('setAutomaticSubst');" data-toggle="modal">automatic substitution`+check+`</a>
                                     </div>
                                 </div>
                             </td>

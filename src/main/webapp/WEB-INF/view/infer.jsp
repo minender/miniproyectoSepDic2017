@@ -346,8 +346,7 @@
                             <!-- Note: The logic of the onclick functions for these buttons is in InferForm.js -->
                             <input id ="BtnInferir" class="btn btn-default" type="submit" name="submitBtnI" value="Infer"/>
                             <br><br><input id ="BtnRetroceder" class="btn btn-default" name="submitBtnR" type="submit" value="Go back"> 
-                            <br><br><input id="BtnLimpiar" class="btn btn-default" type="button" value="Clean"
-                            onclick="cleanJax('leibnizSymbolsId'); cleanJaxSubstitution('substitutionButtonsId')">
+                            <br><br><input id="BtnLimpiar" class="btn btn-default" type="button" value="Clean">
                             <input id="Btn" type="hidden" name="submitBtn" value=""/>
                         </div>
                     </div>

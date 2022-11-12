@@ -149,9 +149,7 @@ function setSubstitutionOnInput(rootId){
  * @param rootId string id of the jaxSubstitution
  * @returns
  */
-function cleanJaxSubstitution(rootId){
-    
-
+async function cleanJaxSubstitution(rootId){
     rootId = rootId + '.';
     
     var textareaId = window[rootId + '_InputForm'];

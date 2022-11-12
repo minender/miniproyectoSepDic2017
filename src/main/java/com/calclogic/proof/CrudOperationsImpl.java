@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -33,6 +34,28 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class CrudOperationsImpl implements CrudOperations {
+    @Autowired
+    private GenericProofMethod genericMethod;
+    @Autowired
+    private AndIntroductionMethod andIntroduction;
+    @Autowired
+    private CaseAnalysisMethod caseAnalysis;
+    @Autowired
+    private ContradictionMethod contradiction;
+    @Autowired
+    private CounterReciprocalMethod counterReciprocal;
+    @Autowired
+    private DirectMethod directMethod;
+    @Autowired
+    private MutualImplicationMethod mutualImplication;
+    @Autowired
+    private StartingOneSideMethod startingOneSide;
+    @Autowired
+    private StrengtheningMethod strengthening;
+    @Autowired
+    private TransitivityMethod transitivity;
+    @Autowired
+    private WeakeningMethod weakening;
 
     /**
      * This function gives the corresponding class of the specified
@@ -43,30 +66,30 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public GenericProofMethod createProofMethodObject(String method) {
+    public GenericProofMethod returnProofMethodObject(String method) {
         switch (method){
             case "DM":
-                return new DirectMethod();
+                return directMethod;
             case "SS":
-                return new StartingOneSideMethod();
+                return startingOneSide;
             case "TR":
-                return new TransitivityMethod();
+                return transitivity;
             case "WE":
-                return new WeakeningMethod();
+                return weakening;
             case "ST":
-                return new StrengtheningMethod();
+                return strengthening;
             case "CR":
-                return new CounterReciprocalMethod();
+                return counterReciprocal;
             case "CO":
-                return new ContradictionMethod();
+                return contradiction;
             case "AI":
-                return new AndIntroductionMethod();
+                return andIntroduction;
             case "MI":
-                return new MutualImplicationMethod();
+                return mutualImplication;
             case "CA":
-                return new CaseAnalysisMethod();
+                return caseAnalysis;
             default:
-                return new GenericProofMethod();
+                return genericMethod;
         }
     }
 
@@ -89,7 +112,7 @@ public class CrudOperationsImpl implements CrudOperations {
         }
         else{
             String strMethod = ((App)method).p.toString().substring(0, 2);
-            GenericProofMethod objectMethod = createProofMethodObject(strMethod);
+            GenericProofMethod objectMethod = returnProofMethodObject(strMethod);
 
             if (objectMethod.getIsRecursiveMethod()){
                 beginFormula = objectMethod.initFormula(beginFormula);
@@ -159,7 +182,6 @@ public class CrudOperationsImpl implements CrudOperations {
     @Transactional
     public Term getSubProof(Term typedTerm, Term method, boolean isRecursive) {
         Term auxMethod = method;
-        String m = null;
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
                     ((App)((App)auxMethod).p).p.toString().equals("AI") && 
@@ -200,7 +222,7 @@ public class CrudOperationsImpl implements CrudOperations {
     @Transactional
     public List<Term> getFatherAndSubProof(Term typedTerm, Term method, List<Term> li) {
         Term auxMethod = method;
-        String m = null;
+        String m;
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
                     ((m=((App)((App)auxMethod).p).p.toString()).equals("AI")||m.equals("CA")) && 
@@ -358,6 +380,7 @@ public class CrudOperationsImpl implements CrudOperations {
     /**
      * This method constructs a new derivation tree adding an one step infer to a proof.This is not a pure function; it may change the the values of its given params in an external context.
      * 
+     * @param user
      * @param proof: Term that represents a proof
      * @param infer: Term that represents one step infer
      * @param objectMethod: object with all the functions related to a method
@@ -444,6 +467,7 @@ public class CrudOperationsImpl implements CrudOperations {
      * This method add 'formula' in one line sub proof for the current sub proof in 
      * (typedTerm, method).
      *  
+     * @param usr
      * @param formula: first line to add for the current sub proof
      * @param typedTerm: term that represent the current proof
      * @param method: Term that represent the current state of the proof method. This
@@ -462,7 +486,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 Term aux = addFirstLineSubProof(usr,formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
                                                                                     ((App)auxMethod).q);
 
-                GenericProofMethod objectMethod = createProofMethodObject("AI");
+                GenericProofMethod objectMethod = returnProofMethodObject("AI");
                 return objectMethod.finishedMethodProof(typedTerm,aux);
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod)) {

@@ -103,11 +103,14 @@ $(function() {
         }
     });
     
-    $('#BtnLimpiar').click(function(){
+    $('#BtnLimpiar').click(async function(){
+        await cleanJax('leibnizSymbolsId'); 
+        await cleanJaxSubstitution('substitutionButtonsId');
         $('#nStatement_id').val("");
         $('#instanciacion_id').val("");
         $('#leibniz_id').val("");
         $('#stbox').text("");
+        
         document.getElementById('substitutionButtonsId.SubstitutionDiv').children[0].innerHTML = "Substitution:";
     });
     
@@ -120,71 +123,21 @@ function hasNumericClass(element){
         clases = clases.split(" ");
         for (let i = 0; i<clases.length;i++){
             if ($.isNumeric(clases[i])){
-                isNumeric = true
+                isNumeric = true;
             }
         }
     }
-    return isNumeric
-    
+    return isNumeric;  
 }
 
 function leibnizMouse(p1,p2){
-
     if (p1===p2) {
-        $('#leibniz_id').val(inferRecoverC(leibniz[p1-0], leibnizLatex[p1-0],'leibnizSymbolsId_'));
-        if (window['auto']){
-            instantiationAjax("automaticSubst");
-        }
-        return;
-    }
-
-    /*var resp;
-    var nivel;
-    var padres = [];
-    if(p1[0] == p2[0]){
-    	resp = p1[0];
-        
-    	// Modify notation properly and set it to the view
-        $('#leibniz_id').val(inferRecoverC(leibniz[resp], leibnizLatex[resp]));
-        return;
-    }  
-    if(p1[1] <= p2[1]){
-    	nivel = p1[1];
-        padres[0] = p1[0];
-    	padres[1] = $("#" + p2[0]).parents("." + nivel).attr("id");
-    }
-    else{
-        
-    	nivel = p2[1];
-        padres[0] = $("#" + p1[0]).parents("." + nivel).attr("id");
-    	padres[1] = p2[0];
-    }
-    if(padres[0] == padres[1]){
-    	resp = padres[0];
-    }
-    else{
-        closestCommonAncestor = $("#" + p1[0]).parents().has($("#" + p2[0])).first()[0];
-        if (closestCommonAncestor){
-            if (hasNumericClass(closestCommonAncestor)){
-                resp = $(closestCommonAncestor).attr("id")
-            }else{
-                current = closestCommonAncestor
-                while ($(current).parent().length > 0 && !hasNumericClass(current)){
-                    current = $(current).parent()[0]
-                }
-                if (!hasNumericClass(current)){
-                    resp = $(".0").attr("id")
-                }else{
-                    resp = $(current).attr("id")
-                }
+        // To be executed inside inferRecoverC
+        let auxiliarFunction = (variablesSaved) => {
+            if (window['auto']){
+                instantiationAjax("automaticSubst", variablesSaved);
             }
-        }else{
-            resp = $("#" + padres[0]).parent().attr("id");      
         }
+        $('#leibniz_id').val(inferRecoverC(leibniz[p1], leibnizLatex[p1],'leibnizSymbolsId_', auxiliarFunction));
     }
-    
-    // Modify notation properly and set it to the view
-    $('#leibniz_id').val(inferRecoverC(leibniz[resp], leibnizLatex[resp]));
-    
-    return;*/
 }
