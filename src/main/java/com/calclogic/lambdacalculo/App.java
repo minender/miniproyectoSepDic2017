@@ -772,7 +772,11 @@ public class App extends Term{
         }
         else {
             Const c = (Const) aux;
-            Simbolo sym = s.getSimbolo(c.getId());
+            Simbolo sym;
+            if (c.getId() != 0)
+                sym = s.getSimbolo(c.getId());
+            else
+                sym = s.getSimbolo(1);
             id = sym.getId();
             nArgs = sym.getArgumentos();
             isQuantifier = sym.isQuantifier();
