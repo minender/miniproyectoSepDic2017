@@ -96,8 +96,14 @@ public class TypedA extends Const implements TypedTerm{
     {
         if (variables_ != null && !variables_.equals("")) {
            List<Var> li = TermUtilities.arguments(variables_);
-           li.addAll(li);
-           return type_.evaluar(li);
+           int nVar1 = ((App)((App)type_).p).q.nPhi();        
+           int nVar2 = ((App)type_).q.nPhi();
+           List<Var> li2 = li.subList(nVar1+nVar2,li.size());
+           li2.addAll(li.subList(0, nVar1));
+           li2.addAll(li.subList(nVar1+nVar2,li.size()));
+           li2.addAll(li.subList(nVar1,nVar2));
+           
+           return type_.evaluar(li2);
         } else {
            return type_.evaluar();
         }

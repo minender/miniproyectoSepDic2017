@@ -56,6 +56,7 @@ import com.calclogic.parse.IsNotInDBException;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
+import com.calclogic.parse.TermUtilities;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
@@ -601,21 +602,21 @@ public class PerfilController {
         PredicadoId predicadoid2 = new PredicadoId();
         predicadoid2.setLogin(username);
         
-        CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
-        TermLexer lexer = new TermLexer(in);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        TermParser parser = new TermParser(tokens);
         Term teoTerm;
         try{ //si la sintanxis no es correcta ocurre una Exception
-        
-            teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager).value;
+            System.out.println(agregarTeorema.getTeorema());
+            teoTerm = TermUtilities.getTerm(agregarTeorema.getTeorema(), predicadoid2, predicadoManager, simboloManager);
+            System.out.println(teoTerm);
             String variables = teoTerm.stFreeVars();
+            System.out.println(variables);
+            /*List<String> l = new ArrayList<String>();
+            teoTerm.traducBD(l); */
             if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
                 ((App)((App)teoTerm).p).p instanceof Const && 
                 ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
-                  ((Const)((App)((App)teoTerm).p).p).getId()==13
+                  ((Const)((App)((App)teoTerm).p).p).getId()==11
                 )
-               ) 
+               )
             {
                 Term arg1, arg2;
                 arg1 = ((App)((App)teoTerm).p).q;
@@ -636,6 +637,8 @@ public class PerfilController {
                 }
                 teoTerm = new App(new App(new Const(0,"="), arg2), teoTerm);
             } 
+            /*String aux = l.toString();
+            variables = aux.substring(1,aux.length()-1)+", "+variables;*/
             Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
             if (null != test) {
                 throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
@@ -711,7 +714,7 @@ public class PerfilController {
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategorias());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-            map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
+            map.addAttribute("mensaje", "The theorem can't be save because "+e.alias);
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
             map.addAttribute("overflow","hidden");
@@ -722,7 +725,7 @@ public class PerfilController {
             return "agregarTeorema";
         }
         catch(IsNotInDBException e){
-            String hdr = parser.getErrorHeader(e);
+            String hdr = "";//parser.getErrorHeader(e);
             String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", usr);
             map.addAttribute("agregarTeorema",agregarTeorema);
@@ -742,7 +745,7 @@ public class PerfilController {
             return "agregarTeorema";
         }
         catch(RecognitionException e){
-            String hdr = parser.getErrorHeader(e);
+            String hdr = ""; //parser.getErrorHeader(e);
             String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", user);
             map.addAttribute("infer",new InfersForm());

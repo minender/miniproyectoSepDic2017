@@ -94,6 +94,8 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract Term traducBD();
     
+    public abstract Term traducBD(List<String> l);
+    
     public abstract List<Term> contandotraducBD();
     
     public abstract Term bracketAbsBD(Var x);
@@ -687,7 +689,7 @@ public abstract class Term implements Cloneable, Serializable{
                 else if(r.tipo.l)
                     return ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);
                 else
-                    return this.invBraBD(vars.remove(0).indice);
+                    return this.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
             }
             else if(r.context instanceof App)
             {
@@ -699,7 +701,7 @@ public abstract class Term implements Cloneable, Serializable{
                      else if (r.tipo.l)
                         ((App)r.context).p=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
                      else
-                        ((App)r.context).p=t.invBraBD(vars.remove(0).indice);
+                        ((App)r.context).p=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
                  }
                  else
                  {
@@ -708,8 +710,9 @@ public abstract class Term implements Cloneable, Serializable{
                         ((App)r.context).q=t.kappa();
                      else if(r.tipo.l)
                         ((App)r.context).q=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                     else 
-                        ((App)r.context).q=t.invBraBD(vars.remove(0).indice);
+                     else { 
+                        ((App)r.context).q=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
+                     }
                  }
             }
             else if(r.context instanceof Bracket)
@@ -720,7 +723,7 @@ public abstract class Term implements Cloneable, Serializable{
                  else if(r.tipo.l)
                      ((Bracket)r.context).t=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
                  else 
-                     ((Bracket)r.context).t=t.invBraBD(vars.remove(0).indice);
+                     ((Bracket)r.context).t=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
             }
         }
         

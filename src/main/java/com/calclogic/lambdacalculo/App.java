@@ -248,6 +248,11 @@ public class App extends Term{
         return new App(p.traducBD(),q.traducBD());
     }
     
+    public Term traducBD(List<String> l)
+    {
+        return new App(p.traducBD(l),q.traducBD(l));
+    }
+    
     public List<Term> contandotraducBD(){
         List<Term> list1=p.contandotraducBD();
         for(int i=0; i<list1.size() ;i++)
@@ -585,7 +590,7 @@ public class App extends Term{
                     Term aux_arg = arg;
                     int index = 1;
                     while (aux_arg instanceof Bracket) {
-                        values.put("v"+index,((Bracket) aux_arg).x.toString());
+                        values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s,numTeo));
                         index++;
                         aux_arg = ((Bracket) aux_arg).t;
                     }
