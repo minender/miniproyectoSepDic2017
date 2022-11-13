@@ -292,17 +292,18 @@ public abstract class Term implements Cloneable, Serializable{
     public Term setToPrinting(String variables) {
         
         if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
-            List<Var> li = TermUtilities.arguments(variables);
-            //List<Var> li2 = TermUtilities.arguments(variables);
-            //li.addAll(li2);
-            int nVar1 = ((App)((App) this).p).q.nPhi();
-            int nVar2 = ((App) this).q.nPhi();
-            List<Var> li2 = li.subList(nVar1+nVar2,li.size());
-            li2.addAll(li.subList(0, nVar1));
-            li2.addAll(li.subList(nVar1+nVar2,li.size()));
-            li2.addAll(li.subList(nVar1,nVar2));
-            //this.evaluar(li);
-            this.evaluar(li2);
+            return evaluar(variables);
+            // List<Var> li = TermUtilities.arguments(variables);
+            // //List<Var> li2 = TermUtilities.arguments(variables);
+            // //li.addAll(li2);
+            // int nVar1 = ((App)((App) this).p).q.nPhi();
+            // int nVar2 = ((App) this).q.nPhi();
+            // List<Var> li2 = li.subList(nVar1+nVar2,li.size());
+            // li2.addAll(li.subList(0, nVar1));
+            // li2.addAll(li.subList(nVar1+nVar2,li.size()));
+            // li2.addAll(li.subList(nVar1,nVar2));
+            // //this.evaluar(li);
+            // this.evaluar(li2);
         }
         Term arg2;
         arg2 = ((App)this).q;

@@ -55,9 +55,8 @@
                 </td>
                 <td>
                 <select onchange="changeTeoria()" id="selectTeoria">
-                    <option value="0" selected>Select a theory</option>
                     <c:forEach items="${teorias}" var="teoria">
-                        <option value="${teoria.getId()}">${teoria.getNombre()}</option>
+                        <option value="${teoria.getId()}" <c:if test="$(teoria.getId() == usuario.getTeoria().getId())">selected</c:if>>${teoria.getNombre()}</option>
                     </c:forEach>
                 </select>
                 </td>

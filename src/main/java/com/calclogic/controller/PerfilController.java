@@ -779,13 +779,14 @@ public class PerfilController {
         Teorema teorema = teoremaManager.getTeorema(teoId);
         Term teoTerm = teorema.getTeoTerm();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false);
+        /**
         try {
             Term testTerm = teoTerm.evaluar(resuelve.getVariables());
             System.out.println(testTerm);
             System.out.println(testTerm.getType(simboloManager));
         } catch (TypeVerificationException ex) {
             System.out.println("error de tipo");
-        }
+        }*/
         
         String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
         String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
@@ -904,8 +905,9 @@ public class PerfilController {
                 if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                 }
-                vars = teoTerm.stFreeVars();;
+                vars = teoTerm.stFreeVars();
                 teoTerm = teoTerm.toEquality(vars);
+                vars = boundVars[0] + ";" + vars;
                 teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString(), teoTerm, vars);
                 if (teorema == null) {
                     throw new CategoriaException("Couldn't edit theorem");
