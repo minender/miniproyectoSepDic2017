@@ -35,7 +35,7 @@
                                                 
             $(function(){
                 
-                setForms(${elegirMetodo});
+                setViewState(${elegirMetodo});
                     
                 $("#metodosDemostracion").change(function(){
                     let commonPrefix = "Are you sure you want to use the";
@@ -275,8 +275,7 @@
                                     let div = document.getElementById("metateoIdName"+id);
                                     div.innerHTML = newData.string;
                                     MathJax.Hub.Typeset();
-                                    elem.style.display = "inline";
-                                    elem2.style.display = "inline";
+                                    elem.style.display = elem2.style.display = "inline";
                                 }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
                                     alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
                                 }
@@ -285,8 +284,7 @@
                         // Case when the metatheorems had been generated previously, 
                         // so we only need to show them again
                         else {
-                            elem.style.display = "inline";
-                            elem2.style.display = "inline";
+                            elem.style.display = elem2.style.display = "inline";
                         }
                     }
                 };

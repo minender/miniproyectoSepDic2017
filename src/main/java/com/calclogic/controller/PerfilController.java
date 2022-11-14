@@ -548,7 +548,6 @@ public class PerfilController {
         }
         
         Usuario usr = usuarioManager.getUsuario(username);
-        System.out.println(usr.getTeoria());
         List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));

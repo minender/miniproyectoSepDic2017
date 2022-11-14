@@ -294,17 +294,18 @@ public abstract class Term implements Cloneable, Serializable{
     public Term setToPrinting(String variables) {
         
         if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
-            List<Var> li = TermUtilities.arguments(variables);
-            //List<Var> li2 = TermUtilities.arguments(variables);
-            //li.addAll(li2);
-            int nVar1 = ((App)((App) this).p).q.nPhi();
-            int nVar2 = ((App) this).q.nPhi();
-            List<Var> li2 = li.subList(nVar1+nVar2,li.size());
-            li2.addAll(li.subList(0, nVar1));
-            li2.addAll(li.subList(nVar1+nVar2,li.size()));
-            li2.addAll(li.subList(nVar1,nVar2));
-            //this.evaluar(li);
-            this.evaluar(li2);
+            this.evaluar(variables);
+            // List<Var> li = TermUtilities.arguments(variables);
+            // //List<Var> li2 = TermUtilities.arguments(variables);
+            // //li.addAll(li2);
+            // int nVar1 = ((App)((App) this).p).q.nPhi();
+            // int nVar2 = ((App) this).q.nPhi();
+            // List<Var> li2 = li.subList(nVar1+nVar2,li.size());
+            // li2.addAll(li.subList(0, nVar1));
+            // li2.addAll(li.subList(nVar1+nVar2,li.size()));
+            // li2.addAll(li.subList(nVar1,nVar2));
+            // //this.evaluar(li);
+            // this.evaluar(li2);
         }
         Term arg2;
         arg2 = ((App)this).q;
@@ -1159,8 +1160,8 @@ public abstract class Term implements Cloneable, Serializable{
             else {
                 li_free = TermUtilities.arguments(free_vars);
             }
-            int nVar1 = ((App)((App) this).p).q.nPhi() - li_free.size();
-            int nVar2 = ((App) this).q.nPhi() - li_free.size();
+            int nVar1 = (((App)((App) this).p).q.nPhi()!=0?((App)((App) this).p).q.nPhi() - li_free.size():0);
+            int nVar2 = (((App) this).q.nPhi()!=0?((App) this).q.nPhi() - li_free.size():0);
             List<Var> li2 = li_free;
             li2.addAll(li_bound.subList(0, nVar1));
             li2.addAll(li_free);

@@ -1,6 +1,7 @@
 $(function() {
     var form = $('#inferForm');
     
+    // "Infer" button
     $("#BtnInferir").click(async function(ev){ 
         if (buttonsEnabled){
             await setInputValueOnParser('leibnizSymbolsId');
@@ -9,12 +10,14 @@ $(function() {
             $("#Btn").val("Inferir");
             var formData = form.serialize();
             $("#loadingModal").css('display','inline-block');
+
             $.ajax({
                 url: $(form).attr('action'),
                 type: 'POST',
                 dataType: 'json',
                 data: formData,
                 success: function(data) {
+
                     $("#loadingModal").css('display','none');
                     if(data.errorParser2 !== null){
                         alert(data.Parser2);
@@ -25,16 +28,10 @@ $(function() {
                     else{
                         $('#formula').html(data.historial);
                         MathJax.Hub.Typeset();
+
                         var proof = $('.proof');
                         proof.scrollTop(proof[0].scrollHeight);
-                        /*var nSol = $('#nSolucion').val();
-                        if(nSol==="new"){
-                            $('#nSolucion').val(data.nSol);
-                            nSol = $('#nSolucion').val();
-                            var url = $(form).attr('action');
-                            url = url.replace("new",nSol);
-                            $(form).attr('action',url);
-                        }*/
+
                         if(data.resuelto === "1"){
                             alert("Congratulations you have found a proof of the theorem!!");
                             window.location = $("#linkMyTheorems").attr("href");
@@ -58,9 +55,7 @@ $(function() {
                             cleanJax('leibnizSymbolsId');
                             cleanJaxSubstitution('substitutionButtonsId');
                         }
-                        //$("#nuevoMetodo").val("0");
                     }
-                    
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) { 
                     $("#loadingModal").css('display','none');
@@ -70,6 +65,7 @@ $(function() {
         }
     });
     
+    // "Go back" button
     $("#BtnRetroceder").click(function(ev){
         if (buttonsEnabled){    
             ev.preventDefault();
@@ -93,16 +89,17 @@ $(function() {
                     $('#stbox').text("");
                     cleanJax('leibnizSymbolsId');
                     cleanJaxSubstitution('substitutionButtonsId');
-                    setForms(data.cambiarMetodo);                    
+                    setViewState(data.cambiarMetodo);                    
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                  $("#loadingModal").css('display','none');
-                  alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+                    $("#loadingModal").css('display','none');
+                    alert("Status: " + textStatus); alert("Error: " + errorThrown); 
                 }
             });
         }
     });
     
+    // "Clean" button
     $('#BtnLimpiar').click(async function(){
         await cleanJax('leibnizSymbolsId'); 
         await cleanJaxSubstitution('substitutionButtonsId');
@@ -116,20 +113,7 @@ $(function() {
     
 });
 
-function hasNumericClass(element){
-    let clases = $(element).attr("class");
-    isNumeric = false;
-    if (clases){
-        clases = clases.split(" ");
-        for (let i = 0; i<clases.length;i++){
-            if ($.isNumeric(clases[i])){
-                isNumeric = true;
-            }
-        }
-    }
-    return isNumeric;  
-}
-
+// This is activated when the user highlights part of the last line of the demonstration
 function leibnizMouse(p1,p2){
     if (p1===p2) {
         // To be executed inside inferRecoverC

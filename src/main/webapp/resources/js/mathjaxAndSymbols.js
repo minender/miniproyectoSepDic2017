@@ -647,10 +647,9 @@ function inferRecoverC(cNotation, latexNotation, rootId, callback=null){
     var args;
     var arg;
     var var1;
-    for(var i = 0; i<n; i++){
-        
+
+    for(var i = 0; i<n; i++){ 
         currentChar = cNotation[i];
-        
         
         // If find an Input box information study it 
         if(currentChar == 'I' && cNotation.substring(i, i + 6) == "Input{"){
@@ -675,14 +674,11 @@ function inferRecoverC(cNotation, latexNotation, rootId, callback=null){
             variable = args[0];
             id = args[1];
             parentSymbolId = args[2].replace("phatherOpId", "");//take only the id 
-            
-            
-            
+        
             newParserString += "Input{" + id ;
             variablesSaved[id] = variable;
             
-            // SET INFORMATION OF THIS INPUT IN THE GLOBAL DICTIONARY
-            
+            // SET INFORMATION OF THIS INPUT IN THE GLOBAL DICTIONARY 
             jaxInputDictionary[id] = {};
             
             // If the element is different than the root
@@ -694,8 +690,6 @@ function inferRecoverC(cNotation, latexNotation, rootId, callback=null){
             
             // set parent symbol
             jaxInputDictionary[id]['simboloId'] = parentSymbolId;
-            
-            
         }
         
         newParserString += currentChar;
