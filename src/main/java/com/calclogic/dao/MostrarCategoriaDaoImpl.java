@@ -43,23 +43,12 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
      */ 
     @Override
     @Transactional
-    public void deleteMostrarCategoria(int id){
-        MostrarCategoria MostrarCategoria = (MostrarCategoria) sessionFactory.getCurrentSession().load(
-				MostrarCategoria.class, id);
+    public void deleteMostrarCategoria(MostrarCategoria MostrarCategoria){
+        //MostrarCategoria MostrarCategoria = (MostrarCategoria) sessionFactory.getCurrentSession().load(
+	//			MostrarCategoria.class, id);
         if (null != MostrarCategoria) {
         	this.sessionFactory.getCurrentSession().delete(MostrarCategoria);
         }
-    }
-    
-    /**
-     * Method to get a MostrarCategoria object by its principal key.
-     * This query is made using standard Hibernate library functions.
-     * @param id Is the principal key of the MostrarCategoria object.
-     */
-    @Override
-    @Transactional
-    public MostrarCategoria getMostrarCategoria(int id){
-        return (MostrarCategoria)this.sessionFactory.getCurrentSession().get(MostrarCategoria.class,id);
     }
     
     /**

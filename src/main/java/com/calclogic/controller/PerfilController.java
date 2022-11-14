@@ -434,7 +434,7 @@ public class PerfilController {
             if (!answer.getListaIdCategorias().contains(categoriaId)){
                 Categoria categoria = categoriaManager.getCategoria(categoriaId);
                 MostrarCategoria mostrarCategoria = mostrarCategoriaManager.getMostrarCategoriaByCategoriaAndUsuario(categoria, currentUser);
-                mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria.getId());
+                mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria);
             }
         }
         

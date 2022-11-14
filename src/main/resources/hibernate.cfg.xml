@@ -20,6 +20,7 @@
     <mapping resource="com/calclogic/entity/Materia.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Teoria.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Simbolo.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/Incluye.hbm.xml"/>
     <mapping resource="com/calclogic/entity/MostrarCategoria.hbm.xml"/>
     <mapping resource="com/calclogic/entity/ProofTemplate.hbm.xml"/>
   </session-factory>
