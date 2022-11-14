@@ -41,7 +41,8 @@ public class TermUtilities {
 		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 		
 		// get the value of the parser 
-		Term t = parser.start_rule(id, pm, sm).value;
+                String[] boundVars = {""};
+		Term t = parser.start_rule(id, pm, sm, boundVars).value;
 		
 		return t;
 	}
@@ -65,7 +66,8 @@ public class TermUtilities {
 		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 		
 		// get the value of the parser 
-		ArrayList<Object> arr = parser.instantiate(id, pm, sm).value;
+                String[] boundVars = {""};
+		ArrayList<Object> arr = parser.instantiate(id, pm, sm, boundVars).value;
 		
 		return arr;
 	}
@@ -89,7 +91,8 @@ public class TermUtilities {
 		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 		
 		// get the value of the parser 
-		Term t = parser.lambda(id, pm, sm).value;
+                String[] boundVars = {""};
+		Term t = parser.lambda(id, pm, sm, boundVars).value;
 		
 		return t;
 	}

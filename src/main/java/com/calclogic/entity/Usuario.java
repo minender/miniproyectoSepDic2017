@@ -29,6 +29,7 @@ public class Usuario  implements java.io.Serializable {
      private Set terminos = new HashSet(0);
      private Set dispones = new HashSet(0);
      private Set resuelves = new HashSet(0);
+     private Teoria teoria;
 
     public Usuario() {
     }
@@ -112,6 +113,15 @@ public class Usuario  implements java.io.Serializable {
     public void setMateria(Materia materia) {
         this.materia = materia;
     }
+    
+    public Teoria getTeoria() {
+        return this.teoria;
+    }
+    
+    public void setTeoria(Teoria teoria) {
+        this.teoria = teoria;
+    }
+    
     public boolean isAdmin() {
         return this.admin;
     }

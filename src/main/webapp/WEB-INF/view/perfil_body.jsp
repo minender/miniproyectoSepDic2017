@@ -4,6 +4,7 @@
     Author     : federico
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -48,6 +49,39 @@
             <tr><td>Last Name:</td><td>${usuario.getApellido()}</td></tr>
             <tr><td>Mail:</td><td>${usuario.getCorreo()}</td></tr>
             <tr><td>&nbsp;</td><td><a href="editar"><button type="button" class="btn btn-default">Edit Profile</button></a></td></tr>
+            <tr>
+                <td>
+                    Select Theory
+                </td>
+                <td>
+                <select onchange="changeTeoria()" id="selectTeoria">
+                    <option value="0" selected>Select a theory</option>
+                    <c:forEach items="${teorias}" var="teoria">
+                        <option value="${teoria.getId()}">${teoria.getNombre()}</option>
+                    </c:forEach>
+                </select>
+                </td>
+            </tr>
           </table>
         </div>
       </div>
+
+            <script>
+                function changeTeoria() {
+                    var idTeo = document.getElementById("selectTeoria").value;
+                    var url = window.location.href + "/changeTheory/" + idTeo;
+                    console.log(url);
+                    $("#modalLoading").css('display','inline-block');
+                    $.ajax({
+                        type:'POST',
+                        url: url,
+                        data: {},
+                        success: function(data){
+                            $("#modalLoading").css('display','none');
+                            alert(data);
+                            location.reload();
+                            //MathJax.Hub.Typeset();
+                        }
+                    });
+                }
+            </script>

@@ -9,12 +9,13 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import com.calclogic.lambdacalculo.TypeVerificationException;
+import java.util.Collections;
 
 /**
  *
@@ -240,7 +241,14 @@ public class App extends Term{
     
     public int fresh(int n)
     {
-        return q.fresh(p.fresh(n));
+        // (x2 x1).fresh(1)
+        int i = p.fresh(n);
+        int j = q.fresh(n);
+        if (i == j && j == n)
+            return n;
+        else
+            return this.maxVar()+1;
+        //return q.fresh(p.fresh(n));
     }
     
     public Term traducBD()
@@ -498,6 +506,7 @@ public class App extends Term{
         String appId = "";
         stk.push(q);
         Term aux = p;
+        position = position+"-";
         if ('L' == kind) {
            stkS.push(appPosition+"2");
            appId = appPosition+"1";
@@ -541,7 +550,7 @@ public class App extends Term{
         // ***** MISSING EXPLANATION
         if (j > nArgs) {
             App newTerm;
-            if (simpleOrAbrv && p instanceof Var && p.occur(new Var('E'))) {
+            if ((simpleOrAbrv||'I' == kind)&& p instanceof Var ){//&& p.occur(new Var('E'))) {
                 sym = s.getSimbolo(s.getPropFunApp());
                 newTerm = new App(new App(new Const(s.getPropFunApp(),"c_{"+s.getPropFunApp()+"}"),p),q);
             }
@@ -590,7 +599,10 @@ public class App extends Term{
                     Term aux_arg = arg;
                     int index = 1;
                     while (aux_arg instanceof Bracket) {
-                        values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s,numTeo));
+                        if (kind != 'I')
+                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s, numTeo));
+                        else
+                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(kind,s,"",position+(index+nArgs),appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
                         index++;
                         aux_arg = ((Bracket) aux_arg).t;
                     }
@@ -738,6 +750,11 @@ public class App extends Term{
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId) {
         
+        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
+            && ((App)p).q.containT() )
+            return q.toStringFormatC(s, pos, id, rootId);
+        
+        pos = pos+"-";
         Stack<Term> stk = new Stack<Term>();
         String term;
         stk.push(q);
@@ -749,23 +766,30 @@ public class App extends Term{
            j++;
         }
         int nArgs;
+        boolean isQuantifier;
         if (aux instanceof Var) {
             if (aux.occur(new Var('E')))
                 id = s.getPropFunApp();
             else
                 id = s.getTermFunApp();
             nArgs = 0;
+            isQuantifier = false;
         }
         else {
             Const c = (Const) aux;
-            Simbolo sym = s.getSimbolo(c.getId());
+            Simbolo sym;
+            if (c.getId() != 0)
+                sym = s.getSimbolo(c.getId());
+            else
+                sym = s.getSimbolo(1);
             id = sym.getId();
             nArgs = sym.getArgumentos();
+            isQuantifier = sym.isQuantifier();
         }
         if ( j > nArgs) {
             Simbolo sym;
             App newTerm;
-            if (false) { //p instanceof Var && p.occur(new Var('E'))) {
+            if (p instanceof Var){// && p.occur(new Var('E'))) {
                 sym = s.getSimbolo(s.getPropFunApp());
                 newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
             }
@@ -780,13 +804,29 @@ public class App extends Term{
         else*/
         term = "C"+id;
         int i=1;
+        List<Var> boundVars = null;
         while (!stk.empty()) {
             Term arg = stk.pop();
+            if (arg instanceof Bracket && isQuantifier && boundVars == null) {
+                boundVars = new ArrayList<Var>();
+                Term aux_arg = arg;
+                while (aux_arg instanceof Bracket) {
+                    Bracket br = (Bracket) aux_arg;
+                    boundVars.add(br.x);
+                    aux_arg = br.t;
+                }
+            }
             /*if (i > nArgs)
              term = "C29("+term+"),"+arg.toStringFormatC(s,pos+i,0);
             else*/
             term += (i == 1/* && id != 29*/?"(":",")+arg.toStringFormatC(s,pos+i,id,rootId);
             i++;
+        }
+        if (boundVars != null) {
+            for(Var v: boundVars) {
+                term += (i == 1 ? "(" : ",") + v.toStringFormatC(s,pos+i,id,rootId);
+                i++;
+            }
         }
         return term+")";
     }
@@ -876,29 +916,57 @@ public class App extends Term{
         return ter;
     }
 
-	@Override
-	public String aliases(String position) {
-		// Get aliases from childred
-		String aliases1 = p.aliases(position.concat("1"));
-		String aliases2 = q.aliases(position.concat("2"));
-		
-		
-		// Check if we have an alias right now and create a proper format string if so
-		String currentAlias = "";
-		if( this.alias != null) {
-			currentAlias = this.alias + ':' + position;	
-			if(!aliases1.equals("") || !aliases2.equals("") ) {
-				currentAlias = ", " + currentAlias;
-			}
-		}
-		
-		// Check if we actually need a comma between alias1 and alias2
-		String commaString = ", ";
-		if( aliases1.equals("") || aliases2.equals("")) {
-			commaString = "";
-		}
-		
-		// Return formated string
-		return aliases1 + commaString + aliases2 + currentAlias;
-	}
+    @Override
+    public String aliases(String position) {
+            // Get aliases from childred
+            String aliases1 = p.aliases(position.concat("1"));
+            String aliases2 = q.aliases(position.concat("2"));
+
+
+            // Check if we have an alias right now and create a proper format string if so
+            String currentAlias = "";
+            if( this.alias != null) {
+                    currentAlias = this.alias + ':' + position;	
+                    if(!aliases1.equals("") || !aliases2.equals("") ) {
+                            currentAlias = ", " + currentAlias;
+                    }
+            }
+
+            // Check if we actually need a comma between alias1 and alias2
+            String commaString = ", ";
+            if( aliases1.equals("") || aliases2.equals("")) {
+                    commaString = "";
+            }
+
+            // Return formated string
+            return aliases1 + commaString + aliases2 + currentAlias;
+    }
+        
+    @Override
+    public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
+        String type_p = p.getType(D, simboloManager);
+        String[] type_p_split = type_p.split("->"); // cambiar por un parser
+        String param_type = type_p_split[0];
+        String type_q;
+        if (q instanceof Var) {
+            Var qvar = (Var) q;
+            if (!D.containsKey(qvar.indice)) {
+                type_q = param_type;
+                D.put(qvar.indice, param_type);
+            }
+            else {
+                type_q = D.get(qvar.indice);
+                if (type_q.equals("*") && !param_type.equals("*")) {
+                    D.put(qvar.indice, param_type);
+                }
+            }
+        }
+        else {
+            type_q = q.getType(D, simboloManager);
+        }
+        if (!type_q.equals(param_type) && !param_type.equals("*")) {
+            throw new TypeVerificationException();
+        }
+        return type_p.substring(param_type.length()+2);
+    }
 }

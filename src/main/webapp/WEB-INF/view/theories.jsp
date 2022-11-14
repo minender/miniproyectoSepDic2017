@@ -292,6 +292,7 @@
                             <th>Associativity</th>
                             <th>Precedence</th>
                             <th>Notation</th>
+                            <th>Type</th>
                             <th>Theory</th>
                             <th>Actions</th>
                         </tr>
@@ -314,6 +315,7 @@
                                     <td></td>
                                 <td>${simbolo.getPrecedencia()}</td>
                                 <td>${simbolo.getNotacion()}</td>
+                                <td>${simbolo.getTipo()}</td>
                                 <td>${simbolo.getTeoria().getNombre()}</td>
                                 <td>
                                     <a href="#editEmployeeModal" class="edit" data-toggle="modal" onclick="editSimbol(${loop.index})"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
@@ -379,6 +381,10 @@
                             <div class="form-group" id="notacion-box">
                                 <label>Notation (*)</label>
                                 <sf:input path="notacion" type="text" class="form-control"/>
+                            </div>
+                            <div class="form-group" id="tipo-box">
+                                <label>Type (*)</label>
+                                <sf:input path="tipo" type="text" class="form-control"/>
                             </div>
                             <div class="form-group">
                                 <div style="width:100%">
@@ -455,7 +461,7 @@
                                 <sf:input path="precedencia" type="number" class="form-control" id="precedencia-edit"/>
                             </div>
                             <div class="form-group" id="notacion-box-edit">
-                                <label>Notación (*)</label>
+                                <label>Notation (*)</label>
                                 <sf:input path="notacion" type="text" class="form-control" id="notacion-edit"/>
                             </div>
                             <div class="form-group">
@@ -566,9 +572,10 @@
                         $('#asociatividad-edit').val(3)
                     }
                 }
-                if (fields[8] == 'Logica Proposicional'){
-                    $('#teoria-edit').val(1);
-                }                
+                $('#tipo-edit').val(fields[8])
+                //if (fields[8] == 'Logica Proposicional'){
+                //    $('#teoria-edit').val(1);
+                //}                
             }
         </script>
         <script>

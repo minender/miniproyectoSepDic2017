@@ -2,6 +2,7 @@ package com.calclogic.service;
 
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Teorema;
+import com.calclogic.lambdacalculo.Term;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ public interface TeoremaManager {
      * @param teorema The new theorem to be added.
      * @return Nothing.
      */    
-    public Teorema updateTeorema(int id, String username, String statement);
+    public Teorema updateTeorema(int id, String username, String statement, Term teoterm, String vars);
     
     /**
      * Deletes one of the theorems of the table.

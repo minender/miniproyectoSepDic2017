@@ -21,13 +21,14 @@ public class AgregarSimbolo {
      private int asociatividad;
      private int precedencia;
      private String notacion;
+     private String tipo;
      private int teoriaid;
 //     @NotEmpty(message="no debe dejar este campo vacío")
     
 
     public AgregarSimbolo(){};
     
-    public AgregarSimbolo(String notacion_latex, int argumentos, boolean esInfijo, int asociatividad, int precedencia, String notacion, int teoriaid, boolean modificar) {
+    public AgregarSimbolo(String notacion_latex, int argumentos, boolean esInfijo, int asociatividad, int precedencia, String notacion, int teoriaid, String tipo, boolean modificar) {
         this.notacion_latex = notacion_latex;
         this.argumentos = argumentos;
         this.esInfijo = esInfijo;
@@ -35,9 +36,10 @@ public class AgregarSimbolo {
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoriaid = teoriaid;
+        this.tipo = tipo;
         this.modificar = modificar;
     }
-        public AgregarSimbolo(int id, String notacion_latex, int argumentos, boolean esInfijo, int asociatividad, int precedencia, String notacion, int teoriaid, boolean modificar) {
+        public AgregarSimbolo(int id, String notacion_latex, int argumentos, boolean esInfijo, int asociatividad, int precedencia, String notacion, int teoriaid, String tipo, boolean modificar) {
         this.id = id;
         this.notacion_latex = notacion_latex;
         this.argumentos = argumentos;
@@ -46,6 +48,7 @@ public class AgregarSimbolo {
         this.precedencia = precedencia;
         this.notacion = notacion;
         this.teoriaid = teoriaid;
+        this.tipo = tipo;
         this.modificar = modificar;
     }
 
@@ -71,6 +74,10 @@ public class AgregarSimbolo {
 
     public String getNotacion() {
         return notacion;
+    }
+    
+    public String getTipo() {
+        return tipo;
     }
 
     public int getTeoriaid() {
@@ -110,6 +117,10 @@ public class AgregarSimbolo {
 
     public void setNotacion(String notacion) {
         this.notacion = notacion;
+    }
+    
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public void setTeoriaid(int teoriaid) {

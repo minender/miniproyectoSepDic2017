@@ -8,6 +8,7 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -125,7 +126,7 @@ public class Var extends Term{
     
     public int fresh(int n)
     {
-        return (n>indice?n:indice+1);
+        return (n!=indice?n:indice+1);
     }
     
     public Term traducBD()
@@ -395,5 +396,4 @@ public class Var extends Term{
 		
 	return currentAlias;
     }
-  
 }

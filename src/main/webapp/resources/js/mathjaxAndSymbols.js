@@ -256,6 +256,12 @@ function deleteOperator(FormId, rootId){
     oldParentId.pop();
     oldParentId = oldParentId.join('-');
     var result;
+    
+    console.log(FormId, rootId);
+    if (rootId === oldParentId) {
+        cleanJax(rootId.substring(0, rootId.length-1));
+        return;
+    }
 
     //Global variables
     var jaxInputDictionary = window[rootId + "jaxInputDictionary"];// get the global dictionary of the jax expression

@@ -82,9 +82,13 @@ public class SimboloManagerImpl implements SimboloManager {
     public Simbolo addSimbolo(Simbolo simbolo){
         simboloDAO.addSimbolo(simbolo);
         List<Simbolo> l = simboloDAO.getAllSimbolo();
-        symbolsCache = new Simbolo[l.size()];
-        for (int i=0; i < l.size(); i++)
-            symbolsCache[i] = l.get(i);
+        Simbolo last = l.get(l.size()-1);
+        int lastIndex = last.getId();
+        symbolsCache = new Simbolo[lastIndex + 1];
+        for (Simbolo s: l)
+            symbolsCache[s.getId()] = s;
+        //for (int i=0; i < l.size(); i++)
+        //    symbolsCache[i] = l.get(i);
         return simbolo;
     }
     
@@ -97,7 +101,7 @@ public class SimboloManagerImpl implements SimboloManager {
     @Override   
     @Transactional
     public void updateSimbolo(Simbolo simbolo){
-        int id = simbolo.getId()-1;
+        int id = simbolo.getId();
         if (0 < id && id <= symbolsCache.length) {
             symbolsCache[id] = simbolo;
         }
@@ -158,6 +162,7 @@ public class SimboloManagerImpl implements SimboloManager {
             teoremaDAO.deleteTeorema(t.getId());
         }
         simboloDAO.deleteSimbolo(id);
+        symbolsCache[id] = null;
         return "Symbol deleted";
     }
     
@@ -168,7 +173,7 @@ public class SimboloManagerImpl implements SimboloManager {
     @Override
     @Transactional
     public Simbolo getSimbolo(int id){
-        if (0 < id && id <= symbolsCache.length)
+        if (0 < id && id < symbolsCache.length)
             return symbolsCache[id];
         else
             return null;
@@ -183,6 +188,16 @@ public class SimboloManagerImpl implements SimboloManager {
         List<Simbolo> list = new ArrayList<Simbolo>();
         for (int i= 0; i < symbolsCache.length; i++)
             if (i >= 0 && symbolsCache[i] != null)
+                list.add(symbolsCache[i]);
+        return list;
+    }
+    
+    @Override
+    @Transactional
+    public List<Simbolo> getAllSimboloByTeoria(int teoriaid){
+        List<Simbolo> list = new ArrayList<Simbolo>();
+        for (int i= 0; i < symbolsCache.length; i++)
+            if (i >= 0 && symbolsCache[i] != null && (symbolsCache[i].getTeoria().getId() == teoriaid || symbolsCache[i].getTeoria().getId() == 1))
                 list.add(symbolsCache[i]);
         return list;
     }

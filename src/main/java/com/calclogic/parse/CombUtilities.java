@@ -45,6 +45,7 @@ public class CombUtilities {
         
 	public static Term getTermForPrinting(String input, String variables) {
 		// get the value of the parser 
+                System.out.println("perro");
 		Term t = getTerm(input,null);
                 Term arg1, arg2;
                 arg1 = ((App)((App)t).p).q;

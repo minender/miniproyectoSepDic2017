@@ -109,7 +109,8 @@ public class TeoremaManagerImpl implements TeoremaManager {
         
     }
     
-    public Teorema updateTeorema(int id, String username, String statement) {
+    @Transactional
+    public Teorema updateTeorema(int id, String username, String statement, Term teoterm, String vars) {
         Teorema teorema = teoremaDAO.getTeorema(id);
         
         if (teorema.getEnunciado().equals(statement)) {
@@ -129,14 +130,18 @@ public class TeoremaManagerImpl implements TeoremaManager {
             if (resuelve.getUsuario().getLogin().equals(username)) {
                 //resuelveDAO.deleteResuelve((resuelve.getId()));
                 //Teorema teorema = teoremaDAO.getTeorema(id);
+                resuelve.setVariables(vars);
                 Teorema teorema2 = teoremaDAO.getTeoremaByEnunciados(statement);
                 if (teorema2 == null) {
                     teorema.setEnunciado(statement);
                     teoremaDAO.updateTeorema(teorema);
+                    resuelveDAO.updateResuelve(resuelve);
                     return teorema;
                 }
                 else {
-                    teoremaDAO.deleteTeorema(id);
+                    resuelve.setTeorema(teorema2);
+                    resuelveDAO.updateResuelve(resuelve);
+                    //teoremaDAO.deleteTeorema(id);
                     return teorema2;
                 }
             }
@@ -152,12 +157,15 @@ public class TeoremaManagerImpl implements TeoremaManager {
                   ) {
                 resuelve = resIter.next();
             }
+            resuelve.setVariables(vars);
+            resuelveDAO.updateResuelve(resuelve);
             if (resuelve.getTeorema().getId() == id && resuelve.getUsuario().getLogin().equals(username)) {
                //Teorema teorema = teoremaDAO.getTeorema(id);
                Teorema teorema2 = this.getTeoremaByEnunciados(statement);
                if (teorema2 == null) {
-                    teorema.setEnunciado(statement);
-                    teorema.setId(0);
+                    teorema = new Teorema(statement, teoterm, false, "");
+                    //teorema.setEnunciado(statement);
+                    //teorema.setId(0);
                     teoremaDAO.addTeorema(teorema);
                     return teorema;
                }

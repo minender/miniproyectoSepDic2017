@@ -34,6 +34,7 @@ public class Resuelve  implements java.io.Serializable {
      private String variables;
      private int demopendiente;
      private Set solucions = new HashSet(0);
+     private Teoria teoria;
 
     public Categoria getCategoria() {
         return categoria;
@@ -71,7 +72,7 @@ public class Resuelve  implements java.io.Serializable {
     }
 
     public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, 
-                    Categoria categoria, String variables) {
+                    Categoria categoria, String variables, Teoria teoria) {
         this.usuario = usuario;
         this.teorema = teorema;
         this.nombreteorema = nombreteorema;
@@ -80,10 +81,11 @@ public class Resuelve  implements java.io.Serializable {
         this.demopendiente = -1;
         this.categoria = categoria;
         this.variables = variables;
+        this.teoria = teoria;
     }
     
     public Resuelve(Usuario usuario, Teorema teorema, String nombreteorema, String numeroteorema, 
-                    boolean resuelto, Categoria categoria, String variables) {
+                    boolean resuelto, Categoria categoria, String variables, Teoria teoria) {
         this.usuario = usuario;
         this.teorema = teorema;
         this.nombreteorema = nombreteorema;
@@ -92,6 +94,7 @@ public class Resuelve  implements java.io.Serializable {
         this.demopendiente = -1;
         this.categoria = categoria;
         this.variables = variables;
+        this.teoria = teoria;
     }
 
     public int getId() {
@@ -115,6 +118,14 @@ public class Resuelve  implements java.io.Serializable {
     
     public void setTeorema(Teorema teorema) {
         this.teorema = teorema;
+    }
+    
+    public Teoria getTeoria() {
+        return this.teoria;
+    }
+    
+    public void setTeoria(Teoria teoria) {
+        this.teoria = teoria;
     }
 
     public String getNombreteorema() {

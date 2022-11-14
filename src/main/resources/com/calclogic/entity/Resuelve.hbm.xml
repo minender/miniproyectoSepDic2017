@@ -30,6 +30,9 @@
     <many-to-one class="com.calclogic.entity.Categoria" fetch="select" lazy="false" name="categoria">
       <column name="categoriaid" not-null="true"/>
     </many-to-one>
+    <many-to-one class="com.calclogic.entity.Teoria" fetch="select" lazy="false" name="teoria">
+      <column name="teoriaid" not-null="true"/>
+    </many-to-one>
     <set inverse="true" name="solucions">
       <key>
         <column name="resuelveid" not-null="true"/>

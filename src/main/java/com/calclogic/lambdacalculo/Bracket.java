@@ -7,6 +7,7 @@ package com.calclogic.lambdacalculo;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -252,14 +253,16 @@ public class Bracket extends Term{
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId)
     {
-        char ascii = (char) x.indice; 
-        return "(\\lambda "+ascii+"."+t.toStringFormatC(s,pos,id,rootId)+")";
+        //char ascii = (char) x.indice; 
+        //return "(\\lambda "+ascii+"."+t.toStringFormatC(s,pos,id,rootId)+")";
+        return t.toStringFormatC(s,pos,id,rootId);
     }
     
     @Override
     public String toStringLaTeXWithInputs(SimboloManager s, String position, String rootId) {
-        char ascii = (char) x.indice; 
-        return "(E^{"+ascii+"}:"+t.toStringLaTeXWithInputs(s,position,rootId)+")";
+        //char ascii = (char) x.indice; 
+        //return "(E^{"+ascii+"}:"+t.toStringLaTeXWithInputs(s,position,rootId)+")";
+        return t.toStringLaTeXWithInputs(s,position,rootId);
     }
     
     @Override
@@ -381,11 +384,22 @@ public class Bracket extends Term{
     }
     
     @Override
-	public String aliases(String position) {
-		
-		return "";
-	}
+    public String aliases(String position) {
+
+            return "";
+    }
+    
+    @Override
+    public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
+        HashMap<Integer, String> D2 = (HashMap<Integer, String>) D.clone();
+        D2.remove(x.indice);
+        String type_t = t.getType(D2, simboloManager);
+        String type_x = D2.get(x.indice);
+        D2.remove(x.indice);
+        D.putAll(D2);
+        return type_t;
+    }
 
     
-    }
+}
 
