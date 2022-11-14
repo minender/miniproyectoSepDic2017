@@ -379,7 +379,7 @@ public class PerfilController {
         map.addAttribute("agregarTeoremaMenu","");
         map.addAttribute("perfilMenu","");
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-        map.addAttribute("categorias",categoriaManager.getAllCategorias());
+        map.addAttribute("categorias",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
         map.addAttribute("showCategorias",showCategorias);
         map.addAttribute("resuelves", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);

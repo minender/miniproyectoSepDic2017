@@ -1,6 +1,7 @@
 package com.calclogic.service;
 
 import com.calclogic.entity.Categoria;
+import com.calclogic.entity.Teoria;
 import java.util.List;
 
 /**
@@ -34,5 +35,7 @@ public interface CategoriaManager {
     /**
      * Method to get a list of all categories available in the system.
      */  
-    public List<Categoria> getAllCategorias();  
+    public List<Categoria> getAllCategorias(); 
+    
+    public List<Categoria> getAllCategoriasByTeoria(Teoria teoria);
 }

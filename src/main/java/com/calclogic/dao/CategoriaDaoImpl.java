@@ -1,6 +1,7 @@
 package com.calclogic.dao;
 
 import com.calclogic.entity.Categoria;
+import com.calclogic.entity.Teoria;
 import java.util.List;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,5 +60,11 @@ public class CategoriaDaoImpl implements CategoriaDAO {
     @Override
     public List<Categoria> getAllCategorias(){
         return this.sessionFactory.getCurrentSession().createQuery("FROM Categoria order by id").list();
+    }
+    
+    @Override
+    public List<Categoria> getAllCategoriasByTeoria(Teoria teoria){
+        //return this.sessionFactory.getCurrentSession().createQuery("FROM Categoria order by id").list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Categoria WHERE teoriaid = :teoriaId OR EXISTS (SELECT padre FROM Incluye WHERE padre = teoriaid AND hijo = :teoriaId) order by id").setParameter("teoriaId", teoria.getId()).list();
     }
 }
