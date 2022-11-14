@@ -48,7 +48,6 @@
                 src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
             </script> -->
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/ClickOnAlias.js"></script>
-            <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/inferAjax.js"></script>
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/limpiar.js"></script>
             <script type="text/javascript" src="${pageContext.request.contextPath}/static/js/saveDisplayedCategories.js"></script>
         </c:when>
