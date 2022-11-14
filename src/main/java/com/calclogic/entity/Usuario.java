@@ -35,7 +35,7 @@ public class Usuario  implements java.io.Serializable {
     }
 
 
-    public Usuario(String login, String nombre, String apellido, String correo, String password, boolean admin) {
+    public Usuario(String login, String nombre, String apellido, String correo, String password, boolean admin, Teoria teoria) {
         this.login = login;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -43,9 +43,10 @@ public class Usuario  implements java.io.Serializable {
         this.password = password;
         this.admin = admin;
 	this.autosust = false;
+        this.teoria = teoria;
     }
     
-    public Usuario(String login, String nombre, String apellido, String correo, String password, Materia materia, boolean admin) {
+    public Usuario(String login, String nombre, String apellido, String correo, String password, Materia materia, boolean admin, Teoria teoria) {
         this.login = login;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -54,8 +55,9 @@ public class Usuario  implements java.io.Serializable {
         this.materia = materia;
         this.admin = admin;
 	this.autosust = false;
+        this.teoria = teoria;
     }
-    public Usuario(String login, String nombre, String apellido, String correo, String password, Materia materia, boolean admin, Set predicados, Set terminos, Set dispones, Set resuelves) {
+    public Usuario(String login, String nombre, String apellido, String correo, String password, Materia materia, boolean admin, Set predicados, Set terminos, Set dispones, Set resuelves, Teoria teoria) {
        this.login = login;
        this.nombre = nombre;
        this.apellido = apellido;
@@ -68,6 +70,7 @@ public class Usuario  implements java.io.Serializable {
        this.dispones = dispones;
        this.resuelves = resuelves;
        this.autosust = false;
+       this.teoria = teoria;
     }
    
     public String getLogin() {

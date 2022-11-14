@@ -178,7 +178,7 @@ public class EvaluarController {
                 map.addAttribute("id", id);
                 map.addAttribute("usuario", username);
                 map.addAttribute("alias", teoTerm2.toStringLaTeXLabeled(simboloManager));//(new TypedApp(I, A)).type().toStringLaTeXFinal());//teoTerm.toStringLaTeXLabeled());
-                map.addAttribute("predserializado", categoriaManager.getAllCategorias().toString());
+                map.addAttribute("predserializado", categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()).toString());
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
 
                 return "PagParaVerPredicado";

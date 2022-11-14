@@ -69,7 +69,7 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
     @Override
     @Transactional
     public List<MostrarCategoria> getAllMostrarCategoriasByUsuario(Usuario usuario){
-        return this.sessionFactory.getCurrentSession().createQuery("FROM MostrarCategoria WHERE usuariologin = :usuariologin ORDER BY categoriaid").setParameter("usuariologin",usuario.getLogin()).list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM MostrarCategoria WHERE usuariologin = :usuariologin AND (categoria.teoria IN (SELECT teoria FROM Usuario WHERE login = :usuariologin) OR categoria.teoria IN (SELECT i.padre FROM Incluye i, Usuario u WHERE i.hijo = u.teoria)) ORDER BY categoriaid").setParameter("usuariologin",usuario.getLogin()).list();
     }
     
     /**

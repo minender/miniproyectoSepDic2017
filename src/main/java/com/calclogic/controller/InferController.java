@@ -147,7 +147,7 @@ public class InferController {
         map.addAttribute("perfilMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","100%");
-        map.addAttribute("categorias",categoriaManager.getAllCategorias());
+        map.addAttribute("categorias",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
         map.addAttribute("resuelves", resuelves);
         map.addAttribute("metateoremas",metateoremaManager);
         map.addAttribute("resuelveManager",resuelveManager);
@@ -281,7 +281,7 @@ public class InferController {
         map.addAttribute("perfilMenu","");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
-        map.addAttribute("categorias",categoriaManager.getAllCategorias());
+        map.addAttribute("categorias",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
         map.addAttribute("resuelves", resuelves);
         map.addAttribute("metateoremas",metateoremaManager);
         map.addAttribute("resuelveManager",resuelveManager);
