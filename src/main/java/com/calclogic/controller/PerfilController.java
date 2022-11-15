@@ -24,6 +24,7 @@ import com.calclogic.entity.TerminoId;
 import com.calclogic.entity.MostrarCategoria;
 import com.calclogic.entity.Predicado;
 import com.calclogic.entity.PredicadoId;
+import com.calclogic.forms.AgregarCategoria;
 import com.calclogic.forms.AgregarSimbolo;
 import com.calclogic.forms.AgregarTeorema;
 import com.calclogic.forms.InferResponse;
@@ -537,6 +538,77 @@ public class PerfilController {
         
         response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"), resuelveManager, disponeManager, simboloManager);
         return response;
+    }
+    
+    @RequestMapping(value="/{username}/guardarcat", method=RequestMethod.GET)
+    public String guardarCatView(@PathVariable String username,ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        
+        map.addAttribute("usuario",usr);
+        map.addAttribute("agregarCategoria",new AgregarCategoria());
+        map.addAttribute("modificar",new Integer(0));
+        map.addAttribute("teorema","");
+        map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
+        map.addAttribute("numeroTeorema","");
+        map.addAttribute("mensaje", "");
+        map.addAttribute("admin","AdminTeoremas");
+        map.addAttribute("agregarTeoremaMenu","active");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("teorias", teoriaManager.getAllTeoria());
+        map.addAttribute("catMenu", "active");
+        
+        return "agregarCategoria";
+    }
+    
+    @RequestMapping(value="/{username}/guardarcat", method=RequestMethod.POST)
+    public String guardarCatViewPOST(@Valid AgregarCategoria agregarCategoria, BindingResult bindingResult, @PathVariable String username, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        
+        Categoria cat = new Categoria(agregarCategoria.getNombre(), teoriaManager.getTeoria(agregarCategoria.getTeoriaid()));
+        categoriaManager.addCategoria(cat);
+        
+        map.addAttribute("usuario",usr);
+        map.addAttribute("agregarCategoria",new AgregarCategoria());
+        map.addAttribute("modificar",new Integer(0));
+        map.addAttribute("teorema","");
+        map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
+        map.addAttribute("numeroTeorema","");
+        map.addAttribute("mensaje", "");
+        map.addAttribute("admin","AdminTeoremas");
+        map.addAttribute("agregarTeoremaMenu","active");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("teorias", teoriaManager.getAllTeoria());
+        map.addAttribute("catMenu", "active");
+        
+        return "perfil";
     }
     
     @RequestMapping(value="/{username}/guardarteo", method=RequestMethod.GET)
