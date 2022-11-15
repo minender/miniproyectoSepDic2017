@@ -550,7 +550,7 @@ public class App extends Term{
         // ***** MISSING EXPLANATION
         if (j > nArgs) {
             App newTerm;
-            if ((simpleOrAbrv||'I' == kind)&& p instanceof Var ){//&& p.occur(new Var('E'))) {
+            if ( p instanceof Var ){//&& p.occur(new Var('E'))) {
                 sym = s.getSimbolo(s.getPropFunApp());
                 newTerm = new App(new App(new Const(s.getPropFunApp(),"c_{"+s.getPropFunApp()+"}"),p),q);
             }
