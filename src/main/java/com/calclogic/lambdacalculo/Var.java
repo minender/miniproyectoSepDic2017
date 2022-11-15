@@ -134,6 +134,11 @@ public class Var extends Term{
         return this;
     }
     
+    public Term traducBD(List<String> l)
+    {
+        return this;
+    }
+    
     public List<Term> contandotraducBD()
     {
         List<Term> list=new ArrayList<Term>();

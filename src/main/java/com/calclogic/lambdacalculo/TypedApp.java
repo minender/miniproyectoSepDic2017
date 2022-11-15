@@ -79,8 +79,7 @@ public class TypedApp extends App implements TypedTerm{
                     Term t1Der = ((App)((App)t1Type).p).q;
                     Term t2Izq = ((App)t2Type).q;
                     //int op2 = ((Const)((App)((App)t2Type).p).p).getId();
-            
-                    if (!t1Der.body().equals(t2Izq.body())){
+                    if (!t1Der.body().traducBD().equals(t2Izq.body().traducBD())){
                         throw new TypeVerificationException();
                     }
                     else{

@@ -20,7 +20,6 @@ start_rule[String u] returns [Term value] : expr[u] { $value=$expr.value; };
   
 expr[String u] returns [Term value]
     :	term[u]                                 { $value = $term.value; }
-    |   LAMBDA v=variable PERIOD e1=expr[u] 	{ $value = new Bracket($v.value, $e1.value); }
     |   O_BRACKET2 vl=variable_list ASSIGN el=term_list[u] C_BRACKET2  
                                                 { 
                                                   if ($vl.value.size() != $el.value.size()) {
@@ -60,6 +59,7 @@ term[String u] returns [Term value]
 term_base[String u] returns [Term value]
 	: constant[u]	       { $value = $constant.value; }
 	| variable	       { $value = $variable.value; }
+        | LAMBDA v=variable PERIOD e1=term[u] 	{ $value = new Bracket($v.value, $e1.value); }
 	| O_PAR term[u] C_PAR  { $value = $term.value; };
 	
 term_tail[String u] returns [LinkedList<Term> value]

@@ -256,6 +256,11 @@ public class App extends Term{
         return new App(p.traducBD(),q.traducBD());
     }
     
+    public Term traducBD(List<String> l)
+    {
+        return new App(p.traducBD(l),q.traducBD(l));
+    }
+    
     public List<Term> contandotraducBD(){
         List<Term> list1=p.contandotraducBD();
         for(int i=0; i<list1.size() ;i++)
@@ -545,7 +550,7 @@ public class App extends Term{
         // ***** MISSING EXPLANATION
         if (j > nArgs) {
             App newTerm;
-            if (simpleOrAbrv && p instanceof Var && p.occur(new Var('E'))) {
+            if ((simpleOrAbrv||'I' == kind)&& p instanceof Var ){//&& p.occur(new Var('E'))) {
                 sym = s.getSimbolo(s.getPropFunApp());
                 newTerm = new App(new App(new Const(s.getPropFunApp(),"c_{"+s.getPropFunApp()+"}"),p),q);
             }
@@ -784,7 +789,7 @@ public class App extends Term{
         if ( j > nArgs) {
             Simbolo sym;
             App newTerm;
-            if (false) { //p instanceof Var && p.occur(new Var('E'))) {
+            if (p instanceof Var){// && p.occur(new Var('E'))) {
                 sym = s.getSimbolo(s.getPropFunApp());
                 newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
             }

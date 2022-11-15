@@ -143,6 +143,12 @@ public class Bracket extends Term{
         return t.traducBD().bracketAbsBD(x);
     }
     
+    public Term traducBD(List<String> l)
+    {
+        l.add(0,((char)x.indice)+"");
+        return t.traducBD().bracketAbsBD(x);
+    }
+    
     public List<Term> contandotraducBD()
     {
         List<Term> list=t.contandotraducBD();
@@ -357,7 +363,7 @@ public class Bracket extends Term{
         }
     }
     
-    @Override
+    @Override     
     public void freeVars(int[] set) {
         if (set[x.indice-65] == 0) {//(!set.contains(x)) 
           t.freeVars(set);
