@@ -24,13 +24,7 @@ public interface MostrarCategoriaManager {
      * @param id Is the principal key of the MostrarCategoria object to delete.
      * @return Nothing.
      */ 
-    public void deleteMostrarCategoria(int id);
-  
-    /**
-     * Method to get a MostrarCategoria object by its principal key.
-     * @param id Is the principal key of the MostrarCategoria object.
-     */  
-    public MostrarCategoria getMostrarCategoria(int id);
+    public void deleteMostrarCategoria(MostrarCategoria mc);
 
     /**
      * Method to get a list of all the entries of the table.

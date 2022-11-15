@@ -3,17 +3,13 @@
 <!-- Generated Mar 20, 2017 12:50:12 PM by Hibernate Tools 3.2.1.GA -->
 <hibernate-mapping>
   <class name="com.calclogic.entity.MostrarCategoria" table="mostrarCategoria">
-    <id name="id" type="int">
-      <column name="id"/>
-      <generator class="sequence">
-        <param name="sequence">mostrarCategoria_id_seq</param>
-      </generator>
-    </id>
-    <many-to-one class="com.calclogic.entity.Usuario" fetch="select" lazy="false" name="usuario">
-      <column name="usuariologin" not-null="true"/>
-    </many-to-one>
-    <many-to-one class="com.calclogic.entity.Categoria" fetch="select" lazy="false" name="categoria">
-      <column name="categoriaid" not-null="true"/>
-    </many-to-one>
+      <composite-id>
+        <key-many-to-one class="com.calclogic.entity.Usuario" lazy="false" name="usuario">
+          <column name="usuariologin" not-null="true"/>
+        </key-many-to-one>
+        <key-many-to-one class="com.calclogic.entity.Categoria" lazy="false" name="categoria">
+          <column name="categoriaid" not-null="true"/>
+        </key-many-to-one>
+    </composite-id>
   </class>
 </hibernate-mapping>

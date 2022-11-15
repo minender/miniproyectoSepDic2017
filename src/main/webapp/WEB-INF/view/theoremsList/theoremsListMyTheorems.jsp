@@ -18,7 +18,7 @@
                         <c:choose>
                             <c:when test="${resu.getCategoria().getId()==cat.getId()}">      
                                 <c:choose>
-                                    <c:when test="${(!resu.isResuelto()) && resu.getDemopendiente() < 1}">
+                                    <c:when test="${((!resu.isResuelto()) && resu.getDemopendiente() < 1) || (resu.isEsAxioma() && resu.getUsuario().getLogin().equals('AdminTeoremas'))}">
                                         <li>
                                             <p>
                                                 <i class="fa fa-lock" aria-hidden="true" ></i>

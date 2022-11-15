@@ -21,26 +21,30 @@ public class Categoria implements java.io.Serializable {
     @SequenceGenerator(name="categoria_id_seq", sequenceName="categoria_id_seq")
      private int id;
      private String nombre;
+     private Teoria teoria;
      private Set teoremas = new HashSet(0);
      private Set metateoremas = new HashSet(0);
 
     public Categoria() {
     }
 
-    public Categoria(String nombre) {
+    public Categoria(String nombre, Teoria teoria) {
         this.nombre = nombre;
+        this.teoria = teoria;
     }
 
     
-    public Categoria(int id, String nombre) {
+    public Categoria(int id, String nombre, Teoria teoria) {
         this.id = id;
         this.nombre = nombre;
+        this.teoria = teoria;
     }
-    public Categoria(int id, String nombre, Set teoremas, Set metateoremas) {
+    public Categoria(int id, String nombre, Set teoremas, Set metateoremas, Teoria teoria) {
        this.id = id;
        this.nombre = nombre;
        this.teoremas = teoremas;
        this.metateoremas = metateoremas;
+       this.teoria = teoria;
     }
    
     public int getId() {
@@ -70,6 +74,14 @@ public class Categoria implements java.io.Serializable {
     
     public void setMetateoremas(Set metateoremas) {
         this.metateoremas = metateoremas;
+    }
+    
+    public Teoria getTeoria() {
+        return this.teoria;
+    }
+    
+    public void setTeoria(Teoria teoria) {
+        this.teoria = teoria;
     }
     
 @Override

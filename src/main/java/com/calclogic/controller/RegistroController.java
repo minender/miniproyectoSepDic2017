@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import com.calclogic.entity.Usuario;
 import com.calclogic.entity.Materia;
+import com.calclogic.entity.Teoria;
 import com.calclogic.forms.Registro;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.UsuarioManager;
 import com.calclogic.service.MateriaManager;
+import com.calclogic.service.TeoriaManager;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.validation.ObjectError;
@@ -29,6 +31,8 @@ public class RegistroController {
         private ResuelveManager resuelveManager;
         @Autowired
         private MateriaManager materiaManager;
+        @Autowired
+        private TeoriaManager teoriaManager;
         
         @RequestMapping(method=RequestMethod.GET, params="new")
         public String createUsuarioProfile(ModelMap map)
@@ -77,9 +81,10 @@ public class RegistroController {
                 Materia materia = materiaManager.getMateria(registro.getMateriaid());
                 String randomchars = "hdfGLd6J4$&(3nd^{bHGF@fs";
                 String pass = DigestUtils.sha512Hex(registro.getPassword()+randomchars);
+                Teoria teoria = teoriaManager.getTeoria(1);
                 user = new Usuario(registro.getLogin(), registro.getNombre(), 
                                            registro.getApellido(), registro.getCorreo(), 
-                                           pass, materia, false);
+                                           pass, materia, false, teoria);
                 usuarioManager.addUsuario(user);
                 /**
                 List<Resuelve> resuelves = resuelveManager.getAllResuelveByUser("AdminTeoremas");
