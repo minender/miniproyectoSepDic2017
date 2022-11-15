@@ -14,7 +14,7 @@ public interface IncluyeManager {
     
     public List<Incluye> getAllIncluye();
   
-    public Incluye getAllIncluyeByPadre(Teoria padre);
+    public List<Incluye> getAllIncluyeByPadre(Teoria padre);
     
-    public Incluye geAlltIncluyeByHijo(Teoria hijo);
+    public List<Incluye> geAlltIncluyeByHijo(Teoria hijo);
 }

@@ -45,13 +45,13 @@ public class IncluyeManagerImpl implements IncluyeManager {
   
     @Override
     @Transactional
-    public Incluye getAllIncluyeByPadre(Teoria padre) {
+    public List<Incluye> getAllIncluyeByPadre(Teoria padre) {
         return incluyeDAO.getAllIncluyeByPadre(padre);
     }
     
     @Override
     @Transactional
-    public Incluye geAlltIncluyeByHijo(Teoria hijo) {
+    public List<Incluye> geAlltIncluyeByHijo(Teoria hijo) {
         return incluyeDAO.geAlltIncluyeByHijo(hijo);
     }
 }

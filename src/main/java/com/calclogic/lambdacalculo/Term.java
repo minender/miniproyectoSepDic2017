@@ -1263,12 +1263,23 @@ public abstract class Term implements Cloneable, Serializable{
     }
     
     public String getType(SimboloManager simboloManager) throws TypeVerificationException {
-        HashMap<Integer, String> D = new HashMap<Integer, String>();
+        HashMap<Integer, String> D = new HashMap<>();
         return getType(D, simboloManager);
     }
     
     //public abstract String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException;
     public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
         throw new TypeVerificationException();
+    }
+    
+    public String checkType(HashMap<Integer, String> D, SimboloManager simboloManager, String expected) 
+            throws TypeVerificationException {
+        String type = this.getType(D, simboloManager);
+        
+        if (!type.equals(expected) && !expected.equals("*") && !type.equals("*")) {
+            throw new TypeVerificationException();
+        }
+        
+        return type;
     }
 }

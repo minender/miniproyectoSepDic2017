@@ -391,4 +391,25 @@ public class Var extends Term{
 		
 	return currentAlias;
     }
+    
+    @Override
+    public String checkType(HashMap<Integer, String> D, SimboloManager simboloManager, String expected) throws TypeVerificationException {
+        String type;
+        if (!D.containsKey(this.indice)) {
+            type = expected;
+            D.put(this.indice, expected);
+        }
+        else {
+            type = D.get(this.indice);
+            if (type.equals("*") && !expected.equals("*")) {
+                D.put(this.indice, expected);
+            }
+        }
+        
+        if (!type.equals(expected) && !expected.equals("*")) {
+            throw new TypeVerificationException();
+        }
+        
+        return type;
+    }
 }

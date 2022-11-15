@@ -1,15 +1,20 @@
 package com.calclogic.service;
 
+import com.calclogic.dao.IncluyeDAO;
 import com.calclogic.dao.ResuelveDAO;
 import com.calclogic.dao.SimboloDAO;
 import com.calclogic.dao.SolucionDAO;
 import com.calclogic.dao.TeoremaDAO;
+import com.calclogic.dao.TeoriaDAO;
+import com.calclogic.entity.Incluye;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Simbolo;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
+import com.calclogic.entity.Teoria;
 import java.sql.BatchUpdateException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +38,10 @@ public class SimboloManagerImpl implements SimboloManager {
     private ResuelveDAO resuelveDAO;
     @Autowired
     private ResuelveManager resuelveManager;
+    @Autowired
+    private TeoriaDAO teoriaDAO;
+    @Autowired
+    private IncluyeDAO incluyeDAO;
     private int propFunApp;
     private int termFunApp;
     Simbolo[] symbolsCache; 
@@ -195,9 +204,16 @@ public class SimboloManagerImpl implements SimboloManager {
     @Override
     @Transactional
     public List<Simbolo> getAllSimboloByTeoria(int teoriaid){
+        Teoria teoria = teoriaDAO.getTeoria(teoriaid);
+        List<Incluye> incluyes = incluyeDAO.geAlltIncluyeByHijo(teoria);
+        HashSet teoriaids = new HashSet();
+        for (Incluye inc: incluyes) {
+            teoriaids.add(inc.getPadre().getId());
+        }
+        teoriaids.add(teoriaid);
         List<Simbolo> list = new ArrayList<Simbolo>();
         for (int i= 0; i < symbolsCache.length; i++)
-            if (i >= 0 && symbolsCache[i] != null && (symbolsCache[i].getTeoria().getId() == teoriaid || symbolsCache[i].getTeoria().getId() == 1))
+            if (i >= 0 && symbolsCache[i] != null && (teoriaids.contains(symbolsCache[i].getTeoria().getId())))
                 list.add(symbolsCache[i]);
         return list;
     }
