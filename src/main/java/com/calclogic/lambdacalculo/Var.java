@@ -402,11 +402,13 @@ public class Var extends Term{
         else {
             type = D.get(this.indice);
             if (type.equals("*") && !expected.equals("*")) {
+                type = expected;
                 D.put(this.indice, expected);
             }
         }
         
         if (!type.equals(expected) && !expected.equals("*")) {
+            System.out.println("Se esperaba "+expected+", se tiene "+type+" para la variable "+((char) this.indice));
             throw new TypeVerificationException();
         }
         

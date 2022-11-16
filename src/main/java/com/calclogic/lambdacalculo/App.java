@@ -978,7 +978,12 @@ public class App extends Term{
             D2 = D;
         }
         
-        String[] type_c_split = type_c.split("->"); // cambiar por un parser
+        String[] type_c_split = Simbolo.splitTipo(type_c);
+        
+        if (type_c_split.length-1 != args.size()) {
+            System.out.println("La aridad esperada del simbolo: "+type_c+" no coincide con la expresion: "+this);
+            throw new TypeVerificationException();
+        }
         
         int i = 0;
         for (Term arg: args) {
@@ -994,7 +999,6 @@ public class App extends Term{
             D.putAll(D2);
         }
         
-        //return type_p.substring(param_type.length()+2);
         return type_c_split[type_c_split.length-1];
     }
 }

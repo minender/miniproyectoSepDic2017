@@ -4,6 +4,7 @@
  */
 package com.calclogic.lambdacalculo;
 
+import com.calclogic.entity.Simbolo;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
@@ -391,8 +392,37 @@ public class Bracket extends Term{
     
     @Override
     public String checkType(HashMap<Integer, String> D, SimboloManager simboloManager, String expected) throws TypeVerificationException {
-        String type_t = t.checkType(D, simboloManager, expected);
-        return type_t;
+        Term aux = this;
+        List<Var> vars = new ArrayList<>();
+        while (aux instanceof Bracket) {
+            vars.add(((Bracket) aux).x);
+            aux = ((Bracket) aux).t;
+        }
+        
+        String[] expected_split;
+        
+        if (expected.equals("*")) {
+            expected_split = new String[vars.size()+1];
+            for (int i=0; i < expected_split.length; i++)
+                expected_split[i] = "*";
+        }
+        else {
+            expected_split = Simbolo.splitTipo(expected);
+        }
+        
+        if (expected_split.length-1 != vars.size()) {
+            System.out.println("La aridad esperada del cuantificador: "+expected+" no coincide con la expresion: "+this);
+            throw new TypeVerificationException();
+        }
+        
+        int i = 0;
+        for (Var v: vars) {
+            expected_split[i] = v.checkType(D, simboloManager, expected_split[i]);
+            i++;
+        }
+        
+        expected_split[expected_split.length-1] = aux.checkType(D, simboloManager, expected_split[expected_split.length-1]);
+        return Simbolo.joinTipo(expected_split);
     }
 }
 
