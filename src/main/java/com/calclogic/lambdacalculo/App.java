@@ -95,10 +95,10 @@ public class App extends Term{
             }
             if (p.occur(var) && (varsTerm.size() ==  Vars.size()) && 
                 !varsTerm.get(i).occur(new Var('E')) && 
-                !varsTerm.get(i).occur(new Var('f')) && 
-                !varsTerm.get(i).occur(new Var('g')) &&
-                !(varsTerm.get(i).esRedexFinal().t) && 
-                !(varsTerm.get(i) instanceof Bracket)
+                !varsTerm.get(i).occur(new Var('P')) && 
+                !varsTerm.get(i).occur(new Var('Q')) &&
+                !(varsTerm.get(i).esRedexFinal().t) //&& 
+                //!(varsTerm.get(i) instanceof Bracket)
                )
             {
                 Term term = varsTerm.get(i);
