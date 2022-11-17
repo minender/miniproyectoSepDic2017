@@ -129,7 +129,8 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     }
 
     /**
-     * This function will create a hint for the current method if it is basic, given the hint's elements.In case the elements don't make sense it will return null.
+     * This function will create a step for the current method if it is basic, given the hint's elements.
+     * In case the elements don't make sense it will return null.
      *
      * @param user 
      * @param A: theorem used on the hint
@@ -143,7 +144,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    public Term createBaseMethodInfer(String user,Term A, ArrayList<Object> instantiation, String instantiationString, 
+    public Term createOneStepInfer(String user,Term A, ArrayList<Object> instantiation, String instantiationString, 
             Bracket leibniz, String leibnizString, Term formulaBeingProved) throws TypeVerificationException
     {
         Term infer = null;

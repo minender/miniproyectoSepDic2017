@@ -42,27 +42,4 @@ public class CombUtilities {
 		
 		
 	}
-        
-	public static Term getTermForPrinting(String input, String variables) {
-		// get the value of the parser 
-                System.out.println("perro");
-		Term t = getTerm(input,null);
-                Term arg1, arg2;
-                arg1 = ((App)((App)t).p).q;
-                arg2 = ((App)t).q;
-                if (variables!=null && !variables.equals("")) {// if no variables you don't need make any reduction
-                  String[] vars = variables.split(",");
-                  for (int i=0; i<vars.length; i++) {
-                    arg1 = new App(arg1,new Var((int)vars[i].trim().charAt(0)));
-                    arg2 = new App(arg2,new Var((int)vars[i].trim().charAt(0)));
-                  }
-		  arg1 = arg1.evaluar();
-                  arg2 = arg2.evaluar();
-                }
-                if (arg1 instanceof Const && ((Const)arg1).getCon().equals("T"))
-                    t = arg2;
-                else
-                    t = new App(new App(new Const(1,"c_{1}"),arg1),arg2);
-		return t;
-	}
 }

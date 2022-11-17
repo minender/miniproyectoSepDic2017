@@ -47,7 +47,8 @@ public interface GenericProofMethod {
     public String subProofInit(String statement);
 
     /**
-     * This function will create a hint for the current method if it is basic, given the hint's elements.In case the elements don't make sense it will return null.
+     * This function will create a step for the current method if it is basic, given the hint's elements.
+     * In case the elements don't make sense it will return null.
      *
      * @param user 
      * @param A: theorem used on the hint
@@ -60,7 +61,7 @@ public interface GenericProofMethod {
      * @return a hint for the direct method
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    public Term createBaseMethodInfer(String user,Term A, ArrayList<Object> instantiation, String instantiationString, 
+    public Term createOneStepInfer(String user,Term A, ArrayList<Object> instantiation, String instantiationString, 
             Bracket leibniz, String leibnizString, Term formulaBeingProved) throws TypeVerificationException;
 
     /**

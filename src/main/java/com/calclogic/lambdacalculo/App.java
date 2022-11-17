@@ -96,10 +96,10 @@ public class App extends Term{
             }
             if (p.occur(var) && (varsTerm.size() ==  Vars.size()) && 
                 !varsTerm.get(i).occur(new Var('E')) && 
-                !varsTerm.get(i).occur(new Var('f')) && 
-                !varsTerm.get(i).occur(new Var('g')) &&
-                !(varsTerm.get(i).esRedexFinal().t) && 
-                !(varsTerm.get(i) instanceof Bracket)
+                !varsTerm.get(i).occur(new Var('P')) && 
+                !varsTerm.get(i).occur(new Var('Q')) &&
+                !(varsTerm.get(i).esRedexFinal().t) //&& 
+                //!(varsTerm.get(i) instanceof Bracket)
                )
             {
                 Term term = varsTerm.get(i);
@@ -255,6 +255,11 @@ public class App extends Term{
     public Term traducBD()
     {
         return new App(p.traducBD(),q.traducBD());
+    }
+    
+    public Term traducBD(List<String> l)
+    {
+        return new App(p.traducBD(l),q.traducBD(l));
     }
     
     public List<Term> contandotraducBD(){
@@ -483,7 +488,7 @@ public class App extends Term{
       * @param position
       * @param rootId
       * @param z
-      * @param t
+      * @param t: The father of all the string that is going to be printed. We need to remember it in all recursive calls.
       * @param l
       * @param l2
       * @param id
@@ -546,7 +551,7 @@ public class App extends Term{
         // ***** MISSING EXPLANATION
         if (j > nArgs) {
             App newTerm;
-            if (simpleOrAbrv && p instanceof Var && p.occur(new Var('E'))) {
+            if ( p instanceof Var ){//&& p.occur(new Var('E'))) {
                 sym = s.getSimbolo(s.getPropFunApp());
                 newTerm = new App(new App(new Const(s.getPropFunApp(),"c_{"+s.getPropFunApp()+"}"),p),q);
             }
@@ -785,7 +790,7 @@ public class App extends Term{
         if ( j > nArgs) {
             Simbolo sym;
             App newTerm;
-            if (false) { //p instanceof Var && p.occur(new Var('E'))) {
+            if (p instanceof Var){// && p.occur(new Var('E'))) {
                 sym = s.getSimbolo(s.getPropFunApp());
                 newTerm = new App(new App(new Const(s.getPropFunApp(),s.propFunAppSym(),!sym.isEsInfijo(),sym.getPrecedencia(),sym.getAsociatividad()),p),q);
             }

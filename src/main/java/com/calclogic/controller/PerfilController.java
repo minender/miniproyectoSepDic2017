@@ -57,6 +57,7 @@ import com.calclogic.parse.IsNotInDBException;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
+import com.calclogic.parse.TermUtilities;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
@@ -696,7 +697,6 @@ public class PerfilController {
         TermParser parser = new TermParser(tokens);
         Term teoTerm;
         try{ //si la sintanxis no es correcta ocurre una Exception
-            
             String[] boundVars = {""};
             String freeVars;
             teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
@@ -781,7 +781,7 @@ public class PerfilController {
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
-            map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
+            map.addAttribute("mensaje", "The theorem can't be save because "+e.alias);
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
             map.addAttribute("overflow","hidden");
@@ -792,7 +792,7 @@ public class PerfilController {
             return "agregarTeorema";
         }
         catch(IsNotInDBException e){
-            String hdr = parser.getErrorHeader(e);
+            String hdr = "";//parser.getErrorHeader(e);
             String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", usr);
             map.addAttribute("agregarTeorema",agregarTeorema);
@@ -812,7 +812,7 @@ public class PerfilController {
             return "agregarTeorema";
         }
         catch(RecognitionException e){
-            String hdr = parser.getErrorHeader(e);
+            String hdr = ""; //parser.getErrorHeader(e);
             String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
             map.addAttribute("usuario", user);
             map.addAttribute("infer",new InfersForm());

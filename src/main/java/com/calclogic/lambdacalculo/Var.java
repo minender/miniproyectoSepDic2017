@@ -134,6 +134,11 @@ public class Var extends Term{
         return this;
     }
     
+    public Term traducBD(List<String> l)
+    {
+        return this;
+    }
+    
     public List<Term> contandotraducBD()
     {
         List<Term> list=new ArrayList<Term>();
@@ -368,7 +373,8 @@ public class Var extends Term{
 
     @Override
     public void freeVars(int[] set) {
-        set[indice-65] = indice;
+        if (indice >= 65)
+           set[indice-65] = indice;
     }
     
     @Override

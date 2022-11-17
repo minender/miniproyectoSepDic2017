@@ -298,10 +298,15 @@ public class InferResponse extends GenericResponse{
         else if ("SS".equals(clickable)) { // End of the impression
             String formulaDer = ((App)((App)newTerm).p).q.body().toStringLaTeX(s,"");
             String formulaIzq = ((App)newTerm).q.body().toStringLaTeX(s,"");
-            Term operatorTerm = ((App)((App)newTerm).p).p;//resuelve.getTeorema().getOperador();
+
+            Term operatorTerm = ((App)((App)newTerm).p).p;
             String operator = operatorTerm.toStringLaTeX(s,"");
-            if(!operatorTerm.toString().startsWith("=") || ((App)((App)newTerm).p).q.containT())
-               throw new Exception();
+
+            // THIS IS NOT USED BECAUSE generarHistorial always receives the formula as in the previous version
+            //if(!operatorTerm.toString().startsWith("=") || ((App)((App)newTerm).p).q.containT()){ 
+            if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{13}")){ // c_{20}
+                throw new Exception();
+            }
             
             formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
             formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";

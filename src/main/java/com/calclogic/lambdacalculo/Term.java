@@ -97,6 +97,8 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract Term traducBD();
     
+    public abstract Term traducBD(List<String> l);
+    
     public abstract List<Term> contandotraducBD();
     
     public abstract Term bracketAbsBD(Var x);
@@ -293,17 +295,18 @@ public abstract class Term implements Cloneable, Serializable{
     public Term setToPrinting(String variables) {
         
         if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
-            List<Var> li = TermUtilities.arguments(variables);
-            //List<Var> li2 = TermUtilities.arguments(variables);
-            //li.addAll(li2);
-            int nVar1 = ((App)((App) this).p).q.nPhi();
-            int nVar2 = ((App) this).q.nPhi();
-            List<Var> li2 = li.subList(nVar1+nVar2,li.size());
-            li2.addAll(li.subList(0, nVar1));
-            li2.addAll(li.subList(nVar1+nVar2,li.size()));
-            li2.addAll(li.subList(nVar1,nVar2));
-            //this.evaluar(li);
-            this.evaluar(li2);
+            this.evaluar(variables);
+            // List<Var> li = TermUtilities.arguments(variables);
+            // //List<Var> li2 = TermUtilities.arguments(variables);
+            // //li.addAll(li2);
+            // int nVar1 = ((App)((App) this).p).q.nPhi();
+            // int nVar2 = ((App) this).q.nPhi();
+            // List<Var> li2 = li.subList(nVar1+nVar2,li.size());
+            // li2.addAll(li.subList(0, nVar1));
+            // li2.addAll(li.subList(nVar1+nVar2,li.size()));
+            // li2.addAll(li.subList(nVar1,nVar2));
+            // //this.evaluar(li);
+            // this.evaluar(li2);
         }
         Term arg2;
         arg2 = ((App)this).q;
@@ -700,7 +703,7 @@ public abstract class Term implements Cloneable, Serializable{
                 else if(r.tipo.l)
                     return ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);
                 else
-                    return this.invBraBD(vars.remove(0).indice);
+                    return this.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
             }
             else if(r.context instanceof App)
             {
@@ -712,7 +715,7 @@ public abstract class Term implements Cloneable, Serializable{
                      else if (r.tipo.l)
                         ((App)r.context).p=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
                      else
-                        ((App)r.context).p=t.invBraBD(vars.remove(0).indice);
+                        ((App)r.context).p=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
                  }
                  else
                  {
@@ -721,8 +724,9 @@ public abstract class Term implements Cloneable, Serializable{
                         ((App)r.context).q=t.kappa();
                      else if(r.tipo.l)
                         ((App)r.context).q=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                     else 
-                        ((App)r.context).q=t.invBraBD(vars.remove(0).indice);
+                     else { 
+                        ((App)r.context).q=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
+                     }
                  }
             }
             else if(r.context instanceof Bracket)
@@ -733,7 +737,7 @@ public abstract class Term implements Cloneable, Serializable{
                  else if(r.tipo.l)
                      ((Bracket)r.context).t=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
                  else 
-                     ((Bracket)r.context).t=t.invBraBD(vars.remove(0).indice);
+                     ((Bracket)r.context).t=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
             }
         }
         
@@ -1157,8 +1161,8 @@ public abstract class Term implements Cloneable, Serializable{
             else {
                 li_free = TermUtilities.arguments(free_vars);
             }
-            int nVar1 = ((App)((App) this).p).q.nPhi() - li_free.size();
-            int nVar2 = ((App) this).q.nPhi() - li_free.size();
+            int nVar1 = (((App)((App) this).p).q.nPhi()!=0?((App)((App) this).p).q.nPhi() - li_free.size():0);
+            int nVar2 = (((App) this).q.nPhi()!=0?((App) this).q.nPhi() - li_free.size():0);
             List<Var> li2 = li_free;
             li2.addAll(li_bound.subList(0, nVar1));
             li2.addAll(li_free);
