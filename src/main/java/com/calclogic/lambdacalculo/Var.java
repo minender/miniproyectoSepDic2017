@@ -4,6 +4,7 @@
  */
 package com.calclogic.lambdacalculo;
 
+import com.calclogic.entity.Simbolo;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
@@ -403,19 +404,16 @@ public class Var extends Term{
         String type;
         if (!D.containsKey(this.indice)) {
             type = expected;
+            System.out.println(((char) this.indice)+" es de tipo "+expected);
             D.put(this.indice, expected);
         }
         else {
-            type = D.get(this.indice);
-            if (type.equals("*") && !expected.equals("*")) {
-                type = expected;
-                D.put(this.indice, expected);
-            }
-        }
-        
-        if (!type.equals(expected) && !expected.equals("*")) {
-            System.out.println("Se esperaba "+expected+", se tiene "+type+" para la variable "+((char) this.indice));
-            throw new TypeVerificationException();
+            String current_type = D.get(this.indice);
+            type = Simbolo.matchTipo(D.get(this.indice), expected);
+            if (!type.equals(current_type)){
+                System.out.println(((char) this.indice)+" es de tipo "+type);
+                D.put(indice, type);
+            }    
         }
         
         return type;

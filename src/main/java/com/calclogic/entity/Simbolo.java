@@ -228,9 +228,11 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
         String tipo = "";
         for (String t: tipos) {
             if (t.length() > 1)
-                tipo += '('+t+')';
+                t = '('+t+')';
+            if (tipo.length() == 0)
+                tipo = t;
             else
-                tipo += t;
+                tipo += "->"+t;
         }
         return tipo;
     }
