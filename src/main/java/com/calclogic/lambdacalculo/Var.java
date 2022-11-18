@@ -202,7 +202,8 @@ public class Var extends Term{
     @Override
     public String toStringLaTeX(SimboloManager s,String numTeo) {
         if(alias == null ) {
-            return (indice > 64?""+(char) indice:"x_{"+indice+"}");
+            boolean inRange = (65 <= indice && indice <= 90) || (97 <= indice && indice <= 122);
+            return (inRange?""+(char) indice:"x_{"+indice+"}");
         }else {
             return alias;
         }

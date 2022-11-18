@@ -241,11 +241,10 @@ public class App extends Term{
     
     public int fresh(int n)
     {
-        // (x2 x1).fresh(1)
         int i = p.fresh(n);
         int j = q.fresh(n);
-        if (i == j && j == n)
-            return n;
+        if (i == j && j == n){
+            return n;}
         else
             return this.maxVar()+1;
         //return q.fresh(p.fresh(n));
@@ -646,7 +645,6 @@ public class App extends Term{
             }
             i++;
         }
-        
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
         notation = ('I' == kind) ? ("\\ {"+notation+"}\\ ") : 
                     (('L' == kind) ? ("\\class{"+nivel+"}{"+notation+"}") : notation);

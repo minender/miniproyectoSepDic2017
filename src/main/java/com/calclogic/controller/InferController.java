@@ -511,13 +511,13 @@ public class InferController {
         if (response.getError() != null){
             return response;
         }
-        
+
         // CREATE THE INSTANTIATION
         ArrayList<Object> arr = null;
         if (!instanciacion.equals("")){
             arr=TermUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
         }
-        
+
         // CREATE LEIBNIZ
         Term leibnizTerm = null;
         if (!leibniz.equals("")){
