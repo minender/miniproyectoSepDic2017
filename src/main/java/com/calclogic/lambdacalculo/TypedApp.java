@@ -5,6 +5,9 @@
  */
 package com.calclogic.lambdacalculo;
 
+import com.calclogic.parse.TermUtilities;
+import java.util.List;
+
 /**
  *
  * @author federico
@@ -171,9 +174,34 @@ public class TypedApp extends App implements TypedTerm{
             E = new App(new App(new Const("="),new App(E,((App)((App)qType).p).q)),new App(E,((App)qType).q)).evaluar();
             return E;*/
             //return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms).evaluar();
-            Term right = ((App)((App)qType).p).q.body().sustParall((Sust)pType).evaluar();
-            Term left = (((App)qType).q).body().sustParall((Sust)pType).evaluar();
-            return new App(new App(new Const("="),right),left).abstractEq();
+            try {
+             Term right = ((App)((App)qType).p).q;
+             Term left = ((App)qType).q;
+             Term aux = left;
+             int i = 0;
+             while ( aux instanceof Bracket ) {
+                Var var = ((Bracket)aux).x;
+                Var v = ((Sust)pType).vars.get(i);
+                if (var.indice == v.indice) {
+                    Term t = ((Sust)pType).terms.remove(0);
+                    right = new App(right,t);
+                    left = new App(left,(Term)t.clone());
+                    i++;
+                }
+                else {
+                    right = new App(right,v);
+                    left = new App(left,v);
+                }
+                aux = ((Bracket)aux).t;
+             }
+             String vars = ";"+((TypedA)q).variables_.split(";")[0];
+             //Term right = ((App)((App)qType).p).q.body().sustParall((Sust)pType).evaluar();
+             //Term left = (((App)qType).q).body().sustParall((Sust)pType).evaluar();
+             return new App(new App(new Const(0,"="),right),left).evaluar(";b,x,b,x").abstractEq();
+            }
+            catch (CloneNotSupportedException e){
+                e.printStackTrace();
+            }
         }
         else if (inferType == 'l')
         {
