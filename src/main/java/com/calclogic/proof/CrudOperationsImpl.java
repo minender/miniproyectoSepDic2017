@@ -443,19 +443,23 @@ public class CrudOperationsImpl implements CrudOperations {
                 return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user), proof), infer);
             }
             else {
-                if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l' ) {
-                    Term aux = ((App)((App)type).p).q;
+                Term aux = ((App)((App)type.setToPrint()).p).q;
+
+                if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l'){
                     Term oldLeib = ((Bracket)((TypedApp)infer).p.type()).t;
                     Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,oldLeib),((App)aux).q));
                     infer = new TypedApp(new TypedL(leibniz),((TypedApp)infer).q);
-                    return new TypedApp(proof, infer);
                 }
                 else {
-                    Term aux = ((App)((App)type).p).q;
-                    Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,new Var('z')),((App)aux).q));
-                    infer = new TypedApp(new TypedL(leibniz),infer);
-                    return new TypedApp(proof, infer);
+                    if (aux instanceof Var){
+                        infer = new TypedApp(proof, new Var('z'));
+                    }
+                    else{
+                        Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,new Var('z')),((App)aux).q));
+                        infer = new TypedApp(new TypedL(leibniz),infer); 
+                    }                     
                 }
+                return new TypedApp(proof, infer);
             }
         } else {
             Term prueba = new TypedApp(proof, infer);
