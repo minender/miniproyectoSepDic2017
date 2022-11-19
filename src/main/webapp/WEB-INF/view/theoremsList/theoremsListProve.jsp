@@ -74,7 +74,7 @@
                                                 </c:when>
 
                                                 <c:otherwise>
-                                                    (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,"")}$    
+                                                    (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,"")}$
                                                 </c:otherwise>
                                             </c:choose>
                                             <%--<span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">
