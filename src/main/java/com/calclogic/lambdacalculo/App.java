@@ -95,10 +95,10 @@ public class App extends Term{
             }
             if (p.occur(var) && (varsTerm.size() ==  Vars.size()) && 
                 !varsTerm.get(i).occur(new Var('E')) && 
-                !varsTerm.get(i).occur(new Var('f')) && 
-                !varsTerm.get(i).occur(new Var('g')) &&
-                !(varsTerm.get(i).esRedexFinal().t) && 
-                !(varsTerm.get(i) instanceof Bracket)
+                !varsTerm.get(i).occur(new Var('P')) && 
+                !varsTerm.get(i).occur(new Var('Q')) &&
+                !(varsTerm.get(i).esRedexFinal().t) //&& 
+                //!(varsTerm.get(i) instanceof Bracket)
                )
             {
                 Term term = varsTerm.get(i);
@@ -241,11 +241,10 @@ public class App extends Term{
     
     public int fresh(int n)
     {
-        // (x2 x1).fresh(1)
         int i = p.fresh(n);
         int j = q.fresh(n);
-        if (i == j && j == n)
-            return n;
+        if (i == j && j == n){
+            return n;}
         else
             return this.maxVar()+1;
         //return q.fresh(p.fresh(n));
@@ -550,7 +549,7 @@ public class App extends Term{
         // ***** MISSING EXPLANATION
         if (j > nArgs) {
             App newTerm;
-            if ((simpleOrAbrv||'I' == kind)&& p instanceof Var ){//&& p.occur(new Var('E'))) {
+            if ( p instanceof Var ){//&& p.occur(new Var('E'))) {
                 sym = s.getSimbolo(s.getPropFunApp());
                 newTerm = new App(new App(new Const(s.getPropFunApp(),"c_{"+s.getPropFunApp()+"}"),p),q);
             }
@@ -646,7 +645,6 @@ public class App extends Term{
             }
             i++;
         }
-        
         StrSubstitutor sub = new StrSubstitutor(values, "%(",")");
         notation = ('I' == kind) ? ("\\ {"+notation+"}\\ ") : 
                     (('L' == kind) ? ("\\class{"+nivel+"}{"+notation+"}") : notation);

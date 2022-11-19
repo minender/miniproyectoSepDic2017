@@ -745,7 +745,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public Term reducir()
     {
-        Redex r=buscarRedexIzq(null,false);
+        Redex r=buscarRedexIzqFinal(null,false);
         if(r!=null){
             if(r.context==null){
                 if(r.tipo.c)
@@ -1104,6 +1104,7 @@ public abstract class Term implements Cloneable, Serializable{
                 }
             }
             else if(izq.p.equals(k) && izq.deep==2){
+                xc.indice = this.fresh(c);
                 return izq.pq.q;
             }
             else{

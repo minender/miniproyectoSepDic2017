@@ -71,7 +71,7 @@ public class Bracket extends Term{
     
     public Term sust(Var x,Term t)
     {
-        return new Bracket(this.x,t.sust(x, t));
+        return new Bracket(this.x,this.t.sust(x, t));
     }
     
     public Term type()
@@ -346,18 +346,18 @@ public class Bracket extends Term{
     @Override
     public Term sustParall(List<Var> Vars, List<Term> varsTerm) {
         ArrayList<Var> aux = new ArrayList<Var>();
+        ArrayList<Term> aux2 = new ArrayList<Term>();
         int i = 0;
         for (Iterator<Var> it = Vars.iterator(); it.hasNext();) {
             Var var = it.next();
             if (!(var.occur(x))) {
-                aux.add(x);     
-                varsTerm.remove(i);
+                aux.add(var);     
+                aux2.add(varsTerm.get(i));
             } 
             i++;
         }
         if (aux.size() != 0) {
-            
-            return new Bracket((Var) x,t.sustParall(aux, varsTerm));
+            return new Bracket((Var) x,t.sustParall(aux, aux2));
         }else{
             return this;
         }
@@ -365,7 +365,7 @@ public class Bracket extends Term{
     
     @Override     
     public void freeVars(int[] set) {
-        if (set[x.indice-65] == 0) {//(!set.contains(x)) 
+        if (x.indice >= 65 && x.indice <= 122 && set[x.indice-65] == 0) {//(!set.contains(x)) 
           t.freeVars(set);
           set[x.indice-65] = 0; // set.remove(x);
         } else 
