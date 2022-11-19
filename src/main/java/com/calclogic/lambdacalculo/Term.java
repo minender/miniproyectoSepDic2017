@@ -5,6 +5,7 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.entity.PredicadoId;
+import com.calclogic.entity.Simbolo;
 import com.calclogic.parse.TermUtilities;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.ResuelveManager;
@@ -1268,12 +1269,20 @@ public abstract class Term implements Cloneable, Serializable{
     }
     
     public String getType(SimboloManager simboloManager) throws TypeVerificationException {
-        HashMap<Integer, String> D = new HashMap<Integer, String>();
+        HashMap<Integer, String> D = new HashMap<>();
         return getType(D, simboloManager);
     }
     
     //public abstract String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException;
     public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
+        System.out.println("getType not implemented for "+this);
         throw new TypeVerificationException();
+    }
+    
+    public String checkType(HashMap<Integer, String> D, SimboloManager simboloManager, String expected) 
+            throws TypeVerificationException {
+        String type = this.getType(D, simboloManager);
+        
+        return Simbolo.matchTipo(type, expected);
     }
 }

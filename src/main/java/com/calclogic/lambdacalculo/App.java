@@ -16,6 +16,7 @@ import java.util.Map;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import java.util.Collections;
+import java.util.HashSet;
 
 /**
  *
@@ -942,29 +943,65 @@ public class App extends Term{
         
     @Override
     public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
-        String type_p = p.getType(D, simboloManager);
-        String[] type_p_split = type_p.split("->"); // cambiar por un parser
-        String param_type = type_p_split[0];
-        String type_q;
-        if (q instanceof Var) {
-            Var qvar = (Var) q;
-            if (!D.containsKey(qvar.indice)) {
-                type_q = param_type;
-                D.put(qvar.indice, param_type);
+        
+        boolean isQuant = false;
+        List<Integer> boundVars = null;
+        Term aux = this;
+        Term abs = this.q;
+        List<Term> args = new ArrayList<>();
+        while (aux instanceof App) {
+            args.add(((App)aux).q);
+            aux = ((App)aux).p;
+        }
+        Collections.reverse(args);
+        
+        Const c = (Const) aux;
+        String type_c = c.getType(D, simboloManager);
+        int cid = c.getId();
+        if (cid > 0) {
+            isQuant = simboloManager.getSimbolo(cid).isQuantifier();
+        }
+        if (isQuant) {
+            boundVars = new ArrayList<>();
+            while (abs instanceof Bracket) {
+                boundVars.add(((Bracket) abs).x.indice);
+                abs = ((Bracket) abs).t;
             }
-            else {
-                type_q = D.get(qvar.indice);
-                if (type_q.equals("*") && !param_type.equals("*")) {
-                    D.put(qvar.indice, param_type);
-                }
+        }
+        
+        HashMap<Integer, String> D2;
+        if (isQuant) {
+            D2 = new HashMap<>();
+            D2.putAll(D);
+            for (Integer v: boundVars) {
+                D2.remove(v);
             }
         }
         else {
-            type_q = q.getType(D, simboloManager);
+            D2 = D;
         }
-        if (!type_q.equals(param_type) && !param_type.equals("*")) {
+        
+        String[] type_c_split = Simbolo.splitTipo(type_c);
+        
+        if (type_c_split.length-1 != args.size()) {
+            System.out.println("La aridad esperada del simbolo: "+type_c+" no coincide con la expresion: "+this);
             throw new TypeVerificationException();
         }
-        return type_p.substring(param_type.length()+2);
+        
+        int i = 0;
+        for (Term arg: args) {
+            String param_type = type_c_split[i];
+            arg.checkType(D2, simboloManager, param_type);
+            i++;
+        }
+        
+        if (isQuant) {
+            for (Integer v: boundVars) {
+                D2.remove(v);
+            }
+            D.putAll(D2);
+        }
+        
+        return type_c_split[type_c_split.length-1];
     }
 }

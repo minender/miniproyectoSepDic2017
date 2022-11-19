@@ -4,6 +4,7 @@
  */
 package com.calclogic.lambdacalculo;
 
+import com.calclogic.entity.Simbolo;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
@@ -397,5 +398,25 @@ public class Var extends Term{
 	}
 		
 	return currentAlias;
+    }
+    
+    @Override
+    public String checkType(HashMap<Integer, String> D, SimboloManager simboloManager, String expected) throws TypeVerificationException {
+        String type;
+        if (!D.containsKey(this.indice)) {
+            type = expected;
+            System.out.println(((char) this.indice)+" es de tipo "+expected);
+            D.put(this.indice, expected);
+        }
+        else {
+            String current_type = D.get(this.indice);
+            type = Simbolo.matchTipo(D.get(this.indice), expected);
+            if (!type.equals(current_type)){
+                System.out.println(((char) this.indice)+" es de tipo "+type);
+                D.put(indice, type);
+            }    
+        }
+        
+        return type;
     }
 }

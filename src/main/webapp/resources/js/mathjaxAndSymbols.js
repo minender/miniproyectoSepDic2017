@@ -257,7 +257,6 @@ function deleteOperator(FormId, rootId){
     oldParentId = oldParentId.join('-');
     var result;
     
-    console.log(FormId, rootId);
     if (rootId === oldParentId) {
         cleanJax(rootId.substring(0, rootId.length-1));
         return;
@@ -686,6 +685,21 @@ function inferRecoverC(cNotation, latexNotation, rootId, callback=null){
                 // set left or right child in latex notation
                 var1 = simboloDic[parentSymbolId]['notacionVariables'][0];
                 jaxInputDictionary[id]['isLeftLatex'] = (var1[var1.length - 1] == id[id.length - 1]);
+            }
+            
+            if(parentSymbolId != ""){
+                var nInputs = simboloDic[parentSymbolId]['notacionVariables'].length;
+                var parentId = id.split('-');
+                parentId.pop();
+                parentId = parentId.join('-');
+                for (var j = 0; j < nInputs ; j++) {
+                    var currentId = parentId+"-"+(j+1);
+                    var1 = simboloDic[parentSymbolId]['notacionVariables'][0];
+                    jaxInputDictionary[currentId] = {
+                        simboloId: parentSymbolId,
+                        isLeftLatex: (var1[var1.length - 1] == currentId[currentId.length - 1])
+                    };
+                }
             }
             
             // set parent symbol

@@ -562,7 +562,6 @@ public class PerfilController {
         map.addAttribute("numeroTeorema","");
         map.addAttribute("mensaje", "");
         map.addAttribute("admin","AdminTeoremas");
-        map.addAttribute("agregarTeoremaMenu","active");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         map.addAttribute("simboloList", simboloList);
@@ -599,7 +598,6 @@ public class PerfilController {
         map.addAttribute("numeroTeorema","");
         map.addAttribute("mensaje", "");
         map.addAttribute("admin","AdminTeoremas");
-        map.addAttribute("agregarTeoremaMenu","active");
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1200px");
         map.addAttribute("simboloList", simboloList);
@@ -851,17 +849,18 @@ public class PerfilController {
         Teorema teorema = teoremaManager.getTeorema(teoId);
         Term teoTerm = teorema.getTeoTerm();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false);
-        /**
+        
+        String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
+        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
+        
+        ///*
         try {
-            Term testTerm = teoTerm.evaluar(resuelve.getVariables());
+            Term testTerm = teoTerm;
             System.out.println(testTerm);
             System.out.println(testTerm.getType(simboloManager));
         } catch (TypeVerificationException ex) {
             System.out.println("error de tipo");
-        }*/
-        
-        String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
-        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
+        }//*/
         
         map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
