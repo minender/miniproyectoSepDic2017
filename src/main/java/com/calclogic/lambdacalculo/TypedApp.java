@@ -181,23 +181,26 @@ public class TypedApp extends App implements TypedTerm{
              int i = 0;
              while ( aux instanceof Bracket ) {
                 Var var = ((Bracket)aux).x;
-                Var v = ((Sust)pType).vars.get(i);
-                if (var.indice == v.indice) {
+                Var v = (i<((Sust)pType).vars.size()?((Sust)pType).vars.get(i):null);
+                if (v != null && var.indice == v.indice) {
                     Term t = ((Sust)pType).terms.remove(0);
+                    if (v.indice == 80 || v.indice == 81 || v.indice == 82)
+                        t = new Bracket(new Var(120),t);
                     right = new App(right,t);
                     left = new App(left,(Term)t.clone());
                     i++;
                 }
                 else {
-                    right = new App(right,v);
-                    left = new App(left,v);
+                    right = new App(right,var);
+                    left = new App(left,var);
                 }
                 aux = ((Bracket)aux).t;
              }
              String vars = ";"+((TypedA)q).variables_.split(";")[0];
+             //System.out.println(new App(new App(new Const(0,"="),right),left));
              //Term right = ((App)((App)qType).p).q.body().sustParall((Sust)pType).evaluar();
              //Term left = (((App)qType).q).body().sustParall((Sust)pType).evaluar();
-             return new App(new App(new Const(0,"="),right),left).evaluar(";b,x,b,x").abstractEq();
+             return new App(new App(new Const(0,"="),right),left).evaluar(vars).abstractEq();
             }
             catch (CloneNotSupportedException e){
                 e.printStackTrace();
