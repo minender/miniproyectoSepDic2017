@@ -954,14 +954,19 @@ public class App extends Term{
             aux = ((App)aux).p;
         }
         Collections.reverse(args);
-        
-        Const c = (Const) aux;
-        String type_c = c.getType(D, simboloManager);
-        int cid = c.getId();
-        if (cid > 0) {
-            isQuant = simboloManager.getSimbolo(cid).isQuantifier();
+        String type_c;
+        if (aux instanceof Const) {
+            Const c = (Const) aux;
+            type_c = c.getType(D, simboloManager);
+            int cid = c.getId();
+            if (cid > 0) {
+                isQuant = simboloManager.getSimbolo(cid).isQuantifier();
+            }
         }
-        if (isQuant) {
+        else {
+            type_c = aux.checkType(D, simboloManager,"t->b");
+        }
+        if (isQuant) { 
             boundVars = new ArrayList<>();
             while (abs instanceof Bracket) {
                 boundVars.add(((Bracket) abs).x.indice);

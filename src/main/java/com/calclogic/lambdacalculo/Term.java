@@ -269,7 +269,7 @@ public abstract class Term implements Cloneable, Serializable{
         return set;
     }
     
-    public String stFreeVars(){
+     public String stFreeVars(){
         String st = null;
         int[] set = freeVars();
 
@@ -282,6 +282,35 @@ public abstract class Term implements Cloneable, Serializable{
         for (int j=i; j<58; j++)
             if (set[j] != 0)
                 st += ","+((char)set[j]);
+        
+        if (st == null)
+            return "";
+        
+        return st;    
+        //return hset.toString().replaceAll("[\\s\\[\\]]", "");
+    }
+    
+    public String stFreeVars(SimboloManager s) throws TypeVerificationException{
+        String st = null;
+        HashMap<Integer,String> h = new HashMap<Integer,String>();
+        int[] set = freeVars();
+        getType(h, s);
+        int i=0;
+        while (st == null && i<58){
+            if (set[i] != 0){
+                if (h.get(i+65).length() > 1) 
+                    st = ((char)set[i])+"(x)";
+                else 
+                    st = ((char)set[i])+"";
+            }
+            i++;
+        } 
+        for (int j=i; j<58; j++)
+            if (set[j] != 0)
+                if (h.get(j+65).length() > 1) 
+                    st += ","+((char)set[j])+"(x)";
+                else
+                    st += ","+((char)set[j]);
         
         if (st == null)
             return "";

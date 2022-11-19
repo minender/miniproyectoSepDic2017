@@ -184,8 +184,6 @@ public class TypedApp extends App implements TypedTerm{
                 Var v = (i<((Sust)pType).vars.size()?((Sust)pType).vars.get(i):null);
                 if (v != null && var.indice == v.indice) {
                     Term t = ((Sust)pType).terms.remove(0);
-                    if (v.indice == 80 || v.indice == 81 || v.indice == 82)
-                        t = new Bracket(new Var(120),t);
                     right = new App(right,t);
                     left = new App(left,(Term)t.clone());
                     i++;

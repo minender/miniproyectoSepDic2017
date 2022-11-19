@@ -33,7 +33,7 @@
                                                     <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,resu.getNumeroteorema())}$</span>
 
                                                     <script type="text/javascript">clickTeoremaInicial('ST-${resu.getNumeroteorema()}');
-                                                            clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().setToPrint().stFreeVars()}');
+                                                            clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().setToPrint().stFreeVars(simboloManager)}');
                                                     </script>
 
                                                     <c:choose>

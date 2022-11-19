@@ -133,39 +133,55 @@ instantiate[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st]
      returns [ArrayList<Object> value]: 
 
      arguments ':=' explist[id,pm,sm,st]         {ArrayList<Object> arr=new ArrayList<Object>();
-                                               if ($arguments.value.size() != $explist.value.size())
+                                                  ArrayList<Var> args=new ArrayList<Var>();
+                                                  ArrayList<Term> arguments = $arguments.value;
+                                                  ArrayList<Term> explist = $explist.value;
+                                               if (arguments.size() != explist.size())
                                                  throw new NoViableAltException(this);
-                                               arr.add($arguments.value);
-                                               arr.add($explist.value);
+                                               for (int i=0; i<arguments.size(); i++){
+                                                 if (arguments.get(i) instanceof Var)
+                                                    args.add((Var)arguments.get(i));
+                                                 else{
+                                                    args.add((Var)((App)arguments.get(i)).p);
+                                                    Term t = new Bracket((Var)((App)arguments.get(i)).p,explist.get(i));
+                                                    explist.add(i,t);
+                                                 }
+                                               }
+                                               arr.add(args);
+                                               arr.add(explist);
                                                $value = arr;
                                               };
 
 
-arguments returns [ArrayList<Var> value]: 
-                                           LETTER ',' arg=arguments 
-                                                           {ArrayList<Var> aux=$arg.value; 
-                                                            Var v=new Var((new Integer((int)$LETTER.text.charAt(0))).intValue());
+arguments returns [ArrayList<Term> value]: 
+                                           L=(LETTER|CAPITALLETTER) ',' arg=arguments 
+                                                           {ArrayList<Term> aux=$arg.value; 
+                                                            Var v=new Var((new Integer((int)$L.text.charAt(0))).intValue());
                                                             aux.add(0,v); 
                                                             $value=aux;
                                                            }
 
-                                         | CAPITALLETTER ',' arg=arguments
-                                                    {ArrayList<Var> aux=$arg.value; 
-                                                     Var v=new Var((new Integer((int)$CAPITALLETTER.text.charAt(0))).intValue());
-                                                     aux.add(0,v); 
-                                                     $value=aux;
-                                                    }
+                                         | L=(LETTER|CAPITALLETTER) '(' M=(LETTER|CAPITALLETTER) ')' ',' arg=arguments 
+                                                           {ArrayList<Term> aux=$arg.value; 
+                                                            Var v=new Var((new Integer((int)$L.text.charAt(0))).intValue());
+                                                            Var v2=new Var((new Integer((int)$M.text.charAt(0))).intValue());
+                                                            aux.add(0,new App(v,v2)); 
+                                                            $value=aux;
+                                                           }
 
-                                         | LETTER          {ArrayList<Var> list=new ArrayList<Var>();
-                                                            Var v=new Var((new Integer($LETTER.text.charAt(0))).intValue());
+                                         | L=(LETTER|CAPITALLETTER)          
+                                                           {ArrayList<Term> list=new ArrayList<Term>();
+                                                            Var v=new Var((new Integer($L.text.charAt(0))).intValue());
                                                             list.add(0,v);
                                                             $value = list;
                                                            }
 
-                                         | CAPITALLETTER   {ArrayList<Var> list=new ArrayList<Var>();
-                                                       Var v=new Var((new Integer($CAPITALLETTER.text.charAt(0))).intValue());
-                                                             list.add(0,v);
-                                                             $value = list;
+                                         | L=(LETTER|CAPITALLETTER) '(' L2=(LETTER|CAPITALLETTER) ')'
+                                                           {ArrayList<Term> list=new ArrayList<Term>();
+                                                            Var v=new Var((new Integer($L.text.charAt(0))).intValue());
+                                                            Var v2=new Var((new Integer($L2.text.charAt(0))).intValue());
+                                                            list.add(0,new App(v,v2));
+                                                            $value = list;
                                                            };
 
 
