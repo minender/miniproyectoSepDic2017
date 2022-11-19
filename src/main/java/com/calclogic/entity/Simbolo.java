@@ -1,6 +1,7 @@
 package com.calclogic.entity;
 // Generated Feb 27, 2019 12:50:11 PM by Hibernate Tools 3.2.1.GA
 
+import com.calclogic.lambdacalculo.TypeVerificationException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -179,4 +180,86 @@ public class Simbolo  extends notacionOwner implements java.io.Serializable {
     public void setTeoria(Teoria teoria) {
         this.teoria = teoria;
     }
+    
+    public static String[] splitTipo(String tipo) throws TypeVerificationException {
+        String[] arr = new String[1];
+        List<String> tipos = new ArrayList<>();
+        int parOpen = 0;
+        int expBegin = 0;
+        int expEnd = 0;
+        for (int i=0; i < tipo.length(); i++) {
+            char c = tipo.charAt(i);
+            if (c == '(')
+                parOpen++;
+            else if (c == ')')
+                parOpen--;
+            if (parOpen < 0)
+                throw new TypeVerificationException();
+            
+            if (c == '-' && parOpen == 0) {
+                expEnd = i;
+                if (tipo.charAt(expBegin) == '(') {
+                    expBegin++;
+                    expEnd--;
+                }
+                tipos.add(tipo.substring(expBegin, expEnd));
+            }
+            
+            if (i == tipo.length()-1) {
+                if (parOpen != 0)
+                    throw new TypeVerificationException();
+                else {
+                    expEnd = i+1;
+                    if (tipo.charAt(expBegin) == '(') {
+                        expBegin++;
+                        expEnd--;
+                    }
+                    tipos.add(tipo.substring(expBegin, expEnd));
+                }
+            }
+            if (c == '>' && parOpen == 0)
+                expBegin = i+1;
+        }
+        
+        return tipos.toArray(new String[tipos.size()]);
+    }
+    
+    public static String joinTipo(String[] tipos){
+        String tipo = "";
+        for (String t: tipos) {
+            if (t.length() > 1)
+                t = '('+t+')';
+            if (tipo.length() == 0)
+                tipo = t;
+            else
+                tipo += "->"+t;
+        }
+        return tipo;
+    }
+    
+    public static String matchTipo(String tipo1, String tipo2) throws TypeVerificationException {
+        if (tipo1.equals("*"))
+            return tipo2;
+        else if (tipo2.equals("*"))
+            return tipo1;
+        else if (tipo1.equals(tipo2))
+            return tipo1;
+        else if (tipo1.length() == 1 && tipo1.length() == 1 && !tipo1.equals(tipo2))
+            throw new TypeVerificationException();
+        String[] t1 = splitTipo(tipo1);
+        String[] t2 = splitTipo(tipo2);
+        return matchTipo(t1, t2);
+    }
+    
+    public static String matchTipo(String[] tipo1, String[] tipo2) throws TypeVerificationException {
+        if (tipo1.length != tipo2.length) {
+            throw new TypeVerificationException();
+        }
+        List<String> tipos = new ArrayList<>();
+        for (int i =0; i < tipo1.length; i++) {
+            tipos.add(matchTipo(tipo1[i], tipo2[i]));
+        }
+        return joinTipo(tipos.toArray(new String[tipos.size()]));
+    }
+    
 }

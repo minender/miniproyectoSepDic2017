@@ -24,6 +24,7 @@ import com.calclogic.entity.TerminoId;
 import com.calclogic.entity.MostrarCategoria;
 import com.calclogic.entity.Predicado;
 import com.calclogic.entity.PredicadoId;
+import com.calclogic.forms.AgregarCategoria;
 import com.calclogic.forms.AgregarSimbolo;
 import com.calclogic.forms.AgregarTeorema;
 import com.calclogic.forms.InferResponse;
@@ -380,7 +381,7 @@ public class PerfilController {
         map.addAttribute("agregarTeoremaMenu","");
         map.addAttribute("perfilMenu","");
         map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-        map.addAttribute("categorias",categoriaManager.getAllCategorias());
+        map.addAttribute("categorias",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
         map.addAttribute("showCategorias",showCategorias);
         map.addAttribute("resuelves", resuelves);
         map.addAttribute("resuelveManager",resuelveManager);
@@ -435,7 +436,7 @@ public class PerfilController {
             if (!answer.getListaIdCategorias().contains(categoriaId)){
                 Categoria categoria = categoriaManager.getCategoria(categoriaId);
                 MostrarCategoria mostrarCategoria = mostrarCategoriaManager.getMostrarCategoriaByCategoriaAndUsuario(categoria, currentUser);
-                mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria.getId());
+                mostrarCategoriaManager.deleteMostrarCategoria(mostrarCategoria);
             }
         }
         
@@ -540,6 +541,75 @@ public class PerfilController {
         return response;
     }
     
+    @RequestMapping(value="/{username}/guardarcat", method=RequestMethod.GET)
+    public String guardarCatView(@PathVariable String username,ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        
+        map.addAttribute("usuario",usr);
+        map.addAttribute("agregarCategoria",new AgregarCategoria());
+        map.addAttribute("modificar",new Integer(0));
+        map.addAttribute("teorema","");
+        map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
+        map.addAttribute("numeroTeorema","");
+        map.addAttribute("mensaje", "");
+        map.addAttribute("admin","AdminTeoremas");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("teorias", teoriaManager.getAllTeoria());
+        map.addAttribute("catMenu", "active");
+        
+        return "agregarCategoria";
+    }
+    
+    @RequestMapping(value="/{username}/guardarcat", method=RequestMethod.POST)
+    public String guardarCatViewPOST(@Valid AgregarCategoria agregarCategoria, BindingResult bindingResult, @PathVariable String username, ModelMap map) {
+        if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
+        {
+            return "redirect:/index";
+        }
+        
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        
+        Categoria cat = new Categoria(agregarCategoria.getNombre(), teoriaManager.getTeoria(agregarCategoria.getTeoriaid()));
+        categoriaManager.addCategoria(cat);
+        
+        map.addAttribute("usuario",usr);
+        map.addAttribute("agregarCategoria",new AgregarCategoria());
+        map.addAttribute("modificar",new Integer(0));
+        map.addAttribute("teorema","");
+        map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
+        map.addAttribute("numeroTeorema","");
+        map.addAttribute("mensaje", "");
+        map.addAttribute("admin","AdminTeoremas");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1200px");
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("teorias", teoriaManager.getAllTeoria());
+        map.addAttribute("catMenu", "active");
+        
+        return "perfil";
+    }
+    
     @RequestMapping(value="/{username}/guardarteo", method=RequestMethod.GET)
     public String guardarTeoView(@PathVariable String username,ModelMap map) {
         if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
@@ -557,7 +627,7 @@ public class PerfilController {
         map.addAttribute("agregarTeorema",new AgregarTeorema());
         map.addAttribute("modificar",new Integer(0));
         map.addAttribute("teorema","");
-        map.addAttribute("categoria",categoriaManager.getAllCategorias());
+        map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
         map.addAttribute("numeroTeorema","");
         map.addAttribute("mensaje", "");
         map.addAttribute("admin","AdminTeoremas");
@@ -600,7 +670,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "");
             map.addAttribute("admin","AdminTeoremas");
@@ -673,7 +743,7 @@ public class PerfilController {
                  
             map.addAttribute("usuario", usr);
             map.addAttribute("guardarMenu","");
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("agregarTeoremaMenu","");
             map.addAttribute("listarTerminosMenu","");
             map.addAttribute("misTeoremasMenu","");        
@@ -691,7 +761,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
             map.addAttribute("selected",agregarTeorema.getCategoria());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
@@ -709,7 +779,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "The theorem can't be save because "+e.alias);
             map.addAttribute("admin","AdminTeoremas");
@@ -728,7 +798,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
             map.addAttribute("admin","AdminTeoremas");
@@ -750,7 +820,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
@@ -779,29 +849,29 @@ public class PerfilController {
         Teorema teorema = teoremaManager.getTeorema(teoId);
         Term teoTerm = teorema.getTeoTerm();
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false);
-        /**
+        
+        String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
+        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
+        
+        ///*
         try {
-            Term testTerm = teoTerm.evaluar(resuelve.getVariables());
+            Term testTerm = teoTerm;
             System.out.println(testTerm);
             System.out.println(testTerm.getType(simboloManager));
         } catch (TypeVerificationException ex) {
             System.out.println("error de tipo");
-        }*/
-        
-        String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
-        String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
+        }//*/
         
         map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
         map.addAttribute("agregarTeorema",new AgregarTeorema());
         map.addAttribute("modificar",new Integer(0));
         map.addAttribute("editar", true);
-        map.addAttribute("categoria",categoriaManager.getAllCategorias());
+        map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
         map.addAttribute("numeroTeorema", resuelve.getNumeroteorema());
         map.addAttribute("teorema", "");
         map.addAttribute("teoremaC", teoC);
         map.addAttribute("teoremaInputs", teoInputs);
-        map.addAttribute("categoria",categoriaManager.getAllCategorias());
         map.addAttribute("mensaje", "");
         map.addAttribute("admin","AdminTeoremas");
         map.addAttribute("agregarTeoremaMenu","active");
@@ -849,7 +919,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "");
             map.addAttribute("admin","AdminTeoremas");
@@ -944,7 +1014,7 @@ public class PerfilController {
             map.addAttribute("navUrlPrefix", "../");
             map.addAttribute("usuario", usr);
             map.addAttribute("guardarMenu","");
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("agregarTeoremaMenu","");
             map.addAttribute("listarTerminosMenu","");
             map.addAttribute("misTeoremasMenu","");        
@@ -964,7 +1034,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("selected",agregarTeorema.getCategoria());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
@@ -983,7 +1053,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
             map.addAttribute("admin","AdminTeoremas");
@@ -1003,7 +1073,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
             map.addAttribute("admin","AdminTeoremas");
@@ -1026,7 +1096,7 @@ public class PerfilController {
             map.addAttribute("agregarTeorema",agregarTeorema);
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
-            map.addAttribute("categoria",categoriaManager.getAllCategorias());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");

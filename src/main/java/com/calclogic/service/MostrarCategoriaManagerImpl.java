@@ -46,18 +46,8 @@ public class MostrarCategoriaManagerImpl implements MostrarCategoriaManager {
      */   
     @Override
     @Transactional
-    public void deleteMostrarCategoria(int id){
-        MostrarCategoriaDAO.deleteMostrarCategoria(id);
-    }
-
-    /**
-     * Method to get a MostrarCategoria object by its principal key.
-     * @param id Is the principal key of the MostrarCategoria object.
-     */ 
-    @Override
-    @Transactional
-    public MostrarCategoria getMostrarCategoria(int id){
-        return MostrarCategoriaDAO.getMostrarCategoria(id);
+    public void deleteMostrarCategoria(MostrarCategoria mc){
+        MostrarCategoriaDAO.deleteMostrarCategoria(mc);
     }
 
     /**

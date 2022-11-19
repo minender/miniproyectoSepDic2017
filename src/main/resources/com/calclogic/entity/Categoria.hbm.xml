@@ -12,6 +12,9 @@
     <property name="nombre" type="string">
       <column name="nombre" not-null="true" unique="true"/>
     </property>
+    <many-to-one class="com.calclogic.entity.Teoria" fetch="select" lazy="false" name="teoria">
+      <column name="teoriaid" not-null="true"/>
+    </many-to-one>
     <!--<set name="teoremas" inverse="true" cascade="all">-->
     <set inverse="true" name="teoremas">
       <key>

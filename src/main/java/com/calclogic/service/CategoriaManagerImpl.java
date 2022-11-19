@@ -2,6 +2,7 @@ package com.calclogic.service;
 
 import com.calclogic.dao.CategoriaDAO;
 import com.calclogic.entity.Categoria;
+import com.calclogic.entity.Teoria;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,5 +58,11 @@ public class CategoriaManagerImpl implements CategoriaManager {
     @Transactional
     public List<Categoria> getAllCategorias(){
         return categoriaDAO.getAllCategorias();
+    }
+    
+    @Override
+    @Transactional
+    public List<Categoria> getAllCategoriasByTeoria(Teoria teoria){
+        return categoriaDAO.getAllCategoriasByTeoria(teoria);
     }
 }

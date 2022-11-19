@@ -133,6 +133,9 @@
     </bean>
     <bean id="mostrarCategoriaManager" class="com.calclogic.service.MostrarCategoriaManagerImpl">
     </bean>
+    <bean id="incluyeDAO" class="com.calclogic.dao.IncluyeDaoImpl"></bean>
+    <bean id="incluyeManager" class="com.calclogic.service.IncluyeManagerImpl">
+    </bean>
     <bean id="proofTemplateDAO" class="com.calclogic.dao.ProofTemplateDaoImpl"></bean>
     <bean id="proofTemplateManager" class="com.calclogic.service.ProofTemplateManagerImpl"></bean>
 

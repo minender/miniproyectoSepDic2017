@@ -15,15 +15,9 @@
                 <c:choose>
                     <c:when test="${isAdmin.intValue()==1}">
                         <li class="nav-item ${students}" ><a href="students" class="nav-link">Students</a></li>
-                    </c:when>    
-                    <c:otherwise>
-                    
-                    </c:otherwise>
-                </c:choose>
-                <c:choose>
-                    <c:when test="${isAdmin.intValue()==1}">
                         <li class="nav-item ${theoMenu}" ><a href="theo" class="nav-link">Theories</a></li>
-                    </c:when>
+                        <li class="nav-item ${catMenu}" ><a href="guardarcat" class="nav-link">Add Category</a></li>
+                    </c:when>    
                 </c:choose>
                 <li class="nav-item ${helpMenu}" ><a href="help" class="nav-link">Help</a></li>
                 <li class="nav-item" ><a id="linkCloseSession" href="close" class="nav-link">Sign Out</a></li>
