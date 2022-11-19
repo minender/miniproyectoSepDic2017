@@ -506,10 +506,9 @@ public class App extends Term{
         String appId = "";
         stk.push(q);
         Term aux = p;
-        position = position+"-";
         if ('L' == kind) {
-           stkS.push(appPosition+"2");
-           appId = appPosition+"1";
+           stkS.push(appPosition+"-2");
+           appId = appPosition+"-1";
         }
         int j = 1;
         while ( aux instanceof App ){
@@ -602,7 +601,7 @@ public class App extends Term{
                         if (kind != 'I')
                             values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s, numTeo));
                         else
-                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(kind,s,"",position+(index+nArgs),appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(kind,s,"",position+"-"+(index+nArgs),appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
                         index++;
                         aux_arg = ((Bracket) aux_arg).t;
                     }
@@ -614,7 +613,7 @@ public class App extends Term{
                         values.put("na"+i,tStr.term);
                     }
                     else{
-                        values.put("na"+i,arg.toStringLaTeX(kind,s,"",position+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                        values.put("na"+i,arg.toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
                         if ('L' == kind){
                             setVar += l2.get(l2.size()-1);
                         }
@@ -628,7 +627,7 @@ public class App extends Term{
                         String prefix = alwaysParentheses ? "a" : "aa";
 
                         if (arg instanceof App){
-                            IntXIntXString tuple = ((App) arg).privateToStringLaTeX(kind,s,"",position+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
+                            IntXIntXString tuple = ((App) arg).privateToStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
                             String parenthesizedTuple = ('L' == kind) ? addParentheses(tuple.x3) : ("("+tuple.x3+")");
 
                             if ( (tuple.x1 == 25) && (opId == 21 || opId == 22 || opId == 23))
@@ -637,7 +636,7 @@ public class App extends Term{
                                 values.put(prefix + i, (tuple.x2 > sym.getPr() || (conditionalParentheses && tuple.x1==opId)) ? tuple.x3 : parenthesizedTuple);
                         }
                         else
-                            values.put(prefix + i,arg.toStringLaTeX(kind, s,"",position+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                            values.put(prefix + i,arg.toStringLaTeX(kind, s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
 
                         if ('L' == kind)
                             setVar += l2.get(l2.size()-1);
@@ -753,7 +752,6 @@ public class App extends Term{
             && ((App)p).q.containT() )
             return q.toStringFormatC(s, pos, id, rootId);
         
-        pos = pos+"-";
         Stack<Term> stk = new Stack<Term>();
         String term;
         stk.push(q);
@@ -818,12 +816,12 @@ public class App extends Term{
             /*if (i > nArgs)
              term = "C29("+term+"),"+arg.toStringFormatC(s,pos+i,0);
             else*/
-            term += (i == 1/* && id != 29*/?"(":",")+arg.toStringFormatC(s,pos+i,id,rootId);
+            term += (i == 1/* && id != 29*/?"(":",")+arg.toStringFormatC(s,pos+"-"+i,id,rootId);
             i++;
         }
         if (boundVars != null) {
             for(Var v: boundVars) {
-                term += (i == 1 ? "(" : ",") + v.toStringFormatC(s,pos+i,id,rootId);
+                term += (i == 1 ? "(" : ",") + v.toStringFormatC(s,pos+"-"+i,id,rootId);
                 i++;
             }
         }
