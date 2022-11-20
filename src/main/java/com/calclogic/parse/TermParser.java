@@ -1,4 +1,4 @@
-// Generated from Term.g by ANTLR 4.8
+// Generated from .\Term.g by ANTLR 4.8
 package com.calclogic.parse; 
 
 import com.calclogic.entity.Predicado;
@@ -594,10 +594,22 @@ public class TermParser extends Parser {
 			setState(59);
 			((InstantiateContext)_localctx).explist = explist(id,pm,sm,st);
 			ArrayList<Object> arr=new ArrayList<Object>();
-			                                               if (((InstantiateContext)_localctx).arguments.value.size() != ((InstantiateContext)_localctx).explist.value.size())
+			                                                  ArrayList<Var> args=new ArrayList<Var>();
+			                                                  ArrayList<Term> arguments = ((InstantiateContext)_localctx).arguments.value;
+			                                                  ArrayList<Term> explist = ((InstantiateContext)_localctx).explist.value;
+			                                               if (arguments.size() != explist.size())
 			                                                 throw new NoViableAltException(this);
-			                                               arr.add(((InstantiateContext)_localctx).arguments.value);
-			                                               arr.add(((InstantiateContext)_localctx).explist.value);
+			                                               for (int i=0; i<arguments.size(); i++){
+			                                                 if (arguments.get(i) instanceof Var)
+			                                                    args.add((Var)arguments.get(i));
+			                                                 else{
+			                                                    args.add((Var)((App)arguments.get(i)).p);
+			                                                    Term t = new Bracket((Var)((App)arguments.get(i)).p,explist.get(i));
+			                                                    explist.add(i,t);
+			                                                 }
+			                                               }
+			                                               arr.add(args);
+			                                               arr.add(explist);
 			                                               ((InstantiateContext)_localctx).value =  arr;
 			                                              
 			}
@@ -614,15 +626,22 @@ public class TermParser extends Parser {
 	}
 
 	public static class ArgumentsContext extends ParserRuleContext {
-		public ArrayList<Var> value;
-		public Token LETTER;
+		public ArrayList<Term> value;
+		public Token L;
 		public ArgumentsContext arg;
-		public Token CAPITALLETTER;
-		public TerminalNode LETTER() { return getToken(TermParser.LETTER, 0); }
+		public Token M;
+		public Token L2;
 		public ArgumentsContext arguments() {
 			return getRuleContext(ArgumentsContext.class,0);
 		}
-		public TerminalNode CAPITALLETTER() { return getToken(TermParser.CAPITALLETTER, 0); }
+		public List<TerminalNode> LETTER() { return getTokens(TermParser.LETTER); }
+		public TerminalNode LETTER(int i) {
+			return getToken(TermParser.LETTER, i);
+		}
+		public List<TerminalNode> CAPITALLETTER() { return getTokens(TermParser.CAPITALLETTER); }
+		public TerminalNode CAPITALLETTER(int i) {
+			return getToken(TermParser.CAPITALLETTER, i);
+		}
 		public ArgumentsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -640,21 +659,31 @@ public class TermParser extends Parser {
 	public final ArgumentsContext arguments() throws RecognitionException {
 		ArgumentsContext _localctx = new ArgumentsContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_arguments);
+		int _la;
 		try {
-			setState(76);
+			setState(82);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(62);
-				((ArgumentsContext)_localctx).LETTER = match(LETTER);
+				((ArgumentsContext)_localctx).L = _input.LT(1);
+				_la = _input.LA(1);
+				if ( !(_la==CAPITALLETTER || _la==LETTER) ) {
+					((ArgumentsContext)_localctx).L = (Token)_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
 				setState(63);
 				match(T__3);
 				setState(64);
 				((ArgumentsContext)_localctx).arg = arguments();
-				ArrayList<Var> aux=((ArgumentsContext)_localctx).arg.value; 
-				                                                            Var v=new Var((new Integer((int)(((ArgumentsContext)_localctx).LETTER!=null?((ArgumentsContext)_localctx).LETTER.getText():null).charAt(0))).intValue());
+				ArrayList<Term> aux=((ArgumentsContext)_localctx).arg.value; 
+				                                                            Var v=new Var((new Integer((int)(((ArgumentsContext)_localctx).L!=null?((ArgumentsContext)_localctx).L.getText():null).charAt(0))).intValue());
 				                                                            aux.add(0,v); 
 				                                                            ((ArgumentsContext)_localctx).value = aux;
 				                                                           
@@ -664,25 +693,59 @@ public class TermParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(67);
-				((ArgumentsContext)_localctx).CAPITALLETTER = match(CAPITALLETTER);
+				((ArgumentsContext)_localctx).L = _input.LT(1);
+				_la = _input.LA(1);
+				if ( !(_la==CAPITALLETTER || _la==LETTER) ) {
+					((ArgumentsContext)_localctx).L = (Token)_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
 				setState(68);
-				match(T__3);
+				match(T__1);
 				setState(69);
+				((ArgumentsContext)_localctx).M = _input.LT(1);
+				_la = _input.LA(1);
+				if ( !(_la==CAPITALLETTER || _la==LETTER) ) {
+					((ArgumentsContext)_localctx).M = (Token)_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				setState(70);
+				match(T__2);
+				setState(71);
+				match(T__3);
+				setState(72);
 				((ArgumentsContext)_localctx).arg = arguments();
-				ArrayList<Var> aux=((ArgumentsContext)_localctx).arg.value; 
-				                                                     Var v=new Var((new Integer((int)(((ArgumentsContext)_localctx).CAPITALLETTER!=null?((ArgumentsContext)_localctx).CAPITALLETTER.getText():null).charAt(0))).intValue());
-				                                                     aux.add(0,v); 
-				                                                     ((ArgumentsContext)_localctx).value = aux;
-				                                                    
+				ArrayList<Term> aux=((ArgumentsContext)_localctx).arg.value; 
+				                                                            Var v=new Var((new Integer((int)(((ArgumentsContext)_localctx).L!=null?((ArgumentsContext)_localctx).L.getText():null).charAt(0))).intValue());
+				                                                            Var v2=new Var((new Integer((int)(((ArgumentsContext)_localctx).M!=null?((ArgumentsContext)_localctx).M.getText():null).charAt(0))).intValue());
+				                                                            aux.add(0,new App(v,v2)); 
+				                                                            ((ArgumentsContext)_localctx).value = aux;
+				                                                           
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(72);
-				((ArgumentsContext)_localctx).LETTER = match(LETTER);
-				ArrayList<Var> list=new ArrayList<Var>();
-				                                                            Var v=new Var((new Integer((((ArgumentsContext)_localctx).LETTER!=null?((ArgumentsContext)_localctx).LETTER.getText():null).charAt(0))).intValue());
+				setState(75);
+				((ArgumentsContext)_localctx).L = _input.LT(1);
+				_la = _input.LA(1);
+				if ( !(_la==CAPITALLETTER || _la==LETTER) ) {
+					((ArgumentsContext)_localctx).L = (Token)_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				ArrayList<Term> list=new ArrayList<Term>();
+				                                                            Var v=new Var((new Integer((((ArgumentsContext)_localctx).L!=null?((ArgumentsContext)_localctx).L.getText():null).charAt(0))).intValue());
 				                                                            list.add(0,v);
 				                                                            ((ArgumentsContext)_localctx).value =  list;
 				                                                           
@@ -691,12 +754,37 @@ public class TermParser extends Parser {
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(74);
-				((ArgumentsContext)_localctx).CAPITALLETTER = match(CAPITALLETTER);
-				ArrayList<Var> list=new ArrayList<Var>();
-				                                                       Var v=new Var((new Integer((((ArgumentsContext)_localctx).CAPITALLETTER!=null?((ArgumentsContext)_localctx).CAPITALLETTER.getText():null).charAt(0))).intValue());
-				                                                             list.add(0,v);
-				                                                             ((ArgumentsContext)_localctx).value =  list;
+				setState(77);
+				((ArgumentsContext)_localctx).L = _input.LT(1);
+				_la = _input.LA(1);
+				if ( !(_la==CAPITALLETTER || _la==LETTER) ) {
+					((ArgumentsContext)_localctx).L = (Token)_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				setState(78);
+				match(T__1);
+				setState(79);
+				((ArgumentsContext)_localctx).L2 = _input.LT(1);
+				_la = _input.LA(1);
+				if ( !(_la==CAPITALLETTER || _la==LETTER) ) {
+					((ArgumentsContext)_localctx).L2 = (Token)_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				setState(80);
+				match(T__2);
+				ArrayList<Term> list=new ArrayList<Term>();
+				                                                            Var v=new Var((new Integer((((ArgumentsContext)_localctx).L!=null?((ArgumentsContext)_localctx).L.getText():null).charAt(0))).intValue());
+				                                                            Var v2=new Var((new Integer((((ArgumentsContext)_localctx).L2!=null?((ArgumentsContext)_localctx).L2.getText():null).charAt(0))).intValue());
+				                                                            list.add(0,new App(v,v2));
+				                                                            ((ArgumentsContext)_localctx).value =  list;
 				                                                           
 				}
 				break;
@@ -714,26 +802,27 @@ public class TermParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\16Q\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\16W\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\2\3\3\3\3\3\3\3\3"+
 		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3%\n\3\3\4\3\4"+
 		"\3\4\3\4\3\4\5\4,\n\4\3\5\3\5\3\5\3\5\3\5\3\5\5\5\64\n\5\3\6\3\6\3\6\3"+
 		"\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b"+
-		"\3\b\3\b\3\b\3\b\5\bO\n\b\3\b\2\2\t\2\4\6\b\n\f\16\2\2\2Q\2\20\3\2\2\2"+
-		"\4$\3\2\2\2\6+\3\2\2\2\b\63\3\2\2\2\n\65\3\2\2\2\f;\3\2\2\2\16N\3\2\2"+
-		"\2\20\21\5\4\3\2\21\22\b\2\1\2\22\3\3\2\2\2\23\24\7\3\2\2\24\25\7\f\2"+
-		"\2\25\26\7\4\2\2\26\27\5\6\4\2\27\30\7\5\2\2\30\31\b\3\1\2\31%\3\2\2\2"+
-		"\32\33\7\r\2\2\33\34\7\4\2\2\34\35\5\6\4\2\35\36\7\5\2\2\36\37\b\3\1\2"+
-		"\37%\3\2\2\2 !\7\n\2\2!%\b\3\1\2\"#\7\13\2\2#%\b\3\1\2$\23\3\2\2\2$\32"+
-		"\3\2\2\2$ \3\2\2\2$\"\3\2\2\2%\5\3\2\2\2&\'\5\4\3\2\'(\5\b\5\2()\b\4\1"+
-		"\2),\3\2\2\2*,\b\4\1\2+&\3\2\2\2+*\3\2\2\2,\7\3\2\2\2-.\7\6\2\2./\5\4"+
-		"\3\2/\60\5\b\5\2\60\61\b\5\1\2\61\64\3\2\2\2\62\64\b\5\1\2\63-\3\2\2\2"+
-		"\63\62\3\2\2\2\64\t\3\2\2\2\65\66\7\7\2\2\66\67\7\13\2\2\678\7\b\2\28"+
-		"9\5\4\3\29:\b\6\1\2:\13\3\2\2\2;<\5\16\b\2<=\7\t\2\2=>\5\6\4\2>?\b\7\1"+
-		"\2?\r\3\2\2\2@A\7\13\2\2AB\7\6\2\2BC\5\16\b\2CD\b\b\1\2DO\3\2\2\2EF\7"+
-		"\n\2\2FG\7\6\2\2GH\5\16\b\2HI\b\b\1\2IO\3\2\2\2JK\7\13\2\2KO\b\b\1\2L"+
-		"M\7\n\2\2MO\b\b\1\2N@\3\2\2\2NE\3\2\2\2NJ\3\2\2\2NL\3\2\2\2O\17\3\2\2"+
-		"\2\6$+\63N";
+		"\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\bU\n\b\3\b\2\2\t\2\4\6\b\n"+
+		"\f\16\2\3\3\2\n\13\2W\2\20\3\2\2\2\4$\3\2\2\2\6+\3\2\2\2\b\63\3\2\2\2"+
+		"\n\65\3\2\2\2\f;\3\2\2\2\16T\3\2\2\2\20\21\5\4\3\2\21\22\b\2\1\2\22\3"+
+		"\3\2\2\2\23\24\7\3\2\2\24\25\7\f\2\2\25\26\7\4\2\2\26\27\5\6\4\2\27\30"+
+		"\7\5\2\2\30\31\b\3\1\2\31%\3\2\2\2\32\33\7\r\2\2\33\34\7\4\2\2\34\35\5"+
+		"\6\4\2\35\36\7\5\2\2\36\37\b\3\1\2\37%\3\2\2\2 !\7\n\2\2!%\b\3\1\2\"#"+
+		"\7\13\2\2#%\b\3\1\2$\23\3\2\2\2$\32\3\2\2\2$ \3\2\2\2$\"\3\2\2\2%\5\3"+
+		"\2\2\2&\'\5\4\3\2\'(\5\b\5\2()\b\4\1\2),\3\2\2\2*,\b\4\1\2+&\3\2\2\2+"+
+		"*\3\2\2\2,\7\3\2\2\2-.\7\6\2\2./\5\4\3\2/\60\5\b\5\2\60\61\b\5\1\2\61"+
+		"\64\3\2\2\2\62\64\b\5\1\2\63-\3\2\2\2\63\62\3\2\2\2\64\t\3\2\2\2\65\66"+
+		"\7\7\2\2\66\67\7\13\2\2\678\7\b\2\289\5\4\3\29:\b\6\1\2:\13\3\2\2\2;<"+
+		"\5\16\b\2<=\7\t\2\2=>\5\6\4\2>?\b\7\1\2?\r\3\2\2\2@A\t\2\2\2AB\7\6\2\2"+
+		"BC\5\16\b\2CD\b\b\1\2DU\3\2\2\2EF\t\2\2\2FG\7\4\2\2GH\t\2\2\2HI\7\5\2"+
+		"\2IJ\7\6\2\2JK\5\16\b\2KL\b\b\1\2LU\3\2\2\2MN\t\2\2\2NU\b\b\1\2OP\t\2"+
+		"\2\2PQ\7\4\2\2QR\t\2\2\2RS\7\5\2\2SU\b\b\1\2T@\3\2\2\2TE\3\2\2\2TM\3\2"+
+		"\2\2TO\3\2\2\2U\17\3\2\2\2\6$+\63T";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

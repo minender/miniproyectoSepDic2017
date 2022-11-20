@@ -98,7 +98,7 @@ public class TermUtilities {
 	}
     
         public static List<Var> arguments(String input) {
-		
+		/*
 		// Feed the argument to the parser
 		CharStream in = CharStreams.fromString(input);
 		
@@ -117,5 +117,12 @@ public class TermUtilities {
 		
 		// get the value of the parser 
 		return parser.arguments().value;
+                */
+                List<Var> l = new ArrayList<Var>();
+                for (int i=0; i<input.length(); i++){
+                   if (input.charAt(i) != ',' && input.charAt(i) != ' ')
+                      l.add(new Var((int)input.charAt(i)));
+                }
+                return l;
 	}
 }

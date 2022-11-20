@@ -345,18 +345,17 @@ public class Const extends Term
 
     @Override
     public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
-        if (id == 0) {
-            return "*->*->b";
-        }
-        else if (id == -1) {
-            return "b";
-        }
-        else {
-            Simbolo sim = simboloManager.getSimbolo(id);
-            if (sim == null) {
-                throw new TypeVerificationException();
-            }
-            return sim.getTipo();
+        switch (id) {
+            case 0:
+                return "*->*->b";
+            case -1:
+                return "b";
+            default:
+                Simbolo sim = simboloManager.getSimbolo(id);
+                if (sim == null) {
+                    throw new TypeVerificationException();
+                }
+                return sim.getTipo();
         }
     }
    

@@ -375,7 +375,7 @@ public class Var extends Term{
 
     @Override
     public void freeVars(int[] set) {
-        if (indice >= 65)
+        if (indice >= 65 && indice <= 122)
            set[indice-65] = indice;
     }
     

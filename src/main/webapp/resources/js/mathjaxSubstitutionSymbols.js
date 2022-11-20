@@ -9,22 +9,7 @@
  */
 function setJaxSubstitutionVariables(newVariables, rootId){
     
-    
-    //IF THE LIST IS EMPTY JUST CLEAN THE DIV
-    if(emptyString(newVariables)){
-        cleanJaxSubstitution(rootId);
-        return;
-    }
-    
     rootId = rootId + '.';
-    
-    //Array with the form ['x','y','z']
-    window[rootId + '_variables']=newVariables.split(',');
-    var variables = window[rootId + '_variables'];
-    
-    //Get the simbolo dicctionary defined within the jaxSubstitution tile
-    var dictionarySym = window[rootId+'simboloDic'];
-    
     //Get div where will put the mathjax divs
     var varsDivId = rootId+'VariablesDiv';
     var varsDiv = document.getElementById(varsDivId);
@@ -33,6 +18,20 @@ function setJaxSubstitutionVariables(newVariables, rootId){
     var id;
     var newDiv;
     varsDiv.innerHTML = '&nbsp;&nbsp;'+newVariables+' := ';
+    newVariables = newVariables.replace(/\([a-zA-z]\)/g, '');
+    //IF THE LIST IS EMPTY JUST CLEAN THE DIV
+    if(emptyString(newVariables)){
+        cleanJaxSubstitution(rootId);
+        return;
+    }
+    
+    //Array with the form ['x','y','z']
+    window[rootId + '_variables']=newVariables.split(',');
+    var variables = window[rootId + '_variables'];
+    
+    //Get the simbolo dicctionary defined within the jaxSubstitution tile
+    var dictionarySym = window[rootId+'simboloDic'];
+    
     for(var i = 0; i < variables.length; i++){
         
         //CREATE A NEW DIV AND SET ITS ATTRIBUTES
