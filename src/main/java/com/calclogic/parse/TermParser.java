@@ -604,8 +604,8 @@ public class TermParser extends Parser {
 			                                                    args.add((Var)arguments.get(i));
 			                                                 else{
 			                                                    args.add((Var)((App)arguments.get(i)).p);
-			                                                    Term t = new Bracket((Var)((App)arguments.get(i)).p,explist.get(i));
-			                                                    explist.add(i,t);
+			                                                    Term t = new Bracket((Var)((App)arguments.get(i)).q,explist.get(i));
+			                                                    explist.set(i,t);
 			                                                 }
 			                                               }
 			                                               arr.add(args);
