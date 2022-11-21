@@ -9,7 +9,23 @@
  */
 function setJaxSubstitutionVariables(newVariables, rootId){
     
+        //IF THE LIST IS EMPTY JUST CLEAN THE DIV
+    if(emptyString(newVariables)){
+        cleanJaxSubstitution(rootId);
+        return;
+    }
+    
     rootId = rootId + '.';
+    
+    //Array with the form ['P(x)','a','Q(x)']
+    var funVariables =newVariables.split(',');
+    //Array with the form ['x','y','z']
+    window[rootId + '_variables']=newVariables.replace(/\([a-zA-z]\)/g, '').split(',');;
+    var variables = window[rootId + '_variables'];
+    
+    //Get the simbolo dicctionary defined within the jaxSubstitution tile
+    var dictionarySym = window[rootId+'simboloDic'];
+    
     //Get div where will put the mathjax divs
     var varsDivId = rootId+'VariablesDiv';
     var varsDiv = document.getElementById(varsDivId);
@@ -17,21 +33,24 @@ function setJaxSubstitutionVariables(newVariables, rootId){
     
     var id;
     var newDiv;
-    varsDiv.innerHTML = '&nbsp;&nbsp;'+newVariables+' := ';
-    newVariables = newVariables.replace(/\([a-zA-z]\)/g, '');
-    //IF THE LIST IS EMPTY JUST CLEAN THE DIV
-    if(emptyString(newVariables)){
-        cleanJaxSubstitution(rootId);
-        return;
+    varsDiv.innerHTML = '&nbsp;&nbsp;';
+    for(var i = 0; i < funVariables.length; i++){
+        if (funVariables[i].length == 1)
+            varsDiv.innerHTML += funVariables[i];
+        else {
+            newDiv = document.createElement('div');
+            id = rootId + 'Bound'+ variables[i] ;
+            newDiv.id = id + 'MathJaxDiv';
+            newDiv.style.display = 'inline-block';
+            newDiv.innerHTML = variables[i]+'(\\( { \\FormInput{'+id+'} } \\))' 
+
+            varsDiv.appendChild(newDiv);
+        }
+        if(i != funVariables.length - 1){
+            varsDiv.innerHTML += ',&nbsp;';
+        }   
     }
-    
-    //Array with the form ['x','y','z']
-    window[rootId + '_variables']=newVariables.split(',');
-    var variables = window[rootId + '_variables'];
-    
-    //Get the simbolo dicctionary defined within the jaxSubstitution tile
-    var dictionarySym = window[rootId+'simboloDic'];
-    
+    varsDiv.innerHTML += ' := '
     for(var i = 0; i < variables.length; i++){
         
         //CREATE A NEW DIV AND SET ITS ATTRIBUTES
@@ -40,7 +59,6 @@ function setJaxSubstitutionVariables(newVariables, rootId){
         newDiv.id = id + 'MathJaxDiv';
         newDiv.style.display = 'inline-block';
         newDiv.innerHTML = '\\( { \\FormInput{'+id+'} } \\)' 
-        
 
         varsDiv.appendChild(newDiv);
         if(i != variables.length - 1){
@@ -58,9 +76,15 @@ function setJaxSubstitutionVariables(newVariables, rootId){
     
     buttonsEnabled = false;
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, varsDivId], function(){
+        var id;
+        for(var i = 0; i < funVariables.length; i++){
+           if (funVariables[i].length != 1) {
+               id = rootId + 'Bound'+ variables[i] ;
+               document.getElementById(id).value = funVariables[i].substr(2,1);
+           }
+        }
         buttonsEnabled = true;
     });
-    
 }
 
 
@@ -91,7 +115,9 @@ function setSubstitutionOnInput(rootId){
     
     // Iteration variables
     var variableRootId;//rootId of the variable
+    var boundVarRootId;//rootId of the bound variable
     var inputs;//array of all inputs inside the variable id
+    var boundVarInput;//array of length 1 with the input for bound variable, or length 0
     var parserString;//parserString of the current variable
     var simboloDic = window[rootId + 'simboloDic'];
     var alias;
@@ -100,10 +126,14 @@ function setSubstitutionOnInput(rootId){
         
         // Get all input boxes from the div
         variableRootId = rootId + variables[i];
+        boundVarRootId = rootId + 'Bound' + variables[i];
         
         inputs = document.getElementById(variableRootId + 'MathJaxDiv').getElementsByClassName("MathJax_Input");
         parserString = window[variableRootId + 'parserString'];
         
+        boundVarInput = document.getElementById(boundVarRootId + 'MathJaxDiv');
+        if (boundVarInput !== null)
+            boundVarInput = boundVarInput.getElementsByClassName("MathJax_Input")[0];
         // Key will be the id of the form, the value its content
         for(var j = 0; j < inputs.length; j++){
             parserString = parserString.replace("Input{" + inputs[j].id + '}',inputs[j].value)
@@ -116,8 +146,12 @@ function setSubstitutionOnInput(rootId){
         parserStringEmpty = emptyString(parserString);
         
         if( !parserStringEmpty ) {
-            leftSide = leftSide + variables[i] + ',';
-            rightSide = rightSide + parserString + ',';
+            leftSide += variables[i];
+            if (boundVarInput !== null && boundVarInput.length !== 0) {
+                leftSide += '('+boundVarInput.value+')';
+            }
+            leftSide += ',';
+            rightSide += parserString + ',';
         }
     }
     

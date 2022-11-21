@@ -169,7 +169,7 @@ public class Bracket extends Term{
     
     public int fresh(int n)
     {
-        return t.fresh(n);
+        return (x.indice == n?n:t.fresh(n));
     }
     
     public Tipo esRedex()

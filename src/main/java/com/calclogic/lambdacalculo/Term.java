@@ -741,8 +741,9 @@ public abstract class Term implements Cloneable, Serializable{
                      Term t=((App)r.context).p; 
                      if (r.tipo.c)
                         ((App)r.context).p=t.kappa();
-                     else if (r.tipo.l)
+                     else if (r.tipo.l){
                         ((App)r.context).p=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
+                     }
                      else
                         ((App)r.context).p=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
                  }
@@ -753,9 +754,8 @@ public abstract class Term implements Cloneable, Serializable{
                         ((App)r.context).q=t.kappa();
                      else if(r.tipo.l)
                         ((App)r.context).q=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                     else { 
+                     else 
                         ((App)r.context).q=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
-                     }
                  }
             }
             else if(r.context instanceof Bracket)
@@ -1124,7 +1124,7 @@ public abstract class Term implements Cloneable, Serializable{
                         AppIzq izq2=obtenerIzq((App)this,phi2.ind.orden);//no se empieza del ultimo mal
                         Term t1=izq2.p;
                         izq2.pq.p=phi2;
-                        return new App((new App(t1,xc)).kappaIndexado(c,xc),this.kappaIndexado(c,xc));
+                        return new App((new App(t1,xc)).kappaIndexado(c,xc),this.kappaIndexado(xc.indice,xc));
                     }
                 } else{
                     /*xc.setIndice(Math.max(izq.pq.q.maxVar(),c));
@@ -1134,7 +1134,7 @@ public abstract class Term implements Cloneable, Serializable{
                 }
             }
             else if(izq.p.equals(k) && izq.deep==2){
-                xc.indice = this.fresh(c);
+                xc.indice = izq.pq.q.fresh(c);
                 return izq.pq.q;
             }
             else{
@@ -1165,7 +1165,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public Term evaluar(String vars) {
         if (";".equals(vars))
-            return this;
+            return evaluar(new ArrayList<Var>());
         else {
             //vars = vars + ", "+ vars;
             String[] split_vars = vars.split(";");

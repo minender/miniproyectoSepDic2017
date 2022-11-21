@@ -244,8 +244,8 @@ public class App extends Term{
     {
         int i = p.fresh(n);
         int j = q.fresh(n);
-        if (i == j && j == n){
-            return n;}
+        if (i == n && j == n)
+            return n;
         else
             return this.maxVar()+1;
         //return q.fresh(p.fresh(n));

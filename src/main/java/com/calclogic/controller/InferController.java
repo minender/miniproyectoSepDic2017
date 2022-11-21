@@ -642,7 +642,6 @@ public class InferController {
         if (!objectMethod.getIsRecursiveMethod()){
             finalProof = objectMethod.finishedBaseMethodProof(formulaBeingProved, newProof, username, resuelveManager, simboloManager);        
         }
-        
         // Get the complete method in case it was not atomic
         Boolean isFinalSolution = formulaBeingProved.equals(finalProof.type().setToPrinting(resuel.getVariables()));
         // CHECK puede ser una igualdad y pasar por equivalencia, esto hay que transformarlo usando arboles de deriv

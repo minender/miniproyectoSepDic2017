@@ -183,7 +183,7 @@ public class TypedApp extends App implements TypedTerm{
                 Var var = ((Bracket)aux).x;
                 Var v = (i<((Sust)pType).vars.size()?((Sust)pType).vars.get(i):null);
                 if (v != null && var.indice == v.indice) {
-                    Term t = ((Sust)pType).terms.remove(0);
+                    Term t = ((Sust)pType).terms.get(i);
                     right = new App(right,t);
                     left = new App(left,(Term)t.clone());
                     i++;
