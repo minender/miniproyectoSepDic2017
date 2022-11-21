@@ -107,7 +107,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         var index = parentIdSplit[parentIdSplit.length - 1];
         var notacionVarParent = simboloDic[parentSimboloId]['notacionVariables'];
         for (var i = 0; i < notacionVarParent.length; i++) {
-            var varIndex = notacionVarParent[i].match(/\d+/)[0];;
+            var varIndex = notacionVarParent[i].match(/\d+/)[0];
             if (index == varIndex){
                 variableName = notacionVarParent[i];
                 break;
@@ -246,16 +246,16 @@ function deleteOperator(FormId, rootId){
 
     //Global variables
     var jaxInputDictionary = window[rootId + "jaxInputDictionary"];// get the global dictionary of the jax expression
-    console.log(rootId + "jaxInputDictionary", FormId);
 
     //FIRST DELETE FROM THE ACTUAL PARSER STRING
     var simboloId = deleteOperatorParserString(FormId, rootId);
+    var notacion = simboloDic[simboloId]['notacionVariables'];
     
     if (jaxInputDictionary[FormId] === undefined) {
-        var var1 = simboloDic[simboloId]['notacionVariables'][0];
+        var var1 = notacion[0];
         jaxInputDictionary[FormId] = {
             simboloId: simboloId,
-            isLeftLatex: (var1[var1.length - 1] == currentPos)
+            isLeftLatex: (var1.match(/\d+/)[0] === currentPos)
         }
     }
     
@@ -274,7 +274,8 @@ function deleteOperator(FormId, rootId){
     var n = originalMathJax.length;
     
     // Must know if this was a right side or left side in the latex string
-    var leftChild = jaxInputDictionary[FormId]['isLeftLatex'];
+    //var leftChild = jaxInputDictionary[FormId]['isLeftLatex'];
+    
     // Get the index from which we'll start studying the string to replace the expression
     var indexFormId = originalMathJax.indexOf("\\FormInput{" + FormId + '}');
     
@@ -283,97 +284,96 @@ function deleteOperator(FormId, rootId){
     var i = indexFormId ;// count where the form starts
     var result;
     var currentChar = originalMathJax[i];
-    
-    if (leftChild) {
         
-        
-        var toReplace = "{";
-        
-        // Must move till wherever is the open par
-        while(currentChar != '{' || originalMathJax[i-2]!="\\"){
-            i--;
-            currentChar = originalMathJax[i];
-            
-            if(i < -1){
-                throw error;
-            }
-
+    var parentSimboloId = jaxInputDictionary[FormId]['simboloId'];
+    var notacionParent = simboloDic[parentSimboloId]['notacionVariables'];
+    var aridadParent = parseInt(simboloDic[parentSimboloId]['arguments']);
+    var count = 0;
+    var index;
+    currentPos = parseInt(currentPos);
+    for (var k=0; k < notacionParent.length; k++) {
+        var notacionIndex = parseInt(notacionParent[k].match(/\d+/)[0]);
+        if (notacionParent[k].match(/[^\d]+/)[0] == "v") {
+            notacionIndex = notacionIndex + aridadParent;
         }
-        
-        leftPar++;
-                
-        // Iterate till get the index of the closing par
-        while((currentChar != '}') || (leftPar != rightPar)){
-                                                        
-            i++;
-            currentChar = originalMathJax[i];
-        
-            if(currentChar == '{'){
-                leftPar++;
-            }else if(currentChar == '}'){
-                rightPar++;
-            }
-            
-            toReplace += currentChar;
-            
-            // If we went over the original mathjax length something went wrong
-            if(i > n){
-                throw error;
-            }
+        if (notacionIndex === currentPos) {
+            index = k;
+            break;
         }
-        
-        toReplace = "\\ " + toReplace + "\\ ";
-        
-        // Now toReplace should have the whole expression we need to delete
-        result =  originalMathJax.replace(toReplace, "\\FormInput{" + oldParentId + "}");
-        
-    }else{
-        
-        var toReplace = "}";
-        
-        
-        // Must move till wherever is the close par
-        while(currentChar != '}' || originalMathJax[i+1]!="\\"){
-            i++;
-            currentChar = originalMathJax[i];
-            
-            // If we went over the original mathjax length something went wrong
-            if(i > n){
-                throw error;
-            }
-
-        }
-        
-        rightPar++;
-        
-        // Iterate till get the index of the closing par
-        while((currentChar != '{') || (leftPar != rightPar)){
-            
-            i--;
-            currentChar = originalMathJax[i];
-            
-            if(currentChar == '{'){
-                leftPar++;
-            }else if(currentChar == '}'){
-                rightPar++;
-            }
-            
-            toReplace = currentChar + toReplace;
-            
-            
-            // If reach -1 something went wron most likely a wrong mathjax input
-            if(i < -1){
-                throw error;
-            }
-            
-        }
-
-        toReplace = "\\ " + toReplace + "\\ ";
-        
-        // Now toReplace should have the whole expression we need to delete 
-        result = originalMathJax.replace(toReplace, "\\FormInput{" + oldParentId + "}");
-                
     }
+    var opRight = notacionParent.length - index - 1;
+
+    // Must move till wherever is the close par
+    while(currentChar != '}') {//|| originalMathJax[i+1]!="\\"){
+        currentChar = originalMathJax[i];
+
+        // If we went over the original mathjax length something went wrong
+        if(i > n){
+            throw error;
+        }
+        i++;
+    }
+
+    if (opRight > 0) {
+
+        while (count < opRight) {
+            var parOpen = 0;
+            var foundPar = false;
+            while (parOpen > 0 || !foundPar) {
+                currentChar = originalMathJax[i];
+                if (currentChar == '{') {
+                    parOpen++;
+                    foundPar = true;
+                }
+                else if (currentChar == '}') {
+                    parOpen--;
+                }
+                i++;
+            }
+            count++;
+        }
+    }
+
+    currentChar = originalMathJax[i];
+    // Must move till wherever is the close par
+    while(currentChar != '}') { //|| originalMathJax[i+1]!="\\"){
+        i++;
+        currentChar = originalMathJax[i];
+
+        // If we went over the original mathjax length something went wrong
+        if(i > n){
+            throw error;
+        }
+    }
+    
+    var toReplace = "}";
+    rightPar++;
+    // Iterate till get the index of the closing par
+    while((currentChar != '{') || (leftPar != rightPar)){
+
+        i--;
+        currentChar = originalMathJax[i];
+
+        if(currentChar == '{'){
+            leftPar++;
+        }else if(currentChar == '}'){
+            rightPar++;
+        }
+
+        toReplace = currentChar + toReplace;
+
+
+        // If reach -1 something went wron most likely a wrong mathjax input
+        if(i < -1){
+            throw error;
+        }
+
+    }
+
+    toReplace = "\\ " + toReplace + "\\ ";
+
+    // Now toReplace should have the whole expression we need to delete 
+    result = originalMathJax.replace(toReplace, "\\FormInput{" + oldParentId + "}");
     
     // Render the new text, also set the new input box attributes
     buttonsEnabled = false;
@@ -394,11 +394,12 @@ function deleteOperator(FormId, rootId){
  */
 function deleteOperatorParserString(formId, rootId){
     //var oldParentId = formId.substring(0, formId.length - 1);// the id the new input box will have
-        var oldParentId = formId.split('-');// the id the new input box will have
-        oldParentId.pop();
-        oldParentId = oldParentId.join('-');
+    var oldParentId = formId.split('-');// the id the new input box will have
+    var lastChar = oldParentId.pop();
+    oldParentId = oldParentId.join('-');
+    console.log("oldParentId", oldParentId);
     
-    var lastChar = formId[formId.length-1];// the last char of the id tells us if is right or left child
+    //var lastChar = formId[formId.length-1];// the last char of the id tells us if is right or left child
 
     
     // If the deleted input box was the first one to be born
@@ -415,9 +416,9 @@ function deleteOperatorParserString(formId, rootId){
     var n = parserString.length;
     
     // Must know if this was a right child or a left child
-    //var leftChild = (lastChar == '1');
-        var leftChild = true;
-        var childPosition = parseInt(lastChar);
+    var leftChild = (lastChar == '1');
+    //var leftChild = true;
+    var childPosition = parseInt(lastChar);
     
     // Get the index from which we'll start studying the string to replace the expression
     var indexFormId = parserString.indexOf("Input{" + formId + '}');
@@ -507,7 +508,7 @@ function deleteOperatorParserString(formId, rootId){
         }
         k++;
     }
-    
+
     // Update global variable of the parserString
     window[rootId + 'parserString'] = result;
     return simboloId;
