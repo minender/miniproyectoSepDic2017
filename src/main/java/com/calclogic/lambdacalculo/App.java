@@ -507,8 +507,8 @@ public class App extends Term{
         stk.push(q);
         Term aux = p;
         if ('L' == kind) {
-           stkS.push(appPosition+"-2");
-           appId = appPosition+"-1";
+           stkS.push(appPosition+"2");
+           appId = appPosition+"1";
         }
         int j = 1;
         while ( aux instanceof App ){
