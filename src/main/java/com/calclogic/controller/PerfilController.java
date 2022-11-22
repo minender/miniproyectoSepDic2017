@@ -486,13 +486,12 @@ public class PerfilController {
         // validar que el usuario este en sesion
         InferResponse response = new InferResponse(crudOp);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
-        Term teorema = resuelve.getTeorema().getTeoTerm();
+        Term teorema = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
         String nTeo = resuelve.getNumeroteorema();
         Solucion solucion = solucionManager.getSolucion(idSol,username);
         
-        //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
         Term typedTerm = solucion.getTypedTerm();
-        
+
         response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,ProofMethodUtilities.getTerm(solucion.getMetodo()), resuelveManager, disponeManager, simboloManager);
         return response;
     }
