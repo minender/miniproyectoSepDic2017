@@ -105,7 +105,7 @@ public class Bracket extends Term{
        if (thisId.equals(subtermId))
            return new Var(z);
        else
-           return new Bracket(x,t.leibniz(z, subtermId, t.hashCode()+""));
+           return new Bracket(x,t.leibniz(z, subtermId, thisId+"("+this.hashCode()+")"));
     }
     
     public boolean isIdFunction() {
@@ -236,7 +236,7 @@ public class Bracket extends Term{
     @Override
     public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
-        return this.t.toStringLaTeXLabeled(s, z, t, appPosition+"1", leibniz, l2, id, nivel);
+        return this.t.toStringLaTeXLabeled(s, z, t, appPosition+"("+this.hashCode()+")", leibniz, l2, id, nivel);
         /*
         id.id++;
         leibniz.add(t.leibniz(z, this));
