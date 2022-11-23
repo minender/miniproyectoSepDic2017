@@ -150,11 +150,11 @@ public class SolucionManagerImpl implements SolucionManager {
     public Solucion getSolucion(int id, String user){
         Solucion solucion = solucionDAO.getSolucion(id);
         if (!solucion.getDemostracion().equals("")) {
-            solucion.setTypedTerm(CombUtilities.getTerm(solucion.getDemostracion(),user));
+            solucion.setTypedTermNotStrProof(CombUtilities.getTerm(solucion.getDemostracion(),user));
             solucion.setProofCrudOperations(crudOp);
         }
-        else // case when all the proof was erased by the go back button
-            solucion.setTypedTerm(null);
+        /*else // case when all the proof was erased by the go back button
+            solucion.setTypedTerm(null);*/
         return solucion;
     }
     
@@ -169,9 +169,9 @@ public class SolucionManagerImpl implements SolucionManager {
         List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelveId);
         for (Solucion sol: sols)
             if (!sol.getDemostracion().equals(""))
-                sol.setTypedTerm(CombUtilities.getTerm(sol.getDemostracion(),null));
-            else
-                sol.setTypedTerm(null);
+                sol.setTypedTermNotStrProof(CombUtilities.getTerm(sol.getDemostracion(),null));
+            /*else
+                sol.setTypedTerm(null);*/
         return sols;
     }
     

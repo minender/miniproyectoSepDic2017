@@ -20,7 +20,7 @@ public class CombUtilities {
 	public static Term getTerm(String input, String usr) {
 		
 		// Feed the argument to the parser
-		CharStream in = CharStreams.fromString(input);
+		CharStream in = CharStreams.fromString(input);//"A^{= (\\Phi_{K} (\\Phi_{K} T)) (\\Phi_{c(bb,)} c_{1} (\\Phi_{(bb,cb)} c_{1}) c_{1})}");
 		
 		// Define the lexer for the input and edit its way of catching error
 		CombLexer lexer = new CombLexer(in);
@@ -36,8 +36,12 @@ public class CombUtilities {
 		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 		
 		// get the value of the parser 
-		Term t = parser.start_rule(usr).value;
-		
+                
+		Term t = null;
+                //if (usr != null) {
+                    t = parser.start_rule(usr).value;
+                 //   System.out.println(t.type());
+               // }
 		return t;
 		
 		

@@ -62,6 +62,11 @@ public class Solucion implements java.io.Serializable {
         this.demostracion = (typedTerm!=null?typedTerm.toString():"");
     }
     
+    public void setTypedTermNotStrProof(Term typedTerm)
+    {
+        this.typedTerm = typedTerm;
+    }
+    
     public Term getTypedTerm()
     {
         return typedTerm;
