@@ -104,10 +104,13 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         arguments = simboloDic[simboloId]['arguments'];
                 
         var parentIdSplit = idParentBox.split('-');
-        var index = parentIdSplit[parentIdSplit.length - 1];
+        var index = parseInt(parentIdSplit[parentIdSplit.length - 1]);
         var notacionVarParent = simboloDic[parentSimboloId]['notacionVariables'];
         for (var i = 0; i < notacionVarParent.length; i++) {
-            var varIndex = notacionVarParent[i].match(/\d+/)[0];
+            var varIndex = parseInt(notacionVarParent[i].match(/\d+/)[0]);
+            if (notacionVarParent[i].match(/^v\d$/)) {
+                varIndex += arguments;
+            }
             if (index == varIndex){
                 variableName = notacionVarParent[i];
                 break;
@@ -140,6 +143,11 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         rightPar = '';
     }
 
+    // Rule 5
+    else if((variableName.match(/^v\d$/))){
+        alert("Bound variable can't be a formula.");
+        return;
+    }
     
     var newMathJax = originalMathJax.replace(parentBox, "\\ {" + leftPar + newNotation + rightPar + "}\\ " );// Finally we replace the old box with the whole new notation 
     
