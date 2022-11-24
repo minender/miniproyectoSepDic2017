@@ -149,7 +149,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract void getAxioms(List<String> l);
     
-    public abstract Term leibniz(int z, String subtermId, String thisId);
+    public abstract Term leibniz(int z, String subtermId, String thisId, SimboloManager s);
     
     /**
      * Returns a string formatted with variables codification (x_{}) and

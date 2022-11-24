@@ -435,6 +435,7 @@ $(function() {
 
 // This is activated when the user highlights part of the last line of the demonstration
 function leibnizMouse(p1,p2){
+    console.log(p1);
     if (p1===p2) {
         // To be executed inside inferRecoverC
         let auxiliarFunction = (variablesSaved) => {

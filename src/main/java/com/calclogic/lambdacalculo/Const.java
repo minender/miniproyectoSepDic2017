@@ -123,7 +123,7 @@ public class Const extends Term
            l.add(this.type().toString());
    }
    
-   public Term leibniz(int z, String subterm, String thisId)
+   public Term leibniz(int z, String subterm, String thisId, SimboloManager s)
    {
        if (thisId.equals(subterm))
            return new Var(z);
@@ -242,7 +242,7 @@ public class Const extends Term
         else 
            term = "\\cssId{"+id.id+"}{\\class{"+nivel+" terminoClick}{"+con+"}}"; 
 
-        leibniz.add(t.leibniz(z, appPosition, ""));
+        leibniz.add(t.leibniz(z, appPosition, "", s));
         l2.add(l2.size(),id.id+",");
 //        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
 //        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
