@@ -1,15 +1,10 @@
 package com.calclogic.parse;
 
-import com.calclogic.entity.Resuelve;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 //import org.springframework.stereotype.Component;
-
 import com.calclogic.lambdacalculo.Term;
-import com.calclogic.lambdacalculo.App;
-import com.calclogic.lambdacalculo.Const;
-import com.calclogic.lambdacalculo.Var;
 
 /**
 * @author jean 11-05-2020

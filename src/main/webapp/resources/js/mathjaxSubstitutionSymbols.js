@@ -78,10 +78,10 @@ function setJaxSubstitutionVariables(newVariables, rootId){
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, varsDivId], function(){
         var id;
         for(var i = 0; i < funVariables.length; i++){
-           if (funVariables[i].length != 1) {
-               id = rootId + 'Bound'+ variables[i] ;
-               document.getElementById(id).value = funVariables[i].substr(2,1);
-           }
+            if (funVariables[i].length != 1) {
+                id = rootId + 'Bound'+ variables[i] ;
+                document.getElementById(id).value = funVariables[i].substr(2,1);
+            }
         }
         buttonsEnabled = true;
     });
@@ -206,14 +206,11 @@ async function cleanJaxSubstitution(rootId){
  */
 
 function emptyString(str){
-    
     for(var i = 0; i < str.length; i++){
         if(str[i] != " "){
             return false;
         }
     }
-    
     return true;
-    
 }
 

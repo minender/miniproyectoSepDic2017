@@ -608,7 +608,7 @@ function cleanParserString(rootId){
 function stringToIntString(string){
     var output = "0";// this ensures is unique because the other symbols cant start at 0
     for (var i = 0, len = string.length; i < len; i++) {
-          output += string.charCodeAt(i).toString();
+        output += string.charCodeAt(i).toString();
     }
     return output;
 }
