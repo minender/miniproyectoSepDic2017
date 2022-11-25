@@ -161,6 +161,14 @@
                 });
             })
         </script>
+        
+        <style>
+            #leibnizVar {
+                width: 0.4cm;
+                height: 0.4cm;
+                font-size: 15px;
+            }
+        </style>
     </head>
     <body>
 
@@ -334,7 +342,7 @@
                                     <c:set var="rootId" value="leibnizSymbolsId" scope="request"/>
                                     <c:set var="labelName" value="Leibniz:" scope="request"/>
                                     <c:set var="inputForm" value="leibniz_id" scope="request"/>
-                                    <c:set var="prefixMathJax" value="E^{z}: " scope="request"/>
+                                    <c:set var="prefixMathJax" value="E^{\\\\FormInput{leibnizVar}}: " scope="request"/>
                                     <c:set var="prefixCnotation" value="lambda z." scope="request"/>
                                     <tiles:insertDefinition name="jaxDiv"/>
                                 </div>
