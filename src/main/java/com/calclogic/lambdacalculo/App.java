@@ -432,7 +432,7 @@ public class App extends Term{
     }
     
     public Term leibniz(int z, String subtermId, String thisId, SimboloManager s){
-        App newTerm = this;//(App) this.toFunApp(s);
+        App newTerm = (App) this.toFunApp(s);
         if (thisId.equals(subtermId))
             return new Var(z);
         else
