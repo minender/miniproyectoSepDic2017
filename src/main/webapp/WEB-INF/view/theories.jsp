@@ -520,12 +520,12 @@
             function deleteSimbolo(idSimbolo){
                 confirm('Are you sure you want to delete the symbol?');
                 const url = window.location.href + "/deleteSymbol/" + idSimbolo;
-                $("#modalLoading").css('display','inline-block');
+                $("#loadingModal").css('display','inline-block');
                 $.ajax({
                     type:'GET',
                     url: url,
                     success: function(data){
-                        $("#modalLoading").css('display','none');
+                        $("#loadingModal").css('display','none');
                         alert(data);
                         location.reload();
                         //MathJax.Hub.Typeset();

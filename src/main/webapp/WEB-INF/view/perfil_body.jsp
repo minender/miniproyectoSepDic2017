@@ -70,13 +70,13 @@
                     var idTeo = document.getElementById("selectTeoria").value;
                     var url = window.location.href + "/changeTheory/" + idTeo;
                     console.log(url);
-                    $("#modalLoading").css('display','inline-block');
+                    $("#loadingModal").css('display','inline-block');
                     $.ajax({
                         type:'POST',
                         url: url,
                         data: {},
                         success: function(data){
-                            $("#modalLoading").css('display','none');
+                            $("#loadingModal").css('display','none');
                             alert(data);
                             location.reload();
                             //MathJax.Hub.Typeset();

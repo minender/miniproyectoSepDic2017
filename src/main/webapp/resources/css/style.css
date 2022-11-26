@@ -327,7 +327,7 @@ iframe{
     background-color: #03A9F4 !important;
 }
 
-#modalLoading {
+#loadingModal {
     display: none;
     height: 100%;
     width: 100%;
