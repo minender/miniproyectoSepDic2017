@@ -30,7 +30,7 @@ import com.calclogic.service.ProofTemplateManager;
 public class InferResponse extends GenericResponse{
     
     // Has all the proof made at this point, written in LaTeX.
-    private String historial; 
+    private String historial = "<center>No valid proof</center>"; // Default case, that will be overwritten
 
     // Indicates if the proof there was an error in the "generarHistorial" function,
     private Boolean errorParser1 = false;

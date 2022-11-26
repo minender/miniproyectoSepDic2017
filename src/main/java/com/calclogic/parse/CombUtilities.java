@@ -1,15 +1,10 @@
 package com.calclogic.parse;
 
-import com.calclogic.entity.Resuelve;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 //import org.springframework.stereotype.Component;
-
 import com.calclogic.lambdacalculo.Term;
-import com.calclogic.lambdacalculo.App;
-import com.calclogic.lambdacalculo.Const;
-import com.calclogic.lambdacalculo.Var;
 
 /**
 * @author jean 11-05-2020
@@ -20,7 +15,7 @@ public class CombUtilities {
 	public static Term getTerm(String input, String usr) {
 		
 		// Feed the argument to the parser
-		CharStream in = CharStreams.fromString(input);//"A^{= (\\Phi_{K} (\\Phi_{K} T)) (\\Phi_{c(bb,)} c_{1} (\\Phi_{(bb,cb)} c_{1}) c_{1})}");
+		CharStream in = CharStreams.fromString(input);
 		
 		// Define the lexer for the input and edit its way of catching error
 		CombLexer lexer = new CombLexer(in);

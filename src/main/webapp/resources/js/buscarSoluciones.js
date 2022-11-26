@@ -3,14 +3,14 @@ function buscarSoluciones(idTeo){
     var url = window.location.href + "/listaSolucion";
     var data = {};
     data["teoid"] = idTeo;
-    $("#modalLoading").css('display','inline-block');
+    $("#loadingModal").css('display','inline-block');
     $.ajax({
         type:'POST',
         url: url,
         dataType:'json',
         data:data,
         success: function(data){
-            $("#modalLoading").css('display','none');
+            $("#loadingModal").css('display','none');
             var i = 0;
             $('#listaSoluciones').html("");
             var len = Object.keys(data.soluciones).length;
@@ -54,14 +54,14 @@ function buscarFormula(idSol,idTeo){
     var url = window.location.href + "/buscarFormula";
     data["idSol"] = idSol;
     data["idTeo"] = idTeo;
-    $("#modalLoading").css('display','inline-block');
+    $("#loadingModal").css('display','inline-block');
     $.ajax({
         type:'POST',
         url: url,
         dataType:'json',
         data:data,
         success: function(data){
-            $("#modalLoading").css('display','none');
+            $("#loadingModal").css('display','none');
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
         }
@@ -73,14 +73,14 @@ function buscarMetaFormula(idTeo){
     var data = {};
     var url = window.location.href + "/buscarMetaFormula";
     data["idTeo"] = idTeo;
-    $("#modalLoading").css('display','inline-block');
+    $("#loadingModal").css('display','inline-block');
     $.ajax({
         type:'POST',
         url: url,
         dataType:'json',
         data:data,
         success: function(data){
-            $("#modalLoading").css('display','none');
+            $("#loadingModal").css('display','none');
             $('#formula').html(data.historial);
             MathJax.Hub.Typeset();
         }
@@ -91,13 +91,13 @@ function delSol(idSol){
     
     var data = {};
     var url = window.location.href + "/deleteSol/" + idSol;
-    $("#modalLoading").css('display','inline-block');
+    $("#loadingModal").css('display','inline-block');
     $.ajax({
         type:'POST',
         url: url,
         data:data,
         success: function(data){
-            $("#modalLoading").css('display','none');
+            $("#loadingModal").css('display','none');
             alert(data);
             location.reload();
             //MathJax.Hub.Typeset();
@@ -110,13 +110,13 @@ function delTeo(idTeo){
     var data = {};
     var url = window.location.href + "/deleteTeo/" + idTeo;
     console.log(url);
-    $("#modalLoading").css('display','inline-block');
+    $("#loadingModal").css('display','inline-block');
     $.ajax({
         type:'POST',
         url: url,
         data:data,
         success: function(data){
-            $("#modalLoading").css('display','none');
+            $("#loadingModal").css('display','none');
             alert(data);
             location.reload();
             //MathJax.Hub.Typeset();
