@@ -134,8 +134,8 @@ public class TypedApp extends App implements TypedTerm{
         aux = min;
         Term E = (nL1<=nL2?t1Der:t2Izq);//new Var(maxVar+1);
         while (aux instanceof Bracket) {
-               E = new App(E, ((Bracket)aux).x);
-               aux = ((Bracket)aux).t;
+            E = new App(E, ((Bracket)aux).x);
+            aux = ((Bracket)aux).t;
         }
         for (int i=0; i< nMax; i++) {
             aux = max;
@@ -155,12 +155,10 @@ public class TypedApp extends App implements TypedTerm{
         return null;
     }
     
-    public Term type()
-    {
+    public Term type() {
         Term pType = p.type();
         Term qType = q.type();
-        if(inferType == 'i')
-        {
+        if(inferType == 'i'){
             /*String[] vs = pType.stFreeVars().split(",");
             Var z = new Var((int)vs[vs.length-1].charAt(0)+1);
             Term t = z;
@@ -175,37 +173,33 @@ public class TypedApp extends App implements TypedTerm{
             return E;*/
             //return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms).evaluar();
             try {
-             Term right = ((App)((App)qType).p).q;
-             Term left = ((App)qType).q;
-             Term aux = left;
-             int i = 0;
-             while ( aux instanceof Bracket ) {
-                Var var = ((Bracket)aux).x;
-                Var v = (i<((Sust)pType).vars.size()?((Sust)pType).vars.get(i):null);
-                if (v != null && var.indice == v.indice) {
-                    Term t = ((Sust)pType).terms.get(i);
-                    right = new App(right,t);
-                    left = new App(left,(Term)t.clone());
-                    i++;
+                Term right = ((App)((App)qType).p).q;
+                Term left = ((App)qType).q;
+                Term aux = left;
+                int i = 0;
+                while ( aux instanceof Bracket ) {
+                    Var var = ((Bracket)aux).x;
+                    Var v = (i<((Sust)pType).vars.size()?((Sust)pType).vars.get(i):null);
+                    if (v != null && var.indice == v.indice) {
+                        Term t = ((Sust)pType).terms.get(i);
+                        right = new App(right,t);
+                        left = new App(left,(Term)t.clone());
+                        i++;
+                    }
+                    else {
+                        right = new App(right,var);
+                        left = new App(left,var);
+                    }
+                    aux = ((Bracket)aux).t;
                 }
-                else {
-                    right = new App(right,var);
-                    left = new App(left,var);
-                }
-                aux = ((Bracket)aux).t;
-             }
-             String vars = ";"+((TypedA)q).variables_.split(";")[0];
-             //System.out.println(new App(new App(new Const(0,"="),right),left));
-             //Term right = ((App)((App)qType).p).q.body().sustParall((Sust)pType).evaluar();
-             //Term left = (((App)qType).q).body().sustParall((Sust)pType).evaluar();
-             return new App(new App(new Const(0,"="),right),left).evaluar(vars).abstractEq();
+                String vars = ";"+((TypedA)q).variables_.split(";")[0];
+                return new App(new App(new Const(0,"="),right),left).evaluar(vars).abstractEq();
             }
             catch (CloneNotSupportedException e){
                 e.printStackTrace();
             }
         }
-        else if (inferType == 'l')
-        {
+        else if (inferType == 'l'){
             Term z = ((Bracket)pType).x;
             Term aux = ((App)qType).q;
             while (aux instanceof Bracket) {
@@ -218,26 +212,22 @@ public class TypedApp extends App implements TypedTerm{
             //Term op2 = ((App)((App)qType).p).p; 
             return new App(new App(new Const(0,"="), t2),t1).abstractEq();
         }
-        if (inferType == 's')
-        {
+        if (inferType == 's'){
             return new App(new App(new Const("="), ((App)qType).q), ((App)((App)qType).p).q);
         }
-        else if (inferType == 'm')
-        {
+        else if (inferType == 'm'){
             Const eq = (Const)((App)((App)pType).p).p;
             pType = ((App)((App)((App)pType).q.body()).p).q;
             Const T = (Const)((App)((App)qType).p).q.body();
             return new App(new App(eq,T),pType).abstractEq();
         }
-        else if (inferType == 'e')
-        {
+        else if (inferType == 'e'){
             Const eq = (Const)((App)((App)pType).p).p;
             pType = ((App)((App)pType).p).q.body();
             Const T = (Const)((App)((App)qType).p).q.body();
             return new App(new App(eq,T),pType).abstractEq();
         }
-        else
-        {
+        else{
             Term pIzq = ((App)pType).q.body(); 
             Term qDer = ((App)((App)qType).p).q.body();
             Const op1 = (Const)((App)((App)pType).p).p;
@@ -247,8 +237,7 @@ public class TypedApp extends App implements TypedTerm{
         }
     }
     
-    public String getCombDBType()
-    {
+    public String getCombDBType(){
         return "";
     }
 }

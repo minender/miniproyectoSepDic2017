@@ -483,17 +483,23 @@ public class PerfilController {
     @RequestMapping(value="/{username}/myTheorems/buscarFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
-        // validar que el usuario este en sesion
-        InferResponse response = new InferResponse(crudOp);
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
-        Term teorema = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
-        String nTeo = resuelve.getNumeroteorema();
-        Solucion solucion = solucionManager.getSolucion(idSol,username);
         
-        Term typedTerm = solucion.getTypedTerm();
+        InferResponse response = new InferResponse(crudOp);
+        try{
+            // Validate that the user is in session
+            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
+            Term teorema = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
+            String nTeo = resuelve.getNumeroteorema();
+            Solucion solucion = solucionManager.getSolucion(idSol,username);
 
-        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,ProofMethodUtilities.getTerm(solucion.getMetodo()), resuelveManager, disponeManager, simboloManager);
-        return response;
+            Term typedTerm = solucion.getTypedTerm();
+
+            response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,ProofMethodUtilities.getTerm(solucion.getMetodo()), resuelveManager, disponeManager, simboloManager);
+            return response;
+        }
+        catch(Exception e){
+            return response;
+        }
     }
     
     @RequestMapping(value="/{username}/myTheorems/buscarMetaFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
