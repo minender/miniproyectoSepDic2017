@@ -75,6 +75,22 @@ public class TypedA extends Const implements TypedTerm{
         }
     }
 
+    public TypedA(Term type, String comb, String user)
+    {
+        super("A");
+        Resuelve r = rm_.getResuelveByUserAndTeorema(user, comb, true);
+        type_ = type;
+        combDBType_ = comb;
+        if (r != null) {
+           variables_ = r.getVariables();
+           nSt_ = r.getNumeroteorema();
+        }
+        else {
+           variables_ = "";
+           nSt_ = "";
+        }
+    }
+    
     public TypedA(int idTeo, String user)
     {
         super("A");

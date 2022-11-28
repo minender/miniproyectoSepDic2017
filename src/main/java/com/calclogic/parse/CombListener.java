@@ -1,12 +1,12 @@
-// Generated from Comb.g4 by ANTLR 4.8
+// Generated from .\Comb.g4 by ANTLR 4.8
 
-	
+    
 package com.calclogic.parse; 
 
-import com.calclogic.lambdacalculo.*;	
+import com.calclogic.lambdacalculo.*;   
 import java.util.LinkedList;
-import com.calclogic.entity.Resuelve;	
-	
+import com.calclogic.entity.Resuelve;   
+    
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 

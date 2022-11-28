@@ -49,7 +49,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
      * @param proof: The proof tree so far
      * @param username: name of the user doing the proof
      * @param resuelveManager
-     * @param simboloManager
+     * @param s
      * @param expr: The root of the proof tree, which is the last line
      * @param initialExpr: The expression (could be a theorem) from which the user started the demonstration
      * @param finalExpr: The last line in the demonstration that the user has made
@@ -58,42 +58,47 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
      */
     @Override
     public Term auxFinBaseMethodProof(Term formulaBeingProved, Term proof, String username,
-                ResuelveManager resuelveManager, SimboloManager simboloManager, 
+                ResuelveManager resuelveManager, SimboloManager s, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         // Case when we started from the theorem being proved
         if(formulaBeingProved.equals(initialExpr)) {
             // List of theorems solved by the user. We examine them to check if the current proof already reached one 
             List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username,true);
-            Term theorem, mt;
+            Term theorem; //, mt;
             Term equanimityExpr = null; // Expression with which equanimity will be applied
-
+            int[] c = new int[1];
+                    
             for(Resuelve resu: resuelves){
+                c[0] = 0;
                 theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
-                Term noEqTheo = ((Term)theorem.clone2()).setToPrinting(resu.getVariables()); 
-                mt = new App(new App(new Const("c_{1}"),new Const("true")),theorem); // theorem == true
+                Term noEqTheo = ((Term)theorem.clone2()).setToPrinting(resu.getVariables(),s,c); 
+                //System.out.println(c);
+                //mt = new App(new App(new Const("c_{1}"),new Const("true")),noEqTheo); // theorem == true
+                // acomodar esto para crear mt dependiendo de los metateoremas que se tienen guardados
                 
                 // We don't want to unify with the formulaBeingProved itself if it was already demonstrated
                 if (noEqTheo.equals(formulaBeingProved)){
                     ;
                 }
                 // If the current theorem or theorem==true matches the final expression
-                else if(noEqTheo.equals(finalExpr) || mt.equals(finalExpr)){
-                    equanimityExpr = new TypedM(theorem,username);
+                else if(noEqTheo.equals(finalExpr)){ //|| mt.equals(finalExpr)){
+                    equanimityExpr = new TypedM(c[0],theorem,username);
                 } 
                 else {
                     // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
                     // >>> It would not work if we did it backwards: (finalExpr, theorem)
                     Equation eq = new Equation(noEqTheo, finalExpr);
-                    Sust sust = eq.mgu(simboloManager);
+                    Sust sust = eq.mgu(s);
 
                     // Case whe lanst line is an instantiation of the compared theorem
                     if (sust != null){
-                        // The equanimity is applied with the instantiated theorem, not with the last line instantiated
-                        equanimityExpr = new TypedApp(new TypedI(sust), new TypedM(theorem, username)); 
+                        // The equanimity is applied with the instantiated theorem
+                        equanimityExpr = new TypedApp(new TypedI(sust), new TypedM(c[0],theorem, username)); 
                     }   
                 }
                 if (equanimityExpr != null){
+                    System.out.println(equanimityExpr);
                     return new TypedApp(new TypedApp(new TypedS(proof.type()), proof), equanimityExpr);
                 }
             }
@@ -104,9 +109,10 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
             TypedA A = new TypedA(aux.traducBD(),username);
 
             if (A.getNSt().equals("")) { 
+                int idOp = ((Const)((App)((App)initialExpr).p).p).getId();
                 initialExpr= new App(new App(new Const(0,"="),((App)((App)initialExpr).p).q),((App)initialExpr).q);
                 initialExpr = initialExpr.abstractEq().traducBD(); 
-                Term M = new TypedM(initialExpr,username); 
+                Term M = new TypedM(idOp,initialExpr,username); 
                 return new TypedApp(proof, M);
             }
             else 
@@ -114,5 +120,4 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
         }
         return proof; 
     } 
-    
 }

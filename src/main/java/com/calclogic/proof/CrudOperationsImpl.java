@@ -428,7 +428,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 catch (ClassCastException e) {
                     throw new TypeVerificationException();
                 }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,null), new TypedM(type,user)), infer);
+                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,null), new TypedM(1,type,user)), infer);
             }
             else if (index != 0 && !eqInf) {
                 String st = "= T (c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8}))";

@@ -531,7 +531,7 @@ public class InferController {
         Resuelve resuel     = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Solucion solucion   = solucionManager.getSolucion(Integer.parseInt(nSol),username);
         Term typedTerm      = solucion.getTypedTerm();
-        Term formula        = resuel.getTeorema().getTeoTerm().setToPrinting(resuel.getVariables());
+        Term formula        = resuel.getTeorema().getTeoTerm().setToPrinting(resuel.getVariables(),simboloManager);
         // CHECK formula pudiera ser una igualdad y pasar por equival trans usando arboles de derivacion
         String metodo       = solucion.getMetodo();
         Term methodTerm     = ProofMethodUtilities.getTerm(metodo);
@@ -643,7 +643,7 @@ public class InferController {
             finalProof = objectMethod.finishedBaseMethodProof(formulaBeingProved, newProof, username, resuelveManager, simboloManager);        
         }
         // Get the complete method in case it was not atomic
-        Boolean isFinalSolution = formulaBeingProved.equals(finalProof.type().setToPrinting(resuel.getVariables()));
+        Boolean isFinalSolution = formulaBeingProved.equals(finalProof.type().setToPrinting(resuel.getVariables(),simboloManager));
         // CHECK puede ser una igualdad y pasar por equivalencia, esto hay que transformarlo usando arboles de deriv
 
         // We need this because in branched recursive methods we use And Introduction structure anyway
@@ -762,7 +762,7 @@ public class InferController {
         }
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
-        Term formula = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
+        Term formula = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables(),simboloManager);
 
         response.generarHistorial(
             username,
@@ -875,7 +875,7 @@ public class InferController {
 
         // This is the theorem statement but parsed as a binary tree. 
         // We call it as "previous" because it may change when the proof starts
-        Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().setToPrinting(resuelveAnterior.getVariables());
+        Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().setToPrinting(resuelveAnterior.getVariables(),simboloManager);
 
         Integer opId; // Id of the symbol of the main operator of an expression
         Solucion solucion = null;
@@ -891,7 +891,7 @@ public class InferController {
                     if (resuelve == null){
                         resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()),false);
                     }
-                    formulaTerm = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
+                    formulaTerm = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables(),simboloManager);
                 }
                 else if (teoid.substring(0, 3).equals("MT-")){
                     Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
@@ -902,7 +902,7 @@ public class InferController {
                 }
             }
             else if ("SS".equals(newMethod)){
-                formulaTerm = resuelveAnterior.getTeorema().getTeoTerm().setToPrinting(resuelveAnterior.getVariables());
+                formulaTerm = resuelveAnterior.getTeorema().getTeoTerm().setToPrinting(resuelveAnterior.getVariables(),simboloManager);
             }
             // ---- End of assigning "formulaTerm" 
 
