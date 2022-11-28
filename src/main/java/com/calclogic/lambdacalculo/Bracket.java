@@ -100,12 +100,12 @@ public class Bracket extends Term{
         t.getAxioms(l);
     }
     
-    public Term leibniz(int z, String subtermId, String thisId)
+    public Term leibniz(int z, String subtermId, String thisId, SimboloManager s)
     {
        if (thisId.equals(subtermId))
            return new Var(z);
        else
-           return new Bracket(x,t.leibniz(z, subtermId, thisId+"("+this.hashCode()+")"));
+           return new Bracket(x,t.leibniz(z, subtermId, thisId+"("+this.hashCode()+")", s));
     }
     
     public boolean isIdFunction() {

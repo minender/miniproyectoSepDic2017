@@ -431,11 +431,12 @@ public class App extends Term{
         q.getAxioms(l);
     }
     
-    public Term leibniz(int z, String subtermId, String thisId){
+    public Term leibniz(int z, String subtermId, String thisId, SimboloManager s){
+        App newTerm = (App) this.toFunApp(s);
         if (thisId.equals(subtermId))
             return new Var(z);
         else
-            return new App(p.leibniz(z, subtermId, thisId+"1"),q.leibniz(z, subtermId, thisId+"2"));
+            return new App(newTerm.p.leibniz(z, subtermId, thisId+"1", s), newTerm.q.leibniz(z, subtermId, thisId+"2", s));
     }
     
     /**
@@ -559,7 +560,7 @@ public class App extends Term{
             }
             if ('L' == kind){
                 IntXIntXString result = newTerm.privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
-                l.add(t.leibniz(z, appPosition, "")); //revisar ten cuidado
+                l.add(t.leibniz(z, appPosition, "", s)); //revisar ten cuidado
                 return result;
             }
             return newTerm.privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
@@ -657,7 +658,7 @@ public class App extends Term{
             //l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
             //l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
             if (opId != s.getPropFunApp() && opId != s.getTermFunApp()){
-                l.add(t.leibniz(z, appPosition, ""));
+                l.add(t.leibniz(z, appPosition, "", s));
             }
             id.id++;       
         }
@@ -1006,5 +1007,20 @@ public class App extends Term{
         }
         
         return type_c_split[type_c_split.length-1];
+    }
+    
+    private Term toFunApp(SimboloManager s) {
+        Term aux = this;
+        while (aux instanceof App) {
+            aux = ((App) aux).p;
+        }
+        if (aux instanceof Const)
+            return this;
+        else if ( p instanceof Var ){
+                return new App(new App(new Const(s.getPropFunApp(),"c_{"+s.getPropFunApp()+"}"),p),q);
+        }
+        else {
+            return new App(new App(new Const(s.getTermFunApp(), "c_{"+s.getTermFunApp()+"}"),p),q);
+        }
     }
 }

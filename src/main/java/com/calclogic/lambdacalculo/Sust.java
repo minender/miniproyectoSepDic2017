@@ -80,7 +80,7 @@ public class Sust extends Term{
         ;
     }
     
-    public Term leibniz(int z, String subtermId, String thisId)
+    public Term leibniz(int z, String subtermId, String thisId, SimboloManager s)
     {
        if (thisId.equals(subtermId))
            return new Var(z);
@@ -88,7 +88,7 @@ public class Sust extends Term{
        {
            List<Term> list = new ArrayList();
            for (Term t: terms)
-               list.add(t.leibniz(z, subtermId, thisId));
+               list.add(t.leibniz(z, subtermId, thisId, s));
            return new Sust(vars,list);
        }
     }
@@ -221,7 +221,7 @@ public class Sust extends Term{
         
         varss = varss.substring(0, varss.length()-1);
         termss = termss.substring(0, termss.length()-1);
-        leibniz.add(init.leibniz(z, leibnizL.get(leibnizL.size()-1), ""));
+        leibniz.add(init.leibniz(z, leibnizL.get(leibnizL.size()-1), "", s));
         
         return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{["+varss+" := "+termss+"]}}";
     }
