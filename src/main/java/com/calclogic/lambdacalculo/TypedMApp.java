@@ -24,7 +24,7 @@ public class TypedMApp extends TypedApp implements TypedTerm{
         proof_ = new TypedApp(aux,proof_);
     }
     
-    public String toString() {
+    public String toStringAll() {
         return "(M_{1} "+super.toString()+")";
     }
     

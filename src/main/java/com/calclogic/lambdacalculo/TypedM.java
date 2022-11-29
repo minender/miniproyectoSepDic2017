@@ -69,8 +69,7 @@ public class TypedM extends TypedA implements TypedTerm {
         return type().traducBD().toString();
     }
     
-    public String toString() {
-        System.out.println("    Entré al toString de TypedM");
+    public String toStringAll() {
         return "M^{"+A.getCombDBType()+"}";
     }
 }
