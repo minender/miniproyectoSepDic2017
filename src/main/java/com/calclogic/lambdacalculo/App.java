@@ -17,6 +17,8 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -536,14 +538,34 @@ public class App extends Term{
         else {
             c = (Const) aux;
             if (c.getId()==0) {
-                sym = s.getSimbolo(1);
-                opId = 1;
+                HashMap<Integer, String> D = new HashMap<>();
+                String tipo;
+                try {
+                    String t1 = stk.get(0).getType(D, s);
+                    String t2 = stk.get(1).getType(D, s);
+                    String t3 = Simbolo.matchTipo(t1, t2);
+                    String[] tipo_split = Simbolo.splitTipo(t3);
+                    tipo = tipo_split[tipo_split.length-1];
+                } catch (TypeVerificationException ex) {
+                    tipo = "*";
+                    Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if (tipo.equals("b")) {
+                    sym = s.getSimbolo(1);
+                    opId = 1;
+                }
+                else {
+                    // poner aqui el id de la igualdad
+                    sym = s.getSimbolo(1);
+                    opId = 1;
+                }
+                nArgs = 2;
             }
             else {
                 sym = s.getSimbolo(c.getId());
                 opId = c.getId();
+                nArgs = sym.getArgumentos();
             }
-            nArgs = sym.getArgumentos();
         }
         
         // This can only occur when what we read previously is a functional variable
