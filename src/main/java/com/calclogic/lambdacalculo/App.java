@@ -954,15 +954,17 @@ public class App extends Term{
         }
         Collections.reverse(args);
         String type_c;
+        int cid;
         if (aux instanceof Const) {
             Const c = (Const) aux;
             type_c = c.getType(D, simboloManager);
-            int cid = c.getId();
+            cid = c.getId();
             if (cid > 0) {
                 isQuant = simboloManager.getSimbolo(cid).isQuantifier();
             }
         }
         else {
+            cid = -1;
             type_c = aux.checkType(D, simboloManager,"t->b");
         }
         if (isQuant) { 
@@ -992,11 +994,18 @@ public class App extends Term{
             throw new TypeVerificationException();
         }
         
-        int i = 0;
-        for (Term arg: args) {
-            String param_type = type_c_split[i];
-            arg.checkType(D2, simboloManager, param_type);
-            i++;
+        if (cid == 0) {
+            String t1 = args.get(0).getType(D2, simboloManager);
+            String t2 = args.get(1).getType(D2, simboloManager);
+            Simbolo.matchTipo(t1, t2);
+        }
+        else {
+            int i = 0;
+            for (Term arg: args) {
+                String param_type = type_c_split[i];
+                arg.checkType(D2, simboloManager, param_type);
+                i++;
+            }
         }
         
         if (isQuant) {

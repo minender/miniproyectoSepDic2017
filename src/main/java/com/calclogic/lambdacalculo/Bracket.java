@@ -421,13 +421,14 @@ public class Bracket extends Term{
             throw new TypeVerificationException();
         }
         
+        expected_split[expected_split.length-1] = aux.checkType(D, simboloManager, expected_split[expected_split.length-1]);
+        
         int i = 0;
         for (Var v: vars) {
             expected_split[i] = v.checkType(D, simboloManager, expected_split[i]);
             i++;
         }
         
-        expected_split[expected_split.length-1] = aux.checkType(D, simboloManager, expected_split[expected_split.length-1]);
         return Simbolo.joinTipo(expected_split);
     }
 }
