@@ -42,11 +42,13 @@ term[String u] returns [Term value]
                                     try {
                                         for (Term it: $term_tail.value) {
                                             if (aux instanceof TypedTerm && 
-                                                (it instanceof TypedTerm || it instanceof Const || it instanceof App))
+                                                (it instanceof TypedTerm)) //|| it instanceof Const || it instanceof App))
                                             {
                                                 aux = new TypedApp(aux,it);
                                             }
-                                            else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm)){
+                                            else if (aux instanceof M && it instanceof TypedTerm) {
+                                                aux = new TypedM(((Const)aux).getId(), Integer.parseInt(((Const)aux).getCon()), it, ((TypedTerm)it).getCombDBType(), u);
+                                            } else if ( !(aux instanceof TypedTerm) && !(it instanceof TypedTerm)){
                                                 aux = new App(aux,it);
                                             }
                                             else{
@@ -87,17 +89,24 @@ term_list_tail[String u] returns [LinkedList<Term> value]
 
 // Variables for example x_{34}
 variable returns [Var value]
-    : VARIABLE {String var = $VARIABLE.text ; // Take string format of the variable
+    :  X DIGITS C_BRACKET {
+                          int index = Integer.parseInt($DIGITS.text);// Take the index of the variable
+                          $value = new Var(index);// Return a new Variable object with that index
+                         };
+    /* : VARIABLE {String var = $VARIABLE.text ; // Take string format of the variable
                     int index = Integer.parseInt(var.substring(3,var.length()-1));// Take only the the index of the variable
                     $value = new Var(index);// Return a new Variable object with that index
-           };
+           };*/
 
 // All kind of constants
 constant[String u] returns [Term value]
-    : CONSTANT_C    { String cons = $CONSTANT_C.text ; // Take string format of the constant
+    : C DIGITS C_BRACKET { int index = Integer.parseInt($DIGITS.text);
+                          $value = new Const(index ,"c_{"+index+"}");
+                        } 
+    /*: CONSTANT_C    { String cons = $CONSTANT_C.text ; // Take string format of the constant
               int index = Integer.parseInt(cons.substring(3,cons.length()-1));// Take only the the index of the constant
               $value = new Const(index ,cons);
-                    }
+                    }*/
     | EQUAL             { String cons = $EQUAL.text ; // Take string format of the constant
                           $value = new Const(0 ,cons);
                         }
@@ -153,41 +162,10 @@ cb_pair returns [Indice value]
             } 
         }
     | A expr[u] C_BRACKET { $value = (u!=null ? new TypedA($expr.value,u) : new TypedA($expr.value)); }
-    | M expr[u] C_BRACKET { /*String templ="(L^{\\lambda x_{122}. c_{1} (%(arg2)) x_{122}} A^{%(arg1)}) (I^{[x_{112}:=%(arg2)]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{1})})";
-                            int i = 2;
-                            int nPar;
-                            String arg1 = $expr.text;
-                            if (arg1.charAt(i) == '(') {
-                                nPar = 1;
-                                i++;
-                                while (nPar != 0) {
-                                    if (arg1.charAt(i)=='('){
-                                        nPar++;
-                                    }
-                                    else if (arg1.charAt(i)==')'){
-                                        nPar--;
-                                    }
-                                    i++;
-                                }
-                            } else {
-                                nPar = 0;
-                                while (nPar == 0) {
-                                    if (arg1.charAt(i)=='('){
-                                        nPar++;
-                                    }
-                                    i++;
-                                }
-                                i--;
-                            }
-                            Term ar1 = $expr.value;
-                            String arg2 = ((App)((App)ar1).p).q.toStringFinal();*/
-                            try {
-                                $value = new TypedM($expr.value, u);
-                            } 
-                            catch (TypeVerificationException e) {
-                                e.printStackTrace();
-                                return null;
-                            }
+    | M d1=DIGITS EXP d2=DIGITS C_BRACKET { 
+                            int id;
+                            id = Integer.parseInt($d1.text);
+                            $value = new M(id, $d2.text);
                         };
 
  
@@ -199,17 +177,15 @@ cb_pair returns [Indice value]
  * fragments
  */
     
-fragment DIGITS : ( '1'..'9' [0-9]* | '0' );  
-fragment C : ('C' | 'c' );
-fragment X : ('X' | 'x' );
+DIGITS : ( '1'..'9' [0-9]* | '0' );  
+C : ('C_{' | 'c_{' );
+X : ('X_{' | 'x_{' );
 
 
 /*
  * tokens
  */
     
-// Constants of type c_{N} where N is a digit
-CONSTANT_C : C '_{' DIGITS '}' ; 
 EQUAL : '=' ;
 TRUE : 'T' ;
 
@@ -225,15 +201,13 @@ COMMA : ',';
 C_BRACKET: '}' ;
 O_BRACKET2: '[';
 C_BRACKET2: ']';
+EXP: '}^{';
 ASSIGN: ':=';
-
-// Variables of type x_{N} where N is a digit
-VARIABLE: X '_{' DIGITS '}';
 
 
 // Neccesary for proofs
 A : 'A^{';
-M : 'M^{';
+M : 'M_{';
 I : 'I^{';
 L : 'L^{';
 S : 'S^{';

@@ -104,10 +104,13 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         arguments = simboloDic[simboloId]['arguments'];
                 
         var parentIdSplit = idParentBox.split('-');
-        var index = parentIdSplit[parentIdSplit.length - 1];
+        var index = parseInt(parentIdSplit[parentIdSplit.length - 1]);
         var notacionVarParent = simboloDic[parentSimboloId]['notacionVariables'];
         for (var i = 0; i < notacionVarParent.length; i++) {
-            var varIndex = notacionVarParent[i].match(/\d+/)[0];
+            var varIndex = parseInt(notacionVarParent[i].match(/\d+/)[0]);
+            if (notacionVarParent[i].match(/^v\d$/)) {
+                varIndex += arguments;
+            }
             if (index == varIndex){
                 variableName = notacionVarParent[i];
                 break;
@@ -140,6 +143,11 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         rightPar = '';
     }
 
+    // Rule 5
+    else if((variableName.match(/^v\d$/))){
+        alert("Bound variable can't be a formula.");
+        return;
+    }
     
     var newMathJax = originalMathJax.replace(parentBox, "\\ {" + leftPar + newNotation + rightPar + "}\\ " );// Finally we replace the old box with the whole new notation 
     
@@ -549,6 +557,9 @@ function setInputValueOnParser(rootId, variablesSaved=null){
     // Set the text we'll send to the controller
     var textarea = $('#'+textareaId);
     var prefix = window[rootId + 'prefixCnotation'];
+    if (prefix.includes("lambda")) {
+        prefix = prefix.replace('z', $("#leibnizVar").val());
+    }
     if(parserString.length == 0){ prefix = '';}
     textarea.val(prefix + parserString);
 
@@ -724,6 +735,10 @@ function inferRecoverC(cNotation, latexNotation, rootId, callback=null){
     
     // Update the jax expression
     var math = MathJax.Hub.getAllJax(rootId + 'MathJaxDiv')[0];
+    
+    if (latexNotation.includes("leibnizVar")) {
+        variablesSaved["leibnizVar"] = 'z';
+    }
 
     buttonsEnabled = false;
     MathJax.Hub.Queue(["Text",  math, "{" +latexNotation + "}"], ()=>{
@@ -731,7 +746,6 @@ function inferRecoverC(cNotation, latexNotation, rootId, callback=null){
         loadMathJaxFormContent(rootId + 'MathJaxDiv',  variablesSaved);      
         buttonsEnabled = true;
     });
-
     return newParserString;
     
 }

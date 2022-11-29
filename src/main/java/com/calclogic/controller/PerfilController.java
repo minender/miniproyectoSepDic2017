@@ -488,7 +488,7 @@ public class PerfilController {
         try{
             // Validate that the user is in session
             Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
-            Term teorema = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables());
+            Term teorema = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables(),simboloManager);
             String nTeo = resuelve.getNumeroteorema();
             Solucion solucion = solucionManager.getSolucion(idSol,username);
 
@@ -706,11 +706,8 @@ public class PerfilController {
             String freeVars;
             teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
             freeVars = teoTerm.stFreeVars();
-            System.out.println(teoTerm);
             String variables = boundVars[0] + ";" + freeVars;
-            System.out.println(variables);
             teoTerm = teoTerm.toEquality(freeVars);
-            System.out.println(teoTerm);
             Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
             if (null != test) {
                 throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());

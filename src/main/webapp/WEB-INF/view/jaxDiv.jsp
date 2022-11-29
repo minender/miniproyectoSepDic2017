@@ -11,7 +11,7 @@
  	</div>
  	<div class="card-body d-flex align-items-center justify-content-center">
             <!-- \({${prefixMathJax} ${initialInput}}\) -->
-        \({${prefixMathJax} \FormInput{${rootId}}}\)
+        \({${prefixMathJax.replace("\\\\", "\\")} \FormInput{${rootId}}}\)
     </div>
 </div>
 

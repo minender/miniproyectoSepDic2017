@@ -149,7 +149,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract void getAxioms(List<String> l);
     
-    public abstract Term leibniz(int z, String subtermId, String thisId);
+    public abstract Term leibniz(int z, String subtermId, String thisId, SimboloManager s);
     
     /**
      * Returns a string formatted with variables codification (x_{}) and
@@ -321,7 +321,11 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract void freeVars(int[] set);
     
-    public Term setToPrinting(String variables) {
+    public Term setToPrinting(String variables, SimboloManager s) {
+        return this.setToPrinting(variables, s, null);
+    }
+    
+    public Term setToPrinting(String variables, SimboloManager s, int[] c) {
         
         if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
             this.evaluar(variables);
@@ -338,13 +342,32 @@ public abstract class Term implements Cloneable, Serializable{
             // this.evaluar(li2);
         }
         Term arg2;
-        arg2 = ((App)this).q;
-        Term t;
+        arg2 = ((App)this).q.body();
+        Term t = null;
         if (this.containT())
-            t = arg2.body();
+            t = arg2;
         else {
-            Term arg1 = ((App)((App)this).p).q;
-            t = new App(new App(new Const(1,"c_{1}"),arg1.body()),arg2.body());
+            Term arg1 = ((App)((App)this).p).q.body();
+            String type;
+            try {
+              type = arg2.getType(s);
+            }
+            catch (TypeVerificationException e){
+                try {
+                   type = arg1.getType(s);
+                }
+                catch (TypeVerificationException e2){
+                    type = "t";
+                }
+            }
+            int opId;
+            if (type.equals("b"))
+               opId = 1;
+            else
+               opId = 12;
+            if (c != null)
+               c[0] = opId;
+            t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1.body()),arg2.body());
         }
         return t;
     }

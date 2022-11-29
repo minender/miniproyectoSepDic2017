@@ -17,6 +17,8 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -431,11 +433,12 @@ public class App extends Term{
         q.getAxioms(l);
     }
     
-    public Term leibniz(int z, String subtermId, String thisId){
+    public Term leibniz(int z, String subtermId, String thisId, SimboloManager s){
+        App newTerm = (App) this.toFunApp(s);
         if (thisId.equals(subtermId))
             return new Var(z);
         else
-            return new App(p.leibniz(z, subtermId, thisId+"1"),q.leibniz(z, subtermId, thisId+"2"));
+            return new App(newTerm.p.leibniz(z, subtermId, thisId+"1", s), newTerm.q.leibniz(z, subtermId, thisId+"2", s));
     }
     
     /**
@@ -535,14 +538,34 @@ public class App extends Term{
         else {
             c = (Const) aux;
             if (c.getId()==0) {
-                sym = s.getSimbolo(1);
-                opId = 1;
+                HashMap<Integer, String> D = new HashMap<>();
+                String tipo;
+                try {
+                    String t1 = stk.get(0).getType(D, s);
+                    String t2 = stk.get(1).getType(D, s);
+                    String t3 = Simbolo.matchTipo(t1, t2);
+                    String[] tipo_split = Simbolo.splitTipo(t3);
+                    tipo = tipo_split[tipo_split.length-1];
+                } catch (TypeVerificationException ex) {
+                    tipo = "*";
+                    Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if (tipo.equals("b")) {
+                    sym = s.getSimbolo(1);
+                    opId = 1;
+                }
+                else {
+                    // poner aqui el id de la igualdad
+                    sym = s.getSimbolo(1);
+                    opId = 1;
+                }
+                nArgs = 2;
             }
             else {
                 sym = s.getSimbolo(c.getId());
                 opId = c.getId();
+                nArgs = sym.getArgumentos();
             }
-            nArgs = sym.getArgumentos();
         }
         
         // This can only occur when what we read previously is a functional variable
@@ -559,7 +582,7 @@ public class App extends Term{
             }
             if ('L' == kind){
                 IntXIntXString result = newTerm.privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
-                l.add(t.leibniz(z, appPosition, "")); //revisar ten cuidado
+                l.add(t.leibniz(z, appPosition, "", s)); //revisar ten cuidado
                 return result;
             }
             return newTerm.privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
@@ -657,7 +680,7 @@ public class App extends Term{
             //l.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
             //l2.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
             if (opId != s.getPropFunApp() && opId != s.getTermFunApp()){
-                l.add(t.leibniz(z, appPosition, ""));
+                l.add(t.leibniz(z, appPosition, "", s));
             }
             id.id++;       
         }
@@ -953,15 +976,17 @@ public class App extends Term{
         }
         Collections.reverse(args);
         String type_c;
+        int cid;
         if (aux instanceof Const) {
             Const c = (Const) aux;
             type_c = c.getType(D, simboloManager);
-            int cid = c.getId();
+            cid = c.getId();
             if (cid > 0) {
                 isQuant = simboloManager.getSimbolo(cid).isQuantifier();
             }
         }
         else {
+            cid = -1;
             type_c = aux.checkType(D, simboloManager,"t->b");
         }
         if (isQuant) { 
@@ -991,11 +1016,18 @@ public class App extends Term{
             throw new TypeVerificationException();
         }
         
-        int i = 0;
-        for (Term arg: args) {
-            String param_type = type_c_split[i];
-            arg.checkType(D2, simboloManager, param_type);
-            i++;
+        if (cid == 0) {
+            String t1 = args.get(0).getType(D2, simboloManager);
+            String t2 = args.get(1).getType(D2, simboloManager);
+            Simbolo.matchTipo(t1, t2);
+        }
+        else {
+            int i = 0;
+            for (Term arg: args) {
+                String param_type = type_c_split[i];
+                arg.checkType(D2, simboloManager, param_type);
+                i++;
+            }
         }
         
         if (isQuant) {
@@ -1006,5 +1038,20 @@ public class App extends Term{
         }
         
         return type_c_split[type_c_split.length-1];
+    }
+    
+    private Term toFunApp(SimboloManager s) {
+        Term aux = this;
+        while (aux instanceof App) {
+            aux = ((App) aux).p;
+        }
+        if (aux instanceof Const)
+            return this;
+        else if ( p instanceof Var ){
+                return new App(new App(new Const(s.getPropFunApp(),"c_{"+s.getPropFunApp()+"}"),p),q);
+        }
+        else {
+            return new App(new App(new Const(s.getTermFunApp(), "c_{"+s.getTermFunApp()+"}"),p),q);
+        }
     }
 }

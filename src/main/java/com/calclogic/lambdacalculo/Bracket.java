@@ -100,12 +100,12 @@ public class Bracket extends Term{
         t.getAxioms(l);
     }
     
-    public Term leibniz(int z, String subtermId, String thisId)
+    public Term leibniz(int z, String subtermId, String thisId, SimboloManager s)
     {
        if (thisId.equals(subtermId))
            return new Var(z);
        else
-           return new Bracket(x,t.leibniz(z, subtermId, t.hashCode()+""));
+           return new Bracket(x,t.leibniz(z, subtermId, thisId+"("+this.hashCode()+")", s));
     }
     
     public boolean isIdFunction() {
@@ -236,7 +236,7 @@ public class Bracket extends Term{
     @Override
     public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
-        return this.t.toStringLaTeXLabeled(s, z, t, appPosition+"1", leibniz, l2, id, nivel);
+        return this.t.toStringLaTeXLabeled(s, z, t, appPosition+"("+this.hashCode()+")", leibniz, l2, id, nivel);
         /*
         id.id++;
         leibniz.add(t.leibniz(z, this));
@@ -421,13 +421,14 @@ public class Bracket extends Term{
             throw new TypeVerificationException();
         }
         
+        expected_split[expected_split.length-1] = aux.checkType(D, simboloManager, expected_split[expected_split.length-1]);
+        
         int i = 0;
         for (Var v: vars) {
             expected_split[i] = v.checkType(D, simboloManager, expected_split[i]);
             i++;
         }
         
-        expected_split[expected_split.length-1] = aux.checkType(D, simboloManager, expected_split[expected_split.length-1]);
         return Simbolo.joinTipo(expected_split);
     }
 }

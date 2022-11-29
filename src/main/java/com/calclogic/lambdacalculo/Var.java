@@ -93,7 +93,7 @@ public class Var extends Term{
         ;
     }
     
-    public Term leibniz(int z, String subtermId, String thisId)
+    public Term leibniz(int z, String subtermId, String thisId, SimboloManager s)
     {
        if (thisId.equals(subtermId))
            return new Var(z);
@@ -213,7 +213,7 @@ public class Var extends Term{
     @Override
     public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
-        leibniz.add(t.leibniz(z, appPosition, ""));
+        leibniz.add(t.leibniz(z, appPosition, "", s));
         l2.add(l2.size(),id.id+",");
         id.id++;
 //        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
@@ -405,18 +405,18 @@ public class Var extends Term{
         String type;
         if (!D.containsKey(this.indice)) {
             type = expected;
-            System.out.println(((char) this.indice)+" es de tipo "+expected);
+            //System.out.println(((char) this.indice)+" es de tipo "+expected);
             D.put(this.indice, expected);
         }
         else {
             String current_type = D.get(this.indice);
             type = Simbolo.matchTipo(D.get(this.indice), expected);
             if (!type.equals(current_type)){
-                System.out.println(((char) this.indice)+" es de tipo "+type);
+                //System.out.println(((char) this.indice)+" es de tipo "+type);
                 D.put(indice, type);
             }    
         }
-        
+
         return type;
     }
 }

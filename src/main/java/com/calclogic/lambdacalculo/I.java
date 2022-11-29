@@ -75,7 +75,7 @@ public class I extends Term {
        ;
    }
    
-   public Term leibniz(int z, String subtermId, String thisId)
+   public Term leibniz(int z, String subtermId, String thisId, SimboloManager s)
    {
        if (thisId.equals(subtermId))
            return new Var(z);
