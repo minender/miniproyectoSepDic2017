@@ -121,4 +121,16 @@ public interface ResuelveManager {
     public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves);
     
     public List<Resuelve> getResuelveDependentGlobal(List<Resuelve> resuelves);
+
+    /**
+     * Method to determine if a symbol represents a reflexive operator.
+     * (The result will depend on whether the user has already demonstrated
+     *  that it is reflexive or not; that's the reason why this function
+     *  is in this class and not in SimboloManager).
+     * 
+     * @param username Is the string with which the user logs in, and that we use to filter the search.
+     * @param symbolNotation Like c_{1}
+     * @return If the symbolNotation represents a reflexive operator or not
+     */ 
+    public Boolean isReflexiveOperatorForUser(String username, String symbolNotation);
 }
