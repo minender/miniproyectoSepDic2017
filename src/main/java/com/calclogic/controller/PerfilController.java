@@ -2234,4 +2234,21 @@ public class PerfilController {
             return "error";
         }
     }
+
+    /* 
+     * This is just a provisional controller to transform some theorems
+     * It occurs that the variables names are not assigned in the desired order (in-order),
+     * so to do not make the changes manually, we will automate it with this controller
+     */
+    @RequestMapping(value="/{username}/transformTheoremWithAppropiateVariables", method=RequestMethod.GET)
+    public void transformTheoremWithAppropiateVariables(@PathVariable String username)
+    {
+        List<Resuelve> resuelves = null;//resuelveManager.getAllResuelveByUserWithSol("AdminTeoremas");
+
+        for (Resuelve r: resuelves){                       
+            Teorema t = r.getTeorema();
+            t.setTeoTerm(t.getTeoTerm());
+        }
+
+    }
 }

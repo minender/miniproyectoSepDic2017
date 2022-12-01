@@ -132,5 +132,5 @@ public interface ResuelveManager {
      * @param symbolNotation Like c_{1}
      * @return If the symbolNotation represents a reflexive operator or not
      */ 
-    public Boolean isReflexiveOperatorForUser(String username, String symbolNotation);
+    public int isReflexiveOperatorForUser(String username, String symbolNotation);
 }

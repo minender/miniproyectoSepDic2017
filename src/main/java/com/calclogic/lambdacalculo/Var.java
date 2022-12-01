@@ -401,6 +401,11 @@ public class Var extends Term{
     }
     
     @Override
+    public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
+        return this.checkType(D, simboloManager, "*");
+    }
+    
+    @Override
     public String checkType(HashMap<Integer, String> D, SimboloManager simboloManager, String expected) throws TypeVerificationException {
         String type;
         if (!D.containsKey(this.indice)) {
