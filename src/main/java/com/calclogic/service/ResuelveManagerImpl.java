@@ -71,7 +71,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
     }
 
     /*
-     * Here we parsed the corresponding theorem of a Resuelve object.
+     * Here we parse the corresponding theorem of a Resuelve object.
      *
      * @param resuelve The mentioned Resuelve object.
      * throws Exception

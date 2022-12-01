@@ -303,8 +303,18 @@ public class InferResponse extends GenericResponse{
             String operator = operatorTerm.toStringLaTeX(s,"");
 
             // THIS IS NOT USED BECAUSE generarHistorial always receives the formula as in the previous version
-            //if(!operatorTerm.toString().startsWith("=") || ((App)((App)newTerm).p).q.containT()){ 
-            if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{13}")){ // c_{20}
+            //if(!operatorTerm.toString().startsWith("=") || ((App)((App)newTerm).p).q.containT()){
+            // if(!operatorTerm.toString().startsWith("c_{1}") && !operatorTerm.toString().startsWith("c_{13}")){ // c_{20}
+            //     throw new Exception();
+            // }
+
+            // To see if the operator is reflexive
+            String comb1 = "= (\\Phi_{K} T) (\\Phi_{(b,)} "+operatorTerm + ")"; // P op P
+            String comb2 = "= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} "+operatorTerm + ")"; // P op P == true (DOES NOT WORK YET)
+            Resuelve resuelve1 = resuelveManager.getResuelveByUserAndTeorema(username, comb1, true);
+            Resuelve resuelve2 = resuelveManager.getResuelveByUserAndTeorema(username, comb2, true);
+
+            if (!resuelve1.isResuelto() && !resuelve2.isResuelto()){
                 throw new Exception();
             }
             

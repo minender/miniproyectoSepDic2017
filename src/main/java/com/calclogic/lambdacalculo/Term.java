@@ -292,7 +292,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public String stFreeVars(SimboloManager s) throws TypeVerificationException{
         String st = null;
-        HashMap<Integer,String> h = new HashMap<Integer,String>();
+        HashMap<Integer,String> h = new HashMap<>();
         int[] set = freeVars();
         getType(h, s);
         int i=0;
