@@ -71,7 +71,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
     }
 
     /*
-     * Here we parsed the corresponding theorem of a Resuelve object.
+     * Here we parse the corresponding theorem of a Resuelve object.
      *
      * @param resuelve The mentioned Resuelve object.
      * throws Exception
@@ -371,4 +371,25 @@ public class ResuelveManagerImpl implements ResuelveManager {
         }
         return new ArrayList<>(dependent.values());
     }
+
+    /**
+     * Method to determine if a symbol represents a reflexive operator.
+     * (The result will depend on whether the user has already demonstrated
+     *  that it is reflexive or not; that's the reason why this function
+     *  is in this class and not in SimboloManagerImpl).
+     * 
+     * @param username Is the string with which the user logs in, and that we use to filter the search.
+     * @param symbolNotation Like c_{1}
+     * @return If the symbolNotation represents a reflexive operator or not
+     */ 
+    @Override
+    @Transactional
+    public Boolean isReflexiveOperatorForUser(String username, String symbolNotation){
+        String comb1 = "= (\\Phi_{K} T) (\\Phi_{(b,)} "+ symbolNotation + ")"; // P op P
+        String comb2 = "= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} "+symbolNotation + ")"; // P op P == true (DOES NOT WORK YET)
+        Resuelve resuelve1 = getResuelveByUserAndTeorema(username, comb1, true);
+        Resuelve resuelve2 = getResuelveByUserAndTeorema(username, comb2, true);
+
+        return resuelve1.isResuelto() || resuelve2.isResuelto();
+    } 
 }

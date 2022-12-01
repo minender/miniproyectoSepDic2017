@@ -54,5 +54,4 @@ public interface SimboloManager {
     public List<Simbolo> getAllSimbolo();
     
     public List<Simbolo> getAllSimboloByTeoria(int teoriaid);
-
 }
