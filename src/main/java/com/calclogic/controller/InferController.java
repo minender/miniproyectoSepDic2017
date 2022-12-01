@@ -230,7 +230,7 @@ public class InferController {
         else{
             Solucion solucion = solucionManager.getSolucion(resuel.getDemopendiente(),username);
             infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"")+"$</center> Proof:");  
-            InferResponse response = new InferResponse(crudOp);
+            InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
             Term typedTerm = solucion.getTypedTerm();
 
             response.generarHistorial(
@@ -242,10 +242,7 @@ public class InferController {
                 (solucion.getMetodo().equals("") || 
                         ProofBoolean.isWaitingMethod(ProofMethodUtilities.getTerm(solucion.getMetodo()))?
                                 false:true),
-                (solucion.getMetodo().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMetodo())), 
-                resuelveManager, 
-                disponeManager,
-                simboloManager
+                (solucion.getMetodo().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMetodo()))
             );
             map.addAttribute("elegirMetodo",response.getCambiarMetodo());
             map.addAttribute("formula",response.getHistorial());
@@ -503,7 +500,7 @@ public class InferController {
                                              @PathVariable String nSol 
                                              /*, @RequestParam(value="teoremaInicial") String teoremaInicial, @RequestParam(value="nuevoMetodo") String nuevoMetodo */) 
     {
-        InferResponse response = new InferResponse(crudOp);
+        InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
         PredicadoId predicadoid = new PredicadoId();
         predicadoid.setLogin(username);
 
@@ -570,7 +567,7 @@ public class InferController {
             infer = objectMethod.createOneStepInfer(username,statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
         }
         catch(TypeVerificationException e) { // If something went wrong building the new step of the proof
-            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
+            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm);
             return response;
         }
 
@@ -615,7 +612,7 @@ public class InferController {
             }
             catch (TypeVerificationException e) {
                 if (i==1/*(i == 1 && !onlyOneLine) || (i == 1 && j == 1)*/){
-                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm,resuelveManager,disponeManager,simboloManager);
+                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm);
                     return response;
                 }
                 /*if (onlyOneLine && j == 0) {
@@ -703,10 +700,7 @@ public class InferController {
             finalProof,
             true,
             true,
-            methodTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager
+            methodTerm
         );
 
         solucionManager.updateSolucion(solucion);
@@ -732,7 +726,7 @@ public class InferController {
                                                   @PathVariable String nTeo, 
                                                   @PathVariable String nSol)
     {   
-        InferResponse response = new InferResponse(crudOp);
+        InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
 
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Solucion solucion = solucionManager.getSolucion(resuelve.getDemopendiente(),username);
@@ -771,10 +765,7 @@ public class InferController {
             nSol.equals("new")?null:solucion.getTypedTerm(), 
             true, 
             true, 
-            method,
-            resuelveManager, 
-            disponeManager, 
-            simboloManager
+            method
         );
         
         // estos set se podrían calcular dentro de generar historial
@@ -810,7 +801,7 @@ public class InferController {
                                             @PathVariable String nSol, 
                                             @PathVariable String nTeo)
     {   
-        InferResponse response = new InferResponse(crudOp);
+        InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Teorema t = resuelve.getTeorema();
         Term term = t.getTeoTerm();
@@ -846,9 +837,6 @@ public class InferController {
             true, 
             false, 
             methodTerm, 
-            resuelveManager, 
-            disponeManager, 
-            simboloManager, 
             newMethod,
             true
         );
@@ -869,7 +857,7 @@ public class InferController {
         String groupMethod = objectMethod.getGroupMethod();
         boolean sideOrTransitive = ("SS".equals(newMethod) || "T".equals(groupMethod));
 
-        InferResponse response = new InferResponse(crudOp);
+        InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
 
         Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
 
@@ -1018,10 +1006,7 @@ public class InferController {
             typedTerm,
             true, // valida
             !isRecursive, // labeled
-            methodTerm,
-            resuelveManager,
-            disponeManager,
-            simboloManager 
+            methodTerm
         );
 
         // In the recursive case, the user still needs to choose another proof method for the sub-proof

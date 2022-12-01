@@ -3,8 +3,6 @@
  * and open the template in the editor.
  */
 package com.calclogic.controller;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.calclogic.entity.Categoria;
 import com.calclogic.entity.Materia;
 import com.calclogic.entity.Resuelve;
@@ -38,7 +36,6 @@ import com.calclogic.forms.UsuarioGuardar;
 import com.calclogic.forms.teoremasSolucion;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Brackear;
-import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Comprobacion;
 import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.Sust;
@@ -57,7 +54,6 @@ import com.calclogic.parse.IsNotInDBException;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
-import com.calclogic.parse.TermUtilities;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
@@ -105,8 +101,6 @@ public class PerfilController {
     private DisponeManager disponeManager;
     @Autowired
     private TeoremaManager teoremaManager;
-    @Autowired
-    private MetateoremaManager metateoremaManager;
     @Autowired
     private CategoriaManager categoriaManager;
     @Autowired
@@ -367,7 +361,7 @@ public class PerfilController {
         }
         Usuario currentUser = (Usuario)session.getAttribute("user");
         Usuario usr = usuarioManager.getUsuario(username);        
-        List <Categoria> showCategorias = new LinkedList<Categoria>();
+        List <Categoria> showCategorias = new LinkedList<>();
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
         
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
@@ -416,7 +410,7 @@ public class PerfilController {
         }
         Usuario currentUser = (Usuario)session.getAttribute("user");
         Usuario usr = usuarioManager.getUsuario(username);        
-        List <Categoria> showCategorias = new LinkedList<Categoria>();
+        List <Categoria> showCategorias = new LinkedList<>();
         List<MostrarCategoria> mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
         List<Integer> categoriasIdListUser =  new LinkedList<>();
 
@@ -484,7 +478,7 @@ public class PerfilController {
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
         
-        InferResponse response = new InferResponse(crudOp);
+        InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
         try{
             // Validate that the user is in session
             Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
@@ -494,7 +488,7 @@ public class PerfilController {
 
             Term typedTerm = solucion.getTypedTerm();
 
-            response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,ProofMethodUtilities.getTerm(solucion.getMetodo()), resuelveManager, disponeManager, simboloManager);
+            response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,ProofMethodUtilities.getTerm(solucion.getMetodo()));
             return response;
         }
         catch(Exception e){
@@ -505,7 +499,7 @@ public class PerfilController {
     @RequestMapping(value="/{username}/myTheorems/buscarMetaFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarMetaFormula(@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {
-        InferResponse response = new InferResponse(crudOp);
+        InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
         Term teo = resuelve.getTeorema().getTeoTerm();
         Simbolo s = simboloManager.getSimbolo(1);
@@ -532,17 +526,19 @@ public class PerfilController {
         Term I2 = new TypedI(new Sust(lis1,lis2));
         Term typedTerm = null;
         try {
-          if (teo.equals(new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad())))
-            typedTerm = new TypedApp(I2,A2);
-          else
-            typedTerm = new TypedApp(new TypedApp(I1,A1), new TypedApp(I2,A2));
+            if (teo.equals(new Const(8,"c_{8}",!s2.isEsInfijo(),s2.getPrecedencia(),s2.getAsociatividad()))){
+                typedTerm = new TypedApp(I2,A2);
+            }
+            else{
+                typedTerm = new TypedApp(new TypedApp(I1,A1), new TypedApp(I2,A2));
+            }
             typedTerm = new TypedApp(new TypedApp(new TypedS(), typedTerm),A3);
         }
         catch (TypeVerificationException e){
             Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"), resuelveManager, disponeManager, simboloManager);
+        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"));
         return response;
     }
     
@@ -1177,16 +1173,15 @@ public class PerfilController {
     	
     	//Add every symbol to the dictionary
     	for (Simbolo simbolo : simboloList) {
-			
-    		idString = String.valueOf(simbolo.getId());
-    		argumentsString = String.valueOf(simbolo.getArgumentos());
-    		precedenceString = String.valueOf(simbolo.getPrecedencia());
-    		notacionVariables = simbolo.getNotacionVariables().toString();
-    		notacionString = simbolo.getNotacion();
-    		
-    		simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + ", notacionString: '" + notacionString + "'}"; 
-    		result.append(idString+":  " + simboloString + ",");
-		}
+            idString = String.valueOf(simbolo.getId());
+            argumentsString = String.valueOf(simbolo.getArgumentos());
+            precedenceString = String.valueOf(simbolo.getPrecedencia());
+            notacionVariables = simbolo.getNotacionVariables().toString();
+            notacionString = simbolo.getNotacion();
+
+            simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + ", notacionString: '" + notacionString + "'}"; 
+            result.append(idString+":  " + simboloString + ",");
+	}
     	
     	precedenceString = "100";
     	//Add every alias to the dictionary
@@ -1642,7 +1637,8 @@ public class PerfilController {
                         throw new AlphaEquivalenceException(predicado2.getId().getAlias());
                     predicadoManager.updatePredicado(predicado);
                     resultado  = " 1 Su abreviaci&oacute;n ha sido guardado con exito";
-                }else{
+                }
+                else{
                     resultado = " 2 Su abreviaci&oacute;n usa variables como: "+check +" que no estan especificada";
                 }
 
@@ -1676,7 +1672,7 @@ public class PerfilController {
             catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
-        String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("terminoid",new TerminoId());
                 map.addAttribute("usuario",usr);                
                 map.addAttribute("modificar",new Integer(1));
