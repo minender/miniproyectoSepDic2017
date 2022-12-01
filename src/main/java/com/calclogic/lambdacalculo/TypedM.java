@@ -38,13 +38,16 @@ public class TypedM extends TypedA implements TypedTerm {
     public TypedM(int id, int opId, Term proof, String type, String user) throws TypeVerificationException {
         super(proof.type(),type, user);
         id_ = id;
-        if (id == 1) {
+        if (id == 1 || id == 2) {
             // A_ = ((TypedA)proof);
             Term lambType = super.type();
             String arg2 = ((App)((App)lambType).p).q.body().toString();
             Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} ("+arg2+") x_{122}}",user);
             aux = new TypedApp(aux,proof);
-            proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+            if (id == 1)
+               proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+            else
+               proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} (A^{= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} c_{"+opId+"})} A^{= T c_{8}})", user);
             proof_ = new TypedApp(aux,proof_);
         }
         else

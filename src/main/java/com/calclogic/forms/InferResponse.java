@@ -300,7 +300,7 @@ public class InferResponse extends GenericResponse{
             Term operatorTerm = ((App)((App)newTerm).p).p;
 
             // The Starting From One Side method only admits reflexive operators
-            if (!resuelveManager.isReflexiveOperatorForUser(user, operatorTerm.toString())){
+            if (resuelveManager.isReflexiveOperatorForUser(user, operatorTerm.toString()) == 0){
                 throw new Exception();
             }
             
