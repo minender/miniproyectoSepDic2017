@@ -809,10 +809,10 @@ public class InferController {
         methodTerm = typedTerm = null;
         
         if ("SS".equals(newMethod)){
-            if (((App)((App)term).p).q.containT()){
-                response.setErrorParser1(true);
-                return response;
-            }
+            // if (((App)((App)term).p).q.containT()){
+            //     response.setErrorParser1(true);
+            //     return response;
+            // }
             response.setLado("1");
         }
         term = new TypedA(term,username).type().setToPrint();

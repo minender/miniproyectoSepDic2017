@@ -173,6 +173,26 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         tuple = tuple + ")";
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE teorema.id IN " + tuple).list();
     }
+
+    /* 
+     * Auxiliar function to return the Resuelve object associated with the user
+     * and not the one associated with AdminTeoremas when a query returns both.
+     * If the query returns a single one, we return that one
+     */
+    private Resuelve correctResuelve(List<Resuelve> list){
+        if (list.isEmpty()) {
+            return null;
+        } 
+        else if (list.size() == 1){
+            return list.get(0);
+        }
+        else{ // At most, the list can have two elements
+            if ("AdminTeoremas".equals(list.get(0).getUsuario().getLogin())){
+                return list.get(1);
+            }
+            return list.get(0);
+        }
+    }
     
     /**
      * Method to get an entry that relates a user with a theorem, 
@@ -189,11 +209,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         String query = "FROM Resuelve r WHERE teorema.id = :teoremaID "+" AND "+this.teoriaQuery+" AND" + user;
         List<Resuelve> list = this.sessionFactory.getCurrentSession().createQuery(query).setParameter("teoremaID",teoremaID).setParameter("userLogin",userLogin).list();
     
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            return list.get(0);
-        }
+        return correctResuelve(list);
     }
     
     /**
@@ -211,11 +227,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         String query = "FROM Resuelve r WHERE teorema.enunciado = :teo AND "+this.teoriaQuery+" AND" + user;
         List<Resuelve> list = this.sessionFactory.getCurrentSession().createQuery(query).setParameter("teo",teo).setParameter("userLogin",userLogin).list();
     
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            return list.get(0);
-        }
+        return correctResuelve(list);
     }
     
     /**
@@ -233,11 +245,7 @@ public class ResuelveDaoImpl implements ResuelveDAO {
         String query = "FROM Resuelve r WHERE numeroteorema = :teoNum AND "+this.teoriaQuery + " AND " + user;
         List<Resuelve> list = this.sessionFactory.getCurrentSession().createQuery(query).setParameter("teoNum",teoNum).setParameter("userLogin",userLogin).list();
     
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            return list.get(0);
-        }
+        return correctResuelve(list);
     }
 
     /**
