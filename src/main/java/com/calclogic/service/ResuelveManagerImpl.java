@@ -387,13 +387,15 @@ public class ResuelveManagerImpl implements ResuelveManager {
     public int isReflexiveOperatorForUser(String username, String symbolNotation){
         String comb = "= (\\Phi_{K} T) (\\Phi_{(b,)} "+ symbolNotation + ")"; // P op P
         Resuelve resuelve1 = getResuelveByUserAndTeorema(username, comb, true);
-        if (resuelve1 != null && resuelve1.isResuelto())
+        if (resuelve1 != null && resuelve1.isResuelto()){
             return 1;
+        }
         else {
             comb = "= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} "+symbolNotation + ")"; // P op P == true (DOES NOT WORK YET)
             Resuelve resuelve2 = getResuelveByUserAndTeorema(username, comb, true);
-            if (resuelve2 != null && resuelve2.isResuelto())
+            if (resuelve2 != null && resuelve2.isResuelto()){
                 return 2;
+            }
         }
         return 0;
     } 

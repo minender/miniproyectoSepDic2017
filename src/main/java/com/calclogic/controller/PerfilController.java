@@ -2243,12 +2243,12 @@ public class PerfilController {
     @RequestMapping(value="/{username}/transformTheoremWithAppropiateVariables", method=RequestMethod.GET)
     public void transformTheoremWithAppropiateVariables(@PathVariable String username)
     {
-        List<Resuelve> resuelves = null;//resuelveManager.getAllResuelveByUserWithSol("AdminTeoremas");
+        // List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol("AdminTeoremas");
 
-        for (Resuelve r: resuelves){                       
-            Teorema t = r.getTeorema();
-            t.setTeoTerm(t.getTeoTerm());
-        }
+        // for (Resuelve r: resuelves){                       
+        //     Teorema t = r.getTeorema();
+        //     t.setTeoTerm(t.getTeoTerm());
+        // }
 
     }
 }
