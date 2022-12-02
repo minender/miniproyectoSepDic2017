@@ -35,6 +35,9 @@ public class TypedM extends TypedA implements TypedTerm {
         }
     }
     
+    /*
+     * @param type The empty string can be passed when we are not referring to an axiom
+     */
     public TypedM(int id, int opId, Term proof, String type, String user) throws TypeVerificationException {
         super(proof.type(),type, user);
         id_ = id;
