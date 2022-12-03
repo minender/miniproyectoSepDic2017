@@ -704,6 +704,9 @@ public class PerfilController {
             freeVars = teoTerm.stFreeVars();
             String variables = boundVars[0] + ";" + freeVars;
             teoTerm = teoTerm.toEquality(freeVars);
+            
+            teoTerm.getType(simboloManager);
+            
             Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
             if (null != test) {
                 throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
@@ -763,6 +766,24 @@ public class PerfilController {
             map.addAttribute("selected",agregarTeorema.getCategoria());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch (TypeVerificationException ex) {
+            map.addAttribute("usuario", user);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
+            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "You cannot enter your theorem because it contains a type error");
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
             map.addAttribute("overflow","hidden");
@@ -948,6 +969,9 @@ public class PerfilController {
             teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
 //                teoTerm.setAlias(0);
             
+            // Verificando el tipo de la expresión
+            System.out.println(teoTerm.getType(simboloManager));
+
             // ESTO DEBE MOSTRAR LAS CATEGORIAS
             Categoria categoria;
             categoria = categoriaManager.getCategoria(new Integer(agregarTeorema.getCategoriaSeleccionada()));
@@ -1058,6 +1082,25 @@ public class PerfilController {
             map.addAttribute("agregarTeoremaMenu","active");
             map.addAttribute("overflow","hidden");
             map.addAttribute("anchuraDiv","1100px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch (TypeVerificationException ex) {
+            map.addAttribute("navUrlPrefix", "../");
+            map.addAttribute("usuario", usr);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
+            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "You cannot enter your theorem because it contains a type error");
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
             map.addAttribute("simboloList", simboloList);
             map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
             map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
