@@ -73,7 +73,6 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                 c[0] = 0;
                 theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
                 Term noEqTheo = ((Term)theorem.clone2()).setToPrinting(resu.getVariables(),s,c); 
-                //System.out.println(c);
                 //mt = new App(new App(new Const("c_{1}"),new Const("true")),noEqTheo); // theorem == true
                 // acomodar esto para crear mt dependiendo de los metateoremas que se tienen guardados
                 
@@ -98,7 +97,6 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                     }   
                 }
                 if (equanimityExpr != null){
-                    System.out.println(equanimityExpr);
                     return new TypedApp(new TypedApp(new TypedS(proof.type()), proof), equanimityExpr);
                 }
             }

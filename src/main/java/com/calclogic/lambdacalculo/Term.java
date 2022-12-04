@@ -350,7 +350,7 @@ public abstract class Term implements Cloneable, Serializable{
             Term arg1 = ((App)((App)this).p).q.body();
             String type;
             try {
-              type = arg2.getType(s);
+                type = arg2.getType(s);
             }
             catch (TypeVerificationException e){
                 try {
@@ -364,7 +364,7 @@ public abstract class Term implements Cloneable, Serializable{
             if (type.equals("b"))
                opId = 1;
             else
-               opId = 12;
+               opId = 13;
             if (c != null)
                c[0] = opId;
             t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1.body()),arg2.body());
