@@ -1089,16 +1089,19 @@ public abstract class Term implements Cloneable, Serializable{
                         izq.pq.p=phi1;
                         AppIzq izq2=obtenerIzq((App)this,phi2.ind.orden);//no se empieza del ultimo mal
                         Term t1=izq2.p;
-                        Term xnMas1;
-                        try{
+                        Term xnMas1 = ((App)this).q;
+                        if ( !(xnMas1 instanceof Var || xnMas1 instanceof Const) ) {
+                           try{
                             xnMas1=(Term)((App)this).q.clone();
-                            izq2.pq.p=phi2;
-                            return new App((new App(t1,xnMas1)).kappa(),this.kappa());
-                        }
-                        catch(CloneNotSupportedException e){
-                             System.out.println(e);
+                           }
+                           catch(CloneNotSupportedException e){
+                             e.printStackTrace();
                              return null;
+                           }
                         }
+                        izq2.pq.p=phi2;
+                        return new App((new App(t1,xnMas1)).kappa(),this.kappa());
+                        
                     }
                 }
                 else{

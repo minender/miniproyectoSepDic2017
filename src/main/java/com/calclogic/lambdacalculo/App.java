@@ -60,13 +60,15 @@ public class App extends Term{
     }
     
     public Term sust(Var x,Term t){
-        Term t2;
-        try{
-            t2=(Term)t.clone();
-        }
-        catch(CloneNotSupportedException e){   
-            e.printStackTrace();
-            return null;
+        Term t2 = t;
+        if (!(t instanceof Var || t instanceof Const)) {
+           try{
+              t2=(Term)t.clone();
+           }
+           catch(CloneNotSupportedException e){   
+              e.printStackTrace();
+              return null;
+           }
         }
         return new App(p.sust(x, t),q.sust(x,t2));
     }
@@ -565,6 +567,17 @@ public class App extends Term{
                 sym = s.getSimbolo(c.getId());
                 opId = c.getId();
                 nArgs = sym.getArgumentos();
+                if (nArgs == 2 && 
+                    stk.get(stk.size()-1) instanceof Bracket && stk.get(stk.size()-2) instanceof Bracket && 
+                    ((Bracket)stk.get(stk.size()-1)).x.indice != ((Bracket)stk.get(stk.size()-2)).x.indice 
+                   ) 
+                {
+                 int boundVId = ((Bracket)stk.get(stk.size()-1)).x.indice;
+                 boundVId = new App(stk.get(stk.size()-1),stk.get(stk.size()-2)).fresh(boundVId);
+                 // this change the id of all occurrences of x, because x would be a pointer
+                 ((Bracket)stk.get(stk.size()-1)).x.indice = boundVId;
+                 ((Bracket)stk.get(stk.size()-2)).x.indice = boundVId;
+                }
             }
         }
         

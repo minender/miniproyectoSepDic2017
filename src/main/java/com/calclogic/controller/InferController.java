@@ -637,7 +637,7 @@ public class InferController {
         Term finalProof = newProof;
 
         if (!objectMethod.getIsRecursiveMethod()){
-            finalProof = objectMethod.finishedBaseMethodProof(formulaBeingProved, newProof, username, resuelveManager, simboloManager);        
+            finalProof = objectMethod.finishedBaseMethodProof(formulaBeingProved, newProof, username, resuelveManager, simboloManager);
         }
         // Get the complete method in case it was not atomic
         Boolean isFinalSolution = formulaBeingProved.equals(finalProof.type().setToPrinting(resuel.getVariables(),simboloManager));

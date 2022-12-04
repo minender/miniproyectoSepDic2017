@@ -164,7 +164,8 @@ public class Bracket extends Term{
     
     public int maxVar()
     {
-        return t.maxVar();
+        int max = t.maxVar();
+        return (max == x.indice?max-1:max);
     }
     
     public int fresh(int n)

@@ -261,15 +261,12 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
     {
         // If Formula that the user is trying to prove in this proof/sub-proof is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
         if(initialExpr.equals(((App)((App)formulaBeingProved).p).q) && finalExpr.equals(((App)formulaBeingProved).q)){
-            Term operatorTerm = ((App)((App)formulaBeingProved).p).p;
-
-            // The Starting From One Side method only admits reflexive operators
-            int resuelveKind = resuelveManager.isReflexiveOperatorForUser(username, operatorTerm.toString());
-
-            TypedApp app = new TypedApp(new TypedS(proof.type()), proof);
-
-            return new TypedM(resuelveKind, ((Const)operatorTerm).getId(), app, "", username);
+            proof = new TypedApp(new TypedS(proof.type()), proof);
         }
+        Term operatorTerm = ((App)((App)formulaBeingProved).p).p;
+        // The Starting From One Side method only admits reflexive operators
+        int resuelveKind = resuelveManager.isReflexiveOperatorForUser(username, operatorTerm.toString());
+        new TypedM(resuelveKind, ((Const)operatorTerm).getId(), proof, "", username);
         return proof;
     }
 }
