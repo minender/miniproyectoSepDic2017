@@ -1307,11 +1307,8 @@ public class PerfilController {
             Term term;
             try //si la sintanxis no es correcta ocurre una Exception
             {
-
-            
                 //aqui hay que hacer un query para verificar que el combinador 
                 //es no esta ya en la BD, poner esta verificacion en el dig de sec
-
                 Predicado predicadoEnBD=predicadoManager.getPredicado(predicadoid2); //arreglar solo consigue los tuyos mas no los de admin y publico
                 if(predicadoEnBD == null)
                 {
@@ -1420,7 +1417,7 @@ public class PerfilController {
             catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
-        String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario",user);
                 map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                 map.addAttribute("modificar",new Integer(0));
@@ -1445,7 +1442,7 @@ public class PerfilController {
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-        String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario",user);
                 map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                 map.addAttribute("modificar",new Integer(0));

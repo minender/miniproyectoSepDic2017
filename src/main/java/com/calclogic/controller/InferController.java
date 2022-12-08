@@ -528,7 +528,7 @@ public class InferController {
         Resuelve resuel     = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Solucion solucion   = solucionManager.getSolucion(Integer.parseInt(nSol),username);
         Term typedTerm      = solucion.getTypedTerm();
-        Term formula        = resuel.getTeorema().getTeoTerm().setToPrinting(resuel.getVariables(),simboloManager);
+        Term formula        = resuel.getTeorema().getTeoTerm().evaluar(resuel.getVariables());//.setToPrinting(resuel.getVariables(),simboloManager);
         // CHECK formula pudiera ser una igualdad y pasar por equival trans usando arboles de derivacion
         String metodo       = solucion.getMetodo();
         Term methodTerm     = ProofMethodUtilities.getTerm(metodo);
@@ -640,7 +640,7 @@ public class InferController {
             finalProof = objectMethod.finishedBaseMethodProof(formulaBeingProved, newProof, username, resuelveManager, simboloManager);
         }
         // Get the complete method in case it was not atomic
-        Boolean isFinalSolution = formulaBeingProved.equals(finalProof.type().setToPrinting(resuel.getVariables(),simboloManager));
+        Boolean isFinalSolution = formulaBeingProved.traducBD().equals(finalProof.type().traducBD());//.setToPrinting(resuel.getVariables(),simboloManager));
         // CHECK puede ser una igualdad y pasar por equivalencia, esto hay que transformarlo usando arboles de deriv
 
         // We need this because in branched recursive methods we use And Introduction structure anyway

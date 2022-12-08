@@ -53,6 +53,10 @@ public class TypedM extends TypedA implements TypedTerm {
                proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} (A^{= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} c_{"+opId+"})} A^{= T c_{8}})", user);
             proof_ = new TypedApp(aux,proof_);
         }
+        else if (id == 3) {
+            String template = proof+ " (S A^{= T c_{8}})";
+            proof_ = CombUtilities.getTerm(template, user);
+        }
         else
             proof_ = proof;
     }
@@ -73,6 +77,10 @@ public class TypedM extends TypedA implements TypedTerm {
         return proof_.type();
     }
     
+    public int getNumber() {
+        return id_;
+    }
+    
     /*public TypedA getA() {
         return A_;
     }*/
@@ -85,7 +93,7 @@ public class TypedM extends TypedA implements TypedTerm {
     public String toStringAll() {
         if (proof_ instanceof TypedA)
             return proof_.toString();
-        else if (id_ == 1)
+        else if (id_ == 1 || id_ == 2)
           return "(M_{"+id_+"}^{"+((Const)((App)((App)((App)((TypedA)((App)((App)proof_).q).q).type()).q.body()).p).p).id+"} A^{"+super.getCombDBType()+"})";
         else
           return "(M_{"+id_+"} A^{"+super.getCombDBType()+"})";

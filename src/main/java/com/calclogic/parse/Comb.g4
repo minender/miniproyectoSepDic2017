@@ -66,7 +66,7 @@ term[String u] returns [Term value]
 term_base[String u] returns [Term value]
     : constant[u]          { $value = $constant.value; }
     | variable         { $value = $variable.value; }
-        | LAMBDA v=variable PERIOD e1=term[u]   { $value = new Bracket($v.value, $e1.value); }
+    | LAMBDA v=variable PERIOD e1=term[u]   { $value = new Bracket($v.value, $e1.value); }
     | O_PAR term[u] C_PAR  { $value = $term.value; };
     
 term_tail[String u] returns [LinkedList<Term> value]
@@ -162,11 +162,18 @@ cb_pair returns [Indice value]
             } 
         }
     | A expr[u] C_BRACKET { $value = (u!=null ? new TypedA($expr.value,u) : new TypedA($expr.value)); }
-    | M d1=DIGITS EXP d2=DIGITS C_BRACKET { 
+    | M d=DIGITS EXP factorize { 
                             int id;
-                            id = Integer.parseInt($d1.text);
-                            $value = new M(id, $d2.text);
+                            id = Integer.parseInt($d.text);
+                            if ($factorize.value == null)
+                               $value = new M(id, "0");
+                            else
+                               $value = new M(id, $factorize.value);
                         };
+
+ factorize returns [String value]
+    :  d=DIGITS C_BRACKET {$value = $d.text; }
+    |  C_BRACKET          {$value = null; };
 
  
 /*

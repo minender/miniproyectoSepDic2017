@@ -175,4 +175,14 @@ public interface CombListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitProve_base(CombParser.Prove_baseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CombParser#factorize}.
+	 * @param ctx the parse tree
+	 */
+	void enterFactorize(CombParser.FactorizeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CombParser#factorize}.
+	 * @param ctx the parse tree
+	 */
+	void exitFactorize(CombParser.FactorizeContext ctx);
 }

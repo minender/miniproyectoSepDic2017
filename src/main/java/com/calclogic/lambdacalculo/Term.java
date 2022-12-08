@@ -321,6 +321,8 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract void freeVars(int[] set);
     
+    public abstract void boundVars(String[] vars);
+    
     public Term setToPrinting(String variables, SimboloManager s) {
         return this.setToPrinting(variables, s, null);
     }
@@ -1188,7 +1190,14 @@ public abstract class Term implements Cloneable, Serializable{
 
 	    return term1;
     }
-    
+    /**
+     * Ojo este metodo solo funciona si el termino es un combinador. Si tiene redex de tipo lambda
+     * que provocan una traduccion que generan redex de tipo traduccion, ya no sirve aunque pogas la 
+     * lista de variables ligadas sugeridas correctamente
+     * 
+     * @param vars
+     * @return 
+     */
     public Term evaluar(String vars) {
         if (";".equals(vars))
             return evaluar(new ArrayList<Var>());
@@ -1217,6 +1226,9 @@ public abstract class Term implements Cloneable, Serializable{
             else {
                 li_free = TermUtilities.arguments(free_vars);
             }
+            // Ojo estas lineas solo funcionan si el termino es un combinador. Si tiene redex de tipo 
+            // lambda que provocan una traduccion que generan redex de tipo traduccion, ya no sirve 
+            // aunque pogas la lista de variables ligadas sugeridas correctamente
             int nVar1 = (((App)((App) this).p).q.nPhi()!=0?((App)((App) this).p).q.nPhi() - li_free.size():0);
             int nVar2 = (((App) this).q.nPhi()!=0?((App) this).q.nPhi() - li_free.size():0);
             List<Var> li2 = li_free;

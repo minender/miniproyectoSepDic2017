@@ -375,6 +375,12 @@ public class Bracket extends Term{
     }
     
     @Override
+    public void boundVars(String[] vars) {
+        vars[0] = (vars[0].equals("")?"":vars[0]+",")+(char)x.indice;
+        t.boundVars(vars);
+    }
+    
+    @Override
     public Term abstractEq() {
         return null;
     }

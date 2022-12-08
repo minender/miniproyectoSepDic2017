@@ -299,7 +299,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     public Term finishedBaseMethodProof(Term formulaBeingProved, Term proof, String username, 
         ResuelveManager resuelveManager, SimboloManager simboloManager)
     {
-        Term expr = proof.type().setToPrint(); // The root of the proof tree, which is the last line
+        Term expr = proof.type();//.setToPrint(); // The root of the proof tree, which is the last line
         Term initialExpr = ((App)expr).q; // The expression (could be a theorem) from which the user started the demonstration
         Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
 

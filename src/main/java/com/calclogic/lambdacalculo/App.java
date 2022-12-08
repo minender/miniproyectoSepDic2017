@@ -126,6 +126,12 @@ public class App extends Term{
     }
     
     @Override
+    public void boundVars(String[] vars) {
+        p.boundVars(vars);
+        q.boundVars(vars);
+    }
+    
+    @Override
     public Term abstractEq() {
         String sVars = this.stFreeVars();
         if (sVars!=null) {
