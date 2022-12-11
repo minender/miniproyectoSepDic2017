@@ -41,6 +41,22 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
     }
 
     /**
+     * TO BE OVERWRITTEN
+     * 
+     * The statement that is needed to prove may change inside a sub proof,
+     * so this function calculates which that new statement is.
+     *  
+     * @param beginFormula: general statement to be proved, is the base to calculate 
+     *                      al de sub statement in the sub proofs.
+     * @return Term that represents the statement to be proved in the current sub proof,
+     *         according to the demonstrarion method used
+     */
+    @Override
+    public Term initFormula(Term beginFormula){
+        return beginFormula;
+    }
+    
+    /**
      * Auxiliar method for "finishedBaseMethodProof" that implements the corresponding
      * logic according to the direct method.It assumes we have a proof that so far has proved A == ...== F
      * 
@@ -62,7 +78,10 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         // Case when we started from the theorem being proved
-        if(formulaBeingProved.equals(initialExpr)) {
+        formulaBeingProved = ((App)formulaBeingProved).q.body();
+        finalExpr = finalExpr.body();
+        initialExpr = initialExpr.body();
+        if(formulaBeingProved.equals(initialExpr.body())) {
             // List of theorems solved by the user. We examine them to check if the current proof already reached one 
             List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username,true);
             Term theorem; //, mt;
@@ -72,7 +91,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
             for(Resuelve resu: resuelves){
                 c[0] = 0;
                 theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
-                Term noEqTheo = ((Term)theorem.clone2()).setToPrinting(resu.getVariables(),s,c); 
+                Term noEqTheo = ((Term)theorem).setToPrinting(resu.getVariables(),s,c); 
                 //System.out.println(c);
                 //mt = new App(new App(new Const("c_{1}"),new Const("true")),noEqTheo); // theorem == true
                 // acomodar esto para crear mt dependiendo de los metateoremas que se tienen guardados
@@ -83,7 +102,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                 }
                 // If the current theorem or theorem==true matches the final expression
                 else if(noEqTheo.equals(finalExpr)){ //|| mt.equals(finalExpr)){
-                    equanimityExpr = new TypedM(c[0],theorem,username);
+                    equanimityExpr = new TypedM(c[0],resu.getNumeroteorema(),username);
                 } 
                 else {
                     // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
@@ -94,11 +113,10 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                     // Case whe lanst line is an instantiation of the compared theorem
                     if (sust != null){
                         // The equanimity is applied with the instantiated theorem
-                        equanimityExpr = new TypedApp(new TypedI(sust), new TypedM(c[0],theorem, username)); 
+                        equanimityExpr = new TypedApp(new TypedI(sust), new TypedM(c[0],resu.getNumeroteorema(), username)); 
                     }   
                 }
                 if (equanimityExpr != null){
-                    System.out.println(equanimityExpr);
                     return new TypedApp(new TypedApp(new TypedS(proof.type()), proof), equanimityExpr);
                 }
             }

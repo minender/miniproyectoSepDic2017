@@ -203,6 +203,9 @@ public class InferResponse extends GenericResponse{
         
         if (methodTerm instanceof App) {
             if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula)){
+              if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 4)
+                typedTerm = ((App)((TypedM)((App)((App)((App)((App)((App)((TypedM)typedTerm).getProof()).q).q).q).p).q).getProof()).p;
+              else
                 typedTerm = ((App)typedTerm).q;
             }
             privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, 
@@ -375,6 +378,7 @@ public class InferResponse extends GenericResponse{
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
+
         if (isRootTeorem && methodTerm == null)
             cambiarMetodo = "1";
         else if (isRootTeorem && ProofBoolean.isWaitingMethod(methodTerm)) 

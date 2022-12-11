@@ -162,18 +162,15 @@ cb_pair returns [Indice value]
             } 
         }
     | A expr[u] C_BRACKET { $value = (u!=null ? new TypedA($expr.value,u) : new TypedA($expr.value)); }
-    | M d=DIGITS EXP factorize { 
+    | M d=DIGITS factorize { 
                             int id;
                             id = Integer.parseInt($d.text);
-                            if ($factorize.value == null)
-                               $value = new M(id, "0");
-                            else
-                               $value = new M(id, $factorize.value);
+                            $value = new M(id, $factorize.value);
                         };
 
  factorize returns [String value]
-    :  d=DIGITS C_BRACKET {$value = $d.text; }
-    |  C_BRACKET          {$value = null; };
+    :  EXP d=DIGITS C_BRACKET {$value = $d.text; }
+    |  C_BRACKET          {$value = "0"; };
 
  
 /*
@@ -223,5 +220,26 @@ Si: 'S';
 
 // Allow whitespace but ignore it 
 WHITESPACE: ' '+ -> channel(HIDDEN) ;
+
+/*
+* Grammar Resume
+* S -> E
+* E -> T | [ VL := TL ]
+* T -> TB TT
+* TB -> C | V | lamb V . T | (T)
+* TT -> TB TT | epsilon
+* VL -> V VLT
+* VLT -> , VL | epsilon
+* TL -> T TLT
+* TLT -> , TL | epsilon
+* V -> x dig }
+* C -> c dig } | = | t | CPH | PB
+* CPH -> ph PHT
+* PHT -> k } | CI }
+* CI -> CP | cb CI | epsilon
+* CP -> ( CI , CI )  
+* PB -> i E } | l E } | si | a E } | m dig F
+* F -> exp dig } | }
+*/
 
 

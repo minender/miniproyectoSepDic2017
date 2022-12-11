@@ -686,7 +686,7 @@ public class InferController {
         solucion.setTypedTerm(finalProof);
         
         // If finished mark solucion as solved
-        if (isFinalSolution) {
+        if (isFinalSolution && formula.traducBD().equals(finalProof.type().traducBD())) {
             response.setResuelto("1");
             solucion.setResuelto(true);
             resuel.setResuelto(true);
@@ -863,7 +863,7 @@ public class InferController {
 
         // This is the theorem statement but parsed as a binary tree. 
         // We call it as "previous" because it may change when the proof starts
-        Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().setToPrinting(resuelveAnterior.getVariables(),simboloManager);
+        Term formulaAnterior = resuelveAnterior.getTeorema().getTeoTerm().evaluar(resuelveAnterior.getVariables());//.setToPrinting(resuelveAnterior.getVariables(),simboloManager);
 
         Integer opId; // Id of the symbol of the main operator of an expression
         Solucion solucion = null;
@@ -879,7 +879,14 @@ public class InferController {
                     if (resuelve == null){
                         resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()),false);
                     }
-                    formulaTerm = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables(),simboloManager);
+                    formulaTerm = resuelve.getTeorema().getTeoTerm().evaluar(resuelve.getVariables());//.setToPrinting(resuelve.getVariables(),simboloManager);
+                    
+                    /*if (nSol.equals("new") && !formulaTerm.containT()) {
+                        solucion = new Solucion(resuelveAnterior, false, null, "D1", crudOp);
+                        solucionManager.addSolucion(solucion);
+                        nSol = solucion.getId()+"";
+                    }*/
+                        
                 }
                 else if (teoid.substring(0, 3).equals("MT-")){
                     Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, teoid.substring(3,teoid.length()));
@@ -908,17 +915,21 @@ public class InferController {
                 }
                 else{
                     // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
-                    solucion = new Solucion(resuelveAnterior, false, formulaTerm, newMethod, crudOp);
+                    formulaTerm = formulaTerm.setToPrint();
+                    if (newMethod.equals("DM") && !formulaTerm.containT())
+                        solucion = new Solucion(resuelveAnterior, false, formulaTerm, "EO "+newMethod, crudOp);
+                    else 
+                        solucion = new Solucion(resuelveAnterior, false, formulaTerm, newMethod, crudOp);
                     typedTerm = formulaTerm;
                     solucionManager.addSolucion(solucion); // This adds a new row to the "solucion" table
                     response.setnSol(solucion.getId()+""); // The concatenation with "" converts the id to a string
                 }
 
-                methodTerm = new Const(newMethod);        
+                methodTerm = ProofMethodUtilities.getTerm(solucion.getMetodo()); //new Const(newMethod);        
             }
             else{
                 // When the proof already exists in the DB, we obtain the solution from it.
-                solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);     
+                solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username); 
                 methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
                 if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 5) ) || // Conjunction /\
@@ -936,9 +947,19 @@ public class InferController {
                 }
                 else{
                     if ("DM".equals(newMethod)){
+                        if (!(methodTerm instanceof Const)) {
+                           formulaAnterior = crudOp.initStatement(formulaAnterior, methodTerm);
+                        }
+                        if (!formulaAnterior.containT()) {
+                           methodTerm = crudOp.eraseMethod(methodTerm.toString());
+                           methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "EO");
+                           methodTerm = crudOp.updateMethod(methodTerm.toString(), "DM");
+                           solucion.setMetodo(methodTerm.toString());
+                        }
                         if (teoid.substring(3,teoid.length()).equals(nTeo)) {
                            formulaTerm = crudOp.initStatement(formulaTerm, methodTerm);
                         }
+                        formulaTerm = formulaTerm.setToPrint();
                         typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), methodTerm);
                         solucion.setTypedTerm(typedTerm);
                     }

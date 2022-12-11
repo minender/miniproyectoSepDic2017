@@ -477,12 +477,11 @@ public class PerfilController {
     @RequestMapping(value="/{username}/myTheorems/buscarFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
-        
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
         try{
             // Validate that the user is in session
             Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
-            Term teorema = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables(),simboloManager);
+            Term teorema = resuelve.getTeorema().getTeoTerm().evaluar(resuelve.getVariables());//.setToPrinting(resuelve.getVariables(),simboloManager);
             String nTeo = resuelve.getNumeroteorema();
             Solucion solucion = solucionManager.getSolucion(idSol,username);
 

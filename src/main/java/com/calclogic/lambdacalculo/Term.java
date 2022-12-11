@@ -401,6 +401,12 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract Term abstractEq();
     
+    public boolean isEquality() {
+        return this instanceof App && ((App)this).p instanceof App && 
+                ((App)((App)this).p).p instanceof Const && 
+                ((Const)((App)((App)this).p).p).getCon().equals("=");
+    }
+    
     public Term body() {
         Term aux = this;
         while (aux instanceof Bracket) {
@@ -1309,7 +1315,7 @@ public abstract class Term implements Cloneable, Serializable{
         if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
             ((App)((App)teoTerm).p).p instanceof Const && 
             ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
-              ((Const)((App)((App)teoTerm).p).p).getId()==13
+              ((Const)((App)((App)teoTerm).p).p).getId()==15
             )
            ) 
         {

@@ -1150,7 +1150,6 @@ public class CombParser extends Parser {
 		public TerminalNode Si() { return getToken(CombParser.Si, 0); }
 		public TerminalNode A() { return getToken(CombParser.A, 0); }
 		public TerminalNode M() { return getToken(CombParser.M, 0); }
-		public TerminalNode EXP() { return getToken(CombParser.EXP, 0); }
 		public FactorizeContext factorize() {
 			return getRuleContext(FactorizeContext.class,0);
 		}
@@ -1175,7 +1174,7 @@ public class CombParser extends Parser {
 		Prove_baseContext _localctx = new Prove_baseContext(_ctx, getState(), u);
 		enterRule(_localctx, 30, RULE_prove_base);
 		try {
-			setState(180);
+			setState(179);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case I:
@@ -1256,16 +1255,11 @@ public class CombParser extends Parser {
 				setState(175);
 				((Prove_baseContext)_localctx).d = match(DIGITS);
 				setState(176);
-				match(EXP);
-				setState(177);
 				((Prove_baseContext)_localctx).factorize = factorize();
 				 
 				                            int id;
 				                            id = Integer.parseInt((((Prove_baseContext)_localctx).d!=null?((Prove_baseContext)_localctx).d.getText():null));
-				                            if (((Prove_baseContext)_localctx).factorize.value == null)
-				                               ((Prove_baseContext)_localctx).value =  new M(id, "0");
-				                            else
-				                               ((Prove_baseContext)_localctx).value =  new M(id, ((Prove_baseContext)_localctx).factorize.value);
+				                            ((Prove_baseContext)_localctx).value =  new M(id, ((Prove_baseContext)_localctx).factorize.value);
 				                        
 				}
 				break;
@@ -1287,6 +1281,7 @@ public class CombParser extends Parser {
 	public static class FactorizeContext extends ParserRuleContext {
 		public String value;
 		public Token d;
+		public TerminalNode EXP() { return getToken(CombParser.EXP, 0); }
 		public TerminalNode C_BRACKET() { return getToken(CombParser.C_BRACKET, 0); }
 		public TerminalNode DIGITS() { return getToken(CombParser.DIGITS, 0); }
 		public FactorizeContext(ParserRuleContext parent, int invokingState) {
@@ -1310,9 +1305,11 @@ public class CombParser extends Parser {
 			setState(187);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case DIGITS:
+			case EXP:
 				enterOuterAlt(_localctx, 1);
 				{
+				setState(181);
+				match(EXP);
 				setState(182);
 				((FactorizeContext)_localctx).d = match(DIGITS);
 				setState(183);
@@ -1325,7 +1322,7 @@ public class CombParser extends Parser {
 				{
 				setState(185);
 				match(C_BRACKET);
-				((FactorizeContext)_localctx).value =  null; 
+				((FactorizeContext)_localctx).value =  "0"; 
 				}
 				break;
 			default:
@@ -1356,12 +1353,12 @@ public class CombParser extends Parser {
 		"\u0088\n\16\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\5\17\u0092\n\17\3"+
 		"\20\3\20\3\20\3\20\3\20\3\20\3\20\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3"+
 		"\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3"+
-		"\21\3\21\3\21\3\21\3\21\3\21\3\21\5\21\u00b7\n\21\3\22\3\22\3\22\3\22"+
+		"\21\3\21\3\21\3\21\3\21\3\21\5\21\u00b6\n\21\3\22\3\22\3\22\3\22\3\22"+
 		"\3\22\5\22\u00be\n\22\3\22\2\2\23\2\4\6\b\n\f\16\20\22\24\26\30\32\34"+
 		"\36 \"\2\2\2\u00c2\2$\3\2\2\2\4\61\3\2\2\2\6\63\3\2\2\2\bH\3\2\2\2\nO"+
 		"\3\2\2\2\fQ\3\2\2\2\16Z\3\2\2\2\20\\\3\2\2\2\22e\3\2\2\2\24g\3\2\2\2\26"+
 		"z\3\2\2\2\30|\3\2\2\2\32\u0087\3\2\2\2\34\u0091\3\2\2\2\36\u0093\3\2\2"+
-		"\2 \u00b6\3\2\2\2\"\u00bd\3\2\2\2$%\5\4\3\2%&\b\2\1\2&\3\3\2\2\2\'(\5"+
+		"\2 \u00b5\3\2\2\2\"\u00bd\3\2\2\2$%\5\4\3\2%&\b\2\1\2&\3\3\2\2\2\'(\5"+
 		"\6\4\2()\b\3\1\2)\62\3\2\2\2*+\7\21\2\2+,\5\f\7\2,-\7\24\2\2-.\5\20\t"+
 		"\2./\7\22\2\2/\60\b\3\1\2\60\62\3\2\2\2\61\'\3\2\2\2\61*\3\2\2\2\62\5"+
 		"\3\2\2\2\63\64\5\b\5\2\64\65\5\n\6\2\65\66\b\4\1\2\66\7\3\2\2\2\678\5"+
@@ -1387,18 +1384,18 @@ public class CombParser extends Parser {
 		"\u0094\7\r\2\2\u0094\u0095\5\34\17\2\u0095\u0096\7\17\2\2\u0096\u0097"+
 		"\5\34\17\2\u0097\u0098\7\16\2\2\u0098\u0099\b\20\1\2\u0099\37\3\2\2\2"+
 		"\u009a\u009b\7\27\2\2\u009b\u009c\5\4\3\2\u009c\u009d\7\20\2\2\u009d\u009e"+
-		"\b\21\1\2\u009e\u00b7\3\2\2\2\u009f\u00a0\7\30\2\2\u00a0\u00a1\5\4\3\2"+
-		"\u00a1\u00a2\7\20\2\2\u00a2\u00a3\b\21\1\2\u00a3\u00b7\3\2\2\2\u00a4\u00a5"+
+		"\b\21\1\2\u009e\u00b6\3\2\2\2\u009f\u00a0\7\30\2\2\u00a0\u00a1\5\4\3\2"+
+		"\u00a1\u00a2\7\20\2\2\u00a2\u00a3\b\21\1\2\u00a3\u00b6\3\2\2\2\u00a4\u00a5"+
 		"\7\31\2\2\u00a5\u00a6\5\4\3\2\u00a6\u00a7\7\20\2\2\u00a7\u00a8\b\21\1"+
-		"\2\u00a8\u00b7\3\2\2\2\u00a9\u00aa\7\32\2\2\u00aa\u00b7\b\21\1\2\u00ab"+
+		"\2\u00a8\u00b6\3\2\2\2\u00a9\u00aa\7\32\2\2\u00aa\u00b6\b\21\1\2\u00ab"+
 		"\u00ac\7\25\2\2\u00ac\u00ad\5\4\3\2\u00ad\u00ae\7\20\2\2\u00ae\u00af\b"+
-		"\21\1\2\u00af\u00b7\3\2\2\2\u00b0\u00b1\7\26\2\2\u00b1\u00b2\7\3\2\2\u00b2"+
-		"\u00b3\7\23\2\2\u00b3\u00b4\5\"\22\2\u00b4\u00b5\b\21\1\2\u00b5\u00b7"+
-		"\3\2\2\2\u00b6\u009a\3\2\2\2\u00b6\u009f\3\2\2\2\u00b6\u00a4\3\2\2\2\u00b6"+
-		"\u00a9\3\2\2\2\u00b6\u00ab\3\2\2\2\u00b6\u00b0\3\2\2\2\u00b7!\3\2\2\2"+
+		"\21\1\2\u00af\u00b6\3\2\2\2\u00b0\u00b1\7\26\2\2\u00b1\u00b2\7\3\2\2\u00b2"+
+		"\u00b3\5\"\22\2\u00b3\u00b4\b\21\1\2\u00b4\u00b6\3\2\2\2\u00b5\u009a\3"+
+		"\2\2\2\u00b5\u009f\3\2\2\2\u00b5\u00a4\3\2\2\2\u00b5\u00a9\3\2\2\2\u00b5"+
+		"\u00ab\3\2\2\2\u00b5\u00b0\3\2\2\2\u00b6!\3\2\2\2\u00b7\u00b8\7\23\2\2"+
 		"\u00b8\u00b9\7\3\2\2\u00b9\u00ba\7\20\2\2\u00ba\u00be\b\22\1\2\u00bb\u00bc"+
-		"\7\20\2\2\u00bc\u00be\b\22\1\2\u00bd\u00b8\3\2\2\2\u00bd\u00bb\3\2\2\2"+
-		"\u00be#\3\2\2\2\f\61HOZez\u0087\u0091\u00b6\u00bd";
+		"\7\20\2\2\u00bc\u00be\b\22\1\2\u00bd\u00b7\3\2\2\2\u00bd\u00bb\3\2\2\2"+
+		"\u00be#\3\2\2\2\f\61HOZez\u0087\u0091\u00b5\u00bd";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

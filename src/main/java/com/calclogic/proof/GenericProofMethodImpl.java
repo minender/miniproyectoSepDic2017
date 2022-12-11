@@ -77,7 +77,8 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     }
 
     private void setIsRecursiveMethod(String method){
-        if (method.equals("CR") || method.equals("CO") || method.equals("AI") || method.equals("CA") || method.equals("MI")){
+        if (method.equals("CR") || method.equals("CO") || method.equals("AI") || 
+            method.equals("CA") || method.equals("MI") || method.equals("EO") || method.equals("OE")){
             this.isRecursiveMethod = true;
         }
     }
