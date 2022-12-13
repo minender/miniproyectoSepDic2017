@@ -66,7 +66,7 @@ term[String u] returns [Term value]
 term_base[String u] returns [Term value]
     : constant[u]          { $value = $constant.value; }
     | variable         { $value = $variable.value; }
-        | LAMBDA v=variable PERIOD e1=term[u]   { $value = new Bracket($v.value, $e1.value); }
+    | LAMBDA v=variable PERIOD e1=term[u]   { $value = new Bracket($v.value, $e1.value); }
     | O_PAR term[u] C_PAR  { $value = $term.value; };
     
 term_tail[String u] returns [LinkedList<Term> value]
@@ -162,11 +162,15 @@ cb_pair returns [Indice value]
             } 
         }
     | A expr[u] C_BRACKET { $value = (u!=null ? new TypedA($expr.value,u) : new TypedA($expr.value)); }
-    | M d1=DIGITS EXP d2=DIGITS C_BRACKET { 
+    | M d=DIGITS factorize { 
                             int id;
-                            id = Integer.parseInt($d1.text);
-                            $value = new M(id, $d2.text);
+                            id = Integer.parseInt($d.text);
+                            $value = new M(id, $factorize.value);
                         };
+
+ factorize returns [String value]
+    :  EXP d=DIGITS C_BRACKET {$value = $d.text; }
+    |  C_BRACKET          {$value = "0"; };
 
  
 /*
@@ -216,5 +220,26 @@ Si: 'S';
 
 // Allow whitespace but ignore it 
 WHITESPACE: ' '+ -> channel(HIDDEN) ;
+
+/*
+* Grammar Resume
+* S -> E
+* E -> T | [ VL := TL ]
+* T -> TB TT
+* TB -> C | V | lamb V . T | (T)
+* TT -> TB TT | epsilon
+* VL -> V VLT
+* VLT -> , VL | epsilon
+* TL -> T TLT
+* TLT -> , TL | epsilon
+* V -> x dig }
+* C -> c dig } | = | t | CPH | PB
+* CPH -> ph PHT
+* PHT -> k } | CI }
+* CI -> CP | cb CI | epsilon
+* CP -> ( CI , CI )  
+* PB -> i E } | l E } | si | a E } | m dig F
+* F -> exp dig } | }
+*/
 
 

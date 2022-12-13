@@ -380,6 +380,11 @@ public class Var extends Term{
     }
     
     @Override
+    public void boundVars(String[] vars) {
+        ;
+    }
+    
+    @Override
     public Term abstractEq() {
         return null;
     }
@@ -401,22 +406,27 @@ public class Var extends Term{
     }
     
     @Override
+    public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
+        return this.checkType(D, simboloManager, "*");
+    }
+    
+    @Override
     public String checkType(HashMap<Integer, String> D, SimboloManager simboloManager, String expected) throws TypeVerificationException {
         String type;
         if (!D.containsKey(this.indice)) {
             type = expected;
-            System.out.println(((char) this.indice)+" es de tipo "+expected);
+            //System.out.println(((char) this.indice)+" es de tipo "+expected);
             D.put(this.indice, expected);
         }
         else {
             String current_type = D.get(this.indice);
             type = Simbolo.matchTipo(D.get(this.indice), expected);
             if (!type.equals(current_type)){
-                System.out.println(((char) this.indice)+" es de tipo "+type);
+                //System.out.println(((char) this.indice)+" es de tipo "+type);
                 D.put(indice, type);
             }    
         }
-        
+
         return type;
     }
 }

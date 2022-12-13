@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class TypedA extends Const implements TypedTerm{
     
-    private final Term type_;
+    protected final Term type_;
     protected final String variables_;
     protected final String nSt_;
     protected final String combDBType_;

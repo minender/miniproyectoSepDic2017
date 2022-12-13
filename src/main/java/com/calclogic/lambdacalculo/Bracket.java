@@ -164,7 +164,8 @@ public class Bracket extends Term{
     
     public int maxVar()
     {
-        return t.maxVar();
+        int max = t.maxVar();
+        return (max == x.indice?max-1:max);
     }
     
     public int fresh(int n)
@@ -374,6 +375,12 @@ public class Bracket extends Term{
     }
     
     @Override
+    public void boundVars(String[] vars) {
+        vars[0] = (vars[0].equals("")?"":vars[0]+",")+(char)x.indice;
+        t.boundVars(vars);
+    }
+    
+    @Override
     public Term abstractEq() {
         return null;
     }
@@ -421,13 +428,14 @@ public class Bracket extends Term{
             throw new TypeVerificationException();
         }
         
+        expected_split[expected_split.length-1] = aux.checkType(D, simboloManager, expected_split[expected_split.length-1]);
+        
         int i = 0;
         for (Var v: vars) {
             expected_split[i] = v.checkType(D, simboloManager, expected_split[i]);
             i++;
         }
         
-        expected_split[expected_split.length-1] = aux.checkType(D, simboloManager, expected_split[expected_split.length-1]);
         return Simbolo.joinTipo(expected_split);
     }
 }

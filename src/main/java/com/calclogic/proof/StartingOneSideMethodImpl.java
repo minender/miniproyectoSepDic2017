@@ -9,6 +9,7 @@ import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
@@ -147,7 +148,7 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
     }
 
     /**
-     * This generates a step in the demonstration of a theorem when we already have a side 
+     * This generates a step in the proof of a theorem when we already have a side 
      * of an equivalence and the next step is the other side. 
      * 
      * At first this might seem exclusive to the starting from one side method, but it is also
@@ -163,6 +164,7 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
     protected String stepOneSideEq(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
         String teo, leib, inst, newStep;
         teo = leib = inst = newStep = "";
+        Term st = null;
 
         // if the inference is a modus pones that simulates natural deduction is true this
         boolean naturalInfer=typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m';
@@ -173,14 +175,14 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
                 if (((App)((App)ultInf).q).q instanceof App){
                     // Term aux = ((App)ultInf.type()).q;
                     // primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                    teo = ((App)((App)((App)ultInf).q).q).q.type().traducBD().toString();
+                    st = ((App)((App)((App)ultInf).q).q).q; //.type().traducBD().toString();
                     inst = ((App)((App)((App)ultInf).q).q).p.type().toStringLaTeX(s,"");
                     inst = "~\\text{with}~" + inst;
                     leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
                     leib = "~\\text{and}~"+"E^{z}:" + leib;
                 }
                 else {
-                    teo = ((App)((App)ultInf).q).q.type().traducBD().toString();
+                    st = ((App)((App)ultInf).q).q;//.type().traducBD().toString();
                     if (((App)ultInf).p instanceof TypedS){
                         if (((App)((App)ultInf).q).p instanceof TypedI){
                             inst = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
@@ -207,32 +209,33 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
                     leib = "~\\text{and}~"+"E^{z}:" + pType.toStringLaTeX(s,"");
                 }
                 // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
-                teo = ((App)ultInf).q.type().traducBD().toString();
+                st = ((App)ultInf).q; //.type().traducBD().toString();
             }
         } else {
-            Term aux = ultInf.type().traducBD(); //CHECK se puede guardar el nTeo y no buscarlo
-            teo = aux.toString();
+            Term aux = ultInf;//.type().traducBD(); //CHECK se puede guardar el nTeo y no buscarlo
+            st = aux; //.toString();
         } 
 
         int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 
                                 :((Const)((App)((App)ultInf.type()).p).p).getId());
         String op = "\\equiv";//s.getSimbolo(conId).getNotacion_latex();
-
-        Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo, false);
-        Boolean entry = true;
+            
+        // Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo, false);
+        teo = ((TypedA)st).getNSt();
+        /*Boolean entry = true;
         if (theo == null){
             theo = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", teo, false);
-
-            if (theo == null){
-                //********** This part will probably be removed
-                teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
-                newStep = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
-                entry = false;
-            }
-        }
-
-        if (entry){
-            teo = theo.getNumeroteorema();
+        }*/
+        /*if (theo == null){
+            //********** This part will probably be removed
+            teo = disponeManager.getDisponeByUserAndMetaeorema(user, teo).getNumerometateorema();
+            newStep = op+"~~~~~~\\langle \\text{mt}~("+teo+")"+inst+leib+"\\rangle";
+            entry = false;
+        }*/
+        if (st instanceof TypedM) {
+            newStep = op+"~~~~~~\\langle \\text{st}~("+teo+")~\\text{and mt}~("+((TypedM) st).getNumber()+")"+inst+leib+"\\rangle";
+        }else {
+            //teo = theo.getNumeroteorema();
             newStep = op+"~~~~~~\\langle \\text{st}~("+teo+")"+inst+leib+"\\rangle";         
         }
         return newStep;
@@ -260,15 +263,12 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
     {
         // If Formula that the user is trying to prove in this proof/sub-proof is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
         if(initialExpr.equals(((App)((App)formulaBeingProved).p).q) && finalExpr.equals(((App)formulaBeingProved).q)){
-            Term operatorTerm = ((App)((App)formulaBeingProved).p).p;
-            // The Starting From One Side method only admits reflexive operators
-            int res = resuelveManager.isReflexiveOperatorForUser(username, operatorTerm.toString());
-            
-            TypedApp app = new TypedApp(new TypedS(proof.type()), proof);
-
-            return new TypedApp(new TypedS(proof.type()), proof);
-
+            proof = new TypedApp(new TypedS(proof.type()), proof);
         }
+        Term operatorTerm = ((App)((App)formulaBeingProved).p).p;
+        // The Starting From One Side method only admits reflexive operators
+        int resuelveKind = resuelveManager.isReflexiveOperatorForUser(username, operatorTerm.toString());
+        new TypedM(resuelveKind, ((Const)operatorTerm).getId(), proof, "", username);
         return proof;
     }
 }

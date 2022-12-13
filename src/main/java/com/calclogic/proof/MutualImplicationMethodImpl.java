@@ -36,6 +36,7 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
     @Override
     public Term initFormula(Term beginFormula){
         // "beginFormula" is of the form [L == R]
+        beginFormula = beginFormula.setToPrint();
         Term prevLeftSide = ((App)beginFormula).q; // L
         Term prevRightSide = ((App)((App)beginFormula).p).q; // R
 
@@ -43,7 +44,7 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
         Term newRightSide = new App(new App(new Const(3 ,"c_{3}"), prevRightSide), prevLeftSide); // [L <== R]  written as  [(<== R) L]
 
         // [newLeftSide /\ newRightSide]  written as  [(/\ newRightSide) newLeftSide]
-        return new App(new App(new Const(5,"c_{5}"), newRightSide), newLeftSide);
+        return new App(new App(new Const(0,"="),new Const(-1,"T")) ,new App(new App(new Const(5,"c_{5}"), newRightSide), newLeftSide)).abstractEq();
     }
 
     /**

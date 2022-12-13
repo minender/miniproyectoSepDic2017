@@ -47,6 +47,10 @@ public class CrudOperationsImpl implements CrudOperations {
     @Autowired
     private DirectMethod directMethod;
     @Autowired
+    private EqualityToOperator equalityToOp;
+    @Autowired
+    private OperatorToEquality operatorToEq;
+    @Autowired
     private MutualImplicationMethod mutualImplication;
     @Autowired
     private StartingOneSideMethod startingOneSide;
@@ -70,6 +74,10 @@ public class CrudOperationsImpl implements CrudOperations {
         switch (method){
             case "DM":
                 return directMethod;
+            case "EO":
+                return equalityToOp;
+            case "OE":
+                return operatorToEq;
             case "SS":
                 return startingOneSide;
             case "TR":
@@ -250,7 +258,7 @@ public class CrudOperationsImpl implements CrudOperations {
     }
 
     /**
-     * When in a demonstration we need to use a theorem or metatheorem as a hint 
+     * When in a proof we need to use a theorem or metatheorem as a hint 
      * (for inference, instantiation or substitution), we need to get its 
      * statement. This function does it.
      *

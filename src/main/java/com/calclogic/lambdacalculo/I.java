@@ -236,6 +236,11 @@ public class I extends Term {
     }
     
     @Override
+    public void boundVars(String[] vars) {
+        ;
+    }
+    
+    @Override
     public Term abstractEq() {
         return null;
     }

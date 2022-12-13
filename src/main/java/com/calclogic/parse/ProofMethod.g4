@@ -29,6 +29,8 @@ method_tail returns [LinkedList<Term> value]
 
 method_base returns [Term value]: 
          DM {$value = new Const("DM");}
+       | EO {$value = new Const("EO");}
+       | OE {$value = new Const("OE");}
        | SS {$value = new Const("SS");}
        | TR {$value = new Const("TR");}
        | WE {$value = new Const("WE");}
@@ -47,6 +49,10 @@ method_base returns [Term value]:
  */
 
 DM: 'DM';
+
+EO: 'EO';
+
+OE: 'OE';
 
 SS: 'SS';
 
