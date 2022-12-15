@@ -1006,7 +1006,7 @@ public class App extends Term{
         }
         else {
             cid = -1;
-            type_c = aux.checkType(D, simboloManager,"t->b");
+            type_c = aux.checkType(D, simboloManager,"*->*");
         }
         if (isQuant) { 
             boundVars = new ArrayList<>();
