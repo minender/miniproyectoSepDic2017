@@ -195,4 +195,4 @@ WORD:   CAPITALLETTER (LETTER)+
 
       | CAPITALLETTER;
 
-WHITESPACE: (' ' | '\r')+ -> channel(HIDDEN);
+WHITESPACE: (' '|'\r'|'\n'|'\t')+ -> channel(HIDDEN);

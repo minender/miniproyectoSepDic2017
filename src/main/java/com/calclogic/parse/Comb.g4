@@ -219,7 +219,7 @@ Si: 'S';
 
 
 // Allow whitespace but ignore it 
-WHITESPACE: ' '+ -> channel(HIDDEN) ;
+WHITESPACE: (' '|'\r'|'\n'|'\t')+ -> channel(HIDDEN) ;
 
 /*
 * Grammar Resume
