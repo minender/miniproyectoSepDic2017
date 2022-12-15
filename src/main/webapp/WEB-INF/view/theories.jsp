@@ -489,34 +489,44 @@
                                                                     
         <%--<tiles:insertDefinition name="footer" />--%>
         <script>
-            var regex_none = /%\(a2\)\s*%\(op\)\s*%\(a1\)/
-            var regex_left = /%\(aa2\)\s*%\(op\)\s*%\(a1\)/
-            var regex_right = /%\(a2\)\s*%\(op\)\s*%\(aa1\)/
-            var regex_left_right = /%\(aa2\)\s*%\(op\)\s*%\(aa1\)/
-            var table = $('#table_id').DataTable({
-                "drawCallback": function( settings ) {
-                    MathJax.Hub.Queue(["Typeset",MathJax.Hub]); 
-                }             
-            });
-            for (let i = 0; i < table.rows().count(); i ++){
-                var temp = table.row(i).data();
-                if (temp[4] == 'Yes'){
-                    if (temp[7].match(regex_left)){
-                        temp[5] = 'Left';
-                    }else if (temp[7].match(regex_right)){
-                        temp[5] = 'Right';
-                    }else if (temp[7].match(regex_left_right)){
-                        temp[5] = 'Left/Right';
-                    }else if (temp[7].match(regex_none)){
-                        temp[5] = 'None';
+            var regex_none;
+            var regex_left;
+            var regex_right;
+            var regex_left_right;
+            var table;
+            //initializeTable();
+            
+            function initializeTable() {
+                regex_none = /%\(a2\)\s*%\(op\)\s*%\(a1\)/
+                regex_left = /%\(aa2\)\s*%\(op\)\s*%\(a1\)/
+                regex_right = /%\(a2\)\s*%\(op\)\s*%\(aa1\)/
+                regex_left_right = /%\(aa2\)\s*%\(op\)\s*%\(aa1\)/
+                table = $('#table_id').DataTable({
+                    "drawCallback": function( settings ) {
+                        MathJax.Hub.Queue(["Typeset",MathJax.Hub]); 
+                    }             
+                });
+                for (let i = 0; i < table.rows().count(); i ++){
+                    var temp = table.row(i).data();
+                    if (temp[4] == 'Yes'){
+                        if (temp[7].match(regex_left)){
+                            temp[5] = 'Left';
+                        }else if (temp[7].match(regex_right)){
+                            temp[5] = 'Right';
+                        }else if (temp[7].match(regex_left_right)){
+                            temp[5] = 'Left/Right';
+                        }else if (temp[7].match(regex_none)){
+                            temp[5] = 'None';
+                        }else{
+                            temp[5] = 'None'
+                        }                        
                     }else{
                         temp[5] = 'None'
-                    }                        
-                }else{
-                    temp[5] = 'None'
+                    }
+                    table.row(i).data(temp).invalidate().draw();
                 }
-                table.row(i).data(temp).invalidate().draw();
             }
+
             function deleteSimbolo(idSimbolo){
                 confirm('Are you sure you want to delete the symbol?');
                 const url = window.location.href + "/deleteSymbol/" + idSimbolo;
@@ -532,12 +542,15 @@
                     }
                 });
             }
+            
             function editSimbol(row_number){
+                if (table == undefined) {
+                    initializeTable();
+                }
                 fields = table.row(row_number).data();
                 $('#id-edit').val(fields[0]);
                 $('#notacion-latex-edit').val(fields[2]);
                 $('#argumentos-edit').val(fields[3]);
-                console.log(fields[4]);
                 if (fields[4] === 'Yes'){
                     $('#es-infijo-edit1').prop("checked", true);
                     $('#es-infijo-edit2').prop("checked", false);
