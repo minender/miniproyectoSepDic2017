@@ -146,6 +146,8 @@
     <bean id="contradiction" class="com.calclogic.proof.ContradictionMethodImpl"></bean>
     <bean id="counterReciprocal" class="com.calclogic.proof.CounterReciprocalMethodImpl"></bean>
     <bean id="directMethod" class="com.calclogic.proof.DirectMethodImpl"></bean>
+    <bean id="equalityToOp" class="com.calclogic.proof.EqualityToOperatorImpl"></bean>
+    <bean id="operatorToEq" class="com.calclogic.proof.OperatorToEqualityImpl"></bean>
     <bean id="mutualImplication" class="com.calclogic.proof.MutualImplicationMethodImpl"></bean>
     <bean id="startingOneSide" class="com.calclogic.proof.StartingOneSideMethodImpl"></bean>
     <bean id="strengthening" class="com.calclogic.proof.StrengtheningMethodImpl"></bean>

@@ -211,6 +211,18 @@ public class CombBaseListener implements CombListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitProve_base(CombParser.Prove_baseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFactorize(CombParser.FactorizeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFactorize(CombParser.FactorizeContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

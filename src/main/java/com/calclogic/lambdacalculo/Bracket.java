@@ -164,7 +164,8 @@ public class Bracket extends Term{
     
     public int maxVar()
     {
-        return t.maxVar();
+        int max = t.maxVar();
+        return (max == x.indice?max-1:max);
     }
     
     public int fresh(int n)
@@ -371,6 +372,12 @@ public class Bracket extends Term{
           set[x.indice-65] = 0; // set.remove(x);
         } else 
           t.freeVars(set);
+    }
+    
+    @Override
+    public void boundVars(String[] vars) {
+        vars[0] = (vars[0].equals("")?"":vars[0]+",")+(char)x.indice;
+        t.boundVars(vars);
     }
     
     @Override

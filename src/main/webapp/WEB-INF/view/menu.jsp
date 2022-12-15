@@ -11,16 +11,16 @@
                 <li class="nav-item ${listarTerminosMenu}"><a href="${urlPrefix}listar?comb=n" class="nav-link">My Abbreviations</a></li>
                 <li class="nav-item ${misTeoremasMenu}"><a id="linkMyTheorems" href="${urlPrefix}myTheorems" class="nav-link">My Theorems</a></li>
                 <li class="nav-item ${agregarTeoremaMenu}"><a href="${urlPrefix}guardarteo" class="nav-link">Add Theorems</a></li>
-                <li class="nav-item ${proveMenu}"><a href="${urlPrefix}${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Prove</a></li>
+                <li class="nav-item ${proveMenu}"><a href="${pageContext.request.contextPath}/infer/${usuario.login}" class="nav-link">Prove</a></li>
                 <c:choose>
                     <c:when test="${isAdmin.intValue()==1}">
-                        <li class="nav-item ${students}" ><a href="students" class="nav-link">Students</a></li>
-                        <li class="nav-item ${theoMenu}" ><a href="theo" class="nav-link">Theories</a></li>
-                        <li class="nav-item ${catMenu}" ><a href="guardarcat" class="nav-link">Add Category</a></li>
+                        <li class="nav-item ${students}" ><a href="${urlPrefix}students" class="nav-link">Students</a></li>
+                        <li class="nav-item ${theoMenu}" ><a href="${urlPrefix}theo" class="nav-link">Theories</a></li>
+                        <li class="nav-item ${catMenu}" ><a href="${urlPrefix}guardarcat" class="nav-link">Add Category</a></li>
                     </c:when>    
                 </c:choose>
-                <li class="nav-item ${helpMenu}" ><a href="help" class="nav-link">Help</a></li>
-                <li class="nav-item" ><a id="linkCloseSession" href="close" class="nav-link">Sign Out</a></li>
+                <li class="nav-item ${helpMenu}" ><a href="${urlPrefix}help" class="nav-link">Help</a></li>
+                <li class="nav-item" ><a id="linkCloseSession" href="${urlPrefix}close" class="nav-link">Sign Out</a></li>
             </ul>
         </div>
     </nav>

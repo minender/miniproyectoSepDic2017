@@ -77,7 +77,8 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     }
 
     private void setIsRecursiveMethod(String method){
-        if (method.equals("CR") || method.equals("CO") || method.equals("AI") || method.equals("CA") || method.equals("MI")){
+        if (method.equals("CR") || method.equals("CO") || method.equals("AI") || 
+            method.equals("CA") || method.equals("MI") || method.equals("EO") || method.equals("OE")){
             this.isRecursiveMethod = true;
         }
     }
@@ -299,7 +300,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     public Term finishedBaseMethodProof(Term formulaBeingProved, Term proof, String username, 
         ResuelveManager resuelveManager, SimboloManager simboloManager)
     {
-        Term expr = proof.type().setToPrint(); // The root of the proof tree, which is the last line
+        Term expr = proof.type();//.setToPrint(); // The root of the proof tree, which is the last line
         Term initialExpr = ((App)expr).q; // The expression (could be a theorem) from which the user started the demonstration
         Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
 

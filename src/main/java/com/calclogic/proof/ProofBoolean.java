@@ -43,6 +43,8 @@ public class ProofBoolean {
         else if (method instanceof Const && 
                     (
                         (methodStr=((Const)method).getCon()).equals("ND") || 
+                        methodStr.equals("EO") || 
+                        methodStr.equals("OE") ||
                         methodStr.equals("CO") || 
                         methodStr.equals("CR") || 
                         methodStr.equals("AI") || 
@@ -57,6 +59,8 @@ public class ProofBoolean {
         else if ( method instanceof App && (m1 = ((App)method).p) instanceof Const &&
                     (
                         (methodStr=((Const)m1).getCon()).equals("ND") || 
+                        methodStr.equals("EO") || 
+                        methodStr.equals("OE") ||
                         methodStr.equals("CO") || 
                         methodStr.equals("CR") ||
                         methodStr.equals("MI")
@@ -129,7 +133,9 @@ public class ProofBoolean {
             return (methodStr=((Const)method).getCon()).equals("CO") || 
                     methodStr.equals("CR") ||
                     methodStr.equals("MI") ||
-                    methodStr.equals("CA") ||
+                    methodStr.equals("EO") || 
+                    methodStr.equals("OE") ||
+             //       methodStr.equals("CA") ||
                     methodStr.equals("WI");
         }
     }

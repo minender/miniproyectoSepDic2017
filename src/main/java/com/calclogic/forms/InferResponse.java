@@ -203,6 +203,9 @@ public class InferResponse extends GenericResponse{
         
         if (methodTerm instanceof App) {
             if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula)){
+              if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 4)
+                typedTerm = ((App)((TypedM)((App)((App)((App)((App)((App)((TypedM)typedTerm).getProof()).q).q).q).p).q).getProof()).p;
+              else
                 typedTerm = ((App)typedTerm).q;
             }
             privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, 
@@ -288,6 +291,7 @@ public class InferResponse extends GenericResponse{
     private String clickableST(String user, Term newTerm, String clickable, Term method, boolean isRootTeorem) 
             throws Exception
     {
+        newTerm = newTerm.setToPrint();
         //Term newTerm = new TypedA(newTerm,user).type();
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // en plena recursion
             return newTerm.toStringLaTeX(simboloManager,"");
@@ -374,6 +378,7 @@ public class InferResponse extends GenericResponse{
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
+
         if (isRootTeorem && methodTerm == null)
             cambiarMetodo = "1";
         else if (isRootTeorem && ProofBoolean.isWaitingMethod(methodTerm)) 
@@ -439,7 +444,7 @@ public class InferResponse extends GenericResponse{
 
         boolean solved;
         if (labeled && !recursive){
-            solved = type.equals(formula);
+            solved = type.traducBD().equals(formula.traducBD());
         }
         else
             solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a

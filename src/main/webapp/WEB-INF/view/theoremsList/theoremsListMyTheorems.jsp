@@ -21,7 +21,14 @@
                                     <c:when test="${((!resu.isResuelto()) && resu.getDemopendiente() < 1) || (resu.isEsAxioma() && resu.getUsuario().getLogin().equals('AdminTeoremas'))}">
                                         <li>
                                             <p>
-                                                <i class="fa fa-lock" aria-hidden="true" ></i>
+                                                <c:choose>
+                                                    <c:when test="${resu.isResuelto()}">
+                                                        <i class="fa fa-unlock" aria-hidden="true"></i>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <i class="fa fa-lock" aria-hidden="true" ></i>        
+                                                    </c:otherwise>
+                                                </c:choose>
                                                 (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
                                                 <c:choose>
                                                     <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas') || usuario.getLogin().equals('AdminTeoremas')}">

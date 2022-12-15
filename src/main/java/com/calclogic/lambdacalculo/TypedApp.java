@@ -47,7 +47,7 @@ public class TypedApp extends App implements TypedTerm{
         }
         else if (t1 instanceof TypedS) // <== S operand created by the grammar
         {
-            if (t2.containT())
+            if (t2Type.containT() && !(((App)t2Type).q instanceof Const && ((Const)((App)t2Type).q).id==8))
                 throw new TypeVerificationException();
             inferType = 's';
         }
@@ -60,8 +60,12 @@ public class TypedApp extends App implements TypedTerm{
                     throw new TypeVerificationException();
                 
                 Term t1Izq = ((App)t1Type).q.body();
-                if (((App)((App)t1Type).p).q.containT() && 
-                      !(((App)((App)t1Type).p).q.body() instanceof App)
+                if (((App)((App)t1Type).p).q.containT() && // esto dice que es un modus pones
+                      !(((App)((App)t1Type).p).q.body() instanceof App) &&
+                     !(t2Type.containT() && // esto dice que no es el caso [t1=T] T=true
+                        ((App)((App)t2Type).p).q instanceof Const && 
+                        ((Const)((App)((App)t2Type).p).q.body()).id==8
+                      )
                    )
                 {
                     t1Izq = ((App)((App)t1Type).q.body()).q;
@@ -207,10 +211,14 @@ public class TypedApp extends App implements TypedTerm{
                 aux = ((Bracket)aux).t;
             }
             Term E = ((Bracket)pType).t.sust(((Bracket)pType).x,z);
-            Term t1 = E.sust(((Bracket)pType).x,((App)qType).q).evaluar();
-            Term t2 = E.sust(((Bracket)pType).x,((App)((App)qType).p).q).evaluar();
+            String[] boundVars = {""};
+            ((App)((App)qType).p).q.body().boundVars(boundVars);
+            ((App)qType).q.body().boundVars(boundVars);
+            Term t1 = E.sust(((Bracket)pType).x,((App)qType).q);
+            Term t2 = E.sust(((Bracket)pType).x,((App)((App)qType).p).q);
             //Term op2 = ((App)((App)qType).p).p; 
-            return new App(new App(new Const(0,"="), t2),t1).abstractEq();
+            return 
+    new App(new App(new Const(0,"="), t2),t1).evaluar(TermUtilities.arguments(boundVars[0])).abstractEq();
         }
         if (inferType == 's'){
             return new App(new App(new Const("="), ((App)qType).q), ((App)((App)qType).p).q);

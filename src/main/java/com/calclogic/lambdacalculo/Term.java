@@ -321,13 +321,15 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract void freeVars(int[] set);
     
+    public abstract void boundVars(String[] vars);
+    
     public Term setToPrinting(String variables, SimboloManager s) {
         return this.setToPrinting(variables, s, null);
     }
     
     public Term setToPrinting(String variables, SimboloManager s, int[] c) {
         
-        if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
+        if (variables != null && !variables.equals("")) {// If there are no variables, you don't need to make any reduction
             this.evaluar(variables);
             // List<Var> li = TermUtilities.arguments(variables);
             // //List<Var> li2 = TermUtilities.arguments(variables);
@@ -398,6 +400,12 @@ public abstract class Term implements Cloneable, Serializable{
     }
     
     public abstract Term abstractEq();
+    
+    public boolean isEquality() {
+        return this instanceof App && ((App)this).p instanceof App && 
+                ((App)((App)this).p).p instanceof Const && 
+                ((Const)((App)((App)this).p).p).getCon().equals("=");
+    }
     
     public Term body() {
         Term aux = this;
@@ -1089,16 +1097,19 @@ public abstract class Term implements Cloneable, Serializable{
                         izq.pq.p=phi1;
                         AppIzq izq2=obtenerIzq((App)this,phi2.ind.orden);//no se empieza del ultimo mal
                         Term t1=izq2.p;
-                        Term xnMas1;
-                        try{
+                        Term xnMas1 = ((App)this).q;
+                        if ( !(xnMas1 instanceof Var || xnMas1 instanceof Const) ) {
+                           try{
                             xnMas1=(Term)((App)this).q.clone();
-                            izq2.pq.p=phi2;
-                            return new App((new App(t1,xnMas1)).kappa(),this.kappa());
-                        }
-                        catch(CloneNotSupportedException e){
-                             System.out.println(e);
+                           }
+                           catch(CloneNotSupportedException e){
+                             e.printStackTrace();
                              return null;
+                           }
                         }
+                        izq2.pq.p=phi2;
+                        return new App((new App(t1,xnMas1)).kappa(),this.kappa());
+                        
                     }
                 }
                 else{
@@ -1185,7 +1196,14 @@ public abstract class Term implements Cloneable, Serializable{
 
 	    return term1;
     }
-    
+    /**
+     * Ojo este metodo solo funciona si el termino es un combinador. Si tiene redex de tipo lambda
+     * que provocan una traduccion que generan redex de tipo traduccion, ya no sirve aunque pogas la 
+     * lista de variables ligadas sugeridas correctamente
+     * 
+     * @param vars
+     * @return 
+     */
     public Term evaluar(String vars) {
         if (";".equals(vars))
             return evaluar(new ArrayList<Var>());
@@ -1214,6 +1232,9 @@ public abstract class Term implements Cloneable, Serializable{
             else {
                 li_free = TermUtilities.arguments(free_vars);
             }
+            // Ojo estas lineas solo funcionan si el termino es un combinador. Si tiene redex de tipo 
+            // lambda que provocan una traduccion que generan redex de tipo traduccion, ya no sirve 
+            // aunque pogas la lista de variables ligadas sugeridas correctamente
             int nVar1 = (((App)((App) this).p).q.nPhi()!=0?((App)((App) this).p).q.nPhi() - li_free.size():0);
             int nVar2 = (((App) this).q.nPhi()!=0?((App) this).q.nPhi() - li_free.size():0);
             List<Var> li2 = li_free;
@@ -1294,7 +1315,7 @@ public abstract class Term implements Cloneable, Serializable{
         if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
             ((App)((App)teoTerm).p).p instanceof Const && 
             ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
-              ((Const)((App)((App)teoTerm).p).p).getId()==13
+              ((Const)((App)((App)teoTerm).p).p).getId()==15
             )
            ) 
         {

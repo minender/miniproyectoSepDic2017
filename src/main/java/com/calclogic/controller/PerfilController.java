@@ -477,12 +477,11 @@ public class PerfilController {
     @RequestMapping(value="/{username}/myTheorems/buscarFormula", method=RequestMethod.POST, produces= MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody InferResponse buscarFormula( @RequestParam(value="idSol") int idSol,@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {   
-        
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
         try{
             // Validate that the user is in session
             Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
-            Term teorema = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables(),simboloManager);
+            Term teorema = resuelve.getTeorema().getTeoTerm().evaluar(resuelve.getVariables());//.setToPrinting(resuelve.getVariables(),simboloManager);
             String nTeo = resuelve.getNumeroteorema();
             Solucion solucion = solucionManager.getSolucion(idSol,username);
 
@@ -704,6 +703,9 @@ public class PerfilController {
             freeVars = teoTerm.stFreeVars();
             String variables = boundVars[0] + ";" + freeVars;
             teoTerm = teoTerm.toEquality(freeVars);
+            
+            teoTerm.getType(simboloManager);
+            
             Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
             if (null != test) {
                 throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
@@ -763,6 +765,24 @@ public class PerfilController {
             map.addAttribute("selected",agregarTeorema.getCategoria());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch (TypeVerificationException ex) {
+            map.addAttribute("usuario", user);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
+            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "You cannot enter your theorem because it contains a type error");
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
             map.addAttribute("overflow","hidden");
@@ -948,6 +968,9 @@ public class PerfilController {
             teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
 //                teoTerm.setAlias(0);
             
+            // Verificando el tipo de la expresión
+            System.out.println(teoTerm.getType(simboloManager));
+
             // ESTO DEBE MOSTRAR LAS CATEGORIAS
             Categoria categoria;
             categoria = categoriaManager.getCategoria(new Integer(agregarTeorema.getCategoriaSeleccionada()));
@@ -1058,6 +1081,25 @@ public class PerfilController {
             map.addAttribute("agregarTeoremaMenu","active");
             map.addAttribute("overflow","hidden");
             map.addAttribute("anchuraDiv","1100px");
+            map.addAttribute("simboloList", simboloList);
+            map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+            map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            return "agregarTeorema";
+        }
+        catch (TypeVerificationException ex) {
+            map.addAttribute("navUrlPrefix", "../");
+            map.addAttribute("usuario", usr);
+            map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("modificar",new Integer(0));
+            map.addAttribute("teorema",agregarTeorema.getTeorema());
+            map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
+            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("mensaje", "You cannot enter your theorem because it contains a type error");
+            map.addAttribute("admin","AdminTeoremas");
+            map.addAttribute("agregarTeoremaMenu","active");
+            map.addAttribute("overflow","hidden");
+            map.addAttribute("anchuraDiv","1200px");
             map.addAttribute("simboloList", simboloList);
             map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
             map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
@@ -1264,11 +1306,8 @@ public class PerfilController {
             Term term;
             try //si la sintanxis no es correcta ocurre una Exception
             {
-
-            
                 //aqui hay que hacer un query para verificar que el combinador 
                 //es no esta ya en la BD, poner esta verificacion en el dig de sec
-
                 Predicado predicadoEnBD=predicadoManager.getPredicado(predicadoid2); //arreglar solo consigue los tuyos mas no los de admin y publico
                 if(predicadoEnBD == null)
                 {
@@ -1377,7 +1416,7 @@ public class PerfilController {
             catch(IsNotInDBException e)
             {
                 String hdr = parser.getErrorHeader(e);
-        String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario",user);
                 map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                 map.addAttribute("modificar",new Integer(0));
@@ -1402,7 +1441,7 @@ public class PerfilController {
             catch(RecognitionException e)
             {
                 String hdr = parser.getErrorHeader(e);
-        String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
+                String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
                 map.addAttribute("usuario",user);
                 map.addAttribute("usuarioGuardar",new UsuarioGuardar());
                 map.addAttribute("modificar",new Integer(0));
