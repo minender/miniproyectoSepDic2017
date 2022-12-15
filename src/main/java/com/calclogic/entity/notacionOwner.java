@@ -26,7 +26,7 @@ public abstract class notacionOwner {
 		return "no_op";
 	};
 	
-	/**
+    /**
      * This method returns a list with the variables names of this symbol's
      * notation, for example for %(a1) %(op) %(a2) would return ["a1", "a2"]
      * @return ArrayList of variable names

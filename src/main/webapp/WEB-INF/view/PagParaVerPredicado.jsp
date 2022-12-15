@@ -10,17 +10,28 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <tiles:insertDefinition name="header" />
+        <%--<tiles:insertDefinition name="header" />--%>
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              //extensions: ["tex2jax.js","[MathJax]/extensions/TeX/forminput.js"], // For version 2.3
+              extensions: ["tex2jax.js","[Contrib]/forminput/forminput.js"], // For version 2.7.7
+              jax: ["input/TeX","output/HTML-CSS"],
+              tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],processEscapes: true,},
+              TeX: {extensions: ["AMSmath.js","AMSsymbols.js"]}
+            });
+            </script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML"></script>
         <title>JSP Page</title>
     </head>
     
     <body>
-        <h1>Hello World!</h1>
-        <p> ${id}  </p>
-        <p> ${usuario}  </p>
-        <p> ${predicado}  </p>
-        <p> ${alias}  </p>
-        <p> ${predserializado}  </p>
-            
+    <center>
+        <h1>${titulo}</h1>
+        <%--<p> ${id}  </p>
+        <p> ${usuario}  </p>--%>
+        <p> ${predicado} </p>
+        <%--<p> ${alias}  </p>--%>
+        <a href="${url}">Ingrese otra fórmula</a>
+    </center>
     </body>
 </html>

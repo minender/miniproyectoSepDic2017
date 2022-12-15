@@ -4,9 +4,14 @@
  */
 package com.calclogic.controller;
 
+import static com.calclogic.controller.PerfilController.simboloDictionaryCode;
+import com.calclogic.entity.Predicado;
 import com.calclogic.entity.PredicadoId;
+import com.calclogic.entity.Simbolo;
 import com.calclogic.entity.TerminoId;
 import com.calclogic.entity.Usuario;
+import com.calclogic.forms.AgregarTeorema;
+import com.calclogic.forms.InsertFormula;
 import com.calclogic.forms.InsertarEvaluar;
 import com.calclogic.lambdacalculo.Corrida;
 import com.calclogic.lambdacalculo.Term;
@@ -16,6 +21,8 @@ import com.calclogic.parse.TermParser;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.Var;
+import com.calclogic.parse.CombLexer;
+import com.calclogic.parse.CombParser;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.MetateoremaManager;
@@ -36,8 +43,11 @@ import org.antlr.v4.runtime.RecognitionException;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
 import com.calclogic.parse.IsNotInDBException;
+import com.calclogic.parse.TermUtilities;
+import com.calclogic.parse.ThrowingErrorListener;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -50,8 +60,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *
  * @author federico
  */
-//@Controller
-//@RequestMapping(value = "/eval")
+@Controller
+@RequestMapping(value = "/eval")
 public class EvaluarController {
 
 
@@ -78,158 +88,107 @@ public class EvaluarController {
     @Autowired
     private HttpSession session;
 
-    @RequestMapping(value = "/{username}/pruebaPredicado/{id}", method = RequestMethod.GET)
-    public String pruebaPredicadoView(@PathVariable String username, @PathVariable String id, ModelMap map) {
-            
-            
-            /*AgregarTeorema agregarTeorema = new AgregarTeorema("(p == p) == (q == q)", "45", "3.23", "El 3.23");
+    @RequestMapping(value = "/{username}/applicativeToLatex", method = RequestMethod.GET)
+    public String pruebaPredicadoView(@PathVariable String username, ModelMap map) {
         
-            Usuario user = usuarioManager.getUsuario(username);
-            usuarioManager.getAllTeoremas(user);
-            */
-            PredicadoId predicadoid2 = new PredicadoId();
-            predicadoid2.setLogin(username);
-
-            CharStream in = CharStreams.fromString("p,q:=p/\\r,r\\/r"); //"p \\/ q /\\(r ==> p /\\ (r \\/ q))");
-            TermLexer lexer = new TermLexer(in);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            TermParser parser = new TermParser(tokens);
-            //Term teoTerm;
-            CharStream in2 = CharStreams.fromString("p \\/ q /\\(r ==> p /\\ (r \\/ q))");
-            TermLexer lexer2 = new TermLexer(in2);
-            CommonTokenStream tokens2 = new CommonTokenStream(lexer2);
-            TermParser parser2 = new TermParser(tokens2);
-            Term teoTerm2;
-            ArrayList<Object> teoTerm;
-            Usuario usr = usuarioManager.getUsuario(username);
-            try //si la sintanxis no es correcta ocurre una Exception
-            {
-
-                String[] boundVars = {""};
-                teoTerm = parser.instantiate(predicadoid2, predicadoManager,simboloManager,boundVars).value;
-//                teoTerm.setAlias(0);
-                String[] boundVars2 = {""};
-                teoTerm2 = parser2.start_rule(predicadoid2, predicadoManager,simboloManager,boundVars2).value;
-//                teoTerm2.setAlias(0);
-                // inicializando pa q no ladille java
-                /*Term izq = null;
-                Term der = null;
-                boolean esEq = true;
-                Const relation = null;
-
-                try {
-                    relation = (Const) ((App) ((App) teoTerm).p).p;
-                    esEq = relation.getCon().trim().equals("\\equiv");
-                    izq = teoTerm;
-                    der = ((App) ((App) teoTerm).p).q;
-                } catch (java.lang.ClassCastException e) {
-                    esEq = false;
-                }
-
-                if (!esEq) {
-                    izq = teoTerm;
-                    der = new Const("true");
-                }
-
+        map.addAttribute("insertFormula",new InsertFormula());
+        
+        return "insertFormula";
+    }
+    
+    @RequestMapping(value = "/{username}/applicativeToLatex", method = RequestMethod.POST)
+    public String pruebaPredicado(@Valid InsertFormula insertFormula, BindingResult bindingResult,
+                                  @PathVariable String username, ModelMap map) {
             
-                // Este teorema sera utilizado para ver si ya existe en la BD
-                Teorema teorema2 = teoremaManager.getTeoremaByEnunciados(izq.toString());
-                if (teorema2 != null) {
-                    System.out.println("el teorema ya existe");
-                } else {
-                    // Este teorema sera utilizado para ver si el inverso ya existe en la BD
-                    Teorema teorema3 = teoremaManager.getTeoremaByEnunciados(der.toString(), izq.toString());
-                    if (teorema3 != null) {
-                        System.out.println("el teorema ya existe aplicando conmutatividad (p == q) == (q == p)");
-                    }
-                }
+        if (bindingResult.hasErrors()) {
+            map.addAttribute("mensaje", "");
+            map.addAttribute("termino", insertFormula.getAlgorithm());
 
-
-                // ESTO DEBE MOSTRAR LAS CATEGORIAS
-                // Se busca si existe la cat, si no existe se crea
-                Categoria categoria = categoriaManager.getCategoria(new Integer(agregarTeorema.getCategoria()));
-                if (categoria == null) {
-                    categoria = new Categoria("Equivalencia");
-//                    categoriaManager.addCategoria(categoria);
-                }
-
-//              Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
-                Teorema teorema = new Teorema(categoria, izq.traducBD().toStringFinal(), izq, false);
-//                teoremaManager.addTeorema(teorema);
-
-//                Resuelve resuelve = new Resuelve(user, teorema, agregarTeorema.getNombreTeorema(), agregarTeorema.getNumeroTeorema(), false);
-                Resuelve resuelve = new Resuelve(user, teorema, "", "Teo de prueba", false);
-//                resuelveManager.addResuelve(resuelve);
-
-                // public Metateorema(int id, Categoria categoria, String enunciado, byte[] metateoserializado)
-                Metateorema metateorema = new Metateorema(teorema.getId(), categoria, teoTerm.traducBD().toStringFinal(), SerializationUtils.serialize(teoTerm));
-//                metateoremaManager.addMetateorema(metateorema);
-
-                // public Dispone(int id, Usuario usuario, Metateorema metateorema, String numerometateorema, boolean resuelto)
-                Dispone dispone = new Dispone(resuelve.getId(), user, metateorema, agregarTeorema.getNumeroTeorema(), false);
-//                disponeManager.addDispone(dispone);
+            return "insertFormula";
+        }
+        // Feed the argument to the parser
+	CharStream in = CharStreams.fromString(insertFormula.getAlgorithm());
+		
+	// Define the lexer for the input and edit its way of catching error
+	CombLexer lexer = new CombLexer(in);
+	lexer.removeErrorListeners();
+	lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
+		
+	// Generate tokens for the parser
+	CommonTokenStream tokens = new CommonTokenStream(lexer);
+		
+	// Define the parser for the tokens and edit its way of catching error
+	CombParser parser = new CombParser(tokens);
+	parser.removeErrorListeners();
+	parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+		
+	// get the value of the parser 
                 
-                Teorema teo = teoremaManager.getTeorema(1);
-                
-                usuarioManager.getAllTeoremas(user);*/
-//                TypedL L = new TypedL((Bracket)teoTerm);
-                //TypedI I = new TypedI(new Sust((ArrayList<Var>)teoTerm.get(0), (ArrayList<Term>)teoTerm.get(1)));
-                //TypedA A = new TypedA(teoTerm2);
-                map.addAttribute("id", id);
-                map.addAttribute("usuario", username);
-                map.addAttribute("alias", teoTerm2.toStringLaTeXLabeled(simboloManager));//(new TypedApp(I, A)).type().toStringLaTeXFinal());//teoTerm.toStringLaTeXLabeled());
-                map.addAttribute("predserializado", categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()).toString());
-                map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-
-                return "PagParaVerPredicado";
-            }
-            /*catch (TypeVerificationException e)
-            {
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
-                map.addAttribute("alias", "TypeVerificationException");
-                map.addAttribute("agregarTeoremaMenu", "class=\"active\"");
-                map.addAttribute("listarTerminosMenu", "");
-                map.addAttribute("verTerminosPublicosMenu", "");
-                map.addAttribute("misPublicacionesMenu", "");
-                map.addAttribute("computarMenu", "");
-                map.addAttribute("perfilMenu", "");
-                map.addAttribute("overflow", "hidden");
-                map.addAttribute("anchuraDiv", "1100px");
-                return "PagParaVerPredicado";
-            }*/
-            catch (IsNotInDBException e) {
-                String hdr = parser.getErrorHeader(e);
-                String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("usuario", usr);
-
-                map.addAttribute("agregarTeoremaMenu", "class=\"active\"");
-                map.addAttribute("listarTerminosMenu", "");
-                map.addAttribute("verTerminosPublicosMenu", "");
-                map.addAttribute("misPublicacionesMenu", "");
-                map.addAttribute("computarMenu", "");
-                map.addAttribute("perfilMenu", "");
-                map.addAttribute("overflow", "hidden");
-                map.addAttribute("anchuraDiv", "1100px");
-                return "PagParaVerPredicado";
-            } catch (RecognitionException e) {
-                String hdr = parser.getErrorHeader(e);
-                String msg = e.getMessage(); //parser.getErrorMessage(e, TermParser.tokenNames);
-                map.addAttribute("usuario", usuarioManager.getUsuario(username));
-
-                map.addAttribute("admin", "admin");
-                map.addAttribute("guardarMenu", "");
-                map.addAttribute("agregarTeoremaMenu", "class=\"active\"");
-                map.addAttribute("listarTerminosMenu", "");
-                map.addAttribute("verTerminosPublicosMenu", "");
-                map.addAttribute("misPublicacionesMenu", "");
-                map.addAttribute("computarMenu", "");
-                map.addAttribute("perfilMenu", "");
-                map.addAttribute("overflow", "hidden");
-                map.addAttribute("anchuraDiv", "1100px");
-                return "PagParaVerPredicado";
-            }
+	Term t = null;
+        try {
+           t = parser.start_rule(username).value;
+           map.addAttribute("predicado", "$"+t.toStringLaTeX(simboloManager, "")+"$");
+        }catch (ParseCancellationException e) {
+           map.addAttribute("mensaje", e.getMessage());
+           return "insertFormula";
+        }
+        map.addAttribute("titulo","Su f&oacute;rmula en $\\LaTeX$ es:");
+        map.addAttribute("url","applicativeToLatex");
+        
+        return "PagParaVerPredicado";
         }
 
+    @RequestMapping(value = "/{username}/latexToApplicative", method = RequestMethod.GET)
+    public String laTeXToApplicativeView(@PathVariable String username, ModelMap map) {
+        
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
+        List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+        predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+        String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        
+        map.addAttribute("teorema","");
+        map.addAttribute("mensaje", "");
+        map.addAttribute("simboloList", simboloList);
+        map.addAttribute("predicadoList", predicadoList);
+        map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+        
+        map.addAttribute("insertFormula",new InsertFormula());
+        
+        return "latexToApplicative";
+    }
+    
+    @RequestMapping(value = "/{username}/latexToApplicative", method = RequestMethod.POST)
+    public String laTeXToApplicative(@Valid InsertFormula insertFormula, BindingResult bindingResult, 
+                                     @PathVariable String username, ModelMap map) {
+        if (bindingResult.hasErrors()) {
+           Usuario usr = usuarioManager.getUsuario(username);
+           List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
+           List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
+           predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
+           String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
+        
+           map.addAttribute("teorema","");
+           map.addAttribute("mensaje", "");
+           map.addAttribute("simboloList", simboloList);
+           map.addAttribute("predicadoList", predicadoList);
+           map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
+           map.addAttribute("mensaje", "");
+
+           return "latexToApplicative";
+        }
+        
+        PredicadoId predicadoid = new PredicadoId();
+        predicadoid.setLogin(username);
+        String formula = insertFormula.getAlgorithm();
+        map.addAttribute("predicado", ""+TermUtilities.getTerm(formula, predicadoid, 
+                                                            predicadoManager, simboloManager) );
+        map.addAttribute("titulo","Su f&oacute;rmula en notaci&oacute;n aplicativa es:");
+        map.addAttribute("url","latexToApplicative");
+        
+        return "PagParaVerPredicado";
+    }
+    
     @RequestMapping(value = "/{username}", method = RequestMethod.POST)
     public String evaluarPasoAPasoView(@Valid InsertarEvaluar insertarEvaluar, BindingResult bindingResult, @PathVariable String username, ModelMap map) {
         if ((Usuario) session.getAttribute("user") == null || !((Usuario) session.getAttribute("user")).getLogin().equals(username)) {

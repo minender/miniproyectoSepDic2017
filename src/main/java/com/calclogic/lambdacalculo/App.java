@@ -609,7 +609,6 @@ public class App extends Term{
 
         // This is to later replace the placeholders with StrSubstitutor
         Map<String,String> values = new HashMap<>();
-
         if ('I' == kind || (simpleOrAbrv && numTeo.equals("")) )
             values.put("op", sym.getNotacion_latex());
         else if ('L' == kind)
@@ -992,7 +991,7 @@ public class App extends Term{
         while (aux instanceof App) {
             args.add(((App)aux).q);
             aux = ((App)aux).p;
-        }
+        } 
         Collections.reverse(args);
         String type_c;
         int cid;

@@ -127,7 +127,7 @@
     <bean id="simboloDAO" class="com.calclogic.dao.SimboloDaoImpl"></bean>
     <bean id="simboloManager" class="com.calclogic.service.SimboloManagerImpl">
         <property name="propFunApp" value="10" />
-        <property name="termFunApp" value="29" />
+        <property name="termFunApp" value="10" />
     </bean>
     <bean id="mostrarCategoriaDAO" class="com.calclogic.dao.MostrarCategoriaDaoImpl">
     </bean>
