@@ -22,7 +22,7 @@
       </repository>
   </repositories>
   <properties>
-    <org.springframework.version>4.3.18.RELEASE</org.springframework.version>
+    <org.springframework.version>5.2.20.RELEASE</org.springframework.version>
     <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     <!--<jackson.version>2.6.3</jackson.version>-->
     <jackson.version>2.13.4</jackson.version>
