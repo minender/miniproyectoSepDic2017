@@ -291,9 +291,7 @@ public class InferResponse extends GenericResponse{
     private String clickableST(String user, Term newTerm, String clickable, Term method, boolean isRootTeorem) 
             throws Exception
     {
-        if (!(newTerm instanceof Const)){
-            newTerm = newTerm.setToPrint();
-        }
+        newTerm = newTerm.setToPrint();
         //Term newTerm = new TypedA(newTerm,user).type();
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // en plena recursion
             return newTerm.toStringLaTeX(simboloManager,"");
