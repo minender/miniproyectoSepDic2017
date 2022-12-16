@@ -44,8 +44,8 @@ public class CaseAnalysisMethodImpl extends AndIntroductionMethodImpl implements
      * The statement that is needed to be proven may change inside a sub proof,
      * so this function calculates which that new statement is.
      *  
-     * @param beginFormula: general statement to be proved, is the base to calculate 
-     *                      al de sub statement in the sub proofs.
+     * @param beginFormula: General statement to be proved, is the base to calculate 
+     *                      all the sub statement in the sub proofs.
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override

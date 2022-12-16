@@ -291,13 +291,16 @@ public class InferResponse extends GenericResponse{
     private String clickableST(String user, Term newTerm, String clickable, Term method, boolean isRootTeorem) 
             throws Exception
     {
-        newTerm = newTerm.setToPrint();
+        if (!(newTerm instanceof Const)){
+            newTerm = newTerm.setToPrint();
+        }
         //Term newTerm = new TypedA(newTerm,user).type();
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // en plena recursion
             return newTerm.toStringLaTeX(simboloManager,"");
         }
-        else if ("DM".equals(clickable))  // End of the impression
-            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringLaTeX(simboloManager,"") + "}}";
+        else if ("DM".equals(clickable)){ // End of the impression
+            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringLaTeX(simboloManager,"") + "}}";  
+        }  
         else if ("SS".equals(clickable)) { // End of the impression
             String formulaDer = ((App)((App)newTerm).p).q.toStringLaTeX(simboloManager,"");
             String formulaIzq = ((App)newTerm).q.toStringLaTeX(simboloManager,"");

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
  * 
  * 
  *
- * @author feder
+ * @author federico
  */
 @Service
 public class EqualityToOperatorImpl extends GenericProofMethodImpl implements EqualityToOperator  {
@@ -38,14 +38,19 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      * The statement that is needed to be proven may change inside a sub proof,
      * so this function calculates which that new statement is.
      *  
-     * @param beginFormula: general statement to be proved, is the base to calculate 
-     *                      al de sub statement in the sub proofs.
+     * @param beginFormula: General statement to be proved, is the base to calculate 
+     *                      all the sub statement in the sub proofs.
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
     public Term initFormula(Term beginFormula){
-        // this convert formulas like lamb x.t1=lamb x.t2 into t1==t2
-        return new App(new App(new Const(0, "="),new Const(-1,"T")), beginFormula.setToPrint()).abstractEq();
+        // This converts formulas like lamb x.t1=lamb x.t2 into t1==t2
+        try{
+            return new App(new App(new Const(0, "="),new Const(-1,"T")), beginFormula.setToPrint()).abstractEq();
+        }
+        catch(Exception e){
+            return new App(new App(new Const(0, "="),new Const(-1,"T")), beginFormula).abstractEq();
+        }  
     }
 
     /**
@@ -57,12 +62,12 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      */
     @Override
     public String header(String statement){
-        return ""+statement;
+        return statement;
     }
 
     /**
-     * Auxiliar method for "finishedLinearRecursiveMethodProof" that implements the corresponding
-     * logic according to the contradiction method.
+     * This overrides the "finishedLinearRecursiveMethodProof" function because it uses a completely
+     * different logic.
      * 
      * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof 
      * @param vars: List of variables for doing parallel substitution
@@ -73,8 +78,7 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
     public Term finishedLinearRecursiveMethodProof(String user, Term formulaBeingProved, Term proof)
     {
         try {
-            return new TypedM(4, 1, proof, "= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})", user);
-             
+            return new TypedM(4, 1, proof, "= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})", user);     
         } catch (TypeVerificationException e)  {
             Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
         }
