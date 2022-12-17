@@ -109,7 +109,7 @@ public class Sust extends Term{
         return -1;
     }
     
-    public int fresh(int n)
+    public int fresh(int n, int[] max)
     {
         return n;
     }

@@ -235,7 +235,7 @@ public class InferController {
 
             response.generarHistorial(
                 username,
-                formula.setToPrint(), 
+                formula, 
                 nTeo, 
                 typedTerm, 
                 true,
@@ -756,7 +756,7 @@ public class InferController {
         }
         
         //List<PasoInferencia> inferencias = solucion.getArregloInferencias();
-        Term formula = resuelve.getTeorema().getTeoTerm().setToPrinting(resuelve.getVariables(),simboloManager);
+        Term formula = resuelve.getTeorema().getTeoTerm().evaluar(resuelve.getVariables());
 
         response.generarHistorial(
             username,
@@ -804,10 +804,10 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
         Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
         Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm();
+        Term term = t.getTeoTerm().evaluar(resuelve.getVariables());
         Term methodTerm, typedTerm;
         methodTerm = typedTerm = null;
-        
+
         if ("SS".equals(newMethod)){
             // if (((App)((App)term).p).q.containT()){
             //     response.setErrorParser1(true);
@@ -815,7 +815,7 @@ public class InferController {
             // }
             response.setLado("1");
         }
-        term = new TypedA(term,username).type().setToPrint();
+        term = new TypedA(term,username).type();
 
         // When the proof already exists in the DB, we obtain the solution from it.
         if (!nSol.equals("new")){       
@@ -915,8 +915,9 @@ public class InferController {
                 }
                 else{
                     // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
+                    boolean containT = formulaTerm.containT();
                     formulaTerm = formulaTerm.setToPrint();
-                    if (newMethod.equals("DM") && !formulaTerm.containT())
+                    if (newMethod.equals("DM") && !containT)
                         solucion = new Solucion(resuelveAnterior, false, formulaTerm, "EO "+newMethod, crudOp);
                     else 
                         solucion = new Solucion(resuelveAnterior, false, formulaTerm, newMethod, crudOp);
