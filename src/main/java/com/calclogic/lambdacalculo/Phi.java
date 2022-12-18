@@ -100,7 +100,7 @@ public class Phi extends Term{
         return -1;
     }
     
-    public int fresh(int n)
+    public int fresh(int n, int[] max)
     {
         return n;
     }
@@ -150,8 +150,8 @@ public class Phi extends Term{
     public Term invBraBD(int n)
     {
         Var xn=new Var(n);
-        
-        return new Bracket(xn,(new App(this,xn)).kappaIndexado(n,xn));
+        int[] max = new int[1];
+        return new Bracket(xn,(new App(this,xn)).kappaIndexado(n,xn,max));
     }
     
     public Term invBD()

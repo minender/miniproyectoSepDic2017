@@ -250,14 +250,15 @@ public class App extends Term{
         return Math.max(p.maxVar(), q.maxVar());
     }
     
-    public int fresh(int n)
+    public int fresh(int n, int[] max)
     {
-        int i = p.fresh(n);
-        int j = q.fresh(n);
+        int i = p.fresh(n,max);
+        int aux = max[0];
+        int j = q.fresh(n,max);
         if (i == n && j == n)
             return n;
         else
-            return this.maxVar()+1;
+            return Math.max(aux, max[0]);
         //return q.fresh(p.fresh(n));
     }
     
@@ -349,13 +350,14 @@ public class App extends Term{
     public Term invBraBD(int n)
     {
         Var xc=new Var(n);
+        int[] max = new int[1];
         if(obtenerIzq(this,-1).p instanceof Phi){
-            return new Bracket(xc, (new App(this,xc)).kappaIndexado(n,xc));
+            return new Bracket(xc, (new App(this,xc)).kappaIndexado(n,xc,max));
         }
         else
         {
             //Var x=new Var(this.maxVar()+1);
-            return new Bracket(xc,(new App(this,xc)).kappaIndexado(n,xc));
+            return new Bracket(xc,(new App(this,xc)).kappaIndexado(n,xc,max));
         }
     }
     
@@ -579,7 +581,7 @@ public class App extends Term{
                    ) 
                 {
                  int boundVId = ((Bracket)stk.get(stk.size()-1)).x.indice;
-                 boundVId = new App(stk.get(stk.size()-1),stk.get(stk.size()-2)).fresh(boundVId);
+                 boundVId = new App(stk.get(stk.size()-1),stk.get(stk.size()-2)).fresh(boundVId,new int[1]);
                  // this change the id of all occurrences of x, because x would be a pointer
                  ((Bracket)stk.get(stk.size()-1)).x.indice = boundVId;
                  ((Bracket)stk.get(stk.size()-2)).x.indice = boundVId;
