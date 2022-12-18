@@ -317,6 +317,7 @@ public class PerfilController {
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
         map.addAttribute("isAdmin",user.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("teorias", teoriaManager.getAllTeoria());
         return "perfil";
     }
     
@@ -754,6 +755,7 @@ public class PerfilController {
             map.addAttribute("simboloList", simboloList);
             map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
             map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            map.addAttribute("teorias", teoriaManager.getAllTeoria());
             return "perfil";
         }
         catch(NullPointerException e){
@@ -871,7 +873,7 @@ public class PerfilController {
         String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
         String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         
-        ///*
+        /*
         try {
             Term testTerm = teoTerm;
             System.out.println(testTerm);
@@ -1046,6 +1048,7 @@ public class PerfilController {
             map.addAttribute("simboloList", simboloList);
             map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
             map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            map.addAttribute("teorias", teoriaManager.getAllTeoria());
             return "perfil";
         }
         catch(NullPointerException e){
@@ -1587,6 +1590,7 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                map.addAttribute("teorias", teoriaManager.getAllTeoria());
                 return "perfil";
             }
             else
@@ -1692,6 +1696,7 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                map.addAttribute("teorias", teoriaManager.getAllTeoria());
                 return "perfil";
             }
             catch(AlphaEquivalenceException e)
