@@ -566,8 +566,8 @@ public class App extends Term{
                 }
                 else {
                     // poner aqui el id de la igualdad
-                    sym = s.getSimbolo(13);
-                    opId = 13;
+                    sym = s.getSimbolo(15);
+                    opId = 15;
                 }
                 nArgs = 2;
             }

@@ -891,10 +891,12 @@ public class PerfilController {
         } catch (TypeVerificationException ex) {
             System.out.println("error de tipo");
         }//*/
+        AgregarTeorema agregarTeorema = new AgregarTeorema();
+        agregarTeorema.setAxioma(resuelve.isResuelto());
         
         map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
-        map.addAttribute("agregarTeorema",new AgregarTeorema());
+        map.addAttribute("agregarTeorema", agregarTeorema);
         map.addAttribute("modificar",new Integer(0));
         map.addAttribute("editar", true);
         map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
@@ -982,10 +984,17 @@ public class PerfilController {
         
             String[] boundVars = {""};
             teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
+            
+            // Guardando info en caso de error
+            String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
+            String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
+            map.addAttribute("teoremaC", teoC);
+            map.addAttribute("teoremaInputs", teoInputs);
 //                teoTerm.setAlias(0);
             
             // Verificando el tipo de la expresión
             System.out.println(teoTerm.getType(simboloManager));
+            
 
             // ESTO DEBE MOSTRAR LAS CATEGORIAS
             Categoria categoria;
