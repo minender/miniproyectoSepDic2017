@@ -96,6 +96,8 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st] returns 
                                                $value=aux;
                                               }
 
+     | 'C'                                    {$value = new Var((new Integer((int)'C')).intValue());}
+
      | CAPITALLETTER                          {$value = new Var((new Integer((int)$CAPITALLETTER.text.charAt(0))).intValue());}
 
      | LETTER                                 {$value = new Var((new Integer((int)$LETTER.text.charAt(0))).intValue());};
@@ -154,7 +156,14 @@ instantiate[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st]
 
 
 arguments returns [ArrayList<Term> value]: 
-                                           L=(LETTER|CAPITALLETTER) ',' arg=arguments 
+                                         | L=(LETTER|CAPITALLETTER)          
+                                                           {ArrayList<Term> list=new ArrayList<Term>();
+                                                            Var v=new Var((new Integer($L.text.charAt(0))).intValue());
+                                                            list.add(0,v);
+                                                            $value = list;
+                                                           }
+
+                                          | L=(LETTER|CAPITALLETTER) ',' arg=arguments 
                                                            {ArrayList<Term> aux=$arg.value; 
                                                             Var v=new Var((new Integer((int)$L.text.charAt(0))).intValue());
                                                             aux.add(0,v); 
@@ -167,13 +176,6 @@ arguments returns [ArrayList<Term> value]:
                                                             Var v2=new Var((new Integer((int)$M.text.charAt(0))).intValue());
                                                             aux.add(0,new App(v,v2)); 
                                                             $value=aux;
-                                                           }
-
-                                         | L=(LETTER|CAPITALLETTER)          
-                                                           {ArrayList<Term> list=new ArrayList<Term>();
-                                                            Var v=new Var((new Integer($L.text.charAt(0))).intValue());
-                                                            list.add(0,v);
-                                                            $value = list;
                                                            }
 
                                          | L=(LETTER|CAPITALLETTER) '(' L2=(LETTER|CAPITALLETTER) ')'
@@ -195,4 +197,4 @@ WORD:   CAPITALLETTER (LETTER)+
 
       | CAPITALLETTER;
 
-WHITESPACE: (' ' | '\r')+ -> channel(HIDDEN);
+WHITESPACE: ' '+ -> channel(HIDDEN);

@@ -125,7 +125,7 @@ public class Var extends Term{
         return indice;
     }
     
-    public int fresh(int n)
+    public int fresh(int n, int[] max)
     {
         return (n!=indice?n:indice+1);
     }

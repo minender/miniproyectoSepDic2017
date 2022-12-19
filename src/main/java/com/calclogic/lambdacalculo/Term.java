@@ -131,7 +131,7 @@ public abstract class Term implements Cloneable, Serializable{
 
     public abstract boolean occur(Var x);
     
-    public abstract int fresh(int n);
+    public abstract int fresh(int n, int[] max);
     
     public abstract String position(Var x);
     
@@ -1128,7 +1128,28 @@ public abstract class Term implements Cloneable, Serializable{
         }
     }
     
-    public Term kappaIndexado(int c,Var xc){
+    public int nextVar(int[] vars, int c) {
+        int aux = c;
+        while (c < vars.length && vars[c] != 0) {
+            c++;
+        }
+        if (aux < vars.length && c == vars.length) {
+            c = 0;
+            while (c < aux && vars[c] != 0) {
+                c++;
+            }
+            if (c!=aux)
+                return c;
+            else
+                return vars.length;
+        }
+        else if (aux >= vars.length)
+            return aux+1;
+        else
+            return c;
+    }
+    
+    public Term kappaIndexado(int c,Var xc, int[] max){
         if(this instanceof App){
             AppIzq izq=obtenerIzq((App)this,-1);
             Const k=new Const("\\Phi_{K}");
@@ -1141,12 +1162,14 @@ public abstract class Term implements Cloneable, Serializable{
                         if(((ConstInd)i).ind.equals("b")){
                             Term x1=izq.pq.q;
                             izq.pqr.p=izq.p;
-                            return new App(x1,this.kappaIndexado(x1.fresh(c),xc));
+                            Term aux = new App(x1,this.kappaIndexado(x1.fresh(c,max),xc,max));
+                            return aux;
                         }
                         else{
                             Term x1=izq.pq.q;
                             izq.pqr.p=izq.p;
-                            return new App(this.kappaIndexado(x1.fresh(c),xc),x1);
+                            Term aux = new App(this.kappaIndexado(x1.fresh(c,max),xc,max),x1);
+                            return aux;
                         }
                     }
                     else{
@@ -1158,7 +1181,7 @@ public abstract class Term implements Cloneable, Serializable{
                         AppIzq izq2=obtenerIzq((App)this,phi2.ind.orden);//no se empieza del ultimo mal
                         Term t1=izq2.p;
                         izq2.pq.p=phi2;
-                        return new App((new App(t1,xc)).kappaIndexado(c,xc),this.kappaIndexado(xc.indice,xc));
+                        return new App((new App(t1,xc)).kappaIndexado(c,xc,max),this.kappaIndexado(xc.indice,xc,max));
                     }
                 } else{
                     /*xc.setIndice(Math.max(izq.pq.q.maxVar(),c));
@@ -1168,7 +1191,7 @@ public abstract class Term implements Cloneable, Serializable{
                 }
             }
             else if(izq.p.equals(k) && izq.deep==2){
-                xc.indice = izq.pq.q.fresh(c);
+                xc.indice = izq.pq.q.fresh(c,max);
                 return izq.pq.q;
             }
             else{

@@ -317,6 +317,7 @@ public class PerfilController {
         map.addAttribute("overflow","hidden");
         map.addAttribute("anchuraDiv","1100px");
         map.addAttribute("isAdmin",user.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("teorias", teoriaManager.getAllTeoria());
         return "perfil";
     }
     
@@ -672,7 +673,9 @@ public class PerfilController {
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("mensaje", "");
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
             map.addAttribute("overflow","hidden");
@@ -754,6 +757,7 @@ public class PerfilController {
             map.addAttribute("simboloList", simboloList);
             map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
             map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            map.addAttribute("teorias", teoriaManager.getAllTeoria());
             return "perfil";
         }
         catch(NullPointerException e){
@@ -762,8 +766,9 @@ public class PerfilController {
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
-            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
@@ -780,8 +785,9 @@ public class PerfilController {
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
-            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("mensaje", "You cannot enter your theorem because it contains a type error");
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
@@ -798,7 +804,9 @@ public class PerfilController {
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("mensaje", "The theorem can't be save because "+e.alias);
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
@@ -818,7 +826,9 @@ public class PerfilController {
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("guardarMenu","");
             map.addAttribute("agregarTeoremaMenu","active");
@@ -839,7 +849,9 @@ public class PerfilController {
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(user.getTeoria()));
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
             map.addAttribute("overflow","hidden");
@@ -871,7 +883,7 @@ public class PerfilController {
         String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
         String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
         
-        ///*
+        /*
         try {
             Term testTerm = teoTerm;
             System.out.println(testTerm);
@@ -879,14 +891,18 @@ public class PerfilController {
         } catch (TypeVerificationException ex) {
             System.out.println("error de tipo");
         }//*/
+        AgregarTeorema agregarTeorema = new AgregarTeorema();
+        agregarTeorema.setAxioma(resuelve.isResuelto());
         
         map.addAttribute("navUrlPrefix", "../");
         map.addAttribute("usuario",usr);
-        map.addAttribute("agregarTeorema",new AgregarTeorema());
+        map.addAttribute("agregarTeorema", agregarTeorema);
         map.addAttribute("modificar",new Integer(0));
         map.addAttribute("editar", true);
         map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
+        map.addAttribute("selected",resuelve.getCategoria().getId());
         map.addAttribute("numeroTeorema", resuelve.getNumeroteorema());
+        map.addAttribute("nombreTeorema", resuelve.getNombreteorema());
         map.addAttribute("teorema", "");
         map.addAttribute("teoremaC", teoC);
         map.addAttribute("teoremaInputs", teoInputs);
@@ -939,6 +955,8 @@ public class PerfilController {
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("mensaje", "");
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
@@ -966,10 +984,17 @@ public class PerfilController {
         
             String[] boundVars = {""};
             teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
+            
+            // Guardando info en caso de error
+            String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
+            String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
+            map.addAttribute("teoremaC", teoC);
+            map.addAttribute("teoremaInputs", teoInputs);
 //                teoTerm.setAlias(0);
             
             // Verificando el tipo de la expresión
             System.out.println(teoTerm.getType(simboloManager));
+            
 
             // ESTO DEBE MOSTRAR LAS CATEGORIAS
             Categoria categoria;
@@ -1046,6 +1071,7 @@ public class PerfilController {
             map.addAttribute("simboloList", simboloList);
             map.addAttribute("simboloDictionaryCode", simboloDictionaryCode);
             map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+            map.addAttribute("teorias", teoriaManager.getAllTeoria());
             return "perfil";
         }
         catch(NullPointerException e){
@@ -1056,7 +1082,8 @@ public class PerfilController {
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
-            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "You cannot enter your theorem because it is invalid");
             map.addAttribute("admin","AdminTeoremas");
@@ -1075,6 +1102,8 @@ public class PerfilController {
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
             map.addAttribute("mensaje", "No se puede ingresar su teorema porque "+e.alias);
             map.addAttribute("admin","AdminTeoremas");
@@ -1093,8 +1122,9 @@ public class PerfilController {
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
-            map.addAttribute("selected",agregarTeorema.getCategoria());
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("mensaje", "You cannot enter your theorem because it contains a type error");
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
@@ -1114,7 +1144,9 @@ public class PerfilController {
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("mensaje", hdr +((IsNotInDBException)e).message);
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("guardarMenu","");
@@ -1134,10 +1166,12 @@ public class PerfilController {
             map.addAttribute("infer",new InfersForm());
             map.addAttribute("mensaje", hdr+" "+msg);
             map.addAttribute("agregarTeorema",agregarTeorema);
+            map.addAttribute("selected",agregarTeorema.getCategoriaSeleccionada());
             map.addAttribute("modificar",new Integer(0));
             map.addAttribute("teorema",agregarTeorema.getTeorema());
             map.addAttribute("categoria",categoriaManager.getAllCategoriasByTeoria(usr.getTeoria()));
             map.addAttribute("numeroTeorema",agregarTeorema.getNumeroTeorema());
+            map.addAttribute("nombreTeorema", agregarTeorema.getNombreTeorema());
             map.addAttribute("admin","AdminTeoremas");
             map.addAttribute("agregarTeoremaMenu","active");
             map.addAttribute("overflow","hidden");
@@ -1587,6 +1621,7 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                map.addAttribute("teorias", teoriaManager.getAllTeoria());
                 return "perfil";
             }
             else
@@ -1692,6 +1727,7 @@ public class PerfilController {
                 map.addAttribute("overflow","hidden");
                 map.addAttribute("anchuraDiv","1200px");
                 map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+                map.addAttribute("teorias", teoriaManager.getAllTeoria());
                 return "perfil";
             }
             catch(AlphaEquivalenceException e)
@@ -2136,7 +2172,6 @@ public class PerfilController {
         Teoria teoria = teoriaManager.getTeoria(agregarSimbolo.getTeoriaid());
         Usuario usr = usuarioManager.getUsuario(username);
         //Teoria teoria = usr.getTeoria();
-        System.out.println(agregarSimbolo.getTipo());
         
         if (!agregarSimbolo.isModificar()){
             Simbolo simbolo = new Simbolo(agregarSimbolo.getNotacion_latex(),agregarSimbolo.getArgumentos(),agregarSimbolo.isEsInfijo(),

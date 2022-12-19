@@ -81,4 +81,4 @@ O_PAR: '(';
 C_PAR: ')';
 
 // Allow whitespace but ignore it 
-WHITESPACE: ' '+ -> channel(HIDDEN) ;
+WHITESPACE: (' '|'\r'|'\n'|'\t')+ -> channel(HIDDEN) ;

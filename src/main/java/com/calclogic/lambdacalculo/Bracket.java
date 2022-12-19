@@ -168,9 +168,9 @@ public class Bracket extends Term{
         return (max == x.indice?max-1:max);
     }
     
-    public int fresh(int n)
+    public int fresh(int n, int[] max)
     {
-        return (x.indice == n?n:t.fresh(n));
+        return (x.indice == n?n:t.fresh(n,max));
     }
     
     public Tipo esRedex()

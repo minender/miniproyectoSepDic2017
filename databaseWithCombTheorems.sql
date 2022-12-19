@@ -820,7 +820,7 @@ COPY userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, pr
 7	\\neg	1	f	1	5	%(op) %(aa1)	1
 8	true	0	f	0	0	%(op)	1
 9	false	0	f	0	0	%(op)	1
-10	 	2	f	3	7	%(a1)^z_{%(na2)}	1
+10	.	2	f	3	7	%(a1) %(op) %(a2)	1
 \.
 
 
