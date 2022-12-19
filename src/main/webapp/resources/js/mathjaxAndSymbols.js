@@ -102,6 +102,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         m = simboloDic[parentSimboloId]['precedence'];
         n = simboloDic[simboloId]['precedence'];
         arguments = simboloDic[simboloId]['arguments'];
+        var argumentsParent = simboloDic[parentSimboloId]['arguments'];
                 
         var parentIdSplit = idParentBox.split('-');
         var index = parseInt(parentIdSplit[parentIdSplit.length - 1]);
@@ -109,7 +110,7 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         for (var i = 0; i < notacionVarParent.length; i++) {
             var varIndex = parseInt(notacionVarParent[i].match(/\d+/)[0]);
             if (notacionVarParent[i].match(/^v\d$/)) {
-                varIndex += arguments;
+                varIndex += argumentsParent;
             }
             if (index == varIndex){
                 variableName = notacionVarParent[i];
