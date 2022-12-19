@@ -1023,7 +1023,7 @@ public class PerfilController {
             resuelve.setTeorema(teorema);
             resuelve.setNombreteorema(agregarTeorema.getNombreTeorema());
             resuelve.setNumeroteorema(agregarTeorema.getNumeroTeorema());
-            resuelve.setEsAxioma(agregarTeorema.isAxioma());
+            resuelve.setResuelto(agregarTeorema.isAxioma());
             resuelve.setCategoria(categoria);
             if (vars != null) {
                 resuelve.setVariables(vars);
