@@ -1381,4 +1381,41 @@ public abstract class Term implements Cloneable, Serializable{
         
         return Simbolo.matchTipo(type, expected);
     }
+    
+    public String getBoundVarsComma() {
+        String s = this.getBoundVars();
+        String boundVars = "";
+        if (!s.equals("")) {
+            int i = 0;
+            while (i < s.length()) {
+                char c = s.charAt(i);
+                if (boundVars.equals(""))
+                    boundVars = "" + c;
+                else
+                    boundVars += "," + c;
+                i++;
+            }
+        }
+        return boundVars;
+    }
+    
+    public String getBoundVars() {
+        if (this instanceof App) {
+            App a = (App) this;
+            return a.p.getBoundVars() + a.q.getBoundVars();
+        }
+        else if (this instanceof Bracket) {
+            String boundVars = "";
+            Term aux = this;
+            while (aux instanceof Bracket) {
+                Var var = ((Bracket) aux).x;
+                boundVars += "" + ((char) ((Var) var).indice);
+                aux = ((Bracket) aux).t;
+            }
+            return boundVars + aux.getBoundVars();
+        }
+        else {
+            return "";
+        }
+    }
 }

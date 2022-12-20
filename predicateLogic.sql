@@ -924,7 +924,7 @@ COPY userdb.simbolo (id, notacion_latex, argumentos, esinfijo, asociatividad, pr
 39	id	1	f	3	9	%(op)_{%(na1) }	2	t->t
 40	abort	0	f	3	0	%(op)	2	t
 41	 	1	f	3	9	%(a1)^{c}	2	t->t
-19	 	2	f	3	7	\\{%(v1) \\in %(na2) | %(na1) \\}	2	(t->t)->(t->b)->t
+19	 	2	f	3	7	\\{%(v1) \\in %(na2) | %(na1) \\}	2	(t->b)->(t->t)->t
 21	 	2	f	3	7	%(na2) , %(na1)	2	t->t->t
 33	 	1	f	3	8	( %(na1) )	2	t->t
 42	0	0	f	3	0	%(op)	2	t
