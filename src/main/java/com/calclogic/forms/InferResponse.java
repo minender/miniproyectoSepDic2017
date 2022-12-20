@@ -191,7 +191,7 @@ public class InferResponse extends GenericResponse{
         Term newFormula = objectMethod.initFormula(formula);
         String statement;
         try {
-            statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false) + "$");
+            statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false, simboloManager) + "$");
         }
         catch (Exception e) {
             Logger.getLogger(InferResponse.class.getName()).log(Level.SEVERE, null, e);
@@ -236,7 +236,7 @@ public class InferResponse extends GenericResponse{
         try{
             String statement;
             Term newFormula = ((App)formula).q; // First branch
-            statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false) + "$");
+            statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false, simboloManager) + "$");
             header += objectMethod.header("") + objectMethod.subProofInit(statement);
 
             if (methodTerm instanceof Const){
@@ -256,7 +256,7 @@ public class InferResponse extends GenericResponse{
                         cambiarMetodo = "0"; 
                     }
                     newFormula = ((App)((App)formula).p).q; // Second branch
-                    statement = centeredBlock("$" + clickableST(user, newFormula, clickable, new Const("AI"), false) + "$");
+                    statement = centeredBlock("$" + clickableST(user, newFormula, clickable, new Const("AI"), false,simboloManager) + "$");
                     historial += objectMethod.subProofInit(statement);
                 }
             }
@@ -266,7 +266,7 @@ public class InferResponse extends GenericResponse{
                                 (ProofBoolean.isBranchedProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
                                  valida, labeled, ((App)((App)methodTerm).p).q, clickable, false);
                 newFormula = ((App)((App)formula).p).q;
-                statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false) + "$");
+                statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false,simboloManager) + "$");
                 header = historial + objectMethod.subProofInit(statement);
                 historial = "";
                 Term newTypedTerm;
@@ -288,10 +288,11 @@ public class InferResponse extends GenericResponse{
      * @param isRootTeorem
      * @return The string that the user can click.
      */
-    private String clickableST(String user, Term newTerm, String clickable, Term method, boolean isRootTeorem) 
+    private String clickableST(String user, Term newTerm, String clickable, Term method, boolean isRootTeorem,
+                               SimboloManager s) 
             throws Exception
     {
-        newTerm = newTerm.setToPrint();
+        newTerm = newTerm.setToPrint(s);
         //Term newTerm = new TypedA(newTerm,user).type();
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // en plena recursion
             return newTerm.toStringLaTeX(simboloManager,"");
@@ -391,7 +392,7 @@ public class InferResponse extends GenericResponse{
             this.setHistorial("");
             try {
                 header = "Theorem " + nTeo + ":<br> "+  
-                         centeredBlock("$" + clickableST(user, formula, clickable, methodTerm, isRootTeorem) + "$") +
+                         centeredBlock("$" + clickableST(user, formula, clickable, methodTerm, isRootTeorem, simboloManager) + "$") +
                          "Proof:<br>";
             }
             catch (Exception e) {

@@ -36,7 +36,7 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
     @Override
     public Term initFormula(Term beginFormula){
         // "beginFormula" is of the form [L == R]
-        beginFormula = beginFormula.setToPrint();
+        beginFormula = beginFormula.setToPrint(simboloManager);
         Term prevLeftSide = ((App)beginFormula).q; // L
         Term prevRightSide = ((App)((App)beginFormula).p).q; // R
 

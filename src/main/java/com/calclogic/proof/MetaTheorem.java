@@ -72,7 +72,7 @@ public class MetaTheorem {
         List<Var> lis1 = new ArrayList<>();
         lis1.add(new Var(113));
         List<Term> lis2 = new ArrayList<>();
-        lis2.add(proof.type().setToPrint());
+        lis2.add(proof.type().setToPrint(null));
         Term I2 = new TypedI(new Sust(lis1,lis2));
         
         TypedApp typedTerm = null;

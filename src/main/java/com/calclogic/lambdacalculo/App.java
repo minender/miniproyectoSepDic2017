@@ -253,12 +253,11 @@ public class App extends Term{
     public int fresh(int n, int[] max)
     {
         int i = p.fresh(n,max);
-        int aux = max[0];
         int j = q.fresh(n,max);
         if (i == n && j == n)
             return n;
         else
-            return Math.max(aux, max[0]);
+            return max[0]+1;
         //return q.fresh(p.fresh(n));
     }
     

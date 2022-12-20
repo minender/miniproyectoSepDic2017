@@ -366,7 +366,7 @@ public abstract class Term implements Cloneable, Serializable{
             if (type.equals("b"))
                opId = 1;
             else
-               opId = 12;
+               opId = 15;
             if (c != null)
                c[0] = opId;
             t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1.body()),arg2.body());
@@ -374,15 +374,33 @@ public abstract class Term implements Cloneable, Serializable{
         return t;
     }
     
-    public Term setToPrint() {
+    public Term setToPrint(SimboloManager s) {
         Term arg1, arg2;
-        arg1 = ((App)((App)this).p).q;
-        arg2 = ((App)this).q;
+        arg1 = ((App)((App)this).p).q.body();
+        arg2 = ((App)this).q.body();
         Term t;
         if (arg1.containT())
-            t = arg2.body();
-        else
-            t = new App(new App(new Const(1,"c_{1}"),arg1.body()),arg2.body());
+            t = arg2;
+        else {
+            String type;
+            try {
+              type = arg2.getType(s);
+            }
+            catch (TypeVerificationException e){
+                try {
+                   type = arg1.getType(s);
+                }
+                catch (TypeVerificationException e2){
+                    type = "t";
+                }
+            }
+            int opId;
+            if (type.equals("b"))
+               opId = 1;
+            else
+               opId = 15;
+            t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1.body()),arg2.body());
+        }
         return t;
     }
     
@@ -1155,7 +1173,6 @@ public abstract class Term implements Cloneable, Serializable{
             Const k=new Const("\\Phi_{K}");
             if((izq.p instanceof Phi) && izq.deep==((ListaInd)((Phi)izq.p).ind).orden+1){
                 ListaInd l=((Phi)izq.p).ind;
-
                 if(!l.list.isEmpty()){
                     Indice i=l.removerUlt();
                     if(i instanceof ConstInd){

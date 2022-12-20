@@ -10,6 +10,7 @@ import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.ProofBoolean;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.proof.GenericProofMethod;
+import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -174,7 +175,8 @@ public class Solucion implements java.io.Serializable {
         return false;
     }
 
-    public int retrocederPaso(String user, Term methodTerm, GenericProofMethod objectMethod){
+    public int retrocederPaso(String user, Term methodTerm, GenericProofMethod objectMethod, 
+                              SimboloManager s){
         String currentGroupMethod = objectMethod.getGroupMethod();
         List<Term> li = new ArrayList<>();
         li = proofCrudOperations.getFatherAndSubProof(typedTerm,methodTerm,li);
@@ -233,7 +235,7 @@ public class Solucion implements java.io.Serializable {
             return 2;
         }
         else {
-            typedTerm = mergeSubProofs(((App)auxTypedTerm.type().setToPrint()).q, li, objectMethod);
+            typedTerm = mergeSubProofs(((App)auxTypedTerm.type().setToPrint(s)).q, li, objectMethod);
             demostracion = typedTerm.toString();
             return 1;
         }

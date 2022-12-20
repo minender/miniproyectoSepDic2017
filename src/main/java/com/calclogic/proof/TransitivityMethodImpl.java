@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
 
+
+
 /**
  *
  * @author ronald
@@ -82,11 +84,11 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
         Term iter; // Iterator over the lines of a demonstration
 
         boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
-                      isInverseImpl(((TypedApp)typedTerm).q.type().setToPrint(),
-                                                                         typedTerm.type().setToPrint());
+                      isInverseImpl(((TypedApp)typedTerm).q.type().setToPrint(simboloManager),
+                                                                         typedTerm.type().setToPrint(simboloManager));
         iter = (reversed?((TypedApp)typedTerm).q:typedTerm);
         boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
-                      ((TypedApp)iter).q.type().setToPrint().toString().equals("c_{8}");
+                      ((TypedApp)iter).q.type().setToPrint(simboloManager).toString().equals("c_{8}");
 
         iter = (lastEquan?((TypedApp)iter).p:iter);
         int i = 0;
@@ -121,7 +123,7 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
             }
             i++;
             // if ultInf is a no =inference do this
-            Term ultInfType = ultInf.type().setToPrint();
+            Term ultInfType = ultInf.type().setToPrint(simboloManager);
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
                    !(((App)((App)ultInfType).p).p.toString().equals("c_{1}") ||
                      ((App)((App)ultInfType).p).p.toString().equals("c_{20}")
@@ -148,13 +150,13 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
         }
         if ( firstOpInf == 0 || i == 1)
         {
-            Term last = (reversed?((App)typedTerm.type().setToPrint()).q:
-                                     ((App)((App)typedTerm.type().setToPrint()).p).q);
+            Term last = (reversed?((App)typedTerm.type().setToPrint(simboloManager)).q:
+                                     ((App)((App)typedTerm.type().setToPrint(simboloManager)).p).q);
             lastline = (solved?last.toStringLaTeX(s,"")+"$":last.toStringLaTeXLabeled(s));
         }
         else {
             Term last = (reversed?((TypedApp)typedTerm).q:typedTerm);
-            last = ((App)((App)((App)((App)(lastEquan?((TypedApp)last).p:last).type().setToPrint()).p).q).p).q;
+            last = ((App)((App)((App)((App)(lastEquan?((TypedApp)last).p:last).type().setToPrint(simboloManager)).p).q).p).q;
             lastline = (solved?last.toStringLaTeX(s,"")+"$":last.toStringLaTeXLabeled(s));
         }
         return historial + "~~~~~~" + lastline;  
@@ -188,8 +190,8 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
                 
                 Term t;
                 if ( modusPonens ) {
-                    App aux1 = (App)((App)((App)((App)((App)ultInf).q.type().setToPrint()).p).q).q;
-                    App aux2 = (App)((App)((App)((App)ultInf.type().setToPrint()).p).q).q;
+                    App aux1 = (App)((App)((App)((App)((App)ultInf).q.type().setToPrint(simboloManager)).p).q).q;
+                    App aux2 = (App)((App)((App)((App)ultInf.type().setToPrint(simboloManager)).p).q).q;
                     if ( ((Var)aux1.q).indice == 112 ) {
                         t = new App(((App)aux2).p,new Var('z'));
                     }
@@ -208,7 +210,7 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
             }
         }
         step = stepOneSideEq(user, ultInf, resuelveManager, disponeManager, s);
-        step = ((App)((App)typedTerm.type().setToPrint()).p).p.toStringLaTeX(s,"")+step.substring(step.indexOf("~"));
+        step = ((App)((App)typedTerm.type().setToPrint(simboloManager)).p).p.toStringLaTeX(s,"")+step.substring(step.indexOf("~"));
         if (leibniz.toString().equals("x_{122}") )
             return step;
         else
@@ -318,5 +320,13 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
             return new TypedApp(proof,new TypedA(new Const("c_{8}"))); // true
         }
         return proof;
+    }
+    
+    public void setSimboloManager(SimboloManager simboloManager) {
+        this.simboloManager = simboloManager;
+    }
+    
+    public SimboloManager getSimboloManager() {
+        return simboloManager;
     }
 }
