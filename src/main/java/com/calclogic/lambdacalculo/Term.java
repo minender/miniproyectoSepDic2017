@@ -298,17 +298,21 @@ public abstract class Term implements Cloneable, Serializable{
         int i=0;
         while (st == null && i<58){
             if (set[i] != 0){
-                if (h.get(i+65).length() > 1) 
+                if (h.get(i+65).length() == 4) 
                     st = ((char)set[i])+"(x)";
-                else 
+                else if (h.get(i+65).length() > 4)
+                    st = ((char)set[i])+"(x,x)";
+                else
                     st = ((char)set[i])+"";
             }
             i++;
         } 
         for (int j=i; j<58; j++)
             if (set[j] != 0)
-                if (h.get(j+65).length() > 1) 
+                if (h.get(j+65).length() == 4) 
                     st += ","+((char)set[j])+"(x)";
+                else if (h.get(j+65).length() > 4)
+                    st += ","+((char)set[j])+"(x,x)";
                 else
                     st += ","+((char)set[j]);
         
