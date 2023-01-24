@@ -26,7 +26,7 @@
                                                         <i class="fa fa-unlock" aria-hidden="true"></i>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <i class="fa fa-lock" aria-hidden="true" ></i>        
+                                                        <i class="fa fa-lock" aria-hidden="true"></i>        
                                                     </c:otherwise>
                                                 </c:choose>
                                                 (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}

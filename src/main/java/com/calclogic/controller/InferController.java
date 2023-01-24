@@ -391,7 +391,7 @@ public class InferController {
         predicadoid.setLogin(username);
         
         Term statementTerm = crudOp.findStatement(response, nStatement, username, resuelveManager, disponeManager);
-        statementTerm = statementTerm.type().setToPrint();
+        statementTerm = statementTerm.type().setToPrint(simboloManager);
         if (response.getError() != null){
             return response;
         }
@@ -745,7 +745,7 @@ public class InferController {
             }
             else {
                 GenericProofMethod objectMethod = crudOp.returnProofMethodObject(currentMethod.toString());
-                respRetroceder = solucion.retrocederPaso(username,method,objectMethod);
+                respRetroceder = solucion.retrocederPaso(username,method,objectMethod,simboloManager);
             }
             if (respRetroceder == 0) {
                method = crudOp.eraseMethod(solucion.getMetodo());
@@ -917,7 +917,7 @@ public class InferController {
                 else{
                     // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
                     boolean containT = formulaTerm.containT();
-                    formulaTerm = formulaTerm.setToPrint();
+                    formulaTerm = formulaTerm.setToPrint(simboloManager);
                     if (newMethod.equals("DM") && !containT)
                         solucion = new Solucion(resuelveAnterior, false, formulaTerm, "EO "+newMethod, crudOp);
                     else 
@@ -961,7 +961,7 @@ public class InferController {
                         if (teoid.substring(3,teoid.length()).equals(nTeo)) {
                            formulaTerm = crudOp.initStatement(formulaTerm, methodTerm);
                         }
-                        formulaTerm = formulaTerm.setToPrint();
+                        formulaTerm = formulaTerm.setToPrint(simboloManager);
                         typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), methodTerm);
                         solucion.setTypedTerm(typedTerm);
                     }

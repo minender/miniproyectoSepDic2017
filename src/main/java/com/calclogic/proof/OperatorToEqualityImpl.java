@@ -45,7 +45,7 @@ public class OperatorToEqualityImpl extends GenericProofMethodImpl implements Op
     @Override
     public Term initFormula(Term beginFormula){
         // this convert formulas like lamb x.t1=lamb x.t2 into t1==t2
-        return beginFormula.setToPrint();
+        return beginFormula.setToPrint(simboloManager);
     }
 
     /**

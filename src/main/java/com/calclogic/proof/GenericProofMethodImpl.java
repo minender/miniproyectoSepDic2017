@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,9 @@ public class GenericProofMethodImpl implements GenericProofMethod{
 
     // Determines if the method of the current class is basic or recursive
     protected Boolean isRecursiveMethod = false;
+    
+    @Autowired
+    protected SimboloManager simboloManager;
 
     /**
      * Establishes the necessary initial class variables according
@@ -150,7 +154,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     {
         Term infer = null;
         TypedI I;
-        Term theoremHint = A.type().setToPrint();
+        Term theoremHint = A.type().setToPrint(simboloManager);
         TypedL L;
         Boolean noInstantiation = instantiationString.equals("");
         Boolean noLeibniz = leibnizString.equals("");
@@ -428,5 +432,13 @@ public class GenericProofMethodImpl implements GenericProofMethod{
             throws TypeVerificationException
     {
         return null;
+    }
+    
+    public void setSimboloManager(SimboloManager simboloManager) {
+        this.simboloManager = simboloManager;
+    }
+    
+    public SimboloManager getSimboloManager() {
+        return simboloManager;
     }
 }

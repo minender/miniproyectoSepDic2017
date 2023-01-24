@@ -16,9 +16,11 @@ import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
+import com.calclogic.service.SimboloManager;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class EqualityToOperatorImpl extends GenericProofMethodImpl implements EqualityToOperator  {
+    
     
     public EqualityToOperatorImpl(){
         setInitVariables("EO");
@@ -45,7 +48,7 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
     @Override
     public Term initFormula(Term beginFormula){
         // This converts formulas like lamb x.t1=lamb x.t2 into t1==t2
-        return new App(new App(new Const(0, "="),new Const(-1,"T")), beginFormula.setToPrint()).abstractEq();
+        return new App(new App(new Const(0, "="),new Const(-1,"T")), beginFormula.setToPrint(simboloManager)).abstractEq();
     }
 
     /**

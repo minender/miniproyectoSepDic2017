@@ -127,7 +127,8 @@ public class Var extends Term{
     
     public int fresh(int n, int[] max)
     {
-        return (n!=indice?n:indice+1);
+        max[0] = Math.max(indice, max[0]);
+        return (n!=indice?n:max[0]+1);
     }
     
     public Term traducBD()

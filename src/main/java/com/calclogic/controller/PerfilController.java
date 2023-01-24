@@ -704,7 +704,8 @@ public class PerfilController {
             String freeVars;
             teoTerm = parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
             freeVars = teoTerm.stFreeVars();
-            String variables = boundVars[0] + ";" + freeVars;
+            String bndVars = teoTerm.getBoundVarsComma();
+            String variables = bndVars + ";" + freeVars;
             teoTerm = teoTerm.toEquality(freeVars);
             
             teoTerm.getType(simboloManager);
@@ -984,7 +985,8 @@ public class PerfilController {
         
             String[] boundVars = {""};
             teoTerm =parser.start_rule(predicadoid2,predicadoManager,simboloManager,boundVars).value;
-            
+            String bndVars = teoTerm.getBoundVarsComma();
+            //System.out.println(teoTerm+"\nold: "+boundVars[0]+" new: "+bndVars);
             // Guardando info en caso de error
             String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
             String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
@@ -1023,7 +1025,7 @@ public class PerfilController {
                 }
                 vars = teoTerm.stFreeVars();
                 teoTerm = teoTerm.toEquality(vars);
-                vars = boundVars[0] + ";" + vars;
+                vars = bndVars + ";" + vars;
                 teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString(), teoTerm, vars);
                 if (teorema == null) {
                     throw new CategoriaException("Couldn't edit theorem");
@@ -1034,7 +1036,7 @@ public class PerfilController {
             resuelve.setTeorema(teorema);
             resuelve.setNombreteorema(agregarTeorema.getNombreTeorema());
             resuelve.setNumeroteorema(agregarTeorema.getNumeroTeorema());
-            resuelve.setEsAxioma(agregarTeorema.isAxioma());
+            resuelve.setResuelto(agregarTeorema.isAxioma());
             resuelve.setCategoria(categoria);
             if (vars != null) {
                 resuelve.setVariables(vars);

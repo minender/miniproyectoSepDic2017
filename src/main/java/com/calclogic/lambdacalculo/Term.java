@@ -298,17 +298,21 @@ public abstract class Term implements Cloneable, Serializable{
         int i=0;
         while (st == null && i<58){
             if (set[i] != 0){
-                if (h.get(i+65).length() > 1) 
+                if (h.get(i+65).length() == 4) 
                     st = ((char)set[i])+"(x)";
-                else 
+                else if (h.get(i+65).length() > 4)
+                    st = ((char)set[i])+"(x,x)";
+                else
                     st = ((char)set[i])+"";
             }
             i++;
         } 
         for (int j=i; j<58; j++)
             if (set[j] != 0)
-                if (h.get(j+65).length() > 1) 
+                if (h.get(j+65).length() == 4) 
                     st += ","+((char)set[j])+"(x)";
+                else if (h.get(j+65).length() > 4)
+                    st += ","+((char)set[j])+"(x,x)";
                 else
                     st += ","+((char)set[j]);
         
@@ -366,7 +370,7 @@ public abstract class Term implements Cloneable, Serializable{
             if (type.equals("b"))
                opId = 1;
             else
-               opId = 13;
+               opId = 15;
             if (c != null)
                c[0] = opId;
             t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1.body()),arg2.body());
@@ -374,15 +378,33 @@ public abstract class Term implements Cloneable, Serializable{
         return t;
     }
     
-    public Term setToPrint() {
+    public Term setToPrint(SimboloManager s) {
         Term arg1, arg2;
-        arg1 = ((App)((App)this).p).q;
-        arg2 = ((App)this).q;
+        arg1 = ((App)((App)this).p).q.body();
+        arg2 = ((App)this).q.body();
         Term t;
         if (arg1.containT())
-            t = arg2.body();
-        else
-            t = new App(new App(new Const(1,"c_{1}"),arg1.body()),arg2.body());
+            t = arg2;
+        else {
+            String type;
+            try {
+              type = arg2.getType(s);
+            }
+            catch (TypeVerificationException e){
+                try {
+                   type = arg1.getType(s);
+                }
+                catch (TypeVerificationException e2){
+                    type = "t";
+                }
+            }
+            int opId;
+            if (type.equals("b"))
+               opId = 1;
+            else
+               opId = 15;
+            t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1.body()),arg2.body());
+        }
         return t;
     }
     
@@ -1155,7 +1177,6 @@ public abstract class Term implements Cloneable, Serializable{
             Const k=new Const("\\Phi_{K}");
             if((izq.p instanceof Phi) && izq.deep==((ListaInd)((Phi)izq.p).ind).orden+1){
                 ListaInd l=((Phi)izq.p).ind;
-
                 if(!l.list.isEmpty()){
                     Indice i=l.removerUlt();
                     if(i instanceof ConstInd){
@@ -1380,5 +1401,42 @@ public abstract class Term implements Cloneable, Serializable{
         String type = this.getType(D, simboloManager);
         
         return Simbolo.matchTipo(type, expected);
+    }
+    
+    public String getBoundVarsComma() {
+        String s = this.getBoundVars();
+        String boundVars = "";
+        if (!s.equals("")) {
+            int i = 0;
+            while (i < s.length()) {
+                char c = s.charAt(i);
+                if (boundVars.equals(""))
+                    boundVars = "" + c;
+                else
+                    boundVars += "," + c;
+                i++;
+            }
+        }
+        return boundVars;
+    }
+    
+    public String getBoundVars() {
+        if (this instanceof App) {
+            App a = (App) this;
+            return a.p.getBoundVars() + a.q.getBoundVars();
+        }
+        else if (this instanceof Bracket) {
+            String boundVars = "";
+            Term aux = this;
+            while (aux instanceof Bracket) {
+                Var var = ((Bracket) aux).x;
+                boundVars += "" + ((char) ((Var) var).indice);
+                aux = ((Bracket) aux).t;
+            }
+            return boundVars + aux.getBoundVars();
+        }
+        else {
+            return "";
+        }
     }
 }

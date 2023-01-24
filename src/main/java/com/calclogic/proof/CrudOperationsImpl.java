@@ -321,8 +321,6 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     public int binaryOperatorId(Term formula, Term methodTerm){
-        // I AM NOT SURE THAT THIS CONVERSION MUST ALWAYS BE MADE
-        formula = formula.setToPrint();
         try{
             if (methodTerm != null){
                 formula = initStatement(formula, methodTerm);
@@ -453,7 +451,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user), proof), infer);
             }
             else {
-                Term aux = ((App)((App)type.setToPrint()).p).q;
+                Term aux = ((App)((App)type).p).q.body();
 
                 if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l'){
                     Term oldLeib = ((Bracket)((TypedApp)infer).p.type()).t;
@@ -518,7 +516,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 String metaTheo = sub1.replace(metaTheoT);
                 Map<String,String> values2 = new HashMap<>();
                 values2.put("MT", metaTheo);
-                values2.put("T1Type", typedTerm.type().setToPrint().toString());
+                values2.put("T1Type", typedTerm.type().setToPrint(null).toString());
                 aux = typedTerm.toString();
                 values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
                 StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
