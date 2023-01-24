@@ -57,7 +57,7 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      */
     @Override
     public String header(String statement){
-        return statement;
+        return "";
     }
 
     /**

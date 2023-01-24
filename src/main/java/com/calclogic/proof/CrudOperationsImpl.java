@@ -321,6 +321,8 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     public int binaryOperatorId(Term formula, Term methodTerm){
+        // I AM NOT SURE THAT THIS CONVERSION MUST ALWAYS BE MADE
+        formula = formula.setToPrint();
         try{
             if (methodTerm != null){
                 formula = initStatement(formula, methodTerm);

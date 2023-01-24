@@ -902,6 +902,7 @@ public class InferController {
             // ---- End of assigning "formulaTerm" 
 
             if (nSol.equals("new")){
+                System.out.println("El id del operador es: "+crudOp.binaryOperatorId(formulaAnterior,null));
                 if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 5) ) || // Conjunction /\
                      ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 1) )    // Equivalence ==
