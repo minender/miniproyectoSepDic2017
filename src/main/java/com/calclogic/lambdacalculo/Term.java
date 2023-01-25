@@ -398,6 +398,10 @@ public abstract class Term implements Cloneable, Serializable{
                     type = "t";
                 }
             }
+            if (type.equals("*") && (arg2 instanceof Var && !(arg1 instanceof Var)) )
+                type = "b";
+            else if (type.equals("*") && (arg2 instanceof Var && arg1 instanceof Var) )
+                type = "t";
             int opId;
             if (type.equals("b"))
                opId = 1;

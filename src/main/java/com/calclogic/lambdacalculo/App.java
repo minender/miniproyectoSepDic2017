@@ -983,7 +983,6 @@ public class App extends Term{
         
     @Override
     public String getType(HashMap<Integer, String> D, SimboloManager simboloManager) throws TypeVerificationException {
-        
         boolean isQuant = false;
         List<Integer> boundVars = null;
         Term aux = this;

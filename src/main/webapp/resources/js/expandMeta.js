@@ -10,5 +10,13 @@ function expandMeta(id) {
           elem.removeClass('d-none');
         else
           elem.addClass('d-none');
-        
+}
+
+function expandMetaInfer(id) {
+    alert('id');
+        elem = $('#metaTeo'+id);
+        if (elem.hasClass('d-none'))
+          elem.removeClass('d-none');
+        else
+          elem.addClass('d-none');
 }

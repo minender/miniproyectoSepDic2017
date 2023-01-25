@@ -13,6 +13,7 @@
     <c:forEach items="${showCategorias}" var="cat">
         <li style="list-style: none; color: #03A9F4"><h4><a data-toggle="collapse" href='#collapse-${cat.getNombre().replaceAll(" ","-")}' role="button" aria-expanded="false" aria-controls='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse-link">${cat.getNombre()}</a><i style="font-size : 20px"class="ml-1 fa fa-chevron-down" aria-hidden="true"></i></h4> 
             <ul id='collapse-${cat.getNombre().replaceAll(" ","-")}' class="collapse">
+                <c:set var="vars" value=""/>
                 <c:forEach items="${resuelves}" var="resu">
                     <c:choose>
                         <c:when test="${resu.getCategoria().getId()==cat.getId()}">
@@ -23,9 +24,10 @@
                                             <c:choose>
                                                 <c:when test="${resu.isResuelto()}"> 
                                                     <%--|| resu.getNumeroteorema().equals(nTeo)}">--%>
+                                                    <%--<c:set var="vars" value="${resu.getTeorema().getTeoTerm().setToPrint(simboloManager).stFreeVars(simboloManager)}"/>--%>
                                                     <c:choose>
                                                         <c:when test="${!resu.getNumeroteorema().equals(nTeo)}">
-                                                            <a onclick="expandMeta('${resu.getNumeroteorema()}')" >
+                                                            <a onclick="expandMeta('${resu.getNumeroteorema()}','${resu.getVariables().split(";")[1]}')" >
                                                                 <i class="fa fa-plus-circle" aria-hidden="true"  style="cursor:pointer; margin-left: 10px; margin-right: 10px;"></i>
                                                             </a>
                                                         </c:when>

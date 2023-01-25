@@ -1,51 +1,31 @@
-Validar que cuando selecciones un teorema a demostrar se haya escojido primero el metodo de demostracion
-Poner una columna en teorema que diga cual es el operador que une el lado derecho e izquierdo del teorema (no siempre es ==)
-Olvidate de la table predicado todos los constraints estan mal usa en su lugar la tabla termino
-En teorema (enunciadoizq, enunciadoder) es unico hay que agregarle una coordenada con el operador que une los dos lados
-Decir que (teoserializadoizq, teoserializadoder) es unico no hace falta
-En metateorema decir (metateoserializadoizq, metateoserializadoder) es unico no es necesario
-Categoriaid no deberia estar en la tabla teorema sino en resuelve
 La entidad Categoria deberia ser debil de usuario
-El query de getTeoremasByCategoria deberia tomar el resuelve del usuario con la categoria en cuestion y hacer join con teorema
-quitar ocultartrue de teorema y metateorema
-Poner la columna esquema en metateorema
-El resuelve del usuario debe tener la lista de variables ligadas que debe usarse para invBD() en caso de logica de primer orden
-En getMetateorema del MetateoremaManager has lo mismo que en teorema que deserealizas de una vez los lados derecho e izquierdos
-(loginusuario,numeroteorema) debe ser unico en resuelve
 en ifer.jsp se usa el resuelveManager dentro de un ciclo para ver si el teorema esta resuelto o no, esto es ineficiente
 Al darle a demostrar deben aparecer los teoremas (no los axiomas) clickeables para escojer cual se va a demostrar
-Si ya hay una demostracion incompleta de ese teorema para ese usuario, se debe preguntar si empezar una nueva o seguir la vieja
-Metodo directo es empezar de toda la formula y llegar a algun teo o axioma
-Partir de un lado de la ecuacion debe pedir que se clickee el lado de la equacion de donde vamos a empezar
 Si un teorema no admite un metodo de demostracion debe la opcion estar inabilitada
-Al hacer el primer paso de la demostracion debe desaparecer la opcion de escojer el metodo de demostracion
-Debe haber un boton para eliminar el paso anterior
-Si se eliminan todos los pasos anteriores y se llega al inicio debe aparcer otra vez la opcion de escojer el metodo de demostracion
-En la lista de mis teoremas deben salir las instancias de demostraciones y la opcion de ver y borrar demostracion
-El espacio donde se despliega la demostracion deberia ser un iframe para que no se recarguen la lista de teo en cada post
-poner columna resuelto en la tabla solucion
-Has un orderby por numero de teorema a la lista de teoremas en los queries
-La impresion de la instanciacion no esta en latex
-El resuelve manager tiene un monton de metodos que obtienen el resuelve de la bd y no setean el atributo demopendiente y teoremaTer
-Si le das a inferir sin llenar el formulario no aparece nada en el lienzo de la emostracion
-Despues de cada inferen el formulario continua lleno con los datos del paso anterior hay que limpiar a menos que la inferencia no sea valida
-Implementar el click al metateorema en la vista demostracion
+Has un orderby por numero de teorema a la lista de teoremas en los queries que ordene 3.4, 3.4.a y 3.5 en ese orden
 Los metateoremas se desbloquean cuando estan demostrados todos los teoremas que usa como hipotesis
-Eliminar el id de mostrar categoria porque se auto incrementa de manera desproporcionada con el uso masivo de usuarios sin que haga falta el id
-
-
-
 
 Nuevos
 
 Cambiar el diseño de base de datos y hacer la migracion
 Hacer un plan de pruebas de flujo de navegacion y automatizar las misma usando selenium
 Hacer documentos del nuevo diseño de base de datos
-Hacer documentos de fundamentos teoricos
-hecer pruebas exhautivas en el metodo de inferencia partir de un lado de la equivalencia
 Estamos trabajando con un sistema de abreviacion en donde hace falta conocer cual es el metodo de demostracion usado
 Sabiendo cual es el metodo de demostracion usado se construye el arbol agregando los nodos correspondientes se podra inferir?
 Estudiando el arbol parcial de derivacion, se puede inferir el metodo? si es asi no hace falta un campo en la tabla
 Del arbol de derivacion final se puede deducir cual es el metodo de demostracion?
-Idear un sistema homogeneo de creacion del arbol para todos los metodos de demostracion
-
+Idear un sistema homogeneo de creacion del arbol, basado en herencia, para todos los metodos de demostracion
+Arreglar inferencia de tipo para el teorema E.p == algo
+Arreglar la automatic substitution cuando hay aplicaciones funcionales en los paratodo y existe
+Utilizar el metateorema 2 del libro para partir de un lado cuando la igualdad = es de terminos
+Arreglar el problema de que nodejs no puede procesar string en latex muy largos, por ejemplo el 
+teorema 9.9 por metodo directo en el primer paso aplicando 3.52 en el consecuente arroja este error de una
+Arreglar el metateorema del True para teoremas que no contengan T
+Revisar el formulario de editar simbolo si carga los campos que estan en la base de datos
+Modificar que los datos inferibles del simbolo como infijo o rightassociativity se carguen en el formulario 
+de editar simbolo sin que esten guardados en la base de datos
+Arreglar el orden en que se ordenan las variables libres y por ende el orden en que se abstraen las mismas para 
+que se puedan reconocer cuando un teorema ya existe salvo el nombre de las variables en todos los casos
+Se lanza una excepcion cuando se trata de editar un teorema siendo AdminTeoremas
+Siempre que se hace click en el + de un teorema, se hace el ajax para cargar todos los metateoremas, es suficiente 
+que el ajax se haga solo la primera vez

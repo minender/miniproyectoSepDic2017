@@ -265,7 +265,7 @@
                     }
                     return urlSplitted.slice(0,stop+1).join("/");
                 }
-                function expandMeta(id) {
+                function expandMeta(id, vars) {
                     elem = document.getElementById("metateoIdName"+id);
                     elem2 = document.getElementById("metaTeo"+id);
                     if (elem.style.display == "inline") {
@@ -283,6 +283,7 @@
                                     let div = document.getElementById("metateoIdName"+id);
                                     div.innerHTML = newData.string;
                                     MathJax.Hub.Typeset();
+                                    clickOperator('clickMT'+id,'nStatement_id','MT-'+id, vars)
                                     elem.style.display = elem2.style.display = "inline";
                                 }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
                                     alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 

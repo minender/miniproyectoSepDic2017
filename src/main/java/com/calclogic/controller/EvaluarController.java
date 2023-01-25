@@ -19,6 +19,7 @@ import com.calclogic.lambdacalculo.Tripla;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
 import com.calclogic.lambdacalculo.TypeVerificationException;
+import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombLexer;
@@ -127,6 +128,8 @@ public class EvaluarController {
 	Term t = null;
         try {
            t = parser.start_rule(username).value;
+           if (t.nPhi() > 0)
+               t = new TypedA(t,"AdminTeoremas").type();
            map.addAttribute("predicado", "$"+t.toStringLaTeX(simboloManager, "")+"$");
         }catch (ParseCancellationException e) {
            map.addAttribute("mensaje", e.getMessage());
@@ -136,7 +139,7 @@ public class EvaluarController {
         map.addAttribute("url","applicativeToLatex");
         
         return "PagParaVerPredicado";
-        }
+    }
 
     @RequestMapping(value = "/{username}/latexToApplicative", method = RequestMethod.GET)
     public String laTeXToApplicativeView(@PathVariable String username, ModelMap map) {
