@@ -9,7 +9,9 @@ import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedS;
+import com.calclogic.lambdacalculo.TypedTerm;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,6 +22,20 @@ import java.util.logging.Logger;
  * @author ronald
  */
 public class MetaTheorem {
+    
+    public static TypedA metaTheorem3(Term proof, String type, String user) {
+        try {
+            if (!type.contains("T")) {
+                proof = new TypedM(1, 1, proof, type, user);
+                type = proof.type().traducBD().toString();
+            }
+            return new TypedM(3, 0, proof, type, user);
+        }
+        catch (TypeVerificationException e){
+            Logger.getLogger(MetaTheorem.class.getName()).log(Level.SEVERE, null, e);
+            return null;
+        }
+    }
     /**
      * This method will return the typedTerm that represents the metaTheorem teo == true
      * @param teo: theorem to be turned into teo == true

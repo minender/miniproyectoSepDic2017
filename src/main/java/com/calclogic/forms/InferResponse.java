@@ -379,7 +379,6 @@ public class InferResponse extends GenericResponse{
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
-
         if (isRootTeorem && methodTerm == null)
             cambiarMetodo = "1";
         else if (isRootTeorem && ProofBoolean.isWaitingMethod(methodTerm)) 

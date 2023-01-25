@@ -274,7 +274,7 @@ public class CrudOperationsImpl implements CrudOperations {
     @Override
     public Term findStatement(GenericResponse response, String nStatement, String username, 
                                 ResuelveManager resuelveManager, DisponeManager disponeManager){
-        Term statementTerm = null;
+        TypedA statementTerm = null;
         if (nStatement.length() >= 4) {
             // FIND THE THEOREM BEING USED IN THE HINT
             String tipoTeo = nStatement.substring(0, 2);
@@ -291,16 +291,18 @@ public class CrudOperationsImpl implements CrudOperations {
                     statementTerm = (resuelve!=null?resuelve.getTeorema().getTeoTerm():null);*/
                     break;
                 case "MT":
-                    Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
+                    /*Dispone dispone = disponeManager.getDisponeByUserAndTeoNum(username, numeroTeo);
                     if (dispone == null){
                         dispone = disponeManager.getDisponeByUserAndTeoNum("AdminTeoremas", numeroTeo);
                     }
-                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);
+                    statementTerm = (dispone!=null?dispone.getMetateorema().getTeoTerm():null);*/
+                    statementTerm = new TypedA(numeroTeo,username);
+                    statementTerm = MetaTheorem.metaTheorem3(statementTerm, statementTerm.getCombDBType(), username);
                     break;
                 default:
                     response.setError("statement format error");
             }
-            if (((TypedA)statementTerm).getNSt().equals("")) {
+            if (statementTerm.getNSt().equals("")) {
                 response.setError("The statement doesn't exist");
             }
         }

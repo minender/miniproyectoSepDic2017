@@ -902,9 +902,9 @@ public class InferController {
             // ---- End of assigning "formulaTerm" 
 
             if (nSol.equals("new")){
-                if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,null) != 1) )    // Equivalence ==
+                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
+                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null) != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null) != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");
@@ -915,8 +915,8 @@ public class InferController {
                 }
                 else{
                     // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
-                    boolean containT = formulaTerm.containT();
-                    formulaTerm = formulaTerm.setToPrint(simboloManager);
+                    boolean containT = (formulaTerm == null?false:formulaTerm.containT());
+                    formulaTerm = (formulaTerm == null?null:formulaTerm.setToPrint(simboloManager));
                     if (newMethod.equals("DM") && !containT)
                         solucion = new Solucion(resuelveAnterior, false, formulaTerm, "EO "+newMethod, crudOp);
                     else 
@@ -932,9 +932,9 @@ public class InferController {
                 // When the proof already exists in the DB, we obtain the solution from it.
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username); 
                 methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
-                if ( ("CR".equals(newMethod) && ((opId=crudOp.binaryOperatorId(formulaAnterior,methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && (crudOp.binaryOperatorId(formulaAnterior,methodTerm) != 1) )    // Equivalence ==
+                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
+                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),methodTerm) != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),methodTerm) != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");
@@ -1055,14 +1055,16 @@ public class InferController {
                                              @RequestParam(value="nTheo") String nTheo
                                             )
     {
-        Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo,true).getTeorema().getTeoTerm();
+        //Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo,true).getTeorema().getTeoTerm();
 
         // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
-        Term metaTheo = MetaTheorem.metaTheorem(statement).type();
-        String str = "<span>("+nTheo+")" + " with Metatheorem (" + "3.7" +"):$~~~" + metaTheo.toStringLaTeX(simboloManager,nTheo) + "$</span>";
+        TypedA A = new TypedA(nTheo, username);
+        Term metaTheo = MetaTheorem.metaTheorem3(A, A.getCombDBType(), username).type();
+        String str = MicroServices.transformLaTexToHTML("$~~~"+metaTheo.toStringLaTeX(simboloManager,"MT-"+nTheo)+"$");
+        str = "("+nTheo+")" + " with Metatheorem (" + "3.7" +"):<span id=clickMT"+nTheo+">" + str + "</span>";
 
         JSONObject json = new JSONObject();
-        json.put("string", MicroServices.transformLaTexToHTML(str));
+        json.put("string", str);
         return json;
     }
 }

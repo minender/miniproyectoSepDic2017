@@ -260,13 +260,12 @@ function clickOperator(Math1,myField,teoid,vars){
             targetString = 'click@'+teoid.substring(3);
         }
         else if (teoid.substring(0,3)==="MT-"){
-            targetString = 'clickmeta@'+teoid.substring(3);
+            targetString = 'click@MT-'+teoid.substring(3);
         }
         if (!event){
             event = window.event;
         };
         var target = event.toElement || event.target;
-
         // This is to avoid that the user selects the theorem by clicking any part of it that is
         // not the main operator. If they click another part, this while will look for the parents
         // until there are no more, so the value will be null, and therefore we will not enter the if.

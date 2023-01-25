@@ -91,7 +91,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
             for(Resuelve resu: resuelves){
                 c[0] = 0;
                 theorem = resu.getTeorema().getTeoTerm(); // This is the theorem that is in the database
-                Term noEqTheo = ((Term)theorem).setToPrinting(resu.getVariables(),s,c); 
+                Term noEqTheo = ((Term)theorem).setToPrinting(resu.getVariables(),s,c);
                 //System.out.println(c);
                 //mt = new App(new App(new Const("c_{1}"),new Const("true")),noEqTheo); // theorem == true
                 // acomodar esto para crear mt dependiendo de los metateoremas que se tienen guardados
@@ -103,7 +103,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                 // If the current theorem or theorem==true matches the final expression
                 else if(noEqTheo.equals(finalExpr)){ //|| mt.equals(finalExpr)){
                     equanimityExpr = new TypedM(c[0],resu.getNumeroteorema(),username);
-                } 
+                }
                 else {
                     // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
                     // >>> It would not work if we did it backwards: (finalExpr, theorem)
@@ -111,10 +111,10 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                     Sust sust = eq.mgu(s);
 
                     // Case whe lanst line is an instantiation of the compared theorem
-                    if (sust != null){
+                    if (sust != null) {
                         // The equanimity is applied with the instantiated theorem
                         equanimityExpr = new TypedApp(new TypedI(sust), new TypedM(c[0],resu.getNumeroteorema(), username)); 
-                    }   
+                    }
                 }
                 if (equanimityExpr != null){
                     return new TypedApp(new TypedApp(new TypedS(proof.type()), proof), equanimityExpr);

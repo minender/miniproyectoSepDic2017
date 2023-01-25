@@ -17,7 +17,7 @@ public class TypedM extends TypedA implements TypedTerm {
     private String proofTemplate_;
     private Term proof_;
     
-    public TypedM(int opId,String nTeo, String user) throws TypeVerificationException {
+    public TypedM(int opId, String nTeo, String user) throws TypeVerificationException {
         super(nTeo, user);
         Term type = super.type_;
         id_ = 1;
@@ -28,11 +28,11 @@ public class TypedM extends TypedA implements TypedTerm {
         else{
             //A_ = new TypedA(type, variables_, nSt_, combDBType_);
             Term lambType = super.type(); //A_.type();
-            String arg2 = ((App)((App)lambType).p).q.body().toString();
-            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} ("+arg2+") x_{122}}",user);
+            String arg2 = ((App)lambType).q.body().toString();
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
             aux = new TypedApp(aux,new TypedA(type, variables_, nSt_, combDBType_));
-            proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
-            proof_ = new TypedApp(aux,proof_);          
+            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+            proof_ = new TypedApp(aux,proof_);
         }
     }
     
@@ -46,10 +46,10 @@ public class TypedM extends TypedA implements TypedTerm {
         else{
             //A_ = new TypedA(type, variables_, nSt_, combDBType_);
             Term lambType = super.type(); //A_.type();
-            String arg2 = ((App)((App)lambType).p).q.body().toString();
-            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} ("+arg2+") x_{122}}",user);
+            String arg2 = ((App)lambType).q.body().toString();
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
             aux = new TypedApp(aux,new TypedA(type, variables_, nSt_, combDBType_));
-            proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
             proof_ = new TypedApp(aux,proof_);          
         }
     }
@@ -77,13 +77,13 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
         if (id == 1 || id == 2) {
             // A_ = ((TypedA)proof);
             Term lambType = super.type();
-            String arg2 = ((App)((App)lambType).p).q.body().toString();
-            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} ("+arg2+") x_{122}}",user);
+            String arg2 = ((App)lambType).q.body().toString();
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
             aux = new TypedApp(aux,proof);
             if (id == 1)
-               proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+               proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
             else
-               proof_ = CombUtilities.getTerm("I^{[x_{112}:="+arg2+"]} (A^{= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} c_{"+opId+"})} A^{= T c_{8}})", user);
+               proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} (A^{= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} c_{"+opId+"})} A^{= T c_{8}})", user);
             proof_ = new TypedApp(aux,proof_);
         }
         else if (id == 3) {
