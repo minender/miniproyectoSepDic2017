@@ -1,31 +1,32 @@
-La entidad Categoria deberia ser debil de usuario
-en ifer.jsp se usa el resuelveManager dentro de un ciclo para ver si el teorema esta resuelto o no, esto es ineficiente
-Al darle a demostrar deben aparecer los teoremas (no los axiomas) clickeables para escojer cual se va a demostrar
-Si un teorema no admite un metodo de demostracion debe la opcion estar inabilitada
-Has un orderby por numero de teorema a la lista de teoremas en los queries que ordene 3.4, 3.4.a y 3.5 en ese orden
-Los metateoremas se desbloquean cuando estan demostrados todos los teoremas que usa como hipotesis
+* La entidad Categoria deberia ser débil de usuario.
+* En infer.jsp se usa el resuelveManager dentro de un ciclo para ver si el teorema está resuelto o no, esto es ineficiente.
+* Al darle a demostrar deben aparecer los teoremas (no los axiomas) clickeables para escojer cuál se va a demostrar.
+* Si un teorema no admite un método de demostración, debe la opcion estar inhabilitada.
+* Haz un orderby por número de teorema a la lista de teoremas en los queries que ordene 3.4, 3.4.a y 3.5 en ese orden.
+* Los metateoremas se desbloquean cuando están demostrados todos los teoremas que usa como hipótesis.
 
 Nuevos
 
-Cambiar el diseño de base de datos y hacer la migracion
-Hacer un plan de pruebas de flujo de navegacion y automatizar las misma usando selenium
-Hacer documentos del nuevo diseño de base de datos
-Estamos trabajando con un sistema de abreviacion en donde hace falta conocer cual es el metodo de demostracion usado
-Sabiendo cual es el metodo de demostracion usado se construye el arbol agregando los nodos correspondientes se podra inferir?
-Estudiando el arbol parcial de derivacion, se puede inferir el metodo? si es asi no hace falta un campo en la tabla
-Del arbol de derivacion final se puede deducir cual es el metodo de demostracion?
-Idear un sistema homogeneo de creacion del arbol, basado en herencia, para todos los metodos de demostracion
-Arreglar inferencia de tipo para el teorema E.p == algo
-Arreglar la automatic substitution cuando hay aplicaciones funcionales en los paratodo y existe
-Utilizar el metateorema 2 del libro para partir de un lado cuando la igualdad = es de terminos
-Arreglar el problema de que nodejs no puede procesar string en latex muy largos, por ejemplo el 
-teorema 9.9 por metodo directo en el primer paso aplicando 3.52 en el consecuente arroja este error de una
-Arreglar el metateorema del True para teoremas que no contengan T
-Revisar el formulario de editar simbolo si carga los campos que estan en la base de datos
-Modificar que los datos inferibles del simbolo como infijo o rightassociativity se carguen en el formulario 
-de editar simbolo sin que esten guardados en la base de datos
-Arreglar el orden en que se ordenan las variables libres y por ende el orden en que se abstraen las mismas para 
-que se puedan reconocer cuando un teorema ya existe salvo el nombre de las variables en todos los casos
-Se lanza una excepcion cuando se trata de editar un teorema siendo AdminTeoremas
-Siempre que se hace click en el + de un teorema, se hace el ajax para cargar todos los metateoremas, es suficiente 
-que el ajax se haga solo la primera vez
+* Cambiar el diseño de base de datos y hacer la migración.
+* Hacer un plan de pruebas de flujo de navegación y automatizar las misma usando selenium.
+* Hacer documentos del nuevo diseño de base de datos.
+* Estamos trabajando con un sistema de abreviación en donde hace falta conocer cuál es el metodo de demostración usado.
+* Sabiendo cuál es el método de demostración usado, se construye el árbol agregando los nodos correspondientes. ¿Se podrá inferir?
+* Estudiando el árbol parcial de derivación, ¿se puede inferir el método? Si es así, no hace falta un campo en la tabla.
+* Del árbol de derivación final ¿se puede deducir cuál es el método de demostración?
+* Idear un sistema homogéneo de creación del árbol, basado en herencia, para todos los métodos de demostración.
+* Arreglar inferencia de tipo para el teorema E.p == algo.
+* Arreglar la automatic substitution cuando hay aplicaciones funcionales en los paratodo y existe.
+* Utilizar el metateorema 2 del libro para partir de un lado cuando la igualdad = es de terminos.
+* Arreglar el problema de que Node.js no puede procesar string en latex muy largos, por ejemplo el 
+  teorema 9.9 por método directo en el primer paso aplicando 3.52 en el consecuente arroja este error de una.
+* Arreglar el metateorema del True para teoremas que no contengan T.
+* Revisar el formulario de editar símbolo si carga los campos que están en la base de datos.
+* Modificar que los datos inferibles del símbolo como infijo o rightassociativity se carguen en el formulario 
+  de editar simbolo sin que estén guardados en la base de datos.
+* Arreglar el orden en que se ordenan las variables libres y, por ende, el orden en que se abstraen las mismas para 
+  que se puedan reconocer cuando un teorema ya existe salvo el nombre de las variables en todos los casos.
+* Se lanza una excepción cuando se trata de editar un teorema siendo AdminTeoremas.
+* Siempre que se hace click en el + de un teorema, se hace el ajax para cargar todos los metateoremas, pero es suficiente 
+  que el ajax se haga sólo la primera vez.
+* Los métodos de debilitamiento / fortalecimiento no están funcionando.
