@@ -808,11 +808,7 @@ public class InferController {
         Term methodTerm, typedTerm;
         methodTerm = typedTerm = null;
 
-        if ("SS".equals(newMethod)){
-            // if (((App)((App)term).p).q.containT()){
-            //     response.setErrorParser1(true);
-            //     return response;
-            // }
+        if ("SS".equals(newMethod) || "WS".equals(newMethod)){
             response.setLado("1");
         }
         term = new TypedA(term,username).type();
@@ -973,30 +969,24 @@ public class InferController {
 
             if (sideOrTransitive){
                 // CAUTION: The controller sets the String null parameters as ""
-                if ("".equals(lado)){ // This does not occur in Starting from one side method, so we are in a transitive one
+                if ("TR".equals(newMethod)){
                     opId = crudOp.binaryOperatorId(formulaTerm,null);
+                    String opNotation = crudOp.getGlobalInfo().operatorStrNotationFromId(opId);
 
-                    switch (opId){
-                        case 2: // Right arrow ==> 
-                            lado = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "i" : "d");
-                            break;
-                        case 3: // Left arrow <==
-                            lado = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "d" : "i");
-                            break;
-                        default:
-                            // **** For the "TR" method we should check first if the operator is transitive
-                            // **** Also, the user should be able to start from whichever side they want
-                            lado = "TR".equals(newMethod) ? "i" : null;
-                            break;
+                    if ("Rightarrow".equals(opNotation) || "Leftarrow".equals(opNotation)){
+                        lado = null;
+                    }
+                    else{
+                        // **** For the "TR" method we should check first if the operator is transitive
+                        lado = "i";
                     }
                 }
-                if (!"".equals(lado)){ // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
+                else{
                     response.setLado(lado);
-                    formulaTerm = lado.equals("i") ? ((App)formulaTerm).q : ((App)((App)formulaTerm).p).q;  
+                    // I am not sure if formulaTerm will always contain T
+                    Term formulaWithoutT = formulaTerm.containT() ? formulaTerm.setToPrinting("", simboloManager) : formulaTerm; 
+                    formulaTerm = lado.equals("i") ? ((App)formulaWithoutT).q : ((App)((App)formulaWithoutT).p).q;  
                 } 
-                else {
-                    throw new ClassCastException("Error");
-                }
 
                 if (nSol.equals("new")) {
                     typedTerm = formulaTerm;

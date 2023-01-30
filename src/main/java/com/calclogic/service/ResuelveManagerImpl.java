@@ -380,7 +380,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * 
      * @param username Is the string with which the user logs in, and that we use to filter the search.
      * @param symbolNotation Like c_{1}
-     * @return If the symbolNotation represents a reflexive operator or not
+     * @return If the symbolNotation represents a reflexive operator (1 or 2, depending on the kind) or not (0)
      */ 
     @Override
     @Transactional

@@ -3,6 +3,7 @@ package com.calclogic.proof;
 import com.calclogic.forms.GenericResponse;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
+import com.calclogic.global.Information;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.DisponeManager;
 
@@ -163,4 +164,9 @@ public interface CrudOperations {
      *         last proof method. If currentMethod encode an Atomic method return null.
      */
     public Term eraseMethod(String currentMethod);
+
+    /**
+     * Returns the Information class object
+     */
+    public Information getGlobalInfo();
 }

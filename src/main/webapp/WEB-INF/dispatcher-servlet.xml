@@ -139,6 +139,8 @@
     <bean id="proofTemplateDAO" class="com.calclogic.dao.ProofTemplateDaoImpl"></bean>
     <bean id="proofTemplateManager" class="com.calclogic.service.ProofTemplateManagerImpl"></bean>
 
+    <bean id="globalInfo" class="com.calclogic.global.InformationImpl"></bean>
+
     <bean id="crudOp" class="com.calclogic.proof.CrudOperationsImpl"></bean>
     <bean id="genericMethod" class="com.calclogic.proof.GenericProofMethodImpl"></bean>
     <bean id="andIntroduction" class="com.calclogic.proof.AndIntroductionMethodImpl"></bean>

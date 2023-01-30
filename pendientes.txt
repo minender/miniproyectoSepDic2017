@@ -23,10 +23,11 @@ Nuevos
 * Arreglar el metateorema del True para teoremas que no contengan T.
 * Revisar el formulario de editar símbolo si carga los campos que están en la base de datos.
 * Modificar que los datos inferibles del símbolo como infijo o rightassociativity se carguen en el formulario 
-  de editar simbolo sin que estén guardados en la base de datos.
+  de editar símbolo sin que estén guardados en la base de datos.
 * Arreglar el orden en que se ordenan las variables libres y, por ende, el orden en que se abstraen las mismas para 
   que se puedan reconocer cuando un teorema ya existe salvo el nombre de las variables en todos los casos.
 * Se lanza una excepción cuando se trata de editar un teorema siendo AdminTeoremas.
 * Siempre que se hace click en el + de un teorema, se hace el ajax para cargar todos los metateoremas, pero es suficiente 
   que el ajax se haga sólo la primera vez.
 * Los métodos de debilitamiento / fortalecimiento no están funcionando.
+* 

@@ -60,8 +60,7 @@
     var methodPhrase = {
         DM: "Direct",
         SS: "Starting from one side",
-        WE: "Weakening",
-        ST: "Strengthening",
+        WS: "Weakening/Strengthening",
         ND: "Natural Deduction",
         TR: "Transitivity",
         CO: "Contradiction",
@@ -143,13 +142,18 @@
                     break;
 
                 case "SS": // One-sided method
+                case "WS": // Weakening/Strengthening method
                     message = 'Please, select the side from which the proof will begin.';
 
                     // If the AJAX is called from here, we must put the current expression as clickable.
                     // The other case will be called from the view "infer.jsp"
-                    method = "SS Clickable"; 
+                    if (method === "SS"){
+                        method = "SS Clickable";
+                    }
+                    else {
+                         method = "WS Clickable";
+                    }
                     break;
-
                 case "CA": // Proof by cases method
                     message = 'Please, enter the number of cases that will be proved.';
                     $('#input_cases').removeClass('d-none');
@@ -164,9 +168,6 @@
                 case "CR": // Counter-reciprocal method
                     message = "Please, select another method to do the sub-proof.";
                     break;
-
-                case "WE": // Weakening method
-                case "ST": // Strengthening method
                 case "TR": // Transitivity method
                 default:
                     break;

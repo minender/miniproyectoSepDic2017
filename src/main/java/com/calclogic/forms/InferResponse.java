@@ -5,7 +5,6 @@
  */
 package com.calclogic.forms;
 
-import com.calclogic.entity.Resuelve;
 import com.calclogic.proof.ProofBoolean;
 import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Const;
@@ -14,15 +13,11 @@ import com.calclogic.service.DisponeManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.externalservices.MicroServices;
-import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedM;
-import com.calclogic.parse.CombUtilities;
-import com.calclogic.parse.TermUtilities;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.GenericProofMethod;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.calclogic.service.ProofTemplateManager;
 
 /**
  *
@@ -294,27 +289,45 @@ public class InferResponse extends GenericResponse{
     {
         newTerm = newTerm.setToPrint(s);
         //Term newTerm = new TypedA(newTerm,user).type();
-        if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // en plena recursion
+        if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // Still in recursion
             return newTerm.toStringLaTeX(simboloManager,"");
         }
         else if ("DM".equals(clickable)){ // End of the impression
             return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringLaTeX(simboloManager,"") + "}}";  
         }  
-        else if ("SS".equals(clickable)) { // End of the impression
-            String formulaDer = ((App)((App)newTerm).p).q.toStringLaTeX(simboloManager,"");
-            String formulaIzq = ((App)newTerm).q.toStringLaTeX(simboloManager,"");
+        else if ("SS".equals(clickable) || "WS".equals(clickable)) { // End of the impression
+            String formulaR = ((App)((App)newTerm).p).q.toStringLaTeX(simboloManager,""); // Right
+            String formulaL = ((App)newTerm).q.toStringLaTeX(simboloManager,""); // Left
             Term operatorTerm = ((App)((App)newTerm).p).p;
-            
-            // The Starting From One Side method only admits reflexive operators
-            if (resuelveManager.isReflexiveOperatorForUser(user, operatorTerm.toString()) == 0){
-                throw new Exception();
+
+            String rightClickString, leftClickString;
+
+            if ("SS".equals(clickable)){
+                // The Starting From One Side method only admits reflexive operators
+                if (resuelveManager.isReflexiveOperatorForUser(user, operatorTerm.toString()) == 0){
+                    throw new Exception();
+                }
+                rightClickString = leftClickString = "teoremaClick";
+            } 
+            else{ // Weakening/Strengthening method
+                String opLatexNotation = proofCrudOperations.getGlobalInfo().operatorStrNotationFromCNotation(operatorTerm.toString());
+                if ("Rightarrow".equals(opLatexNotation)){
+                    rightClickString = "strengtheningClick";
+                    leftClickString = "weakeningClick";
+                }
+                else if ("Leftarrow".equals(opLatexNotation)){
+                    rightClickString = "weakeningClick";
+                    leftClickString = "strengtheningClick";
+                }
+                else{
+                    throw new Exception();
+                }
             }
-            
-            formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
-            formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
+            formulaR = "\\cssId{d}{\\class{"+ rightClickString +"}{\\style{cursor:pointer; color:#08c;}{"+ formulaR + "}}}";
+            formulaL = "\\cssId{i}{\\class{"+ leftClickString +"}{\\style{cursor:pointer; color:#08c;}{"+ formulaL + "}}}";
 
             String operatorLaTeX = operatorTerm.toStringLaTeX(simboloManager,"");
-            return formulaIzq+"$ $"+ operatorLaTeX +"$ $" + formulaDer;
+            return formulaL+"$ $"+ operatorLaTeX +"$ $" + formulaR;
         }
         else{ // clickable.equals("n")
             return newTerm.toStringLaTeX(simboloManager,"");

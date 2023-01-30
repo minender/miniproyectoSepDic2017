@@ -13,6 +13,7 @@ import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.lambdacalculo.TypedM;
+import com.calclogic.global.Information;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.service.ResuelveManager;
@@ -60,6 +61,9 @@ public class CrudOperationsImpl implements CrudOperations {
     private TransitivityMethod transitivity;
     @Autowired
     private WeakeningMethod weakening;
+
+    @Autowired
+    public Information globalInfo;
 
     /**
      * This function gives the corresponding class of the specified
@@ -578,5 +582,13 @@ public class CrudOperationsImpl implements CrudOperations {
             
             return currMethodTerm;
         }
+    }
+
+    /**
+     * Returns the Information class object
+     */
+    @Override
+    public Information getGlobalInfo(){
+        return globalInfo;
     }
 }

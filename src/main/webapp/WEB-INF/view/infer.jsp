@@ -72,6 +72,25 @@
                         clickInTheoremAllowed = true;
                     }
                 });
+
+                $('#formula').on('click','.strengtheningClick',async function(event){
+                    if (clickInTheoremAllowed){
+                        clickInTheoremAllowed = false;
+                        // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
+                        await proofMethodAjax("ST", null, this.id);
+                        clickInTheoremAllowed = true;
+                    }
+                });
+
+                $('#formula').on('click','.weakeningClick',async function(event){
+                    if (clickInTheoremAllowed){
+                        clickInTheoremAllowed = false;
+                        // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
+                        await proofMethodAjax("WE", null, this.id);
+                        clickInTheoremAllowed = true;
+                    }
+                });
+
                 
                 var p1=[];
                 var p2=[];
@@ -198,14 +217,14 @@
             <div class="col-lg-5" style="padding-right: 0px; padding-left: 0px;">
                 <div id="metodosDiv">
                     <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Proof method</h3>
-                    <!-- Algunos métodos sólo deberían estar visibles después de que el usuario los desbloquee haciendo las demostraciones necesarias -->
+                    <!-- Some methods should only be visible after the user unlocks them by doing the
+                         necessary demonstrations -->
                     <select class="form-control" id="metodosDemostracion">
                         <option value="0">Select a method</option>
                         <option value="DM">Direct method</option>
                         <option value="SS">Starting from one side</option>
                         <option value="TR">Transitivity</option>
-                        <option value="WE">Weakening</option>
-                        <option value="ST">Strengthening</option>
+                        <option value="WS">Weakening/Strengthening</option>
                         <!--<option value="ND">Natural deduction</option>-->
                         <option value="CO">Proof by contradiction</option>
                         <option value="CR">Counter-reciprocal</option>
