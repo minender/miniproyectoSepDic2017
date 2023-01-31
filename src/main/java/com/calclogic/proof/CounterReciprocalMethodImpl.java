@@ -11,9 +11,11 @@ import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.parse.CombUtilities;
+import com.calclogic.service.SimboloManager;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -21,6 +23,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implements CounterReciprocalMethod{
+    @Autowired
+    private SimboloManager simboloManager;
 
     public CounterReciprocalMethodImpl(){
         setInitVariables("CR");
@@ -52,6 +56,8 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
      */
     @Override
     public Term initFormula(Term beginFormula){
+        beginFormula = beginFormula.containT() ? beginFormula.setToPrint(simboloManager) : beginFormula;
+
         // "beginFormula" is of the form  [L op R], where "op" is ==> or <==
         Term leftSide = ((App)beginFormula).q; // L
         Term rightSide = ((App)((App)beginFormula).p).q; // R
@@ -89,7 +95,7 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
     @Override
     protected Term auxFinLinearRecursiveMethodProof(String user, Term formulaBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
-    {
+    { 
         String operatorIdSt = binaryOperatorId(formulaBeingProved).toString();
 
         // This string can say: [p => q == !q => !p] or [p <= q == !q <= !p] as well

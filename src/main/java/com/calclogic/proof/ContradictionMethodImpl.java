@@ -10,9 +10,11 @@ import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.parse.CombUtilities;
+import com.calclogic.service.SimboloManager;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ContradictionMethodImpl extends GenericProofMethodImpl implements ContradictionMethod {
+    @Autowired
+    private SimboloManager simboloManager;
 
     public ContradictionMethodImpl(){
         setInitVariables("CO");
@@ -34,10 +38,10 @@ public class ContradictionMethodImpl extends GenericProofMethodImpl implements C
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula){
+    public Term initFormula(Term beginFormula){ 
         // This is saying: ¬formula => false, but the notation must be prefix and the first operand goes to the right.
         // So, here what is really expressed is: (=> false) (¬formula).
-        return new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),beginFormula));
+        return new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),beginFormula.setToPrint(simboloManager)));
     }
 
     /**

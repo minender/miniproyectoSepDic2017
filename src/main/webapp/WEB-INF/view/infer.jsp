@@ -215,25 +215,8 @@
 
             <!--<div style="float: right; width: 40%;">-->
             <div class="col-lg-5" style="padding-right: 0px; padding-left: 0px;">
-                <div id="metodosDiv">
-                    <h3 style="color: #08c; margin: 0px;padding:0px;height:40px;">Proof method</h3>
-                    <!-- Some methods should only be visible after the user unlocks them by doing the
-                         necessary demonstrations -->
-                    <select class="form-control" id="metodosDemostracion">
-                        <option value="0">Select a method</option>
-                        <option value="DM">Direct method</option>
-                        <option value="SS">Starting from one side</option>
-                        <option value="TR">Transitivity</option>
-                        <option value="WS">Weakening/Strengthening</option>
-                        <!--<option value="ND">Natural deduction</option>-->
-                        <option value="CO">Proof by contradiction</option>
-                        <option value="CR">Counter-reciprocal</option>
-                        <option value="AI">Conjunction by parts</option>
-                        <option value="MI">Mutual implication</option>
-                        <option value="CA">Case analysis</option>
-                        <option value="WI">Witness</option>
-                    </select>
-                </div>
+                <!-- To show the menu in which the proof methods can be selected -->
+                <jsp:include page="selectOptions/selectProofMethod.jsp"/>
 
                 <article id="teoremas" class="teoremas">
                     <div class="row flex align-items-center">

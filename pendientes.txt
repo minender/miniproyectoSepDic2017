@@ -30,4 +30,9 @@ Nuevos
 * Siempre que se hace click en el + de un teorema, se hace el ajax para cargar todos los metateoremas, pero es suficiente 
   que el ajax se haga sólo la primera vez.
 * Los métodos de debilitamiento / fortalecimiento no están funcionando.
-* 
+
+Ronald
+
+* Revisar si la función "isReflexiveOperatorForUser" de ResuelveManager funciona para todos los casos o no.
+* En los finish de Contra-recíproco y Contradicción falta ver si hay que hacer un setToPrint/setToPrinting.
+* Los dos métodos mencionados están poniendo como operador principal a la equivalencia siempre.
