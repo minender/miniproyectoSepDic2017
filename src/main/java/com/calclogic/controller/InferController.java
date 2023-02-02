@@ -983,8 +983,10 @@ public class InferController {
                 }
                 else{
                     response.setLado(lado);
-                    // I am not sure if formulaTerm will always contain T
-                    Term formulaWithoutT = formulaTerm.containT() ? formulaTerm.setToPrint(simboloManager) : formulaTerm; 
+                    if (!formulaTerm.containT()){
+                        throw new ClassCastException();
+                    }
+                    Term formulaWithoutT = formulaTerm.setToPrint(simboloManager);
                     formulaTerm = lado.equals("i") ? ((App)formulaWithoutT).q : ((App)((App)formulaWithoutT).p).q;  
                 } 
 

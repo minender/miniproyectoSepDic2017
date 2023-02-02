@@ -287,7 +287,7 @@ public class InferResponse extends GenericResponse{
                                SimboloManager s) 
             throws Exception
     {
-        newTerm = newTerm.setToPrint(s);
+        newTerm = newTerm.containT() ? newTerm.setToPrint(s) : newTerm;
         //Term newTerm = new TypedA(newTerm,user).type();
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // Still in recursion
             return newTerm.toStringLaTeX(simboloManager,"");
