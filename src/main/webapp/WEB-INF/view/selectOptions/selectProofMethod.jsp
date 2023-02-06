@@ -15,7 +15,7 @@
         <option title="Reset the chosen method" value="0">Select a method</option>
         <option title="Start from the theorem to be proved and end in an already proven theorem, or viceversa" value="DM">Direct method</option>
         <option title="When having an equality or equivalence, start from the desired side of it and end in the other" value="SS">Starting from one side</option>
-        <option title="Like starting from one side, but having the possibility of applying a transitive operator in any step" value="TR">Transitivity</option>
+        <option title="Like starting from one side, but having the possibility of applying a transitive operator in any step that is not =, ≡, => or <=" value="TR">Transitivity</option>
         <option title="Start from one side of an implication or consequence, and end in the other" value="WS">Weakening/Strengthening</option>
         <!--<option value="ND">Natural deduction</option>-->
         <option title="Prove that the negation of the theorem implies false" value="CO">Proof by contradiction</option>
@@ -23,6 +23,6 @@
         <option title="Having a conjunction, prove each operand separately" value="AI">Conjunction by parts</option>
         <option title="Transform an equivalence in a conjuntion of an implication and a consequence" value="MI">Mutual implication</option>
         <option title="Formulate some expressions (cases), prove that each one implies the theorem, and prove that the disjuntion of all the cases is true" value="CA">Case analysis</option>
-        <option title="" value="WI">Witness</option>
+        <option title="Prove (exists x | R : P) => Q by introducing a witness x' and proving (R and P)[x:=x'] => Q" value="WI">Witness</option>
     </select>
 </div>

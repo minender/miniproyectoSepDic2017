@@ -1,0 +1,20 @@
+<?xml  version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="globalInfo" class="com.calclogic.global.InformationImpl">
+        <!-- Operators of the database. Update this when updating the database-->
+        <property name="o1" value="equiv" />
+        <property name="o2" value="Rightarrow" />
+        <property name="o3" value="Leftarrow" />
+        <property name="o4" value="vee" />
+        <property name="o5" value="wedge" />
+        <property name="o6" value="not equiv" />
+        <property name="o7" value="neg" />
+        <property name="o8" value="true" />
+        <property name="o9" value="false" />
+        <property name="o15" value="" />
+    </bean>
+</beans>

@@ -35,4 +35,3 @@ Ronald
 
 * Revisar si la función "isReflexiveOperatorForUser" de ResuelveManager funciona para todos los casos o no.
 * En los finish de Contra-recíproco y Contradicción falta ver si hay que hacer un setToPrint/setToPrinting.
-* Los dos métodos mencionados están poniendo como operador principal a la equivalencia siempre.

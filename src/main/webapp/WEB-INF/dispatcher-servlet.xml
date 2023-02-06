@@ -1,4 +1,5 @@
 <?xml  version="1.0" encoding="UTF-8"?>
+
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:aop="http://www.springframework.org/schema/aop"
@@ -24,6 +25,7 @@
     <mvc:resources mapping="/static/**" location="/resources/"/>
     <mvc:default-servlet-handler />
     <mvc:annotation-driven />
+
    
     <!--<bean id="aspecto" class="com.calclogic.service.Aspectos" />
     <aop:aspectj-autoproxy />-->
@@ -46,7 +48,7 @@
             <value>/WEB-INF/views/**/views.xml</value>
           </list>
         </property>-->
-     </bean>
+    </bean>
     
     <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
         <property name="definitions">
@@ -92,69 +94,15 @@
             </props>
         </property> 
     </bean>
-    
-    <bean id="usuarioDAO" class="com.calclogic.dao.UsuarioDaoImpl"></bean>
-    <bean id="usuarioManager" class="com.calclogic.service.UsuarioManagerImpl"></bean>
-    <bean id="terminoDAO" class="com.calclogic.dao.TerminoDaoImpl"></bean>
-    <bean id="terminoManager" class="com.calclogic.service.TerminoManagerImpl"></bean>
-    <bean id="predicadoDAO" class="com.calclogic.dao.PredicadoDaoImpl"></bean>
-    <bean id="predicadoManager" class="com.calclogic.service.PredicadoManagerImpl">
-    </bean>
-    <bean id="categoriaDAO" class="com.calclogic.dao.CategoriaDaoImpl"></bean>
-    <bean id="categoriaManager" class="com.calclogic.service.CategoriaManagerImpl">
-    </bean>
-    <bean id="materiaDAO" class="com.calclogic.dao.MateriaDaoImpl"></bean>
-    <bean id="materiaManager" class="com.calclogic.service.MateriaManagerImpl">
-    </bean>
-    <bean id="teoremaDAO" class="com.calclogic.dao.TeoremaDaoImpl"></bean>
-    <bean id="teoremaManager" class="com.calclogic.service.TeoremaManagerImpl">
-    </bean>
-    <bean id="resuelveDAO" class="com.calclogic.dao.ResuelveDaoImpl"></bean>
-    <bean id="resuelveManager" class="com.calclogic.service.ResuelveManagerImpl">
-    </bean>
-    <bean id="disponeDAO" class="com.calclogic.dao.DisponeDaoImpl"></bean>
-    <bean id="disponeManager" class="com.calclogic.service.DisponeManagerImpl">
-    </bean>
-    <bean id="metateoremaDAO" class="com.calclogic.dao.MetateoremaDaoImpl"></bean>
-    <bean id="metateoremaManager" class="com.calclogic.service.MetateoremaManagerImpl">
-    </bean>
-    <bean id="solucionDAO" class="com.calclogic.dao.SolucionDaoImpl"></bean>
-    <bean id="solucionManager" class="com.calclogic.service.SolucionManagerImpl">
-    </bean>
-    <bean id="teoriaDAO" class="com.calclogic.dao.TeoriaDaoImpl"></bean>
-    <bean id="teoriaManager" class="com.calclogic.service.TeoriaManagerImpl">
-    </bean>
-    <bean id="simboloDAO" class="com.calclogic.dao.SimboloDaoImpl"></bean>
-    <bean id="simboloManager" class="com.calclogic.service.SimboloManagerImpl">
-        <property name="propFunApp" value="10" />
-        <property name="termFunApp" value="10" />
-    </bean>
-    <bean id="mostrarCategoriaDAO" class="com.calclogic.dao.MostrarCategoriaDaoImpl">
-    </bean>
-    <bean id="mostrarCategoriaManager" class="com.calclogic.service.MostrarCategoriaManagerImpl">
-    </bean>
-    <bean id="incluyeDAO" class="com.calclogic.dao.IncluyeDaoImpl"></bean>
-    <bean id="incluyeManager" class="com.calclogic.service.IncluyeManagerImpl">
-    </bean>
-    <bean id="proofTemplateDAO" class="com.calclogic.dao.ProofTemplateDaoImpl"></bean>
-    <bean id="proofTemplateManager" class="com.calclogic.service.ProofTemplateManagerImpl"></bean>
 
-    <bean id="globalInfo" class="com.calclogic.global.InformationImpl"></bean>
+    <!-- Global info -->
+    <import resource="servletDependencies/global.xml"/>
 
-    <bean id="crudOp" class="com.calclogic.proof.CrudOperationsImpl"></bean>
-    <bean id="genericMethod" class="com.calclogic.proof.GenericProofMethodImpl"></bean>
-    <bean id="andIntroduction" class="com.calclogic.proof.AndIntroductionMethodImpl"></bean>
-    <bean id="caseAnalysis" class="com.calclogic.proof.CaseAnalysisMethodImpl"></bean>
-    <bean id="contradiction" class="com.calclogic.proof.ContradictionMethodImpl"></bean>
-    <bean id="counterReciprocal" class="com.calclogic.proof.CounterReciprocalMethodImpl"></bean>
-    <bean id="directMethod" class="com.calclogic.proof.DirectMethodImpl"></bean>
-    <bean id="equalityToOp" class="com.calclogic.proof.EqualityToOperatorImpl"></bean>
-    <bean id="operatorToEq" class="com.calclogic.proof.OperatorToEqualityImpl"></bean>
-    <bean id="mutualImplication" class="com.calclogic.proof.MutualImplicationMethodImpl"></bean>
-    <bean id="startingOneSide" class="com.calclogic.proof.StartingOneSideMethodImpl"></bean>
-    <bean id="strengthening" class="com.calclogic.proof.StrengtheningMethodImpl"></bean>
-    <bean id="transitivity" class="com.calclogic.proof.TransitivityMethodImpl"></bean>
-    <bean id="weakening" class="com.calclogic.proof.WeakeningMethodImpl"></bean>
+    <!-- "dao" and "service" packages -->
+    <import resource="servletDependencies/daoAndManager.xml"/>
+
+    <!-- "proof" package -->
+    <import resource="servletDependencies/proofRelated.xml"/>
 
     <bean id="staticContextInitializer" class="com.calclogic.lambdacalculo.StaticContextInitializer"></bean>
  
