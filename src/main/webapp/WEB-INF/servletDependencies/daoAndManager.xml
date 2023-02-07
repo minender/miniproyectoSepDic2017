@@ -1,0 +1,52 @@
+<?xml  version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="usuarioDAO" class="com.calclogic.dao.UsuarioDaoImpl"></bean>
+    <bean id="usuarioManager" class="com.calclogic.service.UsuarioManagerImpl"></bean>
+    <bean id="terminoDAO" class="com.calclogic.dao.TerminoDaoImpl"></bean>
+    <bean id="terminoManager" class="com.calclogic.service.TerminoManagerImpl"></bean>
+    <bean id="predicadoDAO" class="com.calclogic.dao.PredicadoDaoImpl"></bean>
+    <bean id="predicadoManager" class="com.calclogic.service.PredicadoManagerImpl">
+    </bean>
+    <bean id="categoriaDAO" class="com.calclogic.dao.CategoriaDaoImpl"></bean>
+    <bean id="categoriaManager" class="com.calclogic.service.CategoriaManagerImpl">
+    </bean>
+    <bean id="materiaDAO" class="com.calclogic.dao.MateriaDaoImpl"></bean>
+    <bean id="materiaManager" class="com.calclogic.service.MateriaManagerImpl">
+    </bean>
+    <bean id="teoremaDAO" class="com.calclogic.dao.TeoremaDaoImpl"></bean>
+    <bean id="teoremaManager" class="com.calclogic.service.TeoremaManagerImpl">
+    </bean>
+    <bean id="resuelveDAO" class="com.calclogic.dao.ResuelveDaoImpl"></bean>
+    <bean id="resuelveManager" class="com.calclogic.service.ResuelveManagerImpl">
+    </bean>
+    <bean id="disponeDAO" class="com.calclogic.dao.DisponeDaoImpl"></bean>
+    <bean id="disponeManager" class="com.calclogic.service.DisponeManagerImpl">
+    </bean>
+    <bean id="metateoremaDAO" class="com.calclogic.dao.MetateoremaDaoImpl"></bean>
+    <bean id="metateoremaManager" class="com.calclogic.service.MetateoremaManagerImpl">
+    </bean>
+    <bean id="solucionDAO" class="com.calclogic.dao.SolucionDaoImpl"></bean>
+    <bean id="solucionManager" class="com.calclogic.service.SolucionManagerImpl">
+    </bean>
+    <bean id="teoriaDAO" class="com.calclogic.dao.TeoriaDaoImpl"></bean>
+    <bean id="teoriaManager" class="com.calclogic.service.TeoriaManagerImpl">
+    </bean>
+    <bean id="simboloDAO" class="com.calclogic.dao.SimboloDaoImpl"></bean>
+    <bean id="simboloManager" class="com.calclogic.service.SimboloManagerImpl">
+        <property name="propFunApp" value="10" />
+        <property name="termFunApp" value="10" />
+    </bean>
+    <bean id="mostrarCategoriaDAO" class="com.calclogic.dao.MostrarCategoriaDaoImpl">
+    </bean>
+    <bean id="mostrarCategoriaManager" class="com.calclogic.service.MostrarCategoriaManagerImpl">
+    </bean>
+    <bean id="incluyeDAO" class="com.calclogic.dao.IncluyeDaoImpl"></bean>
+    <bean id="incluyeManager" class="com.calclogic.service.IncluyeManagerImpl">
+    </bean>
+    <bean id="proofTemplateDAO" class="com.calclogic.dao.ProofTemplateDaoImpl"></bean>
+    <bean id="proofTemplateManager" class="com.calclogic.service.ProofTemplateManagerImpl"></bean>
+</beans>

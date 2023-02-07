@@ -287,7 +287,11 @@ public class InferResponse extends GenericResponse{
                                SimboloManager s) 
             throws Exception
     {
+        System.out.println("\nEn clickableST");
+        System.out.println("    newTerm = "+newTerm);
         newTerm = newTerm.containT() ? newTerm.setToPrint(s) : newTerm;
+        System.out.println("    newTerm sin T = "+newTerm);
+        
         //Term newTerm = new TypedA(newTerm,user).type();
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // Still in recursion
             return newTerm.toStringLaTeX(simboloManager,"");

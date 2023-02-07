@@ -1,0 +1,21 @@
+<?xml  version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="crudOp" class="com.calclogic.proof.CrudOperationsImpl"></bean>
+    <bean id="genericMethod" class="com.calclogic.proof.GenericProofMethodImpl"></bean>
+    <bean id="andIntroduction" class="com.calclogic.proof.AndIntroductionMethodImpl"></bean>
+    <bean id="caseAnalysis" class="com.calclogic.proof.CaseAnalysisMethodImpl"></bean>
+    <bean id="contradiction" class="com.calclogic.proof.ContradictionMethodImpl"></bean>
+    <bean id="counterReciprocal" class="com.calclogic.proof.CounterReciprocalMethodImpl"></bean>
+    <bean id="directMethod" class="com.calclogic.proof.DirectMethodImpl"></bean>
+    <bean id="equalityToOp" class="com.calclogic.proof.EqualityToOperatorImpl"></bean>
+    <bean id="operatorToEq" class="com.calclogic.proof.OperatorToEqualityImpl"></bean>
+    <bean id="mutualImplication" class="com.calclogic.proof.MutualImplicationMethodImpl"></bean>
+    <bean id="startingOneSide" class="com.calclogic.proof.StartingOneSideMethodImpl"></bean>
+    <bean id="strengthening" class="com.calclogic.proof.StrengtheningMethodImpl"></bean>
+    <bean id="transitivity" class="com.calclogic.proof.TransitivityMethodImpl"></bean>
+    <bean id="weakening" class="com.calclogic.proof.WeakeningMethodImpl"></bean>
+</beans>
