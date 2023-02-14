@@ -200,16 +200,16 @@ public class InferResponse extends GenericResponse{
             if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula)){
                 if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 4){
                     typedTerm = ((TypedM)typedTerm).getProof();
-                    typedTerm = typedTerm.descendant("22212");
+                    typedTerm = typedTerm.des("22212");
                     typedTerm = ((TypedM)typedTerm).getProof();
-                    typedTerm = typedTerm.descendant("1");
+                    typedTerm = typedTerm.des("1");
                 }
                 else{
-                    typedTerm = typedTerm.descendant("2");
+                    typedTerm = typedTerm.des("2");
                 }
             }
             privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, 
-                                    methodTerm.descendant("2"), clickable, false);
+                                    methodTerm.des("2"), clickable, false);
         }
         else{
             this.setHistorial(header);
@@ -236,7 +236,7 @@ public class InferResponse extends GenericResponse{
         try{
             String statement;
             formula = formula.containT() ? formula.setToPrint(simboloManager) : formula;
-            Term newFormula = formula.descendant("2"); // First branch
+            Term newFormula = formula.des("2"); // First branch
             statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false) + "$");
             header += objectMethod.header("") + objectMethod.subProofInit(statement);
 
@@ -244,9 +244,9 @@ public class InferResponse extends GenericResponse{
                 historial = header;
             }
             // Proof of the first sub-case
-            else if ( methodTerm.descendant("1") instanceof Const ) {
+            else if ( methodTerm.des("1") instanceof Const ) {
                 privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, 
-                                        methodTerm.descendant("2"), clickable, false);
+                                        methodTerm.des("2"), clickable, false);
 
                 if (typedTerm == null || typedTerm.type()==null || !typedTerm.type().equals(newFormula)){
                     if (typedTerm != null){
@@ -257,7 +257,7 @@ public class InferResponse extends GenericResponse{
                     if (!clickable.equals("n")){
                         cambiarMetodo = "0"; 
                     }
-                    newFormula = formula.descendant("12"); // Second branch
+                    newFormula = formula.des("12"); // Second branch
                     statement = centeredBlock("$" + clickableST(user, newFormula, clickable, new Const("AI"), false) + "$");
                     historial += objectMethod.subProofInit(statement);
                 }
@@ -265,17 +265,17 @@ public class InferResponse extends GenericResponse{
             // Proof of a sub-case that is not the first one (sure?)
             else{
                 privateGenerarHistorial(user, newFormula, header, nTeo,   
-                                (ProofBoolean.isBranchedProof2Started(methodTerm) ? typedTerm.descendant("2") : typedTerm), 
-                                 valida, labeled, methodTerm.descendant("12"), clickable, false);
+                                (ProofBoolean.isBranchedProof2Started(methodTerm) ? typedTerm.des("2") : typedTerm), 
+                                 valida, labeled, methodTerm.des("12"), clickable, false);
 
-                newFormula = formula.descendant("12");
+                newFormula = formula.des("12");
                 statement  = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false) + "$");
                 header     = historial + objectMethod.subProofInit(statement);
                 historial  = "";
                 Term newTypedTerm;
                 newTypedTerm = proofCrudOp.getSubProof(typedTerm, methodTerm);
                 privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, 
-                                        methodTerm.descendant("2"), clickable, false);
+                                        methodTerm.des("2"), clickable, false);
             }
         } catch (Exception e) {
             this.setErrorParser1(true);
@@ -305,9 +305,9 @@ public class InferResponse extends GenericResponse{
             return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringLaTeX(simboloManager,"") + "}}";  
         }  
         else if ("SS".equals(clickable) || "WS".equals(clickable)) { // End of the impression
-            String formulaR = newTerm.descendant("12").toStringLaTeX(simboloManager,""); // Right
-            String formulaL = newTerm.descendant("2").toStringLaTeX(simboloManager,""); // Left
-            Term operatorTerm = newTerm.descendant("11");
+            String formulaR = newTerm.des("12").toStringLaTeX(simboloManager,""); // Right
+            String formulaL = newTerm.des("2").toStringLaTeX(simboloManager,""); // Left
+            Term operatorTerm = newTerm.des("11");
 
             String rightClickString, leftClickString;
 
@@ -456,8 +456,8 @@ public class InferResponse extends GenericResponse{
         if (typedTerm!=null && type == null && valida && !recursive) { // Case where what we want to print is the first line
             String firstLine;
             if(naturalSide){          
-                firstLine = typedTerm.descendant("12").toStringLaTeXLabeled(simboloManager);  
-                this.setHistorial(this.getHistorial() + header + "<br>Assuming H1: $" + typedTerm.descendant("2").toStringLaTeX(simboloManager, "") + "$" + centeredBlock("$"+firstLine));
+                firstLine = typedTerm.des("12").toStringLaTeXLabeled(simboloManager);  
+                this.setHistorial(this.getHistorial() + header + "<br>Assuming H1: $" + typedTerm.des("2").toStringLaTeX(simboloManager, "") + "$" + centeredBlock("$"+firstLine));
             }else {
                 firstLine = typedTerm.toStringLaTeXLabeled(simboloManager);
                 this.setHistorial(this.getHistorial() + header + centeredBlock("$"+firstLine));

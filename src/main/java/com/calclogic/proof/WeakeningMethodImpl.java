@@ -57,39 +57,37 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         
         while (t instanceof App) {
             Term nabla2 = nabla; // si no entra en ninguna guardia aborta el TApp(nabla,nabla)
-            if (((App)t).q instanceof Const && ((Const)((App)t).q).getId() == 7 ) {
+            if (t.des("2") instanceof Const && ((Const)t.des("2")).getId() == 7 ) {
                 Term root = nabla.type();
-                nabla2 = neg(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p);
-                t = ((App)t).p;
+                nabla2 = neg( root.des("2"), root.des("12"), (Const)root.des("11") );
+                t = t.des("1");
             }
-            else if (((App)t).q instanceof App && ((App)((App)t).q).p instanceof Const) {
-                if (((Const)((App)((App)t).q).p).getId() == 2 ) {
+            else if (t.des("2") instanceof App && t.des("21") instanceof Const) {
+                if (((Const)t.des("21")).getId() == 2 ) {
                     Term root = nabla.type();
-                    nabla2 = wsl2(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p, ((App)((App)t).q).q);
+                    nabla2 = wsl2(root.des("2"), root.des("12"), (Const)root.des("11"), t.des("22"));
                 }
-                else if ( (((Const)((App)((App)t).q).p).getId() != 1 ) ) {
+                else if ( (((Const)t.des("21")).getId() != 1 ) ) {
                     Term root = nabla.type();
-                    nabla2 = wsl1(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p, ((App)((App)t).q).q,
-                                             (Const)((App)((App)t).q).p);
+                    nabla2 = wsl1(root.des("2"), root.des("12"), 
+                                            (Const)root.des("11"), t.des("22"),
+                                            (Const)t.des("21"));
                 }
-                t = ((App)t).p;
+                t = t.des("1");
             }
-            else if (((App)t).q instanceof Const && ((App)t).p instanceof App) {
-                if ( ((Const)((App)t).q).getId()==3 ) {
+            else if (t.des("2") instanceof Const && t.des("1") instanceof App) {
+                if ( ((Const)t.des("2")).getId()==3 ) {
                     Term root = nabla.type();
-                    nabla2 = wsr2(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p, ((App)((App)t).p).q);
+                    nabla2 = wsr2(root.des("2"), root.des("12"), 
+                                             (Const)root.des("11"), t.des("12"));
                 }
-                else if (((Const)((App)t).q).getId() != 1) {
+                else if (((Const)t.des("2")).getId() != 1) {
                     Term root = nabla.type();
-                    nabla2 = wsr1(((App)root).q, ((App)((App)root).p).q, 
-                                             (Const)((App)((App)root).p).p, ((App)((App)t).p).q,
-                                             (Const)((App)t).q);
+                    nabla2 = wsr1(root.des("2"), root.des("12"), 
+                                             (Const)root.des("11"), t.des("12"),
+                                             (Const)t.des("2"));
                 }
-                t = ((App)((App)t).p).p;
+                t = t.des("11");
             }
             nabla = new TypedApp(nabla2,nabla);
         }
@@ -247,7 +245,7 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
-        String arrow = ((App)((App)formulaBeingProved).p).p.toString();
+        String arrow = formulaBeingProved.des("11").toString();
         Boolean rightArrow = arrow.equals("c_{2}"); // =>
         Boolean leftArrow = arrow.equals("c_{3}"); // <=
 
@@ -267,23 +265,23 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
 
             if (isInverseImpl(expr,formulaBeingProved)){
                 if ("WE".equals(this.methodStr)){
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]",null));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+expr.des("12")+", "+expr.des("2")+"]",null));
                 }
                 else {
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]",null));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+expr.des("2")+", "+expr.des("12")+"]",null));
                 }
                 return new TypedApp(new TypedApp(instantiation,axiom),proof);
             }
-            if (isInverseImpl(((App)((App)expr).p).q,formulaBeingProved)){
+            if (isInverseImpl(expr.des("12"),formulaBeingProved)){
                 Term aux;
                 if ("WE".equals(this.methodStr)){
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]",null));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+expr.des("1212")+", "+expr.des("122")+"]",null));
                     aux = new TypedApp(instantiation,axiom);
 
                     return new TypedApp(new TypedApp(new TypedS(aux.type()),aux),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
                 }
                 else {
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]",null));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+expr.des("122")+", "+expr.des("1212")+"]",null));
                     aux = new TypedApp(instantiation,axiom);
 
                     return new TypedApp(aux,new TypedApp(proof,new TypedA(new Const("c_{8}"))));

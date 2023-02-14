@@ -160,7 +160,7 @@ public abstract class Term implements Cloneable, Serializable{
      * 
      * @return The desired descendant
      */
-    public Term descendant(String descendantsSequence, boolean typed){
+    public Term des(String descendantsSequence, boolean typed){
         Term descendant = this;
         char nextChar;
 
@@ -197,10 +197,10 @@ public abstract class Term implements Cloneable, Serializable{
     }
 
     /**
-     * Shortcut for "descendant"
+     * Shortcut for "des" function
      */
-    public Term descendant(String descendantsSequence){
-        return descendant(descendantsSequence, false);
+    public Term des(String descendantsSequence){
+        return des(descendantsSequence, false);
     }
 
     /**

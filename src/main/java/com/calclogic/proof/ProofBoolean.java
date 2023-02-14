@@ -56,7 +56,7 @@ public class ProofBoolean {
         {
             return true;
         }
-        else if ( method instanceof App && (m1 = method.descendant("1")) instanceof Const &&
+        else if ( method instanceof App && (m1 = method.des("1")) instanceof Const &&
                     (
                         (methodStr=((Const)m1).getCon()).equals("ND") || 
                         methodStr.equals("EO") || 
@@ -67,9 +67,9 @@ public class ProofBoolean {
                     )
                 ) 
         {
-            return isWaitingMethod(method.descendant("2"));
+            return isWaitingMethod(method.des("2"));
         }
-        else if ( method instanceof App && (m1 = method.descendant("1")) instanceof Const &&
+        else if ( method instanceof App && (m1 = method.des("1")) instanceof Const &&
                     (
                         (methodStr=((Const)m1).getCon()).equals("AI") || 
                         methodStr.equals("CA")
@@ -78,15 +78,15 @@ public class ProofBoolean {
         {
             return true;
         }
-        else if ( method instanceof App && (m1 = method.descendant("1")) instanceof App &&
-                    (m2 = m1.descendant("1")) instanceof Const &&
+        else if ( method instanceof App && (m1 = method.des("1")) instanceof App &&
+                    (m2 = m1.des("1")) instanceof Const &&
                     (
                         (methodStr=((Const)m2).getCon()).equals("AI") || 
                         methodStr.equals("CA")
                     )
                 )
         {
-            return isWaitingMethod(method.descendant("2"));
+            return isWaitingMethod(method.des("2"));
         }
         else
             return true;
@@ -151,10 +151,10 @@ public class ProofBoolean {
     public static boolean isProofStarted(Term method) {
         Term aux = method; //muy complicado. Es mas facil si solo se ve si ocurren en
         while (aux instanceof App) {//method las constantes DM, SS, TR, WE o ST
-            if (aux.descendant("1") instanceof App)
+            if (aux.des("1") instanceof App)
                 return true;
             else 
-                aux = aux.descendant("2");
+                aux = aux.des("2");
         }
         String methodStr;
         return aux instanceof Const && 
@@ -188,12 +188,12 @@ public class ProofBoolean {
      */
     public static boolean isBranchedProof2Started(Term method) {
         String methodStr;
-        return method instanceof App && method.descendant("1") instanceof App && 
+        return method instanceof App && method.des("1") instanceof App && 
                 (
-                    (methodStr=method.descendant("11").toString()).equals("AI") ||
+                    (methodStr=method.des("11").toString()).equals("AI") ||
                     methodStr.equals("CA")
                 )
-                && isProofStarted(method.descendant("2"));
+                && isProofStarted(method.des("2"));
     }
     
     /**
@@ -208,15 +208,15 @@ public class ProofBoolean {
     public static boolean containsBranchedProof2Started(Term method) {
         String methodStr;
         Term aux = method;   
-        while (aux instanceof App && aux.descendant("1") instanceof Const ) {
-            aux = aux.descendant("2");
+        while (aux instanceof App && aux.des("1") instanceof Const ) {
+            aux = aux.des("2");
         }
         if (aux instanceof App)
-           return aux.descendant("1") instanceof App && 
+           return aux.des("1") instanceof App && 
                    (
-                    (methodStr=aux.descendant("11").toString()).equals("AI") ||
+                    (methodStr=aux.des("11").toString()).equals("AI") ||
                      methodStr.equals("CA")
-                   ) && isProofStarted(aux.descendant("2"));
+                   ) && isProofStarted(aux.des("2"));
         else
             return false;
     }
@@ -231,46 +231,46 @@ public class ProofBoolean {
      */
     public static boolean isAIOneLineProof(Term typedTerm) {
         return typedTerm instanceof App && 
-                            typedTerm.descendant("1") instanceof App &&
-                            typedTerm.descendant("12") instanceof App && 
-                            typedTerm.descendant("122") instanceof App &&
-                            typedTerm.descendant("1222") instanceof App &&
-                            typedTerm.descendant("12222") instanceof App &&
-                            typedTerm.descendant("122221") instanceof TypedL &&
-        !(((Bracket)((TypedL)typedTerm.descendant("122221")).type()).t.occur(new Var(122)));
+                            typedTerm.des("1") instanceof App &&
+                            typedTerm.des("12") instanceof App && 
+                            typedTerm.des("122") instanceof App &&
+                            typedTerm.des("1222") instanceof App &&
+                            typedTerm.des("12222") instanceof App &&
+                            typedTerm.des("122221") instanceof TypedL &&
+        !(((Bracket)((TypedL)typedTerm.des("122221")).type()).t.occur(new Var(122)));
     }
 
     public static boolean isIAA(Term root, SimboloManager s) {
         
         if(!(root instanceof App)) return false;
         
-        Term leftSide = root.descendant("1").type();
+        Term leftSide = root.des("1").type();
         
-        return root.descendant("2") instanceof TypedA &&
-                root.descendant("1") instanceof App &&
-                root.descendant("11") instanceof TypedI &&
-                root.descendant("12") instanceof TypedA &&   
+        return root.des("2") instanceof TypedA &&
+                root.des("1") instanceof App &&
+                root.des("11") instanceof TypedI &&
+                root.des("12") instanceof TypedA &&   
                 
-                leftSide instanceof App && leftSide.descendant("1") instanceof App &&
-                leftSide.descendant("11").toStringLaTeX(s, "").equals("\\Rightarrow") &&
-                leftSide.descendant("2").equals(root.descendant("2").type());    
+                leftSide instanceof App && leftSide.des("1") instanceof App &&
+                leftSide.des("11").toStringLaTeX(s, "").equals("\\Rightarrow") &&
+                leftSide.des("2").equals(root.des("2").type());    
     }
     
     public static boolean isIAIA(Term root, SimboloManager s) {
         if(!(root instanceof App)) return false;
         
-        Term leftSide = root.descendant("1").type();
+        Term leftSide = root.des("1").type();
         
-        return root.descendant("2") instanceof App &&
-                root.descendant("21") instanceof TypedI &&
-                root.descendant("22") instanceof TypedA &&
-                root.descendant("1") instanceof App &&
-                root.descendant("11") instanceof TypedI &&
-                root.descendant("12") instanceof TypedA && 
+        return root.des("2") instanceof App &&
+                root.des("21") instanceof TypedI &&
+                root.des("22") instanceof TypedA &&
+                root.des("1") instanceof App &&
+                root.des("11") instanceof TypedI &&
+                root.des("12") instanceof TypedA && 
                 
-                leftSide instanceof App && leftSide.descendant("1") instanceof App &&
-                leftSide.descendant("11").toStringLaTeX(s, "").equals("\\Rightarrow") &&
-                leftSide.descendant("2").equals(root.descendant("2").type());         
+                leftSide instanceof App && leftSide.des("1") instanceof App &&
+                leftSide.des("11").toStringLaTeX(s, "").equals("\\Rightarrow") &&
+                leftSide.des("2").equals(root.des("2").type());         
     }
     
     /**
@@ -290,10 +290,10 @@ public class ProofBoolean {
         if(isIAIA(root, s)) return "IAIA";
         
         // Case 3: S(IAIA)
-        if( root.descendant("1") instanceof TypedS && isIAIA(root.descendant("2"), s)) return "S(IAIA)";
+        if( root.des("1") instanceof TypedS && isIAIA(root.des("2"), s)) return "S(IAIA)";
         
         // Case 4: S(IAA)
-        if( root.descendant("1") instanceof TypedS && isIAA(root.descendant("2"), s)) return "S(IAA)";
+        if( root.des("1") instanceof TypedS && isIAA(root.des("2"), s)) return "S(IAA)";
         
         return "NoModus";
     }
@@ -306,14 +306,14 @@ public class ProofBoolean {
      * @return true if and only if t1 and t2 are of the form p op q and q op^{-1} p respectively
      */    
     public static boolean isInverseImpl(Term t1, Term t2) {   
-        if ( !(t1 instanceof App) || !(t1.descendant("1") instanceof App)) {
+        if ( !(t1 instanceof App) || !(t1.des("1") instanceof App)) {
             return false;
         }
-        String op1 = t1.descendant("11").toString();
+        String op1 = t1.des("11").toString();
         return (op1.equals("c_{2}") || op1.equals("c_{3}")) && 
-                t2 instanceof App && t2.descendant("1") instanceof App &&
-                t1.descendant("2").equals(t2.descendant("12")) && 
-                t1.descendant("12").equals(t2.descendant("2")) && 
-                t2.descendant("11").toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
+                t2 instanceof App && t2.des("1") instanceof App &&
+                t1.des("2").equals(t2.des("12")) && 
+                t1.des("12").equals(t2.des("2")) && 
+                t2.des("11").toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
     } 
 }

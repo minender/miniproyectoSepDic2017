@@ -73,9 +73,9 @@ public class AndIntroductionMethodImpl extends GenericProofMethodImpl implements
 
         Term auxiliarTree = new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),finalProof);
 
-        Term firstProof = originalTerm.descendant("2");
-        Term firstStAndTrue = originalTerm.descendant("11");
-        Term leibniz = originalTerm.descendant("121");
+        Term firstProof = originalTerm.des("2");
+        Term firstStAndTrue = originalTerm.des("11");
+        Term leibniz = originalTerm.des("121");
 
         return new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,auxiliarTree)),firstProof);
     }
