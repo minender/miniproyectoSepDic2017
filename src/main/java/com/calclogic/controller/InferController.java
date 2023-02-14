@@ -415,13 +415,16 @@ public class InferController {
 
                 if (objectMethod.getGroupMethod().equals("T")){
                     int index = objectMethod.transFirstOpInferIndex(typedTerm,false);
-                    if (index == 0 || index == 1)
-                        lastLine = ((App)((App)typedTerm.type()).p).q;
-                    else
-                        lastLine = ((App)((App)((App)((App)typedTerm.type()).p).q).p).q;
+                    if (index == 0 || index == 1) {
+                        lastLine = typedTerm.type().descendant("12");
+                    }
+                    else {
+                        lastLine = typedTerm.type().descendant("1212");
+                    }
                 }
-                else
-                    lastLine = ((App)((App)lastLine).p).q;
+                else{
+                    lastLine = lastLine.descendant("12");
+                }
             }
 
             lastLine = lastLine.body();
@@ -444,10 +447,10 @@ public class InferController {
                 leibnizTerm = lastLine;
 
             if (zUnifiable)  {
-                eq = new Equation(((App)statementTerm).q,leibnizTerm);
+                eq = new Equation(statementTerm.descendant("2"),leibnizTerm);
                 sust = eq.mgu(simboloManager);
                 if (sust == null) {
-                    eq = new Equation(((App)((App)statementTerm).p).q,leibnizTerm);
+                    eq = new Equation(statementTerm.descendant("12"),leibnizTerm);
                     sust = eq.mgu(simboloManager);
                 }
             }
@@ -541,20 +544,20 @@ public class InferController {
         Term initSt = formula;
 
         while (!(methodTermIter instanceof Const)) {
-            methodStk.push(((App)methodTermIter).p);
-            initSt = crudOp.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
+            methodStk.push(methodTermIter.descendant("1"));   
+            initSt = crudOp.initStatement(initSt,new App(methodTermIter.descendant("1"),new Const("DM")));
             formulasToProof.push(initSt);
 
             if (
-                  ((App)methodTermIter).p instanceof App &&
-                  ("B".equals(crudOp.returnProofMethodObject( ((App)((App)methodTermIter).p).p.toString() ).getGroupMethod())) &&
+                  methodTermIter.descendant("1") instanceof App &&
+                  ("B".equals(crudOp.returnProofMethodObject( methodTermIter.descendant("11").toString() ).getGroupMethod())) &&
                   (ProofBoolean.isBranchedProof2Started(methodTermIter))         
                )
             {
                 fatherProofs.push(typedTerm);
                 typedTerm = crudOp.getSubProof(typedTerm, methodTermIter);
             }
-            methodTermIter = ((App)methodTermIter).q;
+            methodTermIter = methodTermIter.descendant("2");
         }
         Term formulaBeingProved = formulasToProof.pop();
     
@@ -595,7 +598,7 @@ public class InferController {
                 if (i == 1 /*&& j == 0*/){
                     infer = new TypedApp(new TypedS(), infer);
                 }
-                // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
+                // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid with respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
                 newProof = crudOp.addInferToProof(username,currentProof, infer, objectMethod);
                 if (isOnlyOneLine){
@@ -668,7 +671,7 @@ public class InferController {
 
             // This part ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App){
-                Term m = ((App)methodTermAux).p;
+                Term m = methodTermAux.descendant("1");
                 String strM = m.toString();
                 if (m != null){
                     objectMethod = crudOp.returnProofMethodObject(strM);
@@ -897,10 +900,10 @@ public class InferController {
             }
             // ---- End of assigning "formulaTerm" 
 
-            if (nSol.equals("new")){
-                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null) != 1) )    // Equivalence ==
+            if (nSol.equals("new")) {
+                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(formulaAnterior.descendant("2").body(),null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
+                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.descendant("2").body(),null) != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.descendant("2").body(),null) != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");
@@ -928,9 +931,10 @@ public class InferController {
                 // When the proof already exists in the DB, we obtain the solution from it.
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username); 
                 methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
-                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),methodTerm) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),methodTerm) != 1) )    // Equivalence ==
+                
+                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(formulaAnterior.descendant("2").body(),methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
+                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.descendant("2").body(),methodTerm) != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.descendant("2").body(),methodTerm) != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");
@@ -987,7 +991,7 @@ public class InferController {
                         throw new ClassCastException();
                     }
                     Term formulaWithoutT = formulaTerm.setToPrint(simboloManager);
-                    formulaTerm = lado.equals("i") ? ((App)formulaWithoutT).q : ((App)((App)formulaWithoutT).p).q;  
+                    formulaTerm = lado.equals("i") ? formulaWithoutT.descendant("2") : formulaWithoutT.descendant("12");  
                 } 
 
                 if (nSol.equals("new")) {

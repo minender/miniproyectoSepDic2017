@@ -165,13 +165,15 @@ public class GenericProofMethodImpl implements GenericProofMethod{
             if (noInstantiation && noLeibniz){
                 infer = A;
             }
-            else if (noInstantiation){
-                if (("T".equals(this.groupMethod)) && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                     (C=((App)(((App)theoremHint).p)).p) != null && C instanceof Const &&
-                     (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
-
+            else if (noInstantiation){  
+                if (("T".equals(this.groupMethod)) && theoremHint instanceof App && theoremHint.descendant("1") instanceof App &&
+                     (C=theoremHint.descendant("11")) != null && C instanceof Const &&
+                     (((Const)C).getId() == 2 || ((Const)C).getId() == 3) 
+                    )
+                {
                     infer = parityLeibniz(leibniz, A);
-                }else {
+                } 
+                else {
                     L = new TypedL(leibniz);
                     infer = new TypedApp(L,A);
                 } 
@@ -182,12 +184,14 @@ public class GenericProofMethodImpl implements GenericProofMethod{
                 if (noLeibniz){
                     infer = new TypedApp(I,A);
                 }
-                else if (("T".equals(this.groupMethod)) && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
-                        (C=((App)((App)theoremHint).p).p) != null && C instanceof Const &&
-                        (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
-
+                else if (("T".equals(this.groupMethod)) && theoremHint instanceof App && theoremHint.descendant("1") instanceof App &&
+                         (C=theoremHint.descendant("11")) != null && C instanceof Const &&
+                         (((Const)C).getId() == 2 || ((Const)C).getId() == 3) 
+                        )
+                {
                     infer = parityLeibniz(leibniz,new TypedApp(I,A));
-                } else {
+                } 
+                else {
                     L = new TypedL((Bracket)leibniz);
                     infer = new TypedApp(L,new TypedApp(I,A));
                 }
@@ -305,8 +309,8 @@ public class GenericProofMethodImpl implements GenericProofMethod{
         ResuelveManager resuelveManager, SimboloManager simboloManager)
     {
         Term expr = proof.type();//.setToPrint(); // The root of the proof tree, which is the last line
-        Term initialExpr = ((App)expr).q; // The expression (could be a theorem) from which the user started the demonstration
-        Term finalExpr = ((App)((App)expr).p).q; // The last line in the demonstration that the user has made
+        Term initialExpr = expr.descendant("2"); // The expression (could be a theorem) from which the user started the demonstration
+        Term finalExpr = expr.descendant("12"); // The last line in the demonstration that the user has made
 
         try{
             return auxFinBaseMethodProof(formulaBeingProved, proof, username, resuelveManager, simboloManager, 

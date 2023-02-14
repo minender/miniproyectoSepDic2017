@@ -123,23 +123,24 @@ public class CrudOperationsImpl implements CrudOperations {
             return beginFormula;
         }
         else{
-            String strMethod = ((App)method).p.toString().substring(0, 2);
+            String strMethod = method.descendant("1").toString().substring(0, 2);
             GenericProofMethod objectMethod = returnProofMethodObject(strMethod);
 
             if (objectMethod.getIsRecursiveMethod()){
                 beginFormula = objectMethod.initFormula(beginFormula);
 
-                if ("B".equals(objectMethod.getGroupMethod())){ // Branched recursive methods
-                    if ( ((App)method).p instanceof Const ) {
-                        beginFormula = ((App)beginFormula).q;
+                // Branched recursive methods
+                if ("B".equals(objectMethod.getGroupMethod())){ 
+                    if ( method.descendant("1") instanceof Const ) {
+                        beginFormula = beginFormula.descendant("2");
                     } else {
-                        beginFormula = ((App)((App)beginFormula).p).q;
+                        beginFormula = beginFormula.descendant("12");
                     }
                 }
             } else{
                 return null; // When no possibility matched. 
             }
-            return initStatement(beginFormula, ((App)method).q);
+            return initStatement(beginFormula, method.descendant("2"));
         }
     }
 
@@ -148,7 +149,7 @@ public class CrudOperationsImpl implements CrudOperations {
     public Term currentMethod(Term method) {
         if (method instanceof App) {
             while (method instanceof App) {
-                method = ((App)method).q;
+                method = method.descendant("2");
             }
             return method;
         }
@@ -195,25 +196,25 @@ public class CrudOperationsImpl implements CrudOperations {
     public Term getSubProof(Term typedTerm, Term method, boolean isRecursive) {
         Term auxMethod = method;
         while (auxMethod instanceof App) {
-            if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((App)((App)auxMethod).p).p.toString().equals("AI") && 
+            if (auxMethod instanceof App && auxMethod.descendant("1") instanceof App && 
+                    auxMethod.descendant("11").toString().equals("AI") && 
                     !ProofBoolean.isBranchedProof2Started(auxMethod)
-                    ){
+                )
+            {
                 return null;// no deberia devolver this, no seria mas homogeneo?
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
-                return ((Bracket)((TypedL)((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p).type()).t;
+                return ((Bracket)((TypedL)typedTerm.descendant("122221")).type()).t; 
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
                 if (isRecursive){
-                    return getSubProof(((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q,
-                                                                                 ((App)auxMethod).q,true);
+                    return getSubProof(typedTerm.descendant("12222"),auxMethod.descendant("2"),true);
                 }
                 else{
-                    return ((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q;
+                    return typedTerm.descendant("12222");
                 }
             } else{
-                auxMethod = ((App)auxMethod).q;
+                auxMethod = auxMethod.descendant("2");
             }
         }
         return typedTerm;
@@ -236,25 +237,25 @@ public class CrudOperationsImpl implements CrudOperations {
         Term auxMethod = method;
         String m;
         while (auxMethod instanceof App) {
-            if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
-                    ((m=((App)((App)auxMethod).p).p.toString()).equals("AI")||m.equals("CA")) && 
-                    !ProofBoolean.isProofStarted(((App)auxMethod).q)
-                    ){
+            if (auxMethod instanceof App && auxMethod.descendant("1") instanceof App && 
+                    ((m=auxMethod.descendant("11").toString()).equals("AI") || m.equals("CA")) && 
+                    !ProofBoolean.isProofStarted(auxMethod.descendant("2"))
+                )
+            {
                 li.add(0,typedTerm);
                 return li;
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
                 li.add(0, typedTerm);
-                li.add(0,((Bracket)((TypedL)((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p).type()).t);
+                li.add(0,((Bracket)((TypedL)typedTerm.descendant("122221")).type()).t);
                 return li;
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
-                li.add(0, typedTerm);
-                return getFatherAndSubProof(((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q,
-                                                                                   ((App)auxMethod).q,li);
+                li.add(0, typedTerm);  
+                return getFatherAndSubProof(typedTerm.descendant("12222"),auxMethod.descendant("2"),li);
             }
             else{
-                auxMethod = ((App)auxMethod).q;
+                auxMethod = auxMethod.descendant("2");
             }
         }
         li.add(0, typedTerm);
@@ -332,8 +333,8 @@ public class CrudOperationsImpl implements CrudOperations {
                 formula = initStatement(formula, methodTerm);
             }
             // In applicative notation, the expression "P operator Q" is written as "(operator Q) P",
-            // so the attribute 'p' is "(operator Q)" and p.p is "operator". 
-            return ((Const)((App)((App)formula).p).p).getId();
+            // so the attribute "1" is "(operator Q)" and "11" is "operator". 
+            return ((Const)formula.descendant("11")).getId();
         }
         catch (ClassCastException e){
             return -1;
@@ -356,8 +357,7 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term updateMethod(String currentMethod, String newMethod) {
-        
+    public Term updateMethod(String currentMethod, String newMethod) {  
         if (currentMethod.equals(""))
             return new Const(newMethod);
         else {
@@ -367,24 +367,28 @@ public class CrudOperationsImpl implements CrudOperations {
             Term father = methodTerm;
             
             if (t instanceof App)
-               aux = ((App)t).q;  
+               aux = t.descendant("2");  
             while (aux != null && !(aux instanceof Const) && ProofBoolean.isWaitingMethod(aux)) {
                father = t;
-               t = aux;
-               aux = ((App)aux).q;
+               t   = aux;
+               aux = aux.descendant("2");
             }
-            if (aux == null)
-               methodTerm = new App(methodTerm, new Const(newMethod));
-            else if (aux instanceof Const && ProofBoolean.isWaitingMethod(aux)) 
-               ((App)t).q = new App(aux, new Const(newMethod));
+            if (aux == null){
+                methodTerm = new App(methodTerm, new Const(newMethod));
+            }
+            else if (aux instanceof Const && ProofBoolean.isWaitingMethod(aux)){
+                t.setChild(new App(aux, new Const(newMethod)),'2');
+            }
             else { 
                 /*if (father == methodTerm && isWaitingMethod(t))
                   methodTerm = new App(methodTerm, new Const("DM"));
                 else */
-                if (father == t)
+                if (father == t){
                     methodTerm = new App(methodTerm, new Const(newMethod));
-                else
-                    ((App)father).q = new App(t, new Const(newMethod));
+                }
+                else {
+                    father.setChild(new App(t, new Const(newMethod)),'2');
+                }
             }
                   
             return methodTerm;      
@@ -409,13 +413,10 @@ public class CrudOperationsImpl implements CrudOperations {
         if (objectMethod.getGroupMethod().equals("T")){
             Term type = proof.type();
             Term typeInf = infer.type();
-            String op;
-            String opInf;
+            String op, opInf;
             try {
-                op = (type.containT()?((App)((App)((App)type).q.body()).p).p.toString()
-                                       :((App)((App)type).p).p.toString());
-                opInf = (typeInf.containT()?((App)((App)((App)typeInf).q.body()).p).p.toString()
-                                       :((App)((App)typeInf).p).p.toString());
+                op    = type.containT()    ? type.descendant("2").body().descendant("11").toString()    : type.descendant("11").toString();
+                opInf = typeInf.containT() ? typeInf.descendant("2").body().descendant("11").toString() : typeInf.descendant("11").toString();
             }
             catch (ClassCastException e) {
                 throw new TypeVerificationException();
@@ -427,17 +428,17 @@ public class CrudOperationsImpl implements CrudOperations {
 
             int index = objectMethod.transFirstOpInferIndex(proof,true);
             boolean eqInf = opInf.equals("=");
-            if ( index == 0 && eqInf) {
+            if (index == 0 && eqInf) {
                 return new TypedApp(proof, infer);
             }
             else if (index == 0 && !eqInf) {
-                String eq = "c_{1}";//op;
-                String st = "= T (c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101}))";
+                String eq    = "c_{1}";//op;
+                String st    = "= T (c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) (" + eq + " x_{102} x_{101}))";
                 String deriv = "";
-                typeInf = ((App)typeInf).q.body();
+                typeInf = typeInf.descendant("2").body();
                 try {
-                    String E = "\\Phi_{b} ("+ ((App)typeInf).p+")";
-                    deriv = "I^{[x_{101}, x_{102}, x_{69} := "+((App)type).q.body()+", "+((App)((App)type).p).q.body()+", "+E+"]} A^{"+st+"}";
+                    String E = "\\Phi_{b} (" + typeInf.descendant("1") + ")";
+                    deriv = "I^{[x_{101}, x_{102}, x_{69} := " + type.descendant("2").body() + ", " + type.descendant("12").body() + ", " + E + "]} A^{" + st + "}";
                 }
                 catch (ClassCastException e) {
                     throw new TypeVerificationException();
@@ -445,31 +446,41 @@ public class CrudOperationsImpl implements CrudOperations {
                 return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,null), new TypedM(1,type,user)), infer);
             }
             else if (index != 0 && !eqInf) {
-                String st = "= T (c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8}))";
+                String st = "= T (c_{2} (c_{2} (c_{1} (" + opInf + " x_{114} x_{112}) c_{8}) (" + opInf + " x_{114} x_{113}))  (c_{1} (" + opInf + " x_{113} x_{112}) c_{8}))";
                 String deriv = "";
-                typeInf = ((App)typeInf).q.body();
+                typeInf = typeInf.descendant("2").body();
+
                 try {
-                    Term aux = (App)((App)((App)((App)type).q.body()).p).q;
-                    deriv = "I^{[x_{112}, x_{113}, x_{114} := "+((App)aux).q+", "+((App)((App)aux).p).q+", "+((App)((App)typeInf).p).q+"]} A^{"+st+"}";
-                }catch (ClassCastException e) {
+                    Term aux = (App)type.descendant("2").body().descendant("12"); // >>> PREGUNTAR POR ESTE APP DE MÁS. ¿ES NECESARIO?
+                    deriv = "I^{[x_{112}, x_{113}, x_{114} := " + aux.descendant("2") + ", " + aux.descendant("12") + ", " + typeInf.descendant("12") + "]} A^{" + st + "}";
+                } 
+                catch (ClassCastException e) {
                     throw new TypeVerificationException();
                 }
                 return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user), proof), infer);
             }
             else {
-                Term aux = ((App)((App)type).p).q.body();
+                Term aux = type.descendant("12").body();
+
+
 
                 if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l'){
-                    Term oldLeib = ((Bracket)((TypedApp)infer).p.type()).t;
-                    Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,oldLeib),((App)aux).q));
-                    infer = new TypedApp(new TypedL(leibniz),((TypedApp)infer).q);
+                    Term oldLeib = ((Bracket)infer.descendant("1", true).type()).t;
+                    Bracket leibniz = new Bracket( new Var('z'), new App(new App(aux.descendant("11"),oldLeib), aux.descendant("2")) );
+
+                    infer = new TypedApp(new TypedL(leibniz), infer.descendant("2", true));
                 }
                 else {
                     if (aux instanceof Var){
                         infer = new TypedApp(proof, new Var('z'));
                     }
                     else{
-                        Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,new Var('z')),((App)aux).q));
+                        Bracket leibniz = new Bracket( new Var('z'), 
+                                                        new App(
+                                                            new App(aux.descendant("11"),new Var('z')), 
+                                                            aux.descendant("2")
+                                                        )
+                                                    );
                         infer = new TypedApp(new TypedL(leibniz),infer); 
                     }                     
                 }
@@ -498,11 +509,10 @@ public class CrudOperationsImpl implements CrudOperations {
         Term auxMethod = method; // "method" is entry/exit, so if we use it directly we change its value in the caller
         while (auxMethod instanceof App) {
             if (ProofBoolean.isBranchedProof2Started(auxMethod) && 
-                ProofBoolean.containsBranchedProof2Started(((App)auxMethod).q)
+                ProofBoolean.containsBranchedProof2Started(auxMethod.descendant("2"))    
                )
             {
-                Term aux = addFirstLineSubProof(usr,formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
-                                                                                    ((App)auxMethod).q);
+                Term aux = addFirstLineSubProof(usr,formula, typedTerm.descendant("1222"), auxMethod.descendant("2"));
 
                 GenericProofMethod objectMethod = returnProofMethodObject("AI");
                 return objectMethod.finishedMethodProof(typedTerm,aux);
@@ -524,7 +534,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 values2.put("MT", metaTheo);
                 values2.put("T1Type", typedTerm.type().setToPrint(null).toString());
                 aux = typedTerm.toString();
-                values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
+                values2.put("T1", (typedTerm instanceof Const ? aux : "(" + aux + ")") );
                 StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
                 String template = "S (I^{[x_{112}:=%(T1Type)]} A^{= \\Phi_{} (\\Phi_{b} (c_{5} c_{8}))}) (L^{\\lambda x_{122}. c_{5} x_{122} (%(T1Type))} (%(MT)) )";
                 String proof = sub2.replace(template);
@@ -537,7 +547,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 }
                 return proofTerm;
             }else{
-                auxMethod = ((App)auxMethod).q;
+                auxMethod = auxMethod.descendant("2");
             }
         }
         return formula;
@@ -560,25 +570,27 @@ public class CrudOperationsImpl implements CrudOperations {
     public Term eraseMethod(String currentMethod) {
         // revisa en las llamadas a este metodo si se ahorra algo al recibir String 
         // en lugar de Term
-        if (currentMethod.length() <= 3)
+        if (currentMethod.length() <= 3){
             return null;
+        }
         else {
             Term currMethodTerm = ProofMethodUtilities.getTerm(currentMethod);
             Term father = currMethodTerm;
-            Term q = ((App)father).q;
+            Term q = father.descendant("2");
             Term aux;
-            if (q instanceof Const)
-               return ((App)father).p;
+            if (q instanceof Const){
+                return father.descendant("1");
+            }
             else {
-              aux = q;
-              q = ((App)q).q;
+                aux = q;
+                q   = q.descendant("2");
             }
             while ( q instanceof App) {
                 father = aux;
-                aux = ((App)father).q;
-                q = ((App)aux).q;
+                aux = father.descendant("2");
+                q   = aux.descendant("2");
             }
-            ((App)father).q = ((App)aux).p;
+            father.setChild(aux.descendant("1"),'2');
             
             return currMethodTerm;
         }
@@ -586,6 +598,7 @@ public class CrudOperationsImpl implements CrudOperations {
 
     /**
      * Returns the Information class object
+     * @return globalInfo bean
      */
     @Override
     public Information getGlobalInfo(){

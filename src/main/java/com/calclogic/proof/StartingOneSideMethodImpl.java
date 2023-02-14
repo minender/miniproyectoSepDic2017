@@ -71,13 +71,13 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
            but just a functional application (an App) or is an equanimity inference */
         if (this.methodStr.equals("SS") || !(typedTerm instanceof TypedApp) || ((TypedApp)typedTerm).inferType!='e') {
             if (solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='s'){
-                iter = ((TypedApp)typedTerm).q;
+                iter = typedTerm.descendant("2",true);  
             }
             else{
                 iter = typedTerm;
             }
             ultInfType = iter.type();
-            Term aux = ((App)((App)iter.type()).p).q.body();       
+            Term aux = ultInfType.descendant("12").body();       
             lastline = (solved?aux.toStringLaTeX(s,"")+"$":aux.toStringLaTeXLabeled(s));
         }
         // Case when direct method is applied and the starting point is the expression to be proved
@@ -86,14 +86,14 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
             String eqSust = ""; // Indicates the instantiation (if any) that was necessary to apply to the already proven theorem
 
             // Case when we need to instantiate the already proven theorem so it matches the final expression of the current proof
-            if (((TypedApp)typedTerm).q instanceof TypedApp){
-                nTeo = ((TypedA)((TypedApp)((TypedApp)typedTerm).q).q).getNSt();
-                eqSust = "~with~"+ ((TypedApp)((TypedApp)typedTerm).q).p.type().toStringLaTeX(s,"");
+            if (typedTerm.descendant("2",true) instanceof TypedApp){  
+                nTeo = ((TypedA)typedTerm.descendant("22",true)).getNSt();
+                eqSust = "~with~"+ typedTerm.descendant("21",true).type().toStringLaTeX(s,"");
             }
             else {
                 // Note that here we have a less "q" respect of the previous case because in there 
                 // there was an additional tree representing the instantiation
-                nTeo = ((TypedA)((TypedApp)typedTerm).q).getNSt();  
+                nTeo = ((TypedA)typedTerm.descendant("2",true)).getNSt();  
             }
             
 
@@ -107,34 +107,34 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
                 eqHintResuel = resuelveManager.getResuelveByUserAndTeorema("AdminTeoremas", lastline, false);
             }
 
-            equanimityHint = "~~~-~\\text{st}~("+nTeo+")"+eqSust;
+            equanimityHint = "~~~-~\\text{st}~(" + nTeo + ")" + eqSust;
 
-            if( ((TypedApp)typedTerm).p instanceof TypedApp && 
-                ((TypedApp)((TypedApp)typedTerm).p).inferType=='s' 
+            if( typedTerm.descendant("1",true) instanceof TypedApp && 
+                ((TypedApp)typedTerm.descendant("1",true)).inferType=='s' 
                ) 
             {
-                iter = ((TypedApp)((TypedApp)typedTerm).p).q;       
-                lastline = ((App)((App)iter.type()).p).q.toStringLaTeX(s,"")+equanimityHint+"$";
+                iter = typedTerm.descendant("12",true);
+                lastline = iter.type().descendant("12").toStringLaTeX(s,"") + equanimityHint + "$";
             }
             else  {
-                iter = ((TypedApp)typedTerm).p;
+                iter = typedTerm.descendant("1",true);
                 equanimity = true;
-                lastline = ((App)((App)iter.type()).p).q.toStringLaTeX(s,"")+"$";
+                lastline = iter.type().descendant("12").toStringLaTeX(s,"") + "$";
             }
         }
 
         Term ultInf = null;
         while (iter!=ultInf){
             if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t') {
-                ultInf = ((TypedApp)iter).q;
-                iter = ((TypedApp)iter).p;
+                ultInf = iter.descendant("2",true);
+                iter = iter.descendant("1",true);
                 ultInfType = ultInf.type();
-                primExp = ((App)ultInfType).q.toStringLaTeX(s,""); 
+                primExp = ultInfType.descendant("2").toStringLaTeX(s,""); 
             }
             else {
                 ultInf = iter;
                 ultInfType = ultInf.type();
-                primExp = ((App)ultInfType).q.toStringLaTeX(s,"");
+                primExp = ultInfType.descendant("2").toStringLaTeX(s,"");
                 if (equanimity){
                     primExp += equanimityHint;
                 }
@@ -168,56 +168,56 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
 
         // if the inference is a modus pones that simulates natural deduction is true this
         boolean naturalInfer=typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m';
-        Term ultInf = (naturalInfer?((TypedApp)typedTerm).p:typedTerm);
+        Term ultInf = (naturalInfer ? typedTerm.descendant("1",true) : typedTerm);
 
         if (ultInf instanceof App){
-            if (((App)ultInf).q instanceof App){
-                if (((App)((App)ultInf).q).q instanceof App){
+            if (ultInf.descendant("2") instanceof App){     
+                if (ultInf.descendant("22") instanceof App){
                     // Term aux = ((App)ultInf.type()).q;
                     // primExp = aux.toStringInf(s,"")+(aux.equals(goal)?equanimityHint:"");
-                    st = ((App)((App)((App)ultInf).q).q).q; //.type().traducBD().toString();
-                    inst = ((App)((App)((App)ultInf).q).q).p.type().toStringLaTeX(s,"");
+                    st = ultInf.descendant("222"); //.type().traducBD().toString();
+                    inst = ultInf.descendant("221").type().toStringLaTeX(s,"");
                     inst = "~\\text{with}~" + inst;
-                    leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
+                    leib = ultInf.descendant("21").type().toStringLaTeX(s,"");
                     leib = "~\\text{and}~"+"E^{z}:" + leib;
                 }
                 else {
-                    st = ((App)((App)ultInf).q).q;//.type().traducBD().toString();
-                    if (((App)ultInf).p instanceof TypedS){
-                        if (((App)((App)ultInf).q).p instanceof TypedI){
-                            inst = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
+                    st = ultInf.descendant("22"); //.type().traducBD().toString();
+                    if (ultInf.descendant("1") instanceof TypedS){
+                        if (ultInf.descendant("21") instanceof TypedI){
+                            inst = ultInf.descendant("21").type().toStringLaTeX(s,"");
                             inst = "~\\text{with}~" + inst;
                         }
                         else {
-                            leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
+                            leib = ultInf.descendant("21").type().toStringLaTeX(s,"");
                             leib = "~\\text{and}~"+"E^{z}:" + leib;
                         }
                     } else {
-                        inst = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
+                        inst = ultInf.descendant("21").type().toStringLaTeX(s,"");
                         inst = "~\\text{with}~" + inst;
-                        leib = ((App)ultInf).p.type().toStringLaTeX(s,"");
+                        leib = ultInf.descendant("1").type().toStringLaTeX(s,"");
                         leib = "~\\text{and}~"+"E^{z}:" + leib;
                     }
                 }
             } else {
-                Term pType = ((App)ultInf).p.type();
-                if (((App)ultInf).p instanceof TypedI){
+                Term pType = ultInf.descendant("1").type();
+                if (ultInf.descendant("1") instanceof TypedI){
                     inst = pType.toStringLaTeX(s,"");
                     inst = "~\\text{with}~" + inst;
                 }
-                else if (((App)ultInf).p instanceof TypedL){
+                else if (ultInf.descendant("1") instanceof TypedL){
                     leib = "~\\text{and}~"+"E^{z}:" + pType.toStringLaTeX(s,"");
                 }
                 // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
-                st = ((App)ultInf).q; //.type().traducBD().toString();
+                st = ultInf.descendant("2"); //.type().traducBD().toString();
             }
         } else {
             Term aux = ultInf;//.type().traducBD(); //CHECK se puede guardar el nTeo y no buscarlo
             st = aux; //.toString();
-        } 
+        }
 
-        int conId =(naturalInfer? ((Const)((App)((App)((App)((App)ultInf.type()).p).q).p).p).getId() 
-                                :((Const)((App)((App)ultInf.type()).p).p).getId());
+        int conId =(naturalInfer? ((Const)ultInf.type().descendant("1211")).getId() 
+                                :((Const)ultInf.type().descendant("11")).getId());
         String op = "\\equiv";//s.getSimbolo(conId).getNotacion_latex();
             
         // Resuelve theo = resuelveManager.getResuelveByUserAndTeorema(user, teo, false);
@@ -262,10 +262,10 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         // If Formula that the user is trying to prove in this proof/sub-proof is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
-        if(initialExpr.equals(((App)((App)formulaBeingProved).p).q) && finalExpr.equals(((App)formulaBeingProved).q)){
+        if(initialExpr.equals(formulaBeingProved.descendant("12")) && finalExpr.equals(formulaBeingProved.descendant("2"))){
             proof = new TypedApp(new TypedS(proof.type()), proof);
         }
-        Term operatorTerm = ((App)((App)formulaBeingProved).p).p;
+        Term operatorTerm = formulaBeingProved.descendant("11");
         // The Starting From One Side method only admits reflexive operators
         int resuelveKind = resuelveManager.isReflexiveOperatorForUser(username, operatorTerm.toString());
         new TypedM(resuelveKind, ((Const)operatorTerm).getId(), proof, "", username);

@@ -50,15 +50,15 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
      * @return true if and only if t1 and t2 are of the form p op q and q op^{-1} p respectively
      */    
     protected boolean isInverseImpl(Term t1, Term t2) {
-        if ( !(t1 instanceof App) || !(((App)t1).p instanceof App)) {
+        if ( !(t1 instanceof App) || !(t1.descendant("1") instanceof App)) {
             return false;
         }
-        String op1 = ((App)((App)t1).p).p.toString();
+        String op1 = t1.descendant("11").toString();
         return (op1.equals("c_{2}") || op1.equals("c_{3}")) && 
-                t2 instanceof App && ((App)t2).p instanceof App &&
-                ((App)t1).q.equals(((App)((App)t2).p).q) && 
-               ((App)((App)t1).p).q.equals(((App)t2).q) && 
-               ((App)((App)t2).p).p.toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
+                t2 instanceof App && t2.descendant("1") instanceof App &&
+                t1.descendant("2").equals(t2.descendant("12")) && 
+               t1.descendant("12").equals(t2.descendant("2")) && 
+               t2.descendant("11").toString().equals((op1.equals("c_{2}")?"c_{3}":"c_{2}"));
     }
 
     /**
@@ -81,12 +81,12 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
         String primExp;
         String newStep; // New part of the proof that will be added
         String lastline; // Plain string of the last line of the demonstration
-        Term iter; // Iterator over the lines of a demonstration
+        Term iter; // Iterator over the lines of a demonstration 
 
         boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
-                      isInverseImpl(((TypedApp)typedTerm).q.type().setToPrint(simboloManager),
+                      isInverseImpl(typedTerm.descendant("2", true).type().setToPrint(simboloManager),
                                                                          typedTerm.type().setToPrint(simboloManager));
-        iter = (reversed?((TypedApp)typedTerm).q:typedTerm);
+        iter = (reversed ? typedTerm.descendant("2", true) : typedTerm);
         boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
                       ((TypedApp)iter).q.type().setToPrint(simboloManager).toString().equals("c_{8}");
 

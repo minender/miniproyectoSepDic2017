@@ -150,6 +150,77 @@ public abstract class Term implements Cloneable, Serializable{
     public abstract void getAxioms(List<String> l);
     
     public abstract Term leibniz(int z, String subtermId, String thisId, SimboloManager s);
+
+    /**
+     * Calculates a specific descendant of a Term that is a binary tree.
+     * 
+     * @param descendantsSequence: Sequence of 1's and 2's indicating in each 
+     *        case to examine the left child or the right child respectively.
+     * @param typed: When true, we must apply a TypedApp; otherwise, we must apply an App.
+     * 
+     * @return The desired descendant
+     */
+    public Term descendant(String descendantsSequence, boolean typed){
+        Term descendant = this;
+        char nextChar;
+
+        if (typed){
+            for (int i=0; i < descendantsSequence.length(); i++){
+                nextChar = descendantsSequence.charAt(i);
+                switch (nextChar){
+                    case '1':
+                        descendant = ((TypedApp)descendant).p;
+                        break;
+                    case '2':
+                        descendant = ((TypedApp)descendant).q;
+                        break;
+                    default:
+                        break;
+                }
+            }           
+        } else {
+            for (int i=0; i < descendantsSequence.length(); i++){
+                nextChar = descendantsSequence.charAt(i);
+                switch (nextChar){
+                    case '1':
+                        descendant = ((App)descendant).p;
+                        break;
+                    case '2':
+                        descendant = ((App)descendant).q;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return descendant;
+    }
+
+    /**
+     * Shortcut for "descendant"
+     */
+    public Term descendant(String descendantsSequence){
+        return descendant(descendantsSequence, false);
+    }
+
+    /**
+     * Assigns a child to a Term
+     * 
+     * @param child: Term to be assigned as a child of the original one
+     * @param position: '1' indicates that the assigned child is the left one, and '2' indicates that it is the right one
+     */
+    public void setChild(Term child, char position){
+        switch (position){
+            case '1':
+                ((App)this).p = child;
+                break;
+            case '2':
+                ((App)this).q = child;
+                break;
+            default:
+                break;
+        }
+    }
     
     /**
      * Returns a string formatted with variables codification (x_{}) and

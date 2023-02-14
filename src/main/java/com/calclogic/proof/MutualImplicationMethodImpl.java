@@ -37,8 +37,8 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
     public Term initFormula(Term beginFormula){
         // "beginFormula" is of the form [L == R]
         beginFormula = beginFormula.setToPrint(simboloManager);
-        Term prevLeftSide = ((App)beginFormula).q; // L
-        Term prevRightSide = ((App)((App)beginFormula).p).q; // R
+        Term prevLeftSide = beginFormula.descendant("2"); // L  
+        Term prevRightSide = beginFormula.descendant("12"); // R
 
         Term newLeftSide = new App(new App(new Const(2 ,"c_{2}"), prevRightSide), prevLeftSide);  // [L ==> R]  written as  [(==> R) L]
         Term newRightSide = new App(new App(new Const(3 ,"c_{3}"), prevRightSide), prevLeftSide); // [L <== R]  written as  [(<== R) L]
@@ -82,8 +82,8 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
         // Substitution [p,q := ...]
         vars.add(0, new Var(112)); // Letter 'p'
         vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, ((App)((App)formulaBeingProved).q).q); // Note .q is (p ==> q), so .q.q is 'p'.
-        terms.add(0, ((App)((App)((App)formulaBeingProved).q).p).q); // .q.p is (==> q) so .q.p.q is 'q'.
+        terms.add(0, formulaBeingProved.descendant("22")); // Note "2" is (p ==> q), so "22" is 'p'.
+        terms.add(0, formulaBeingProved.descendant("212")); // "21" is (==> q) so "212" is 'q'.
         Sust sus = new Sust(vars, terms);
 
         // We give the instantiation format to the substitution above

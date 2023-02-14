@@ -78,7 +78,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         // Case when we started from the theorem being proved
-        formulaBeingProved = ((App)formulaBeingProved).q.body();
+        formulaBeingProved = formulaBeingProved.descendant("2").body();  
         finalExpr = finalExpr.body();
         initialExpr = initialExpr.body();
         if(formulaBeingProved.equals(initialExpr.body())) {
@@ -128,8 +128,8 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
             TypedA A = new TypedA(aux.traducBD(),username);
 
             if (A.getNSt().equals("")) { 
-                int idOp = ((Const)((App)((App)initialExpr).p).p).getId();
-                initialExpr= new App(new App(new Const(0,"="),((App)((App)initialExpr).p).q),((App)initialExpr).q);
+                int idOp = ((Const)initialExpr.descendant("11")).getId();  
+                initialExpr= new App(new App(new Const(0,"="),initialExpr.descendant("12")), initialExpr.descendant("2"));
                 initialExpr = initialExpr.abstractEq().traducBD(); 
                 Term M = new TypedM(idOp,initialExpr,username); 
                 return new TypedApp(proof, M);
