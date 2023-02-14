@@ -416,14 +416,14 @@ public class InferController {
                 if (objectMethod.getGroupMethod().equals("T")){
                     int index = objectMethod.transFirstOpInferIndex(typedTerm,false);
                     if (index == 0 || index == 1) {
-                        lastLine = typedTerm.type().des("12");
+                        lastLine = typedTerm.type().dsc("12");
                     }
                     else {
-                        lastLine = typedTerm.type().des("1212");
+                        lastLine = typedTerm.type().dsc("1212");
                     }
                 }
                 else{
-                    lastLine = lastLine.des("12");
+                    lastLine = lastLine.dsc("12");
                 }
             }
 
@@ -447,10 +447,10 @@ public class InferController {
                 leibnizTerm = lastLine;
 
             if (zUnifiable)  {
-                eq = new Equation(statementTerm.des("2"),leibnizTerm);
+                eq = new Equation(statementTerm.dsc("2"),leibnizTerm);
                 sust = eq.mgu(simboloManager);
                 if (sust == null) {
-                    eq = new Equation(statementTerm.des("12"),leibnizTerm);
+                    eq = new Equation(statementTerm.dsc("12"),leibnizTerm);
                     sust = eq.mgu(simboloManager);
                 }
             }
@@ -544,20 +544,20 @@ public class InferController {
         Term initSt = formula;
 
         while (!(methodTermIter instanceof Const)) {
-            methodStk.push(methodTermIter.des("1"));   
-            initSt = crudOp.initStatement(initSt,new App(methodTermIter.des("1"),new Const("DM")));
+            methodStk.push(methodTermIter.dsc("1"));   
+            initSt = crudOp.initStatement(initSt,new App(methodTermIter.dsc("1"),new Const("DM")));
             formulasToProof.push(initSt);
 
             if (
-                  methodTermIter.des("1") instanceof App &&
-                  ("B".equals(crudOp.returnProofMethodObject( methodTermIter.des("11").toString() ).getGroupMethod())) &&
+                  methodTermIter.dsc("1") instanceof App &&
+                  ("B".equals(crudOp.returnProofMethodObject( methodTermIter.dsc("11").toString() ).getGroupMethod())) &&
                   (ProofBoolean.isBranchedProof2Started(methodTermIter))         
                )
             {
                 fatherProofs.push(typedTerm);
                 typedTerm = crudOp.getSubProof(typedTerm, methodTermIter);
             }
-            methodTermIter = methodTermIter.des("2");
+            methodTermIter = methodTermIter.dsc("2");
         }
         Term formulaBeingProved = formulasToProof.pop();
     
@@ -671,7 +671,7 @@ public class InferController {
 
             // This part ensures that after each one-step inference the tree for the second proof is updated
             if (methodTermAux instanceof App){
-                Term m = methodTermAux.des("1");
+                Term m = methodTermAux.dsc("1");
                 String strM = m.toString();
                 if (m != null){
                     objectMethod = crudOp.returnProofMethodObject(strM);
@@ -901,9 +901,9 @@ public class InferController {
             // ---- End of assigning "formulaTerm" 
 
             if (nSol.equals("new")) {
-                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(formulaAnterior.des("2").body(),null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.des("2").body(),null) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.des("2").body(),null) != 1) )    // Equivalence ==
+                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
+                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),null) != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),null) != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");
@@ -932,9 +932,9 @@ public class InferController {
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username); 
                 methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
                 
-                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(formulaAnterior.des("2").body(),methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.des("2").body(),methodTerm) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.des("2").body(),methodTerm) != 1) )    // Equivalence ==
+                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
+                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),methodTerm) != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),methodTerm) != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");
@@ -991,7 +991,7 @@ public class InferController {
                         throw new ClassCastException();
                     }
                     Term formulaWithoutT = formulaTerm.setToPrint(simboloManager);
-                    formulaTerm = lado.equals("i") ? formulaWithoutT.des("2") : formulaWithoutT.des("12");  
+                    formulaTerm = lado.equals("i") ? formulaWithoutT.dsc("2") : formulaWithoutT.dsc("12");  
                 } 
 
                 if (nSol.equals("new")) {

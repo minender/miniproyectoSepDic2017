@@ -166,8 +166,8 @@ public class GenericProofMethodImpl implements GenericProofMethod{
                 infer = A;
             }
             else if (noInstantiation){  
-                if (("T".equals(this.groupMethod)) && theoremHint instanceof App && theoremHint.des("1") instanceof App &&
-                     (C=theoremHint.des("11")) != null && C instanceof Const &&
+                if (("T".equals(this.groupMethod)) && theoremHint instanceof App && theoremHint.dsc("1") instanceof App &&
+                     (C=theoremHint.dsc("11")) != null && C instanceof Const &&
                      (((Const)C).getId() == 2 || ((Const)C).getId() == 3) 
                     )
                 {
@@ -184,8 +184,8 @@ public class GenericProofMethodImpl implements GenericProofMethod{
                 if (noLeibniz){
                     infer = new TypedApp(I,A);
                 }
-                else if (("T".equals(this.groupMethod)) && theoremHint instanceof App && theoremHint.des("1") instanceof App &&
-                         (C=theoremHint.des("11")) != null && C instanceof Const &&
+                else if (("T".equals(this.groupMethod)) && theoremHint instanceof App && theoremHint.dsc("1") instanceof App &&
+                         (C=theoremHint.dsc("11")) != null && C instanceof Const &&
                          (((Const)C).getId() == 2 || ((Const)C).getId() == 3) 
                         )
                 {
@@ -309,8 +309,8 @@ public class GenericProofMethodImpl implements GenericProofMethod{
         ResuelveManager resuelveManager, SimboloManager simboloManager)
     {
         Term expr = proof.type();//.setToPrint(); // The root of the proof tree, which is the last line
-        Term initialExpr = expr.des("2"); // The expression (could be a theorem) from which the user started the demonstration
-        Term finalExpr = expr.des("12"); // The last line in the demonstration that the user has made
+        Term initialExpr = expr.dsc("2"); // The expression (could be a theorem) from which the user started the demonstration
+        Term finalExpr = expr.dsc("12"); // The last line in the demonstration that the user has made
 
         try{
             return auxFinBaseMethodProof(formulaBeingProved, proof, username, resuelveManager, simboloManager, 

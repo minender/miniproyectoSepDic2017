@@ -43,7 +43,7 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
     private Integer binaryOperatorId(Term formula){
         // In applicative notation, the expression "P operator Q" is written as "(operator Q) P",
         // so the attribute "1" is "(operator Q)" and "11" is "operator". 
-        return ((Const)formula.des("11")).getId();
+        return ((Const)formula.dsc("11")).getId();
     }
 
     /**
@@ -59,8 +59,8 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
         beginFormula = beginFormula.containT() ? beginFormula.setToPrint(simboloManager) : beginFormula;
 
         // "beginFormula" is of the form  [L op R], where "op" is ==> or <==
-        Term leftSide = beginFormula.des("2"); // L  
-        Term rightSide = beginFormula.des("12"); // R
+        Term leftSide = beginFormula.dsc("2"); // L  
+        Term rightSide = beginFormula.dsc("12"); // R
         // Now we negate the sides
         leftSide = new App(new Const(7 ,"c_{7}"), leftSide); // !L
         rightSide = new App(new Const(7,"c_{7}"), rightSide); // !R
@@ -108,8 +108,8 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
         // Substitution [p,q := ...]
         vars.add(0, new Var(112)); // Letter 'p'
         vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, formulaBeingProved.des("2"));   
-        terms.add(0, formulaBeingProved.des("12"));
+        terms.add(0, formulaBeingProved.dsc("2"));   
+        terms.add(0, formulaBeingProved.dsc("12"));
         Sust sus = new Sust(vars, terms);
         
         // We give the instantiation format to the substitution above
