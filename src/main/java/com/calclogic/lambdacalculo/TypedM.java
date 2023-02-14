@@ -55,6 +55,18 @@ public class TypedM extends TypedA implements TypedTerm {
     }
     
     /*
+     *(E^{lambda z.z/\E.Q1}(I^{p:=H}A^{3.39}))
+     * (L^{lambda z.(H/\z)/\E.Q1}(I^{?}(M_{3}^{1} A^{?})))
+     *  (E^{lambda z.(H/\z)/\E.Q1}(I^{p,q:=H,Q1==Q2}A^{3.66}))
+     *   (I^{p,q,r:=H,Q1==Q2,E.Q1}A^{3.37})
+     *    (E^{lambda z.H/\z}(I^{e,f:=Q1,Q2}A^{3.84.a}))
+     *     (I^{p,q,r:=H,Q1==Q2,E.Q2}A^{3.37})
+     *      (E^{lambda z.(H/\z)/\E.Q2}(I^{p,q:=H,Q1==Q2}A^{3.66}))
+     *       (E^{lambda z.(H/\z)/\E.Q2}(I^{?}(M_{3} A^{?})))
+     *        (E^{lambda z.z/\E.Q2}(I^{p:=H}A^{3.39}))
+     */
+    
+    /*
      * @param type The empty string can be passed when we are not referring to an axiom
     The Metatheorem 4 is:
                                                                      t1==t2 = t      
@@ -89,7 +101,11 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
         else if (id == 3) {
             String template = "(S A^{= T c_{8}})";
             proof_ = CombUtilities.getTerm(template, user);
+            //if (proof.containT()) 
             proof_ = new TypedApp(proof ,proof_);
+            /*else{
+                proof = new TypedM(1,1,proof,type,user);
+            }*/
         }
         else if (id == 4) {
             Term proofType = proof.type();
@@ -142,7 +158,7 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
         if (proof_ instanceof TypedA)
             return proof_.toString();
         else if (id_ == 1 || id_ == 2)
-          return "(M_{"+id_+"}^{"+((Const)((App)((App)((App)((TypedA)((App)((App)proof_).q).q).type()).q.body()).p).p).id+"} A^{"+super.getCombDBType()+"})";
+          return "(M_{"+id_+"}^{"+((Const)((App)((App)((App)((TypedA)((App)((App)proof_).q).q).type()).q.body()).p).p).id+"} ("+((App)((App)proof_).p).q+"))";
         else if (id_ == 3)
           return "(M_{"+id_+"} ("+((App)proof_).p+"))";
         else if (id_ == 4)

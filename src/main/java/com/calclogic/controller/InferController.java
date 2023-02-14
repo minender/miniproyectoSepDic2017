@@ -897,7 +897,7 @@ public class InferController {
                 }
             }
             else if ("SS".equals(newMethod)){
-                formulaTerm = resuelveAnterior.getTeorema().getTeoTerm().setToPrinting(resuelveAnterior.getVariables(),simboloManager);
+                formulaTerm = resuelveAnterior.getTeorema().getTeoTerm().evaluar(resuelveAnterior.getVariables());//.setToPrinting(resuelveAnterior.getVariables(),simboloManager);
             }
             // ---- End of assigning "formulaTerm" 
 
@@ -911,7 +911,13 @@ public class InferController {
                 }
 
                 if (sideOrTransitive){
-                    solucion = new Solucion(resuelveAnterior, false, null, newMethod, crudOp);
+                    boolean containT = (formulaTerm == null?false:formulaTerm.containT());
+                    if (newMethod.equals("SS") && containT && 
+                        crudOp.binaryOperatorId(formulaTerm, null) == 15
+                       )
+                        solucion = new Solucion(resuelveAnterior, false, null, "OE "+newMethod, crudOp);
+                    else
+                        solucion = new Solucion(resuelveAnterior, false, null, newMethod, crudOp);
                 }
                 else{
                     // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
@@ -944,14 +950,30 @@ public class InferController {
                 solucion.setMetodo(methodTerm.toString());
 
                 if (sideOrTransitive){
+                    if ("SS".equals(newMethod)) {
+                       boolean containT = formulaAnterior.containT();
+                       Term aux = formulaAnterior;
+                       if (!(methodTerm instanceof Const)) {
+                           aux = crudOp.initStatement(formulaAnterior, methodTerm);
+                           containT = true;
+                       }
+                       int inerOp = crudOp.binaryOperatorId(aux, null);
+                       if (newMethod.equals("SS") && containT && (inerOp == 1 || inerOp == 15)) {
+                           methodTerm = crudOp.eraseMethod(methodTerm.toString());
+                           methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "OE");
+                           methodTerm = crudOp.updateMethod(methodTerm.toString(), "SS");
+                           solucion.setMetodo(methodTerm.toString());
+                       }
+                    }
                     formulaTerm = crudOp.initStatement(formulaTerm,methodTerm);
                 }
                 else{
                     if ("DM".equals(newMethod)){
+                        Term aux = formulaAnterior;
                         if (!(methodTerm instanceof Const)) {
-                           formulaAnterior = crudOp.initStatement(formulaAnterior, methodTerm);
+                           aux = crudOp.initStatement(formulaAnterior, methodTerm);
                         }
-                        if (!formulaAnterior.containT()) {
+                        if (!aux.containT()) {
                            methodTerm = crudOp.eraseMethod(methodTerm.toString());
                            methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "EO");
                            methodTerm = crudOp.updateMethod(methodTerm.toString(), "DM");
@@ -961,7 +983,8 @@ public class InferController {
                            formulaTerm = crudOp.initStatement(formulaTerm, methodTerm);
                         }
                         formulaTerm = formulaTerm.setToPrint(simboloManager);
-                        typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), methodTerm);
+                        typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(),
+                                                                methodTerm, simboloManager);
                         solucion.setTypedTerm(typedTerm);
                     }
                     solucionManager.updateSolucion(solucion);       
@@ -1005,7 +1028,8 @@ public class InferController {
                     response.setnSol(solucion.getId()+"");
                 }
                 else {
-                    typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), methodTerm);
+                    typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), 
+                                                            methodTerm, simboloManager);
                     solucion.setTypedTerm(typedTerm);
                     solucionManager.updateSolucion(solucion);
                 }       
@@ -1020,7 +1044,7 @@ public class InferController {
             response.setErrorParser1(true);
             return response;
         }
-        
+
         response.generarHistorial(
             username, // user
             formulaAnterior, // formula

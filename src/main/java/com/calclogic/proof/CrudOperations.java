@@ -5,6 +5,7 @@ import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.DisponeManager;
+import com.calclogic.service.SimboloManager;
 
 import java.util.List;
 
@@ -148,7 +149,7 @@ public interface CrudOperations {
      *                term had the information about what is the current sub proof
      * @return Term that represent the statement to be proved in the current sub proof.
      */
-    public Term addFirstLineSubProof(String user, Term formula, Term typedTerm, Term method);
+    public Term addFirstLineSubProof(String user, Term formula, Term typedTerm, Term method, SimboloManager s);
     
     /**
      * This method erase one basic proof method for currentMethod. 

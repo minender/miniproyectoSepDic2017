@@ -200,11 +200,12 @@ public class InferResponse extends GenericResponse{
         }
         // By <current> method, the following must be proved: <statement> 
         header += objectMethod.header(statement);   
-        
         if (methodTerm instanceof App) {
-            if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula)){
+            if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().setToPrint(simboloManager).equals(formula)){
               if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 4)
                 typedTerm = ((App)((TypedM)((App)((App)((App)((App)((App)((TypedM)typedTerm).getProof()).q).q).q).p).q).getProof()).p;
+              else if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 1)
+                typedTerm = ((App)((App)((TypedM)typedTerm).getProof()).p).q;
               else
                 typedTerm = ((App)typedTerm).q;
             }
@@ -235,6 +236,8 @@ public class InferResponse extends GenericResponse{
     {
         try{
             String statement;
+            if (formula.containT())
+                formula = ((App)formula).q.body();
             Term newFormula = ((App)formula).q; // First branch
             statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false, simboloManager) + "$");
             header += objectMethod.header("") + objectMethod.subProofInit(statement);

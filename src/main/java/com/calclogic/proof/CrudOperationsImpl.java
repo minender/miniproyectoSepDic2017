@@ -17,6 +17,7 @@ import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.DisponeManager;
+import com.calclogic.service.SimboloManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -123,6 +124,8 @@ public class CrudOperationsImpl implements CrudOperations {
             GenericProofMethod objectMethod = returnProofMethodObject(strMethod);
 
             if (objectMethod.getIsRecursiveMethod()){
+                if (beginFormula.containT())
+                    beginFormula = ((App)beginFormula).q.body();
                 beginFormula = objectMethod.initFormula(beginFormula);
 
                 if ("B".equals(objectMethod.getGroupMethod())){ // Branched recursive methods
@@ -490,7 +493,7 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term addFirstLineSubProof(String usr, Term formula, Term typedTerm, Term method) {
+    public Term addFirstLineSubProof(String usr, Term formula, Term typedTerm, Term method, SimboloManager s) {
         Term auxMethod = method; // "method" is entry/exit, so if we use it directly we change its value in the caller
         while (auxMethod instanceof App) {
             if (ProofBoolean.isBranchedProof2Started(auxMethod) && 
@@ -498,7 +501,7 @@ public class CrudOperationsImpl implements CrudOperations {
                )
             {
                 Term aux = addFirstLineSubProof(usr,formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
-                                                                                    ((App)auxMethod).q);
+                                                                                    ((App)auxMethod).q, s);
 
                 GenericProofMethod objectMethod = returnProofMethodObject("AI");
                 return objectMethod.finishedMethodProof(typedTerm,aux);
@@ -518,7 +521,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 String metaTheo = sub1.replace(metaTheoT);
                 Map<String,String> values2 = new HashMap<>();
                 values2.put("MT", metaTheo);
-                values2.put("T1Type", typedTerm.type().setToPrint(null).toString());
+                values2.put("T1Type", typedTerm.type().setToPrint(s).toString());
                 aux = typedTerm.toString();
                 values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
                 StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");
