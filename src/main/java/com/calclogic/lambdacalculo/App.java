@@ -135,8 +135,8 @@ public class App extends Term{
     public Term abstractEq() {
         String sVars = this.stFreeVars();
         if (sVars!=null) {
-           q = q.abstractVars(sVars);
-           ((App)p).q = ((App)p).q.abstractVars(sVars);
+            q = q.abstractVars(sVars);
+            p.setChild(p.dsc("2").abstractVars(sVars), '2');      
         }
         return this;
     }
@@ -528,13 +528,12 @@ public class App extends Term{
                stkS.push(appId+"2");
                appId += "1";
             }
-            stk.push(((App)aux).q);
-            aux = ((App)aux).p;
+            stk.push(aux.dsc("2"));  
+            aux = aux.dsc("1");
             j++;
         }
         Simbolo sym = null;
-        int opId;
-        int nArgs;
+        int opId, nArgs;
         Const c = null;
 
         // This case of Var is not currently used in Symbolic Logic, only in Discrete Math to denote functions.
@@ -723,9 +722,9 @@ public class App extends Term{
      * @param numTeo
      * @return String representation in LaTeX Format.
      */
-    public String toStringLaTeX(SimboloManager s, String numTeo){
-        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
-            && ((App)p).q.containT() )
+    public String toStringLaTeX(SimboloManager s, String numTeo){      
+        if (p instanceof App && p.dsc("1") instanceof Const && ((Const)p.dsc("1")).getId()==0 
+            && p.dsc("2").containT() )
             return q.toStringLaTeX(s,numTeo);
         else
             return privateToStringLaTeX('S',s,numTeo,"","",null,0,null,null,null,null,0,null,null).x3;
@@ -740,8 +739,8 @@ public class App extends Term{
      * @return String representation with HTML inputs.
      */
     public String toStringLaTeXWithInputs(SimboloManager s, String position, String rootId){
-        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
-            && ((App)p).q.containT() )
+        if (p instanceof App && p.dsc("1") instanceof Const && ((Const)p.dsc("1")).getId()==0 
+            && p.dsc("2").containT() )
             return q.toStringLaTeXWithInputs(s, position, rootId);
         else
             return privateToStringLaTeX('I',s,null,position,"",rootId,0,null,null,null,null,0,null,null).x3;
@@ -761,8 +760,8 @@ public class App extends Term{
      */
     @Override
     public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> l1, List<String> l2, Id id, int nivel){
-        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
-            && ((App)p).q.containT() )
+        if (p instanceof App && p.dsc("1") instanceof Const && ((Const)p.dsc("1")).getId()==0 
+            && p.dsc("2").containT() )
             return q.toStringLaTeXLabeled(s, z, t, appPosition, l1, l2, id, nivel);
         else{
             return privateToStringLaTeX('L',s,null,"",appPosition,null,z,t,l1,l2,id,nivel,null,null).x3;
@@ -771,8 +770,8 @@ public class App extends Term{
 
     @Override
     public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, String numTeo){
-        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
-            && ((App)p).q.containT() )
+        if (p instanceof App && p.dsc("1") instanceof Const && ((Const)p.dsc("1")).getId()==0 
+            && p.dsc("2").containT() )
             q.toStringLaTeXAbrv(toString, s, pm, numTeo);
         else
             privateToStringLaTeX('A',s,numTeo,"","",null,0,null,null,null,null,0,toString,pm);
@@ -790,8 +789,8 @@ public class App extends Term{
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId) {
         
-        if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
-            && ((App)p).q.containT() )
+        if (p instanceof App && p.dsc("1") instanceof Const && ((Const)p.dsc("1")).getId()==0 
+            && p.dsc("2").containT() )
             return q.toStringFormatC(s, pos, id, rootId);
         
         Stack<Term> stk = new Stack<Term>();
@@ -800,9 +799,9 @@ public class App extends Term{
         Term aux = p;
         int j = 1;
         while ( aux instanceof App ){
-           stk.push(((App)aux).q);
-           aux = ((App)aux).p;
-           j++;
+            stk.push(aux.dsc("2"));
+            aux = aux.dsc("1");
+            j++;
         }
         int nArgs;
         boolean isQuantifier;
@@ -989,8 +988,8 @@ public class App extends Term{
         Term abs = this.q;
         List<Term> args = new ArrayList<>();
         while (aux instanceof App) {
-            args.add(((App)aux).q);
-            aux = ((App)aux).p;
+            args.add(aux.dsc("2"));
+            aux = aux.dsc("1");
         } 
         Collections.reverse(args);
         String type_c;
@@ -1065,7 +1064,7 @@ public class App extends Term{
     private Term toFunApp(SimboloManager s) {
         Term aux = this;
         while (aux instanceof App) {
-            aux = ((App) aux).p;
+            aux = aux.dsc("1");
         }
         if (aux instanceof Const)
             return this;

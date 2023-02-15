@@ -22,70 +22,68 @@ public class TypedApp extends App implements TypedTerm{
      */
     public char inferType;
     
-    public TypedApp(Term t1, Term t2)  throws TypeVerificationException
-    {
+    public TypedApp(Term t1, Term t2)  throws TypeVerificationException{
         super(t1, t2);
         Term t1Type = t1.type();
         Term t2Type = t2.type();
         Const op;
         try {
-
             App rootRight = (App)t2Type;
-            App leftChild = (App)rootRight.p;
+            App leftChild = (App)rootRight.p;  
             op = (Const)leftChild.p;
         }
         catch (ClassCastException e) {
             throw new TypeVerificationException();
         }
-        if ( op.getId()!=0 )
+        if ( op.getId()!=0 ){
             throw new TypeVerificationException();
-        else if (t1Type instanceof Sust)
+        }
+        else if (t1Type instanceof Sust){
             inferType = 'i';
-        else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
-        {
+        }
+        else if (t1Type instanceof Bracket){ //t2Type tiene que ser equiv
             inferType = 'l'; // Cuando se tipe hay que verificar si (t1Type t2Type) no dan error de tipo
         }
-        else if (t1 instanceof TypedS) // <== S operand created by the grammar
-        {
-            if (t2Type.containT() && !(((App)t2Type).q instanceof Const && ((Const)((App)t2Type).q).id==8))
+        else if (t1 instanceof TypedS){ // <== S operand created by the grammar
+            if (t2Type.containT() && !(t2Type.dsc("2") instanceof Const && ((Const)t2Type.dsc("2")).id==8)){
                 throw new TypeVerificationException();
+            }
             inferType = 's';
         }
-        else if (t1Type instanceof App)
-        {
-            try
-            {
-                int op1 = ((Const)((App)((App)t1Type).p).p).getId();
-                if (op1 != 0)
+        else if (t1Type instanceof App){
+            try{
+                int op1 = ((Const)t1Type.dsc("11")).getId();
+                if (op1 != 0){
                     throw new TypeVerificationException();
+                }
                 
-                Term t1Izq = ((App)t1Type).q.body();
-                if (((App)((App)t1Type).p).q.containT() && // esto dice que es un modus pones
-                      !(((App)((App)t1Type).p).q.body() instanceof App) &&
+                Term t1Izq = t1Type.dsc("2").body();
+                if (t1Type.dsc("12").containT() && // esto dice que es un modus pones
+                      !(t1Type.dsc("12").body() instanceof App) &&
                      !(t2Type.containT() && // esto dice que no es el caso [t1=T] T=true
-                        ((App)((App)t2Type).p).q instanceof Const && 
-                        ((Const)((App)((App)t2Type).p).q.body()).id==8
+                        t2Type.dsc("12") instanceof Const && 
+                        ((Const)t2Type.dsc("12").body()).id==8
                       )
                    )
                 {
-                    t1Izq = ((App)((App)t1Type).q.body()).q;
-                    op1 = ((Const)((App)((App)((App)t1Type).q.body()).p).p).getId();
+                    t1Izq = t1Type.dsc("2").body().dsc("2");          
+                    op1 = ((Const)t1Type.dsc("2").body().dsc("11")).getId();
                     if (op1 != 2) //&& !op1.equals("c_{3}"))// el c_{3} como que esta de mas
                         throw new TypeVerificationException();
                 }
                 
-                if ( !(((App)((App)t2Type).p).q.containT() && 
-                        !(((App)((App)t2Type).p).q.body() instanceof App) && 
-                        t1Izq.equals(((App)t2Type).q.body())
+                if ( !(t2Type.dsc("12").containT() &&
+                        !(t2Type.dsc("12").body() instanceof App) && 
+                        t1Izq.equals(t2Type.dsc("2").body())
                       )
                    ) // Esto dice que no es modus pones ni equanimity
                 {//(q==r)=q q=r pilas con este caso no se sabe si es equanimity o transitividad
                     if (op1 != 0) 
                         throw new TypeVerificationException();
                     
-                    Term t1Der = ((App)((App)t1Type).p).q;
-                    Term t2Izq = ((App)t2Type).q;
-                    //int op2 = ((Const)((App)((App)t2Type).p).p).getId();
+                    Term t1Der = t1Type.dsc("12");
+                    Term t2Izq = t2Type.dsc("2");
+                    
                     if (!t1Der.body().traducBD().equals(t2Izq.body().traducBD())){
                         throw new TypeVerificationException();
                     }
@@ -105,15 +103,15 @@ public class TypedApp extends App implements TypedTerm{
     }
     
     public static Term tranE(Term t1Type, Term t2Type) {
-        Term t1Der = ((App)((App)t1Type).p).q;
-        Term t2Izq = ((App)t2Type).q;
+        Term t1Der = t1Type.dsc("12");
+        Term t2Izq = t2Type.dsc("2");
         int nL1, nL2, maxVar, nMax;
         Term aux = t1Der;
         nL1 = 0;
         maxVar = 0;
         while (aux instanceof Bracket) {
             maxVar = ((Bracket)aux).x.indice;
-            aux = ((Bracket)aux).t;
+            aux = aux.dsc("3");  
             nL1++;
         }
         aux = t2Izq;
@@ -121,7 +119,7 @@ public class TypedApp extends App implements TypedTerm{
         while (aux instanceof Bracket) {
             if ( ((Bracket)aux).x.indice > maxVar )
                 maxVar = ((Bracket)aux).x.indice;
-            aux = ((Bracket)aux).t;
+            aux = aux.dsc("3");
             nL2++;
         }
         Term max, min;
@@ -139,12 +137,12 @@ public class TypedApp extends App implements TypedTerm{
         Term E = (nL1<=nL2?t1Der:t2Izq);//new Var(maxVar+1);
         while (aux instanceof Bracket) {
             E = new App(E, ((Bracket)aux).x);
-            aux = ((Bracket)aux).t;
+            aux = aux.dsc("3");
         }
         for (int i=0; i< nMax; i++) {
             aux = max;
             for (int j=0; j< nMax-1-i;j++) {
-                aux = ((Bracket)aux).t;
+                aux = aux.dsc("3");
             }
             E = new Bracket(((Bracket)aux).x,E);
         }
@@ -162,24 +160,12 @@ public class TypedApp extends App implements TypedTerm{
     public Term type() {
         Term pType = p.type();
         Term qType = q.type();
+
         if(inferType == 'i'){
-            /*String[] vs = pType.stFreeVars().split(",");
-            Var z = new Var((int)vs[vs.length-1].charAt(0)+1);
-            Term t = z;
-            for (int i = 0; i<((Sust)pType).vars.size();i++) {
-                t = new App(t,((Sust)pType).terms.get(i));
-            }
-            for (int i=vs.length-1; i>=0;i--) { 
-                t = new Bracket(new Var((int)vs[i].charAt(0)),t);
-            }
-            Term E = new Bracket(z, t);
-            E = new App(new App(new Const("="),new App(E,((App)((App)qType).p).q)),new App(E,((App)qType).q)).evaluar();
-            return E;*/
-            //return qType.sustParall(((Sust)pType).vars, ((Sust)pType).terms).evaluar();
             try {
-                Term right = ((App)((App)qType).p).q;
-                Term left = ((App)qType).q;
-                Term aux = left;
+                Term right = qType.dsc("12");      
+                Term left  = qType.dsc("2");
+                Term aux   = left;
                 int i = 0;
                 while ( aux instanceof Bracket ) {
                     Var var = ((Bracket)aux).x;
@@ -194,7 +180,7 @@ public class TypedApp extends App implements TypedTerm{
                         right = new App(right,var);
                         left = new App(left,var);
                     }
-                    aux = ((Bracket)aux).t;
+                    aux = aux.dsc("3");
                 }
                 String vars = ";"+((TypedA)q).variables_.split(";")[0];
                 return new App(new App(new Const(0,"="),right),left).evaluar(vars).abstractEq();
@@ -205,40 +191,39 @@ public class TypedApp extends App implements TypedTerm{
         }
         else if (inferType == 'l'){
             Term z = ((Bracket)pType).x;
-            Term aux = ((App)qType).q;
+            Term aux = qType.dsc("2");
             while (aux instanceof Bracket) {
                 z = new App(z,((Bracket)aux).x);
-                aux = ((Bracket)aux).t;
+                aux = aux.dsc("3");
             }
-            Term E = ((Bracket)pType).t.sust(((Bracket)pType).x,z);
+            Term E = pType.dsc("3").sust(((Bracket)pType).x,z);
             String[] boundVars = {""};
-            ((App)((App)qType).p).q.body().boundVars(boundVars);
-            ((App)qType).q.body().boundVars(boundVars);
-            Term t1 = E.sust(((Bracket)pType).x,((App)qType).q);
-            Term t2 = E.sust(((Bracket)pType).x,((App)((App)qType).p).q);
-            //Term op2 = ((App)((App)qType).p).p; 
-            return 
-    new App(new App(new Const(0,"="), t2),t1).evaluar(TermUtilities.arguments(boundVars[0])).abstractEq();
+            qType.dsc("12").body().boundVars(boundVars);
+            qType.dsc("2").body().boundVars(boundVars);
+            Term t1 = E.sust(((Bracket)pType).x, qType.dsc("2"));   
+            Term t2 = E.sust(((Bracket)pType).x, qType.dsc("12"));
+
+            return  new App(new App(new Const(0,"="), t2),t1).evaluar(TermUtilities.arguments(boundVars[0])).abstractEq();
         }
         if (inferType == 's'){
-            return new App(new App(new Const("="), ((App)qType).q), ((App)((App)qType).p).q);
+            return new App(new App(new Const("="), qType.dsc("2")), qType.dsc("12"));
         }
         else if (inferType == 'm'){
-            Const eq = (Const)((App)((App)pType).p).p;
-            pType = ((App)((App)((App)pType).q.body()).p).q;
-            Const T = (Const)((App)((App)qType).p).q.body();
+            Const eq = (Const)pType.dsc("11");
+            pType = pType.dsc("2").body().dsc("12");
+            Const T = (Const)qType.dsc("12").body();
             return new App(new App(eq,T),pType).abstractEq();
         }
         else if (inferType == 'e'){
-            Const eq = (Const)((App)((App)pType).p).p;
-            pType = ((App)((App)pType).p).q.body();
-            Const T = (Const)((App)((App)qType).p).q.body();
+            Const eq = (Const)pType.dsc("11");      
+            pType    = pType.dsc("12").body();
+            Const T  = (Const)qType.dsc("12").body();
             return new App(new App(eq,T),pType).abstractEq();
         }
         else{
-            Term pIzq = ((App)pType).q.body(); 
-            Term qDer = ((App)((App)qType).p).q.body();
-            Const op1 = (Const)((App)((App)pType).p).p;
+            Term pIzq = pType.dsc("2").body();        
+            Term qDer = qType.dsc("12").body();
+            Const op1 = (Const)pType.dsc("11");
            
             return new App(new App(op1, qDer), pIzq).abstractEq();
             // verificar si compartir terminos no trae problemas con reducir

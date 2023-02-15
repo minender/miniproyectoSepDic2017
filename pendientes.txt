@@ -35,3 +35,5 @@ Ronald
 
 * Revisar si la función "isReflexiveOperatorForUser" de ResuelveManager funciona para todos los casos o no.
 * En los finish de Contra-recíproco y Contradicción falta ver si hay que hacer un setToPrint/setToPrinting.
+* El método de transitividad debería no debería poder comenzar con una prueba cuyo operador sea =>, pero lo hace
+  porque al buscar su operador, como la fórmula contieneT, devuelve algo que no es.

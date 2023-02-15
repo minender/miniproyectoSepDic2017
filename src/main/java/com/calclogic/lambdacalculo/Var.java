@@ -6,11 +6,9 @@ package com.calclogic.lambdacalculo;
 
 import com.calclogic.entity.Simbolo;
 import com.calclogic.service.PredicadoManager;
-import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 

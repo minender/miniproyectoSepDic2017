@@ -29,35 +29,31 @@ public class Bracket extends Term{
     }
     
     
-    public Bracket(Var x1,Term t1)
-    {
+    public Bracket(Var x1,Term t1){
         x=x1;
         t=t1;
     }
     
-    public int x()
-    {
+    public int x(){
         return x.indice;
     }
     
-    public boolean occur(Var y)
-    {
-         if(x.equals(y))
-             return false;
-         else
-             return t.occur(y);
+    public boolean occur(Var y){
+        if(x.equals(y))
+            return false;
+        else
+            return t.occur(y);
     }
     
-    public String position(Var y)
-    {
-         if(x.equals(y))
-             return "3";
-         else {
+    public String position(Var y){
+        if(x.equals(y))
+            return "3";
+        else {
             if (t.occur(y))
-             return "1"+t.position(y);
+                return "1"+t.position(y);
             else
-             return "3";
-         }
+                return "3";
+        }
     }
     
     @Override
@@ -70,88 +66,72 @@ public class Bracket extends Term{
            return null;
     }
     
-    public Term sust(Var x,Term t)
-    {
+    public Term sust(Var x,Term t){
         return new Bracket(this.x,this.t.sust(x, t));
     }
     
-    public Term type()
-    {
+    public Term type(){
         return null;
     }
     
-    public int nPhi()
-    {
+    public int nPhi(){
         return 0;
     }
     
-    public boolean containTypedA()
-    {
+    public boolean containTypedA(){
         return t.containTypedA();
     }
     
-    public boolean containT()
-    {
+    public boolean containT(){
         return t.containT();
     }
     
-    public void getAxioms(List<String> l)
-    {
+    public void getAxioms(List<String> l){
         t.getAxioms(l);
     }
     
-    public Term leibniz(int z, String subtermId, String thisId, SimboloManager s)
-    {
-       if (thisId.equals(subtermId))
-           return new Var(z);
-       else
-           return new Bracket(x,t.leibniz(z, subtermId, thisId+"("+this.hashCode()+")", s));
+    public Term leibniz(int z, String subtermId, String thisId, SimboloManager s){
+        if (thisId.equals(subtermId))
+            return new Var(z);
+        else
+            return new Bracket(x,t.leibniz(z, subtermId, thisId+"("+this.hashCode()+")", s));
     }
     
     public boolean isIdFunction() {
        return t.equals(x);
     }
     
-    public int setAlias(int currentAlia)
-    {
-        if(t.alias != null)
-        {
+    public int setAlias(int currentAlia){
+        if(t.alias != null){
             t.alias = t.alias+"@"+currentAlia;
             currentAlia++;
         }
-        
         currentAlia = t.setAlias(currentAlia);
         return currentAlia;
     }
     
-    public Term bracketAbsSH(Var y)
-    {
+    public Term bracketAbsSH(Var y){
         return t.bracketAbsSH(x).bracketAbsSH(y);
     }
     
-    public Term bracketAbsBD(Var y)
-    {
+    public Term bracketAbsBD(Var y){
         return t.bracketAbsBD(x).bracketAbsBD(y);
     }
     
-    public Term bracketAbsBD()
-    {
+    public Term bracketAbsBD(){
         return t.bracketAbsBD(x);
     }
     
-    public Term traducBD()
-    {
+    public Term traducBD(){
         return t.traducBD().bracketAbsBD(x);
     }
     
-    public Term traducBD(List<String> l)
-    {
+    public Term traducBD(List<String> l){
         l.add(0,((char)x.indice)+"");
         return t.traducBD().bracketAbsBD(x);
     }
     
-    public List<Term> contandotraducBD()
-    {
+    public List<Term> contandotraducBD(){
         List<Term> list=t.contandotraducBD();
         for (int i=0; i<list.size(); i++) {
             Var xaux = new Var(x.indice);
@@ -162,56 +142,46 @@ public class Bracket extends Term{
         return list;
     }
     
-    public int maxVar()
-    {
+    public int maxVar(){
         int max = t.maxVar();
         return (max == x.indice?max-1:max);
     }
     
-    public int fresh(int n, int[] max)
-    {
+    public int fresh(int n, int[] max){
         return (x.indice == n?n:t.fresh(n,max));
     }
     
-    public Tipo esRedex()
-    {
+    public Tipo esRedex(){
         return new Tipo(false,false);
     }
     
-     public Tipo esRedexFinal()
-    {
+    public Tipo esRedexFinal(){
         return new Tipo(false,false,false);
     }
     
-    public Redex buscarRedexIzq(Term contexto,boolean p)
-    {
+    public Redex buscarRedexIzq(Term contexto,boolean p){
         return t.buscarRedexIzq(this,false);
     }
     
-    public Redex buscarRedexIzqFinal(Term contexto,boolean p)
-    {
+    public Redex buscarRedexIzqFinal(Term contexto,boolean p){
         return t.buscarRedexIzqFinal(this,false);
     }
     
-    public Term invBraBD(int n)
-    {
+    public Term invBraBD(int n){
         return this;
     }
     
-    public Term invBD()
-    {
+    public Term invBD(){
         Term term = new Bracket(x,t.invBD());
         term.alias = this.alias;
         return term;
     }
     
-    public Term invBDOneStep()
-    {
+    public Term invBDOneStep(){
         return new Bracket(x,t.invBDOneStep());
     }
     
-    public String toStringAll()
-    {   
+    public String toStringAll(){   
         if(t.alias == null)
             return "(\\lambda "+x.toStringAll()+"."+t.toString()+")";
         else{
@@ -221,16 +191,14 @@ public class Bracket extends Term{
     }
     
     @Override
-    public String toStringLaTeX(SimboloManager s,String numTeo)
-    {
+    public String toStringLaTeX(SimboloManager s,String numTeo){
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
             return t.toStringLaTeX(s,"");
             //return t.toStringInf(s,numTeo);
         }
         else {
-            return t.alias ;
-            //return t.alias;
+            return t.alias;
         }//.split("@")[0].replace("_", "\\_") +")";
     }
     
@@ -238,23 +206,10 @@ public class Bracket extends Term{
     public String toStringLaTeXLabeled(SimboloManager s,int z, Term t, String appPosition, List<Term> leibniz, 
                                      List<String> l2, Id id, int nivel){
         return this.t.toStringLaTeXLabeled(s, z, t, appPosition+"("+this.hashCode()+")", leibniz, l2, id, nivel);
-        /*
-        id.id++;
-        leibniz.add(t.leibniz(z, this));
-        l2.add(l2.remove(0)+id.id+",");
-        if(t.alias == null) {
-            //FALTA IMPLEMENTAR FINAL
-            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringLaTeXFinal(null)+"."+t.toStringLaTeXFinal(null)+")}}";
-        }
-        else {
-            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{(\\lambda "+x.toStringLaTeXFinal(null)+"."+t.alias +")}}";
-        }
-        */
     }
     
     @Override
-    public String toStringFormatC(SimboloManager s, String pos, int id, String rootId)
-    {
+    public String toStringFormatC(SimboloManager s, String pos, int id, String rootId){
         //char ascii = (char) x.indice; 
         //return "(\\lambda "+ascii+"."+t.toStringFormatC(s,pos,id,rootId)+")";
         return t.toStringFormatC(s,pos,id,rootId);
@@ -268,34 +223,27 @@ public class Bracket extends Term{
     }
     
     @Override
-    public ToString toStringAbrv(ToString toString)
-    {
-        if(t.alias == null)
-        {
+    public ToString toStringAbrv(ToString toString){
+        if(t.alias == null){
             t.toStringAbrvFinal(toString);
             toString.term= "(\\lambda "+x.toString()+"."+toString.term+")";
             return toString;
         }
-        else
-        {
+        else{
             toString.setNuevoAlias(t.alias, t);
             toString.term="(\\lambda "+x.toString()+"."+toString.term+")";
             return toString;
-        }
-        
+        } 
     }
     
     @Override
-    public ToString toStringLaTeXAbrv(ToString toString,SimboloManager s, PredicadoManager p,String nTeo)
-    {
-        if(t.alias == null)
-        {
+    public ToString toStringLaTeXAbrv(ToString toString,SimboloManager s, PredicadoManager p,String nTeo){
+        if(t.alias == null){
             t.toStringLaTeXAbrvFinal(toString,s,p,nTeo);
             //toString.term= "(\\lambda "+x.toStringLaTeX(s,"")+"."+toString.term+")";
             return toString;
         }
-        else
-        {
+        else{
             toString.setNuevoAlias(t.alias, t);
             //toString.term="(\\lambda "+x.toStringLaTeX(s,"")+"."+toString.term+")";
             return toString;
@@ -303,16 +251,13 @@ public class Bracket extends Term{
         
     }
     
-    public ToString toStringAbrvV1(ToString toString)
-    {
-        if(t.alias == null)
-        {
+    public ToString toStringAbrvV1(ToString toString){
+        if(t.alias == null){
             t.toStringAbrvFinalV1(toString);
             toString.term= "(\\lambda "+x.toString()+"."+toString.term+")";
             return toString;
         }
-        else
-        {
+        else{
             toString.setNuevoAliasV1(t.alias, t);
             toString.term="(\\lambda "+x.toString()+"."+toString.term+")";
             return toString;
@@ -368,10 +313,10 @@ public class Bracket extends Term{
     @Override     
     public void freeVars(int[] set) {
         if (x.indice >= 65 && x.indice <= 122 && set[x.indice-65] == 0) {//(!set.contains(x)) 
-          t.freeVars(set);
-          set[x.indice-65] = 0; // set.remove(x);
+            t.freeVars(set);
+            set[x.indice-65] = 0; // set.remove(x);
         } else 
-          t.freeVars(set);
+            t.freeVars(set);
     }
     
     @Override

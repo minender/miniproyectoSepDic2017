@@ -140,6 +140,16 @@ public class InformationImpl implements Information {
     }
 
     /**
+     * This function gives the id of an operator written as C_{num}
+     *
+     * @param cNotation
+     * @return The id of the operator
+     */
+    public Integer operatorIdFromCNotation(String cNotation){
+        return Integer.parseInt(cNotation.split("\\{")[1].split("\\}")[0]);
+    }
+
+    /**
      * This function gives the latex notation of an operator written as C_{num}
      *
      * @param cNotation
@@ -147,7 +157,30 @@ public class InformationImpl implements Information {
      */
     @Override
     public String operatorStrNotationFromCNotation(String cNotation){
-        // We must extract the number (the id) from the cNotation
-        return this.operatorStrNotationFromId(Integer.parseInt(cNotation.split("\\{")[1].split("\\}")[0]));
+        return this.operatorStrNotationFromId(this.operatorIdFromCNotation(cNotation));
+    }
+
+    /**
+     * Determines if an operator is an implication or a consequence,
+     * given its id.
+     *
+     * @param operatorId
+     * @return The boolean result
+     */
+    @Override
+    public Boolean idIsImplicationOrConsequence(Integer operatorId){
+        String opNotation = this.operatorStrNotationFromId(operatorId);
+        return "Rightarrow".equals(opNotation) || "Leftarrow".equals(opNotation);
+    }
+
+    /**
+     * Determines if an operator, written as C_{num}, is an implication or a consequence,
+     *
+     * @param cNotation
+     * @return The boolean result
+     */
+    @Override
+    public Boolean cNotationIsImplicationOrConsequence(String cNotation){
+        return this.idIsImplicationOrConsequence(this.operatorIdFromCNotation(cNotation));
     }
 }

@@ -11,44 +11,39 @@ package com.calclogic.lambdacalculo;
  */
 public class TypedS extends Const implements TypedTerm{
     
-    private Term simetry_;
+    private Term simmetry_;
     
-    public TypedS(Term simetry) throws TypeVerificationException, ClassCastException
-    {
+    public TypedS(Term simmetry) throws TypeVerificationException, ClassCastException{
         super("S");
-        String con = ((Const)((App)((App)simetry).p).p).getCon().trim();
-        int id = ((Const)((App)((App)simetry).p).p).getId();
+        String con = ((Const)simmetry.dsc("11")).getCon().trim();
+        int id = ((Const)simmetry.dsc("11")).getId();
         if (!con.equals("="))
            throw new TypeVerificationException();
-        Term t1 = ((App)simetry).q;
-        Term t2 = ((App)((App)simetry).p).q;
-        simetry_ = new App(new App(new Const(1,"c_{2}",false,1,1),
-                   new App(new App(new Const(id,con,false,1,1),t1),t2)),simetry);
+        Term t1 = simmetry.dsc("2");    
+        Term t2 = simmetry.dsc("12");
+        simmetry_ = new App(new App(new Const(1,"c_{2}",false,1,1),
+                   new App(new App(new Const(id,con,false,1,1),t1),t2)),simmetry);
     }
     
-    public TypedS(Term simetry, int i) throws TypeVerificationException, ClassCastException
-    {
+    public TypedS(Term simmetry, int i) throws TypeVerificationException, ClassCastException{
         super("S");
-        simetry_ = simetry;
+        simmetry_ = simmetry;
     }
     
-    public TypedS() throws TypeVerificationException, ClassCastException
-    {
+    public TypedS() throws TypeVerificationException, ClassCastException{
         super("S");
-        simetry_ = null;
+        simmetry_ = null;
     }
 
-    public void setSimetry(Term simetry) {
-        simetry_ = simetry;
+    public void setSimetry(Term simmetry) {
+        simmetry_ = simmetry;
     }
     
-    public Term type()
-    {
-        return simetry_;
+    public Term type(){
+        return simmetry_;
     }
     
-    public String getCombDBType()
-    {
-        return simetry_.toString();
+    public String getCombDBType(){
+        return simmetry_.toString();
     }
 }

@@ -25,8 +25,8 @@ public class Comprobacion {
                st = st + actual.toStringLaTeX(null,"") + ",";
             }
             else if (actual instanceof App) {
-              pila.push(((App)actual).q);
-              pila.push(((App)actual).p);
+              pila.push(actual.dsc("2"));
+              pila.push(actual.dsc("1"));
             }
         } 
         return st;

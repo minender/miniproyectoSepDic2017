@@ -164,7 +164,7 @@ public abstract class Term implements Cloneable, Serializable{
         Term descendant = this;
         char nextChar;
 
-        if (typed){
+        if (typed){ // Use TypedApp (or Bracket)
             for (int i=0; i < descendantsSequence.length(); i++){
                 nextChar = descendantsSequence.charAt(i);
                 switch (nextChar){
@@ -174,11 +174,15 @@ public abstract class Term implements Cloneable, Serializable{
                     case '2':
                         descendant = ((TypedApp)descendant).q;
                         break;
+                    case '3':
+                        descendant = ((Bracket)descendant).t;
+                        break;
                     default:
                         break;
                 }
             }           
-        } else {
+        } 
+        else { // Use App (or Bracket)
             for (int i=0; i < descendantsSequence.length(); i++){
                 nextChar = descendantsSequence.charAt(i);
                 switch (nextChar){
@@ -187,6 +191,9 @@ public abstract class Term implements Cloneable, Serializable{
                         break;
                     case '2':
                         descendant = ((App)descendant).q;
+                        break;
+                    case '3':
+                        descendant = ((Bracket)descendant).t;
                         break;
                     default:
                         break;
@@ -216,6 +223,9 @@ public abstract class Term implements Cloneable, Serializable{
                 break;
             case '2':
                 ((App)this).q = child;
+                break;
+            case '3':
+                ((Bracket)this).t = child;
                 break;
             default:
                 break;
@@ -419,19 +429,19 @@ public abstract class Term implements Cloneable, Serializable{
             // this.evaluar(li2);
         }
         Term arg2;
-        arg2 = ((App)this).q.body();
+        arg2 = this.dsc("2").body();
         Term t = null;
         if (this.containT())
             t = arg2;
         else {
-            Term arg1 = ((App)((App)this).p).q.body();
+            Term arg1 = this.dsc("12").body();
             String type;
             try {
                 type = arg2.getType(s);
             }
             catch (TypeVerificationException e){
                 try {
-                   type = arg1.getType(s);
+                    type = arg1.getType(s);
                 }
                 catch (TypeVerificationException e2){
                     type = "t";
@@ -439,9 +449,9 @@ public abstract class Term implements Cloneable, Serializable{
             }
             int opId;
             if (type.equals("b"))
-               opId = 1;
+                opId = 1;
             else
-               opId = 15;
+                opId = 15;
             if (c != null)
                c[0] = opId;
             t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1.body()),arg2.body());
@@ -451,19 +461,19 @@ public abstract class Term implements Cloneable, Serializable{
     
     public Term setToPrint(SimboloManager s) {
         Term arg1, arg2;
-        arg1 = ((App)((App)this).p).q.body();
-        arg2 = ((App)this).q.body();
+        arg1 = this.dsc("12").body();
+        arg2 = this.dsc("2").body();
         Term t;
         if (arg1.containT())
             t = arg2;
         else {
             String type;
             try {
-              type = arg2.getType(s);
+                type = arg2.getType(s);
             }
             catch (TypeVerificationException e){
                 try {
-                   type = arg1.getType(s);
+                    type = arg1.getType(s);
                 }
                 catch (TypeVerificationException e2){
                     type = "t";
@@ -499,9 +509,9 @@ public abstract class Term implements Cloneable, Serializable{
     public abstract Term abstractEq();
     
     public boolean isEquality() {
-        return this instanceof App && ((App)this).p instanceof App && 
-                ((App)((App)this).p).p instanceof Const && 
-                ((Const)((App)((App)this).p).p).getCon().equals("=");
+        return this instanceof App && this.dsc("1") instanceof App && 
+                this.dsc("11") instanceof Const && 
+                ((Const)this.dsc("11")).getCon().equals("=");
     }
     
     public Term body() {
@@ -771,43 +781,29 @@ public abstract class Term implements Cloneable, Serializable{
     
     public List<String> volverPuroList(){
         try{
-            Term clone=(Term)this.clone();
-            Redex r=clone.buscarRedexIzq(null,false);
+            Term clone = (Term)this.clone();
+            Redex r = clone.buscarRedexIzq(null,false);
             List<String> puro = new LinkedList<>();
+
             if(r!=null && r.tipo.l){
                 if(r.context==null){
-                    List<Term> list = ((Bracket)(((App)clone).p)).t.contandotraducBD();
-                    for(Term t:list)
-                        puro.add((new App(new Bracket(((Bracket)(((App)clone).p)).x,t),((App)clone).q)).toStringAbrvFinalFinal().replace("\\", "\\\\"));        
-                }
-                else if(r.context instanceof App){
-                    if(r.p){
-                        Term t=((App)r.context).p; 
-                        List<Term> list = ((Bracket)((App)t).p).t.contandotraducBD();
-                        for(Term ter: list){
-                            ((App)r.context).p=new App(new Bracket(((Bracket)((App)t).p).x,ter),((App)t).q);
-                            puro.add(clone.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        }
-                    }
-                    else{
-                        Term t=((App)r.context).q;  
-                        List<Term> list = ((Bracket)((App)t).p).t.contandotraducBD();
-                        for(Term ter: list){
-                            ((App)r.context).q=new App(new Bracket(((Bracket)((App)t).p).x,ter),((App)t).q);
-                            puro.add(clone.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        }
+                    List<Term> list = clone.dsc("13").contandotraducBD();
+                    for(Term t:list){
+                        puro.add((new App(new Bracket(((Bracket)clone.dsc("1")).x,t),clone.dsc("2"))).toStringAbrvFinalFinal().replace("\\", "\\\\"));        
                     }
                 }
-                else if(r.context instanceof Bracket){           
-                    Term t=((Bracket)r.context).t;
-                    List<Term> list = ((Bracket)((App)t).p).t.contandotraducBD();
+                else if (r.context instanceof App || r.context instanceof Bracket){
+                    String pos = (r.context instanceof App) ? (r.p ? "1" : "2") : "3";
+                    Term t = r.context.dsc(pos); 
+                    List<Term> list = t.dsc("13").contandotraducBD();
+
                     for(Term ter: list){
-                        ((Bracket)r.context).t=new App(new Bracket(((Bracket)((App)t).p).x,ter),((App)t).q);
+                        r.context.setChild(new App(new Bracket(((Bracket)t.dsc("1")).x,ter),t.dsc("2")), pos.charAt(0));
                         puro.add(clone.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     }
                 }
             }
-            if(puro.size() == 0){
+            if(puro.isEmpty()){
                 puro.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
             }
             return puro;
@@ -818,26 +814,17 @@ public abstract class Term implements Cloneable, Serializable{
     
     public Term volverPuro(){
         try{
-            Term clone=(Term)this.clone();
-            Redex r=clone.buscarRedexIzq(null,false);
+            Term clone = (Term)this.clone();
+            Redex r = clone.buscarRedexIzq(null,false);
             if(r!=null && r.tipo.l){
-                if(r.context==null)
-                    return new App(new Bracket(((Bracket)(((App)clone).p)).x,((Bracket)(((App)clone).p)).t.traducBD()),((App)clone).q);
-                else if(r.context instanceof App){
-                    if(r.p){
-                        Term t=((App)r.context).p; 
-                        ((App)r.context).p=new App(new Bracket(((Bracket)((App)t).p).x,((Bracket)((App)t).p).t.traducBD()),((App)t).q);
-                        return clone;
-                    }
-                    else{
-                        Term t=((App)r.context).q;  
-                        ((App)r.context).q=new App(new Bracket(((Bracket)((App)t).p).x,((Bracket)((App)t).p).t.traducBD()),((App)t).q);
-                        return clone;
-                    }
+                if(r.context==null){
+                    return new App(new Bracket(((Bracket)clone.dsc("1")).x,clone.dsc("13").traducBD()),clone.dsc("2"));
                 }
-                else if(r.context instanceof Bracket){           
-                    Term t=((Bracket)r.context).t;
-                    ((Bracket)r.context).t=new App(new Bracket(((Bracket)((App)t).p).x,((Bracket)((App)t).p).t.traducBD()),((App)t).q);
+                else if(r.context instanceof App || r.context instanceof Bracket){
+                    String pos = (r.context instanceof App) ? (r.p ? "1" : "2") : "3";
+                    Term t = r.context.dsc(pos); 
+
+                    r.context.setChild(new App(new Bracket(((Bracket)t.dsc("1")).x,t.dsc("13").traducBD()),t.dsc("2")), pos.charAt(0));
                     return clone;
                 }
             }
@@ -848,152 +835,78 @@ public abstract class Term implements Cloneable, Serializable{
         return this;
     }
     
-    public Term reducir(List<Var> vars)
-    {
-        Redex r=buscarRedexIzqFinal(null,false);
-        if(r!=null)
-        {
-            if(r.context==null)
-            {
-                if(r.tipo.c)
+    public Term reducir(List<Var> vars){
+        Redex r = buscarRedexIzqFinal(null,false);
+        if(r!=null){
+            Integer variable = (vars == null) ? 0 : (vars.size()!=0 ? vars.remove(0).indice : 65);
+
+            if(r.context==null){
+                if (r.tipo.c)
                     return this.kappa();
-                else if(r.tipo.l)
-                    return ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);
+                else if (r.tipo.l)
+                    return this.dsc("13").traducBD().sust(((Bracket)this.dsc("1")).x, this.dsc("2"));
                 else
-                    return this.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
+                    return this.invBraBD(variable);
             }
-            else if(r.context instanceof App)
-            {
-                 if(r.p)
-                 {
-                     Term t=((App)r.context).p; 
-                     if (r.tipo.c)
-                        ((App)r.context).p=t.kappa();
-                     else if (r.tipo.l){
-                        ((App)r.context).p=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                     }
-                     else
-                        ((App)r.context).p=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
-                 }
-                 else
-                 {
-                     Term t=((App)r.context).q; 
-                     if(r.tipo.c)
-                        ((App)r.context).q=t.kappa();
-                     else if(r.tipo.l)
-                        ((App)r.context).q=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                     else 
-                        ((App)r.context).q=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
-                 }
+            else if(r.context instanceof App || r.context instanceof Bracket){
+                String pos = (r.context instanceof App) ? (r.p ? "1" : "2") : "3";
+                Term t = r.context.dsc(pos); 
+
+                if (r.tipo.c)
+                    r.context.setChild(t.kappa(), pos.charAt(0));
+                else if (r.tipo.l)
+                    r.context.setChild(t.dsc("13").traducBD().sust(((Bracket)t.dsc("1")).x, t.dsc("2")), pos.charAt(0));
+                else
+                    r.context.setChild(t.invBraBD(variable), pos.charAt(0));
             }
-            else if(r.context instanceof Bracket)
-            {                          
-                 Term t=((Bracket)r.context).t; 
-                 if(r.tipo.c)
-                     ((Bracket)r.context).t=t.kappa();
-                 else if(r.tipo.l)
-                     ((Bracket)r.context).t=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                 else 
-                     ((Bracket)r.context).t=t.invBraBD((vars.size()!=0?vars.remove(0).indice:65));
-            }
-        }
-        
+        }       
         return this;
     }
     
-    public Term reducir()
-    {
-        Redex r=buscarRedexIzqFinal(null,false);
-        if(r!=null){
-            if(r.context==null){
-                if(r.tipo.c)
-                    return this.kappa();
-                else if(r.tipo.l)
-                    return ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);                    
-                else
-                    return this.invBraBD(0);
-            }
-            else if(r.context instanceof App){
-                if(r.p){
-                    Term t=((App)r.context).p; 
-                    if (r.tipo.c)
-                        ((App)r.context).p=t.kappa();
-                    else if (r.tipo.l)
-                        ((App)r.context).p=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                     else
-                        ((App)r.context).p=t.invBraBD(0);
-                 }
-                 else
-                 {
-                     Term t=((App)r.context).q; 
-                     if(r.tipo.c)
-                        ((App)r.context).q=t.kappa();
-                    else if(r.tipo.l)
-                        ((App)r.context).q=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                     else
-                        ((App)r.context).q=t.invBraBD(0);
-                 }
-            }
-            else if(r.context instanceof Bracket)
-            {     
-                 Term t=((Bracket)r.context).t; 
-                 if(r.tipo.c)
-                     ((Bracket)r.context).t=t.kappa();
-                 else if(r.tipo.l)
-                     ((Bracket)r.context).t=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                 else
-                     ((Bracket)r.context).t=t.invBraBD(0);
-            }
-        } 
-        return this;
+    public Term reducir(){
+        return this.reducir(null);
     }
     
     public Term reducirFinal(Corrida corr){
         Redex r=buscarRedexIzqFinal(null,false);
         if(r!=null){
             Term reduc;
+
             if(r.context==null){
                 if(r.tipo.c){
                     reduc = this.kappa();
                     corr.operations.add(new Integer(3));
-                    corr.terminos.add(reduc.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     try{
                         Term tee=(Term)reduc.clone();
                         corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     }
                     catch(Exception e){e.printStackTrace();}
-                    corr.reducciones++;
-                    return reduc;
                 }
                 else if(r.tipo.l){
-                    List<String> puro=this.volverPuroList();
-                    for(int i=0; i < puro.size(); i++)
+                    List<String> puro = this.volverPuroList();
+                    for(int i=0; i < puro.size(); i++){
                         corr.operations.add(new Integer(1));
-                    
+                    }
                     corr.terminos.addAll(puro);
-                    corr.traducciones+=puro.size();
+                    corr.traducciones += puro.size();
                     reduc = ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);
                     corr.operations.add(new Integer(3));
-                    corr.terminos.add(reduc.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     try{
                         Term tee=(Term)reduc.clone();
                         corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     }
                     catch(Exception e){e.printStackTrace();}
-                    corr.reducciones++;
-                    return reduc;
                 }
-                else
-                {
-                    reduc=this.invBraBD(0);
-                    corr.operations.add(new Integer(2));
-                    corr.terminos.add(reduc.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                    corr.traducciones++;
-                    return reduc;
+                else{
+                    reduc = this.invBraBD(0);
+                    corr.operations.add(new Integer(2));  
                 }
+                corr.terminos.add(reduc.toStringAbrvFinalFinal().replace("\\", "\\\\"));
+                corr.reducciones++;
+                return reduc;
             }
             else if(r.context instanceof App){
-                 if(r.p){
+                if(r.p){
                     Term t=((App)r.context).p; 
                     if(r.tipo.c){
                         ((App)r.context).p=t.kappa();
@@ -1008,8 +921,9 @@ public abstract class Term implements Cloneable, Serializable{
                     }
                     else if(r.tipo.l){
                         List<String> puro=this.volverPuroList();
-                        for(int i=0; i < puro.size(); i++)
+                        for(int i=0; i < puro.size(); i++){
                             corr.operations.add(new Integer(1));
+                        }
                         
                         corr.terminos.addAll(puro);
                         corr.traducciones+=puro.size();
@@ -1022,15 +936,14 @@ public abstract class Term implements Cloneable, Serializable{
                         }
                         catch(Exception e){e.printStackTrace();}
                         corr.reducciones++;
-                     }
-                     else
-                     {
+                    }
+                    else{
                         ((App)r.context).p=t.invBraBD(0);
                         corr.operations.add(new Integer(2));
                         corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                         corr.traducciones++;
                     }
-                 } else {
+                } else {
                     Term t=((App)r.context).q; 
                     if(r.tipo.c){
                         ((App)r.context).q=t.kappa();
@@ -1059,9 +972,8 @@ public abstract class Term implements Cloneable, Serializable{
                         }
                         catch(Exception e){e.printStackTrace();}
                         corr.reducciones++;
-                     }
-                     else
-                     {
+                    }
+                    else{
                         ((App)r.context).q=t.invBraBD(0);
                         corr.operations.add(new Integer(2));
                         corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
@@ -1092,19 +1004,18 @@ public abstract class Term implements Cloneable, Serializable{
                     corr.operations.add(new Integer(3));
                     corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     try{
-                     Term tee=(Term)this.clone();
-                     corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
+                        Term tee=(Term)this.clone();
+                        corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     }
                     catch(Exception e){e.printStackTrace();}
                     corr.reducciones++;
-                 }
-                 else
-                 {
+                }
+                else{
                     ((Bracket)r.context).t=t.invBraBD(0);
                     corr.operations.add(new Integer(2));
                     corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     corr.traducciones++;
-                 }
+                }
             }
         }
         return this;
@@ -1132,7 +1043,7 @@ public abstract class Term implements Cloneable, Serializable{
         while((deep != 0) && p1 instanceof App){
             aizqnivel2=appizq;
             appizq=(App)p1;
-            p1=((App)p1).p;
+            p1 = p1.dsc("1");
             i++;
             deep--;
         }
@@ -1142,13 +1053,13 @@ public abstract class Term implements Cloneable, Serializable{
     public Stack<Term> unfold(SimboloManager s) {
         Stack<Term> stk = new Stack<>();
         if (this instanceof App) {
-            stk.push(((App)this).q);
-            Term aux = ((App)this).p;
+            stk.push(this.dsc("2"));   
+            Term aux = this.dsc("1");
             int j = 1;
             while ( aux instanceof App ){
-               stk.push(((App)aux).q);
-               aux = ((App)aux).p;
-               j++;
+                stk.push(aux.dsc("2"));
+                aux = aux.dsc("1");
+                j++;
             }
             if (aux instanceof Const && s.getSimbolo(((Const)aux).getId()).getArgumentos() == stk.size()) {
                 stk.push(aux);
@@ -1194,19 +1105,18 @@ public abstract class Term implements Cloneable, Serializable{
                         izq.pq.p=phi1;
                         AppIzq izq2=obtenerIzq((App)this,phi2.ind.orden);//no se empieza del ultimo mal
                         Term t1=izq2.p;
-                        Term xnMas1 = ((App)this).q;
+                        Term xnMas1 = this.dsc("2");
                         if ( !(xnMas1 instanceof Var || xnMas1 instanceof Const) ) {
-                           try{
-                            xnMas1=(Term)((App)this).q.clone();
-                           }
-                           catch(CloneNotSupportedException e){
-                             e.printStackTrace();
-                             return null;
-                           }
+                            try{
+                                xnMas1=(Term)this.dsc("2").clone();
+                            }
+                            catch(CloneNotSupportedException e){
+                                e.printStackTrace();
+                                return null;
+                            }
                         }
                         izq2.pq.p=phi2;
-                        return new App((new App(t1,xnMas1)).kappa(),this.kappa());
-                        
+                        return new App((new App(t1,xnMas1)).kappa(),this.kappa());      
                     }
                 }
                 else{
@@ -1280,8 +1190,6 @@ public abstract class Term implements Cloneable, Serializable{
                         return new App((new App(t1,xc)).kappaIndexado(c,xc,max),this.kappaIndexado(xc.indice,xc,max));
                     }
                 } else{
-                    /*xc.setIndice(Math.max(izq.pq.q.maxVar(),c));
-                    return xc;*/
                     xc.indice=c;
                     return xc;
                 }
@@ -1302,16 +1210,12 @@ public abstract class Term implements Cloneable, Serializable{
         Term term2=this;
         Term term1=term2;
 
-        //do
-        //{
         term1=term2;
         Redex redex=term1.buscarRedexIzqFinal(null, false);
         while(redex!=null){
             term1=term1.reducir();
             redex=term1.buscarRedexIzqFinal(null, false);
         }
-        //    term2=term1.invBDOneStep();
-        //}while(!term1.equals(term2));
 
 	    return term1;
     }
@@ -1327,7 +1231,6 @@ public abstract class Term implements Cloneable, Serializable{
         if (";".equals(vars))
             return evaluar(new ArrayList<Var>());
         else {
-            //vars = vars + ", "+ vars;
             String[] split_vars = vars.split(";");
             String bound_vars = split_vars[0];
             String free_vars;
@@ -1354,8 +1257,8 @@ public abstract class Term implements Cloneable, Serializable{
             // Ojo estas lineas solo funcionan si el termino es un combinador. Si tiene redex de tipo 
             // lambda que provocan una traduccion que generan redex de tipo traduccion, ya no sirve 
             // aunque pogas la lista de variables ligadas sugeridas correctamente
-            int nVar1 = (((App)((App) this).p).q.nPhi()!=0?((App)((App) this).p).q.nPhi() - li_free.size():0);
-            int nVar2 = (((App) this).q.nPhi()!=0?((App) this).q.nPhi() - li_free.size():0);
+            int nVar1 = (this.dsc("12").nPhi()!=0 ? this.dsc("12").nPhi() - li_free.size() : 0);
+            int nVar2 = (this.dsc("2").nPhi()!=0 ? this.dsc("2").nPhi() - li_free.size() : 0);
             List<Var> li2 = li_free;
             li2.addAll(li_bound.subList(0, nVar1));
             li2.addAll(li_free);
@@ -1364,28 +1267,21 @@ public abstract class Term implements Cloneable, Serializable{
         }
     }
     
-    public Term evaluar(List<Var> vars)
-    {
-            Term term2=this;
-            Term term1=term2;
+    public Term evaluar(List<Var> vars){
+        Term term2 = this;
+        Term term1 = term2;
 
-            //do
-            //{
-                term1=term2;
-                Redex redex=term1.buscarRedexIzqFinal(null, false);
-                while(redex!=null)
-                {
-                    term1=term1.reducir(vars);
-                    redex=term1.buscarRedexIzqFinal(null, false);
-                }
-            //    term2=term1.invBDOneStep();
-            //}while(!term1.equals(term2));
+        Redex redex=term1.buscarRedexIzqFinal(null, false);
+
+        while(redex!=null){
+            term1 = term1.reducir(vars);
+            redex = term1.buscarRedexIzqFinal(null, false);
+        }
 
 	    return term1;
     }
     
-    public Corrida evaluarFinal()
-    {
+    public Corrida evaluarFinal(){
         Corrida corr = new Corrida();
         Term term=this;
         corr.terminos.add(term.toStringAbrvFinalFinal().replace("\\", "\\\\"));
@@ -1403,10 +1299,10 @@ public abstract class Term implements Cloneable, Serializable{
     	Term suc=new Bracket(new Var(0),new Bracket(new Var(1),new Bracket(new Var(2),new App(new App(new Var(0),new Var(1)),new App(new Var(1),new Var(2)))))); 
     	Term ent=new Bracket(new Var(0),new Bracket(new Var(1),new Var(1))); 
     	
-    	for(int i=1; i<=n;i++)
-    		ent=(new App(suc,ent)).evaluar(); 
-            
-            ent.alias="N"+n;
+    	for(int i=1; i<=n;i++){
+            ent=(new App(suc,ent)).evaluar(); 
+        }
+    	ent.alias="N"+n;
 
     	return ent;
     }
@@ -1421,7 +1317,8 @@ public abstract class Term implements Cloneable, Serializable{
     public Object clone2() {
     	try {
     		return this.clone();
-    	}catch (Exception e) {
+    	}
+        catch (Exception e) {
 			System.out.println("CloneNotSupportedException");
 			return null;
 		}
@@ -1429,19 +1326,19 @@ public abstract class Term implements Cloneable, Serializable{
     };
     
     public Term toEquality(String variables) {
-        
         Term teoTerm = this;
-        if (teoTerm instanceof App && ((App)teoTerm).p instanceof App && 
-            ((App)((App)teoTerm).p).p instanceof Const && 
-            ( ((Const)((App)((App)teoTerm).p).p).getId()==1 ||
-              ((Const)((App)((App)teoTerm).p).p).getId()==15
+        Integer id;
+        if (teoTerm instanceof App && teoTerm.dsc("1") instanceof App && 
+            teoTerm.dsc("11") instanceof Const && 
+            ( (id=((Const)teoTerm.dsc("11")).getId())==1 ||
+              id==15
             )
            ) 
         {
             Term arg1, arg2;
-            arg1 = ((App)((App)teoTerm).p).q;
-            arg2 = ((App)teoTerm).q;
-            String[] vars = (variables==null || variables.equals("")?new String[0]:variables.split(","));
+            arg1 = teoTerm.dsc("12");
+            arg2 = teoTerm.dsc("2");
+            String[] vars = (variables==null || variables.equals("") ? new String[0] : variables.split(","));
             for (int i=vars.length-1; 0<=i; i--) {
                 arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
                 arg2 = new Bracket(new Var((int)vars[i].charAt(0)),arg2);

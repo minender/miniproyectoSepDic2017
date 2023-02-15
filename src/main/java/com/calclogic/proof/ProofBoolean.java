@@ -176,6 +176,48 @@ public class ProofBoolean {
     public static boolean isOneLineProof(Term proof){
         return (proof.type() == null);
     }
+
+    /**
+     * Determines if the main operator of a formula is not valid for the
+     * indicated demonstration method. 
+     * 
+     * Currently this only analyzes Counter-reciprocal, And Introduction and Mutual Implication
+     * 
+     * @param newMethod: The demonstration method that the user just selected
+     * @param methodTerm: Tree of the methods that have been used in the proof so far.
+     * @param originalFormula: This is the statement of the theorem to be proved,
+     *                      not of the formula of the current sub-case to be proved,
+     *                      because we use methodTerm to get it.
+     * @param crudOp
+     * 
+     * @return True if the operator is not appropriate for the method; false otherwise.
+     */
+    public static boolean isOpNotValidForMethod(String newMethod, Term methodTerm, Term originalFormula, CrudOperations crudOp){
+        if (originalFormula.containT()){
+            Integer opId = crudOp.binaryOperatorId(originalFormula.dsc("2").body(),methodTerm);
+
+            switch (newMethod){
+                case "CR":
+                    if (!crudOp.getGlobalInfo().idIsImplicationOrConsequence(opId)){ // Right arrow ==> or left arrow <==
+                        return true;
+                    }
+                    break;
+                case "AI":
+                    if (!"wedge".equals(crudOp.getGlobalInfo().operatorStrNotationFromId(opId))){ // Conjunction /\
+                        return true;
+                    }
+                    break;
+                case "MI":
+                    if (!"equiv".equals(crudOp.getGlobalInfo().operatorStrNotationFromId(opId))){ // Equivalence ==
+                        return true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return false;
+    }
     
     /**
      * True if and only if the method is a branched recursive one 

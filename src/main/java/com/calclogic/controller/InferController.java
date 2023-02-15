@@ -901,11 +901,8 @@ public class InferController {
             // ---- End of assigning "formulaTerm" 
 
             if (nSol.equals("new")) {
-                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),null) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),null) != 1) )    // Equivalence ==
-                    )
-                {
+                // This checks if the operator is valid or not for "CR", "AI" or "MI"
+                if (ProofBoolean.isOpNotValidForMethod(newMethod, null, formulaAnterior, crudOp)){
                     throw new ClassCastException("Error");
                 }
 
@@ -931,12 +928,9 @@ public class InferController {
                 // When the proof already exists in the DB, we obtain the solution from it.
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username); 
                 methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
-                
-                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),methodTerm) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(formulaAnterior.dsc("2").body(),methodTerm) != 1) )    // Equivalence ==
-                    )
-                {
+
+                // This checks if the operator is valid or not for "CR", "AI" or "MI"
+                if (ProofBoolean.isOpNotValidForMethod(newMethod, methodTerm, formulaAnterior, crudOp)){
                     throw new ClassCastException("Error");
                 }
 
@@ -975,24 +969,19 @@ public class InferController {
                 // CAUTION: The controller sets the String null parameters as ""
                 if ("TR".equals(newMethod)){
                     opId = crudOp.binaryOperatorId(formulaTerm,null);
-                    String opNotation = crudOp.getGlobalInfo().operatorStrNotationFromId(opId);
 
-                    if ("Rightarrow".equals(opNotation) || "Leftarrow".equals(opNotation)){
-                        lado = null;
-                    }
-                    else{
-                        // **** For the "TR" method we should check first if the operator is transitive
-                        lado = "i";
-                    }
-                }
-                else{
-                    response.setLado(lado);
-                    if (!formulaTerm.containT()){
+                    if (crudOp.getGlobalInfo().idIsImplicationOrConsequence(opId)){
                         throw new ClassCastException();
                     }
-                    Term formulaWithoutT = formulaTerm.setToPrint(simboloManager);
-                    formulaTerm = lado.equals("i") ? formulaWithoutT.dsc("2") : formulaWithoutT.dsc("12");  
-                } 
+                    // **** For the "TR" method we should check first if the operator is transitive
+                    lado = "i";
+                }
+                if (!formulaTerm.containT()){
+                    throw new ClassCastException();
+                }
+                response.setLado(lado);
+                Term formulaWithoutT = formulaTerm.setToPrint(simboloManager);
+                formulaTerm = lado.equals("i") ? formulaWithoutT.dsc("2") : formulaWithoutT.dsc("12");  
 
                 if (nSol.equals("new")) {
                     typedTerm = formulaTerm;
@@ -1051,8 +1040,6 @@ public class InferController {
                                              @RequestParam(value="nTheo") String nTheo
                                             )
     {
-        //Term statement = resuelveManager.getResuelveByUserAndTeoNum(username,nTheo,true).getTeorema().getTeoTerm();
-
         // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
         TypedA A = new TypedA(nTheo, username);
         Term metaTheo = MetaTheorem.metaTheorem3(A, A.getCombDBType(), username).type();
