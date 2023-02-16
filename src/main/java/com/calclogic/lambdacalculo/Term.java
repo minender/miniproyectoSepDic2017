@@ -871,16 +871,11 @@ public abstract class Term implements Cloneable, Serializable{
         Redex r=buscarRedexIzqFinal(null,false);
         if(r!=null){
             Term reduc;
+            Boolean cOrL = true;
 
             if(r.context==null){
                 if(r.tipo.c){
                     reduc = this.kappa();
-                    corr.operations.add(new Integer(3));
-                    try{
-                        Term tee=(Term)reduc.clone();
-                        corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                    }
-                    catch(Exception e){e.printStackTrace();}
                 }
                 else if(r.tipo.l){
                     List<String> puro = this.volverPuroList();
@@ -889,132 +884,61 @@ public abstract class Term implements Cloneable, Serializable{
                     }
                     corr.terminos.addAll(puro);
                     corr.traducciones += puro.size();
-                    reduc = ((Bracket)(((App)this).p)).t.traducBD().sust(((Bracket)(((App)this).p)).x, ((App)this).q);
+                    reduc = this.dsc("13").traducBD().sust(((Bracket)this.dsc("1")).x, this.dsc("2"));
+                }
+                else{
+                    reduc = this.invBraBD(0);
+                    corr.operations.add(new Integer(2));
+                    corr.traducciones++;
+                    cOrL = false;
+                }
+
+                corr.terminos.add(reduc.toStringAbrvFinalFinal().replace("\\", "\\\\"))
+                if (cOrL){
+                    corr.reducciones++;
                     corr.operations.add(new Integer(3));
+
                     try{
                         Term tee=(Term)reduc.clone();
                         corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     }
                     catch(Exception e){e.printStackTrace();}
                 }
-                else{
-                    reduc = this.invBraBD(0);
-                    corr.operations.add(new Integer(2));  
-                }
-                corr.terminos.add(reduc.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                corr.reducciones++;
                 return reduc;
             }
-            else if(r.context instanceof App){
-                if(r.p){
-                    Term t=((App)r.context).p; 
-                    if(r.tipo.c){
-                        ((App)r.context).p=t.kappa();
-                        corr.operations.add(new Integer(3));
-                        corr.reducciones++;
-                        corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        try{
-                            Term tee=(Term)((App)r.context).p.clone();
-                            corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        }
-                        catch(Exception e){e.printStackTrace();}
-                    }
-                    else if(r.tipo.l){
-                        List<String> puro=this.volverPuroList();
-                        for(int i=0; i < puro.size(); i++){
-                            corr.operations.add(new Integer(1));
-                        }
-                        
-                        corr.terminos.addAll(puro);
-                        corr.traducciones+=puro.size();
-                        ((App)r.context).p=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                        corr.operations.add(new Integer(3));
-                        corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        try{
-                            Term tee=(Term)this.clone();
-                            corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        }
-                        catch(Exception e){e.printStackTrace();}
-                        corr.reducciones++;
-                    }
-                    else{
-                        ((App)r.context).p=t.invBraBD(0);
-                        corr.operations.add(new Integer(2));
-                        corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        corr.traducciones++;
-                    }
-                } else {
-                    Term t=((App)r.context).q; 
-                    if(r.tipo.c){
-                        ((App)r.context).q=t.kappa();
-                        corr.operations.add(new Integer(3));
-                        corr.reducciones++;
-                        corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        try{
-                            Term tee=(Term)this.clone();
-                            corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        }
-                        catch(Exception e){e.printStackTrace();}
-                    }
-                    else if(r.tipo.l){
-                        List<String> puro=this.volverPuroList();
-                        for(int i=0; i < puro.size(); i++)
-                            corr.operations.add(new Integer(1));
-                        
-                        corr.terminos.addAll(puro);
-                        corr.traducciones+=puro.size();
-                        ((App)r.context).q=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                        corr.operations.add(new Integer(3));
-                        corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        try{
-                            Term tee=(Term)this.clone();
-                            corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        }
-                        catch(Exception e){e.printStackTrace();}
-                        corr.reducciones++;
-                    }
-                    else{
-                        ((App)r.context).q=t.invBraBD(0);
-                        corr.operations.add(new Integer(2));
-                        corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                        corr.traducciones++;
-                    }
+            else if(r.context instanceof App || r.context instanceof Bracket){
+                String pos = (r.context instanceof App) ? (r.p ? "1" : "2") : "3";
+                Term t = r.context.dsc(pos); 
+
+                if (r.tipo.c){
+                    r.context.setChild(t.kappa(), pos.charAt(0));
                 }
-            } else if(r.context instanceof Bracket){           
-                Term t=((Bracket)r.context).t; 
-                if(r.tipo.c){
-                    ((Bracket)r.context).t=t.kappa();
-                    corr.operations.add(new Integer(3));
-                    corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                    try{
-                        Term tee=(Term)this.clone();
-                        corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                    }
-                    catch(Exception e){e.printStackTrace();}
-                    corr.reducciones++;
-                }
-                else if(r.tipo.l){
-                    List<String> puro=this.volverPuroList();
-                    for(int i=0; i < puro.size(); i++)
+                else if (r.tipo.l){
+                    List<String> puro = this.volverPuroList();
+                    for(int i=0; i < puro.size(); i++){
                         corr.operations.add(new Integer(1));
-                        
+                    }   
                     corr.terminos.addAll(puro);
-                    corr.traducciones+=puro.size();
-                    ((Bracket)r.context).t=((Bracket)((App)t).p).t.traducBD().sust(((Bracket)((App)t).p).x, ((App)t).q);
-                    corr.operations.add(new Integer(3));
-                    corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                    try{
-                        Term tee=(Term)this.clone();
-                        corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                    }
-                    catch(Exception e){e.printStackTrace();}
-                    corr.reducciones++;
+                    corr.traducciones += puro.size();
+                    r.context.setChild(t.dsc("13").traducBD().sust(((Bracket)t.dsc("1")).x, t.dsc("2")), pos.charAt(0));
                 }
                 else{
-                    ((Bracket)r.context).t=t.invBraBD(0);
+                    r.context.setChild(t.invBraBD(0), pos.charAt(0));
                     corr.operations.add(new Integer(2));
-                    corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     corr.traducciones++;
+                    cOrL = false;
+                }
+
+                corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
+                if (cOrL){
+                    corr.operations.add(new Integer(3));
+                    corr.reducciones++;
+
+                    try{
+                        Term tee = ("1".equals(pos) && r.tipo.c) ? (Term)r.context.dsc("1").clone() : (Term)this.clone();
+                        corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
+                    }
+                    catch(Exception e){e.printStackTrace();}
                 }
             }
         }
