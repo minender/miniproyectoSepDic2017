@@ -136,9 +136,9 @@ public class Solucion implements java.io.Serializable {
         String metaTheo = sub1.replace(metaTheoT);
 
         try {
-          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo,null));
-          newProof = new TypedApp(new TypedApp(((App)((App)father).p).p, newProof),((App)father).q);
-          return newProof;
+            Term newProof = new TypedApp(father.dsc("121"), CombUtilities.getTerm(metaTheo,null));
+            newProof = new TypedApp(new TypedApp(father.dsc("11"), newProof),father.dsc("2"));
+            return newProof;
         }
         catch (TypeVerificationException e) {
             Logger.getLogger(Solucion.class.getName()).log(Level.SEVERE, null, e);
@@ -154,7 +154,7 @@ public class Solucion implements java.io.Serializable {
             int i;
             if (subProof==null || subProof.type()==null) {
                 i=2;
-                auxProof =(subProof==null?((TypedApp)fathers.get(1)).q:branchedOneLineSubProof(subProof,fathers.get(1)));
+                auxProof =(subProof==null ? fathers.get(1).dsc("2", true) : branchedOneLineSubProof(subProof,fathers.get(1)));
             }
             else {
                 i=1;
@@ -184,12 +184,12 @@ public class Solucion implements java.io.Serializable {
 
         if (ProofBoolean.isOneLineProof(auxTypedTerm)){
             typedTerm= mergeSubProofs(null, li, objectMethod);
-            demostracion =(typedTerm==null?"":typedTerm.toString());
+            demostracion =(typedTerm==null ? "" : typedTerm.toString());
             return 0;
         }
         if ( (
               !currentGroupMethod.equals("T") &&
-              auxTypedTerm instanceof App && ((App)auxTypedTerm).p.containTypedA()
+              auxTypedTerm instanceof App && auxTypedTerm.dsc("1").containTypedA()
              ) 
              ||
               // next line checks if it is a no one step proof 
@@ -199,10 +199,10 @@ public class Solucion implements java.io.Serializable {
                 (
                     (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t') ||
                     (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='m' &&
-                        ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
-                        ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='m' && 
-                        ((TypedApp)((TypedApp)auxTypedTerm).p).p instanceof TypedApp &&
-                        ((TypedApp)((TypedApp)((TypedApp)auxTypedTerm).p).p).inferType=='i'
+                        auxTypedTerm.dsc("1", true) instanceof TypedApp && 
+                        ((TypedApp)auxTypedTerm.dsc("1", true)).inferType=='m' && 
+                        auxTypedTerm.dsc("11", true) instanceof TypedApp &&
+                        ((TypedApp)auxTypedTerm.dsc("11", true)).inferType=='i'
                     )
                 )
              )
@@ -210,32 +210,32 @@ public class Solucion implements java.io.Serializable {
         {
             if (currentGroupMethod.equals("T")&& 
                 !(auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t')    
-               ) 
+               )
             {
-                typedTerm = mergeSubProofs(((App)((App)auxTypedTerm).p).q, li, objectMethod);
+                typedTerm = mergeSubProofs(auxTypedTerm.dsc("12"), li, objectMethod);
                 if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
-                        ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
-                        ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
+                        auxTypedTerm.dsc("1", true) instanceof TypedApp && 
+                        ((TypedApp)auxTypedTerm.dsc("1", true)).inferType=='s'     
                    )
                 {
-                    typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q, li, objectMethod);
+                    typedTerm = mergeSubProofs(auxTypedTerm.dsc("2", true), li, objectMethod);
                 }
             }
             else {
-                typedTerm = mergeSubProofs(((App)auxTypedTerm).p, li, objectMethod);
+                typedTerm = mergeSubProofs(auxTypedTerm.dsc("1"), li, objectMethod);
                 if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
-                        ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
-                        ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
+                        auxTypedTerm.dsc("1", true) instanceof TypedApp && 
+                        ((TypedApp)auxTypedTerm.dsc("1", true)).inferType=='s'     
                    )
                 {
-                    typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q, li, objectMethod);
+                    typedTerm = mergeSubProofs(auxTypedTerm.dsc("2", true), li, objectMethod);
                 }
             }
             demostracion = typedTerm.toString();
             return 2;
         }
         else {
-            typedTerm = mergeSubProofs(((App)auxTypedTerm.type().setToPrint(s)).q, li, objectMethod);
+            typedTerm = mergeSubProofs(auxTypedTerm.type().setToPrint(s).dsc("2"), li, objectMethod);
             demostracion = typedTerm.toString();
             return 1;
         }
