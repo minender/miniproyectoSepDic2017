@@ -834,30 +834,34 @@ public abstract class Term implements Cloneable, Serializable{
         catch(Exception e){}
         return this;
     }
+
+    private int auxiliarRedexKindForReducing(Redex r){
+        return (r.tipo.c) ? 1 : (r.tipo.l ? 2 : 3);
+    }
+
+    private Term auxiliarElementForReducing(int redexKind, Term t, Integer variable){
+        switch (redexKind){
+            case 1:
+                return t.kappa();
+            case 2:
+                return t.dsc("13").traducBD().sust(((Bracket)t.dsc("1")).x, t.dsc("2"));
+            default:
+                return t.invBraBD(variable);  
+        }   
+    }
     
     public Term reducir(List<Var> vars){
         Redex r = buscarRedexIzqFinal(null,false);
         if(r!=null){
             Integer variable = (vars == null) ? 0 : (vars.size()!=0 ? vars.remove(0).indice : 65);
+            int redexKind = auxiliarRedexKindForReducing(r);
 
             if(r.context==null){
-                if (r.tipo.c)
-                    return this.kappa();
-                else if (r.tipo.l)
-                    return this.dsc("13").traducBD().sust(((Bracket)this.dsc("1")).x, this.dsc("2"));
-                else
-                    return this.invBraBD(variable);
+                return auxiliarElementForReducing(redexKind, this, variable);
             }
             else if(r.context instanceof App || r.context instanceof Bracket){
                 String pos = (r.context instanceof App) ? (r.p ? "1" : "2") : "3";
-                Term t = r.context.dsc(pos); 
-
-                if (r.tipo.c)
-                    r.context.setChild(t.kappa(), pos.charAt(0));
-                else if (r.tipo.l)
-                    r.context.setChild(t.dsc("13").traducBD().sust(((Bracket)t.dsc("1")).x, t.dsc("2")), pos.charAt(0));
-                else
-                    r.context.setChild(t.invBraBD(variable), pos.charAt(0));
+                r.context.setChild(auxiliarElementForReducing(redexKind, r.context.dsc(pos), variable), pos.charAt(0));
             }
         }       
         return this;
@@ -866,83 +870,56 @@ public abstract class Term implements Cloneable, Serializable{
     public Term reducir(){
         return this.reducir(null);
     }
-    
+
     public Term reducirFinal(Corrida corr){
+        Term toReturn = this;
         Redex r=buscarRedexIzqFinal(null,false);
+
         if(r!=null){
-            Term reduc;
-            Boolean cOrL = true;
+            int redexKind = auxiliarRedexKindForReducing(r);
+            String pos = null;
+            Term toClone = null;
+            Boolean entry = false;
 
             if(r.context==null){
-                if(r.tipo.c){
-                    reduc = this.kappa();
-                }
-                else if(r.tipo.l){
-                    List<String> puro = this.volverPuroList();
-                    for(int i=0; i < puro.size(); i++){
-                        corr.operations.add(new Integer(1));
-                    }
-                    corr.terminos.addAll(puro);
-                    corr.traducciones += puro.size();
-                    reduc = this.dsc("13").traducBD().sust(((Bracket)this.dsc("1")).x, this.dsc("2"));
-                }
-                else{
-                    reduc = this.invBraBD(0);
-                    corr.operations.add(new Integer(2));
-                    corr.traducciones++;
-                    cOrL = false;
-                }
-
-                corr.terminos.add(reduc.toStringAbrvFinalFinal().replace("\\", "\\\\"))
-                if (cOrL){
-                    corr.reducciones++;
-                    corr.operations.add(new Integer(3));
-
-                    try{
-                        Term tee=(Term)reduc.clone();
-                        corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                    }
-                    catch(Exception e){e.printStackTrace();}
-                }
-                return reduc;
+                toReturn = toClone = auxiliarElementForReducing(redexKind, this, 0);
+                entry = true;
             }
             else if(r.context instanceof App || r.context instanceof Bracket){
-                String pos = (r.context instanceof App) ? (r.p ? "1" : "2") : "3";
-                Term t = r.context.dsc(pos); 
-
-                if (r.tipo.c){
-                    r.context.setChild(t.kappa(), pos.charAt(0));
-                }
-                else if (r.tipo.l){
+                pos = (r.context instanceof App) ? (r.p ? "1" : "2") : "3";
+                r.context.setChild(auxiliarElementForReducing(redexKind, r.context.dsc(pos), 0), pos.charAt(0));
+                toClone = this;
+                entry = true;
+            }
+            if (entry){
+                if (redexKind == 2){ // r.tipo.l  and not  r.tipo.c
                     List<String> puro = this.volverPuroList();
-                    for(int i=0; i < puro.size(); i++){
-                        corr.operations.add(new Integer(1));
-                    }   
+                    for (String puroElem : puro) {
+                        corr.operations.add(1);
+                    }
                     corr.terminos.addAll(puro);
-                    corr.traducciones += puro.size();
-                    r.context.setChild(t.dsc("13").traducBD().sust(((Bracket)t.dsc("1")).x, t.dsc("2")), pos.charAt(0));
+                    corr.traducciones += puro.size();        
                 }
-                else{
-                    r.context.setChild(t.invBraBD(0), pos.charAt(0));
-                    corr.operations.add(new Integer(2));
+                else if (redexKind > 2){ // not  r.tipo.c  and not  r.tipo.l
+                    corr.operations.add(2);
                     corr.traducciones++;
-                    cOrL = false;
                 }
 
-                corr.terminos.add(this.toStringAbrvFinalFinal().replace("\\", "\\\\"));
-                if (cOrL){
-                    corr.operations.add(new Integer(3));
+                corr.terminos.add(toClone.toStringAbrvFinalFinal().replace("\\", "\\\\"));
+
+                if (redexKind < 3){ // r.tipo.c || r.tipo.l
+                    corr.operations.add(3);
                     corr.reducciones++;
 
                     try{
-                        Term tee = ("1".equals(pos) && r.tipo.c) ? (Term)r.context.dsc("1").clone() : (Term)this.clone();
+                        Term tee = ("1".equals(pos) && r.tipo.c) ? (Term)r.context.dsc("1").clone() : (Term)toClone.clone();
                         corr.lambdaTerms.add(tee.invBD().toStringAbrvFinalFinal().replace("\\", "\\\\"));
                     }
                     catch(Exception e){e.printStackTrace();}
                 }
             }
         }
-        return this;
+        return toReturn;
     }
     
     protected class AppIzq{
