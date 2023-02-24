@@ -184,19 +184,19 @@ public class CrudOperationsImpl implements CrudOperations {
     }
     
     /**
-     * This method return the sub Term of typedTerm that represent the derivation tree 
+     * This method returns the sub Term of typedTerm that represents the derivation tree 
      * of only the current sub proof if isRecursive parameter is true. If isRecursive 
-     * is false this method return the sub Term of typedTerm that represent the derivation tree 
+     * is false, this method returns the sub Term of typedTerm that represents the derivation tree 
      * of only the current sub proof of the first And Introduction method searched in 
      * method parameter.
      *  
-     * @param typedTerm: Term that represent all the current proof.
-     * @param method: Term that represent the current state of the proof method. This
+     * @param typedTerm: Term that represents all the current proof.
+     * @param method: Term that represents the current state of the proof method. This
      *                term had the information about what is the current sub proof.
-     * @param isRecursive: if the value is true, the search of the sub proof call this 
+     * @param isRecursive: if the value is true, the search of the sub proof calls this 
      *                     method recursively.
-     * @return sub Term of typedTerm that represent the derivation tree 
-     *         of only the current sub proof. The deep of the sub proof depend on the 
+     * @return sub Term of typedTerm that represents the derivation tree 
+     *         of only the current sub proof. The deep of the sub proof depends on the 
      *         value of isRecursive
      */
     @Override
@@ -215,7 +215,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 return ((Bracket)((TypedL)typedTerm.dsc("122221")).type()).t; 
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
-                ((TypedM)typedTerm.dsc("1222")).getSubProof(); // QUESTION: Before, the number was "12222"
+                typedTerm = ((TypedM)typedTerm.dsc("1222")).getSubProof(); // QUESTION: Before, the number was "12222"
 
                 if (isRecursive){
                     return getSubProof(typedTerm,auxMethod.dsc("2"),true);

@@ -300,7 +300,7 @@ public class InferResponse extends GenericResponse{
             throws Exception
     {
         // The setToPrint eliminates the lambda functions
-        newTerm = newTerm.containT() ? newTerm.setToPrint(simboloManager) : newTerm;
+        newTerm = newTerm.setToPrint(simboloManager);
         
         //Term newTerm = new TypedA(newTerm,user).type();
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // Still in recursion
@@ -405,110 +405,113 @@ public class InferResponse extends GenericResponse{
         Boolean labeled, Term methodTerm, String clickable, Boolean isRootTeorem)
     {
         try{
-        // siempre que el metodo sea vacio o se este esperando un metodo, hay 
-        // que pedirlo, salvo cuando no se haya terminado la primera prueba de
-        // un metodo binario
-        if (isRootTeorem && methodTerm == null)
-            cambiarMetodo = "1";
-        else if (isRootTeorem && ProofBoolean.isWaitingMethod(methodTerm)) 
-            cambiarMetodo = "2";
-        else if(isRootTeorem)
-            cambiarMetodo ="0";
+            // siempre que el metodo sea vacio o se este esperando un metodo, hay 
+            // que pedirlo, salvo cuando no se haya terminado la primera prueba de
+            // un metodo binario
+            if (isRootTeorem && methodTerm == null)
+                cambiarMetodo = "1";
+            else if (isRootTeorem && ProofBoolean.isWaitingMethod(methodTerm)) 
+                cambiarMetodo = "2";
+            else if(isRootTeorem)
+                cambiarMetodo ="0";
 
-        // If we're printing a root teorem, print it as a theorem.
-        if (isRootTeorem) {
-            this.setHistorial("");
-            try {
-                header = "Theorem " + nTeo + ":<br> "+  
-                         centeredBlock("$" + clickableST(user, formula, clickable, methodTerm, isRootTeorem) + "$") +
-                         "Proof:<br>";
+            // If we're printing a root teorem, print it as a theorem.
+            if (isRootTeorem) {
+                this.setHistorial("");
+                try {
+                    header = "Theorem " + nTeo + ":<br> "+  
+                             centeredBlock("$" + clickableST(user, formula, clickable, methodTerm, isRootTeorem) + "$") +
+                             "Proof:<br>";
+                }
+                catch (Exception e) {
+                    this.setErrorParser1(true);
+                    return ;
+                }
             }
-            catch (Exception e) {
-                this.setErrorParser1(true);
-                return ;
+
+            String strMethod = "   "; // We need substring(0,2) can always be applied
+            if(methodTerm != null) {
+                valid = valida;
+                strMethod = methodTerm.toString();
+            }
+
+            strMethod = strMethod.substring(0, 2);
+            GenericProofMethod objectMethod = proofCrudOp.returnProofMethodObject(strMethod);
+
+            boolean recursive = objectMethod.getIsRecursiveMethod();
+
+            // If the method is recursive, the header will be built in the "setRecursiveMethod"
+            header += (!recursive) ? objectMethod.header(nTeo) : "";
+
+            // PROVISIONAL <--- ESTO DEBE SER BORRADO
+            Boolean naturalSide, naturalDirect;
+            naturalSide = naturalDirect = false;
+            // ---- FIN DE LO QUE DEBE SER BORRADO
+            
+            Term type = typedTerm==null?null:typedTerm.type();
+
+            if (typedTerm==null && methodTerm == null && !recursive){
+                this.setHistorial(this.getHistorial() + header);
+                return;
+            }
+            // This occurs when there is only one line in the demonstration and the first inference is invalid
+            if (typedTerm!=null && type == null && !valida && !recursive){
+                this.setHistorial(this.getHistorial() + header + centeredBlock("$"+typedTerm.toStringLaTeXLabeled(simboloManager)) + noValidInference());
+                return;
+            }
+            if (typedTerm!=null && type == null && valida && !recursive) { // Case where what we want to print is the first line
+                String firstLine;
+                if(naturalSide){          
+                    firstLine = typedTerm.dsc("12").toStringLaTeXLabeled(simboloManager);  
+                    this.setHistorial(this.getHistorial() + header + "<br>Assuming H1: $" + typedTerm.dsc("2").toStringLaTeX(simboloManager, "") + "$" + centeredBlock("$"+firstLine));
+                }else {
+                    firstLine = typedTerm.toStringLaTeXLabeled(simboloManager);
+                    this.setHistorial(this.getHistorial() + header + centeredBlock("$"+firstLine));
+                }
+                return;
+            }
+
+            boolean solved;
+            if (labeled && !recursive){
+                solved = type.traducBD().equals(formula.traducBD());
+            }
+            else
+                solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a
+                               // si se pide labeled o no la ultima linea- Aqui se cablea con solved = true
+                               // OJO: Recordar que ahora esas funciones se llaman "setProofMethod" y están
+                               // en la respectiva clase del método 
+            // -- Here is where we really generate the proof record accoding to the demonstration method ---
+
+            if (recursive){
+                if ("B".equals(objectMethod.getGroupMethod())){
+
+
+                    // ******* I AM NOT SURE IF THIS LINE WILL ALWAYS REMAIN HERE
+                    Term editedFormula = objectMethod.initFormula(formula);
+
+                    setBranchedRecursiveMethodProof(user, typedTerm, header, clickable, 
+                        methodTerm, valida, labeled, editedFormula, nTeo, objectMethod);        
+                }
+                else {
+                    setLinearRecursiveMethodProof(user, typedTerm, header, clickable, 
+                        methodTerm, valida, labeled, formula, nTeo, objectMethod);  
+                }
+            } else {
+                this.setHistorial(objectMethod.setBaseMethodProof(
+                    this.getHistorial(), user, typedTerm, solved, resuelveManager, disponeManager, simboloManager
+                ));
+
+                historial = header + centeredBlock("$"+historial);
+
+                // This occurs when there is more than one line in the demonstration, and the next tried inference is invalid
+                if (!valida){
+                    historial = historial + noValidInference();
+                }
             }
         }
-
-        String strMethod = "   "; // We need substring(0,2) can always be applied
-        if(methodTerm != null) {
-            valid = valida;
-            strMethod = methodTerm.toString();
+        catch(Exception e) {
+            e.printStackTrace();
         }
-
-        strMethod = strMethod.substring(0, 2);
-        GenericProofMethod objectMethod = proofCrudOp.returnProofMethodObject(strMethod);
-
-        boolean recursive = objectMethod.getIsRecursiveMethod();
-
-        // If the method is recursive, the header will be built in the "setRecursiveMethod"
-        header += (!recursive) ? objectMethod.header(nTeo) : "";
-
-        // PROVISIONAL <--- ESTO DEBE SER BORRADO
-        Boolean naturalSide, naturalDirect;
-        naturalSide = naturalDirect = false;
-        // ---- FIN DE LO QUE DEBE SER BORRADO
-        
-        Term type = typedTerm==null?null:typedTerm.type();
-
-        if (typedTerm==null && methodTerm == null && !recursive){
-            this.setHistorial(this.getHistorial() + header);
-            return;
-        }
-        // This occurs when there is only one line in the demonstration and the first inference is invalid
-        if (typedTerm!=null && type == null && !valida && !recursive){
-            this.setHistorial(this.getHistorial() + header + centeredBlock("$"+typedTerm.toStringLaTeXLabeled(simboloManager)) + noValidInference());
-            return;
-        }
-        if (typedTerm!=null && type == null && valida && !recursive) { // Case where what we want to print is the first line
-            String firstLine;
-            if(naturalSide){          
-                firstLine = typedTerm.dsc("12").toStringLaTeXLabeled(simboloManager);  
-                this.setHistorial(this.getHistorial() + header + "<br>Assuming H1: $" + typedTerm.dsc("2").toStringLaTeX(simboloManager, "") + "$" + centeredBlock("$"+firstLine));
-            }else {
-                firstLine = typedTerm.toStringLaTeXLabeled(simboloManager);
-                this.setHistorial(this.getHistorial() + header + centeredBlock("$"+firstLine));
-            }
-            return;
-        }
-
-        boolean solved;
-        if (labeled && !recursive){
-            solved = type.traducBD().equals(formula.traducBD());
-        }
-        else
-            solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a
-                           // si se pide labeled o no la ultima linea- Aqui se cablea con solved = true
-                           // OJO: Recordar que ahora esas funciones se llaman "setProofMethod" y están
-                           // en la respectiva clase del método 
-        // -- Here is where we really generate the proof record accoding to the demonstration method ---
-
-        if (recursive){
-            if ("B".equals(objectMethod.getGroupMethod())){
-
-
-                // ******* I AM NOT SURE IF THIS LINE WILL ALWAYS REMAIN HERE
-                Term editedFormula = objectMethod.initFormula(formula);
-
-                setBranchedRecursiveMethodProof(user, typedTerm, header, clickable, 
-                    methodTerm, valida, labeled, editedFormula, nTeo, objectMethod);        
-            }
-            else {
-                setLinearRecursiveMethodProof(user, typedTerm, header, clickable, 
-                    methodTerm, valida, labeled, formula, nTeo, objectMethod);  
-            }
-        } else {
-            this.setHistorial(objectMethod.setBaseMethodProof(
-                this.getHistorial(), user, typedTerm, solved, resuelveManager, disponeManager, simboloManager
-            ));
-
-            historial = header + centeredBlock("$"+historial);
-
-            // This occurs when there is more than one line in the demonstration, and the next tried inference is invalid
-            if (!valida){
-                historial = historial + noValidInference();
-            }
-        }
-        }catch(Exception e) {e.printStackTrace();}
     }
 
     // Returns a HTML centered block with the text "No valid inference"

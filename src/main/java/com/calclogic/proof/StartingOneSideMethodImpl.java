@@ -168,7 +168,7 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
 
         // if the inference is a modus pones that simulates natural deduction is true this
         boolean naturalInfer=typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='m';
-        Term ultInf = (naturalInfer ? typedTerm.dsc("1",true) : typedTerm);
+        Term ultInf = naturalInfer ? typedTerm.dsc("1",true) : typedTerm;
 
         if (ultInf instanceof App){
             if (ultInf.dsc("2") instanceof App){     
