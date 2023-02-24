@@ -121,6 +121,18 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             Term T4 = CombUtilities.getTerm(template4, user);
             proof_ = new TypedApp(T4,new TypedApp(T3,new TypedApp(T2,T1)));
         }
+        else if (id == 5) { // igual que id=1 pero para identificar que el 2 branch del AI no ha terminado y la prueba hasta ahora tiene raiz [p=q]
+            Term lambType = super.type();
+            String arg2 = ((App)lambType).q.body().toString();
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
+            aux = new TypedApp(aux,proof);
+            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+            proof_ = new TypedApp(aux,proof_);
+            
+            String template = "(S A^{= T c_{8}})";
+            //if (proof.containT()) 
+            proof_ = new TypedApp(proof_, CombUtilities.getTerm(template, user));
+        }
         else
             proof_ = proof;
     }
@@ -149,6 +161,21 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
         return proof_;
     }
     
+    public Term getSubProof() {
+        if (id_ == 1) 
+            return ((App)((App)proof_).p).q;
+        else if (id_ == 2)
+            return ((App)((App)proof_).p).q;
+        else if (id_ == 3)
+            return ((App)proof_).p;
+        else if (id_ == 4)
+            return ((App)((TypedM)((App)((App)((App)((App)((App)proof_).q).q).q).p).q).getProof()).p;
+        else if (id_ == 5)
+            return ((App)((App)((App)proof_).p).p).q;
+        else
+            return proof_;
+    }
+    
     /*public String getCombDBType() {
         return type().traducBD().toString();
     }*/
@@ -163,6 +190,8 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
           return "(M_{"+id_+"} ("+((App)proof_).p+"))";
         else if (id_ == 4)
           return "(M_{"+id_+"} ("+((App)((TypedM)((App)((App)((App)((App)((App)proof_).q).q).q).p).q).getProof()).p+"))";
+        else if (id_ == 5)
+          return "(M_{"+id_+"}^{"+((Const)((App)((App)((App)((TypedA)((App)((App)((App)proof_).p).q).q).type()).q.body()).p).p).id+"} ("+((App)((App)((App)proof_).p).p).q+"))";          
         else 
           return "(M_{"+id_+"} ("+proof_+"))";
     }

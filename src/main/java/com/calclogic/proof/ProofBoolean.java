@@ -50,6 +50,7 @@ public class ProofBoolean {
                         methodStr.equals("AI") || 
                         methodStr.equals("MI") || 
                         methodStr.equals("CA") || 
+                        methodStr.equals("GE") || 
                         methodStr.equals("WI")
                     )
                 ) 
@@ -63,6 +64,7 @@ public class ProofBoolean {
                         methodStr.equals("OE") ||
                         methodStr.equals("CO") || 
                         methodStr.equals("CR") ||
+                        methodStr.equals("GE") || 
                         methodStr.equals("MI")
                     )
                 ) 
@@ -135,7 +137,7 @@ public class ProofBoolean {
                     methodStr.equals("MI") ||
                     methodStr.equals("EO") || 
                     methodStr.equals("OE") ||
-             //       methodStr.equals("CA") ||
+                    methodStr.equals("GE") ||
                     methodStr.equals("WI");
         }
     }

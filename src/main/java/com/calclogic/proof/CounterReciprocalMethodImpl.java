@@ -53,16 +53,18 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
     @Override
     public Term initFormula(Term beginFormula){
         // "beginFormula" is of the form  [L op R], where "op" is ==> or <==
-        Term leftSide = ((App)beginFormula).q; // L
-        Term rightSide = ((App)((App)beginFormula).p).q; // R
+        Term aux = ((App)beginFormula).q.body();
+        Term leftSide = ((App)aux).q; // L
+        Term rightSide = ((App)((App)aux).p).q; // R
         // Now we negate the sides
         leftSide = new App(new Const(7 ,"c_{7}"), leftSide); // !L
         rightSide = new App(new Const(7,"c_{7}"), rightSide); // !R
 
         Integer operatorId = binaryOperatorId(beginFormula);
-
+        beginFormula = new App(new App(new Const(operatorId,"c_{"+operatorId.toString()+"}"),leftSide), rightSide);
+        
         // [!R op !L]  written as  [(op !L) R]
-        return new App(new App(new Const(operatorId,"c_{"+operatorId.toString()+"}"),leftSide), rightSide);
+        return new App(new App(new Const(0,"="),((App)((App)beginFormula).p).q.body()),aux).abstractEq();
     }
 
     /**
@@ -110,5 +112,15 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
         TypedI I = new TypedI(sus);
 
         return new TypedApp(new TypedS(),new TypedApp(I,A));
+    }
+    
+    /**
+     * This function delete the last part of the proof depends of the method
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finish the proof
+     */
+    public Term deleteFinishProof(Term proof) {
+        return ((App)proof).q;
     }
 }

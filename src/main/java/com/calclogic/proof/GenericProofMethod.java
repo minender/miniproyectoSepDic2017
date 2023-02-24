@@ -172,4 +172,12 @@ public interface GenericProofMethod {
      * @return proof of conjunction of two sub proofs
      */
     public Term finishedBranchedRecursiveMethodProof(String user, Term originalTerm, Term finalProof);
+    
+    /**
+     * This function delete the last part of the proof depends of the method
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finish the proof
+     */
+    public Term deleteFinishProof(Term proof);
 }

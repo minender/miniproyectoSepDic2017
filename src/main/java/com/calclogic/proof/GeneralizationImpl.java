@@ -13,28 +13,18 @@ import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
-import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
-import com.calclogic.service.SimboloManager;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
- * 
- * 
  *
  * @author feder
  */
-@Service
-public class EqualityToOperatorImpl extends GenericProofMethodImpl implements EqualityToOperator  {
+public class GeneralizationImpl extends GenericProofMethodImpl implements Generalization{
     
-    
-    public EqualityToOperatorImpl(){
-        setInitVariables("EO");
+        public GeneralizationImpl(){
+        setInitVariables("GE");
     }
 
     /**
@@ -47,8 +37,12 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      */
     @Override
     public Term initFormula(Term beginFormula){
-        // this convert formulas like lamb x.t1=lamb x.t2 into t1==t2
-        return new App(new App(new Const(0, "="),new Const(-1,"T")), beginFormula.setToPrint(simboloManager)).abstractEq();
+        // This is saying: ¬formula => false = T, but the notation must be prefix and the first operand goes to the right.
+        // So, here what is really expressed is: (=> false) (¬formula) = T.
+        
+        Term aux = ((App)beginFormula).q.body();
+        
+        return new App(new App(new Const(0,"="),((App)((App)beginFormula).p).q.body()),((App)aux).q.body()).abstractEq();
     }
 
     /**
@@ -60,7 +54,7 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      */
     @Override
     public String header(String statement){
-        return ""+statement;
+        return "By generalization method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
     /**
@@ -73,15 +67,30 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      * @return axiom tree that will later be used to build the complete proof
      */
     @Override
-    public Term finishedLinearRecursiveMethodProof(String user, Term formulaBeingProved, Term proof)
+    protected Term auxFinLinearRecursiveMethodProof(String user, Term formulaBeingProved, List<Var> vars, List<Term> terms) 
+            throws TypeVerificationException
     {
-        try {
-            return new TypedM(4, 1, proof, "= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})", user);
-             
-        } catch (TypeVerificationException e)  {
-            Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
-        }
-        return proof;
+        // This string says: ¬p => false == ¬(¬p)
+        String str1 = "c_{1} (c_{7} (c_{7} x_{112})) (c_{2} c_{9} (c_{7} x_{112}))";
+        Term st1 = CombUtilities.getTerm(str1,null);
+
+        // This string says: ¬(¬p) == p
+        String str2 = "c_{1} x_{112} (c_{7} (c_{7} x_{112}))";
+        Term st2 = CombUtilities.getTerm(str2,null);
+
+        // We make the two formulas above to be treated as axioms
+        TypedA A1 = new TypedA(st1);
+        TypedA A2 = new TypedA(st2);
+
+        // Substitution [p := formulaBeingProved]
+        vars.add(0, new Var(112)); // Letter'p'
+        terms.add(0, formulaBeingProved);
+        Sust sus = new Sust(vars, terms);
+
+        // We give the instantiation format to the substitution above
+        TypedI I = new TypedI(sus);
+
+        return new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2));
     }
     
     /**
@@ -91,6 +100,7 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      * @return proof without the last part of the proof that finish the proof
      */
     public Term deleteFinishProof(Term proof) {
-        return ((TypedM)proof).getSubProof();
+        return ((App)((App)proof).q).q;
     }
+
 }

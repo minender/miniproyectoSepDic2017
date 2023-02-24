@@ -744,11 +744,17 @@ public class InferController {
                 respRetroceder = 0;
             }
             else {
+                Term teorema = resuelve.getTeorema().getTeoTerm().evaluar(resuelve.getVariables());
+                solucion.deleteFinishStack(method, teorema);
                 GenericProofMethod objectMethod = crudOp.returnProofMethodObject(currentMethod.toString());
                 respRetroceder = solucion.retrocederPaso(username,method,objectMethod,simboloManager);
             }
             if (respRetroceder == 0) {
                method = crudOp.eraseMethod(solucion.getMetodo());
+               currentMethod = crudOp.currentMethod(method);
+               if (currentMethod!=null && 
+                      (currentMethod.toString().equals("EO") || currentMethod.toString().equals("OE")))
+                   method = crudOp.eraseMethod(method.toString());
                solucion.setMetodo((method == null?"":method.toString()));
             }
             
@@ -923,7 +929,8 @@ public class InferController {
                     // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
                     boolean containT = (formulaTerm == null?false:formulaTerm.containT());
                     formulaTerm = (formulaTerm == null?null:formulaTerm.setToPrint(simboloManager));
-                    if (newMethod.equals("DM") && !containT)
+                    if ((newMethod.equals("DM")||newMethod.equals("CO")||newMethod.equals("MI")||newMethod.equals("CA")) 
+                         && !containT)
                         solucion = new Solucion(resuelveAnterior, false, formulaTerm, "EO "+newMethod, crudOp);
                     else 
                         solucion = new Solucion(resuelveAnterior, false, formulaTerm, newMethod, crudOp);
@@ -938,26 +945,35 @@ public class InferController {
                 // When the proof already exists in the DB, we obtain the solution from it.
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username); 
                 methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
-                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),methodTerm)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),methodTerm) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),methodTerm) != 1) )    // Equivalence ==
+                Term previousSt = crudOp.initStatement(formulaAnterior, methodTerm);
+                if ( ("CR".equals(newMethod) && previousSt.containT() && ((opId=((Const)((App)((App)((App)previousSt).q.body()).p).p).getId()) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
+                     ("AI".equals(newMethod) && previousSt.containT() && (((Const)((App)((App)((App)previousSt).q.body()).p).p).getId() != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && previousSt.containT() && (((Const)((App)((App)((App)previousSt).q.body()).p).p).getId() != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");
                 }
 
-                // We save in the database the concatenation of the previous list of methods with the new one
-                solucion.setMetodo(methodTerm.toString());
+                boolean containT = previousSt.containT();
+                if ((newMethod.equals("DM")||newMethod.equals("CO")||newMethod.equals("MI")||newMethod.equals("CA")) 
+                         && !containT) {
+                    methodTerm = crudOp.eraseMethod(methodTerm.toString());
+                    methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "EO");
+                    methodTerm = crudOp.updateMethod(methodTerm.toString(), newMethod);
+                    solucion.setMetodo(methodTerm.toString());       
+                } else
+                   // We save in the database the concatenation of the previous list of methods with the new one
+                   solucion.setMetodo(methodTerm.toString());
 
                 if (sideOrTransitive){
                     if ("SS".equals(newMethod)) {
-                       boolean containT = formulaAnterior.containT();
                        Term aux = formulaAnterior;
                        if (!(methodTerm instanceof Const)) {
                            aux = crudOp.initStatement(formulaAnterior, methodTerm);
                            containT = true;
                        }
-                       int inerOp = crudOp.binaryOperatorId(aux, null);
+                       // Este setToPrint es muy necesario
+                       int inerOp = crudOp.binaryOperatorId(aux.setToPrint(simboloManager), null);
                        if (newMethod.equals("SS") && containT && (inerOp == 1 || inerOp == 15)) {
                            methodTerm = crudOp.eraseMethod(methodTerm.toString());
                            methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "OE");
@@ -1028,6 +1044,7 @@ public class InferController {
                     response.setnSol(solucion.getId()+"");
                 }
                 else {
+                    formulaTerm = formulaTerm.body();
                     typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(), 
                                                             methodTerm, simboloManager);
                     solucion.setTypedTerm(typedTerm);

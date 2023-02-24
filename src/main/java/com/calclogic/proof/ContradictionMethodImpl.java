@@ -1,6 +1,7 @@
 package com.calclogic.proof;
 
 import com.calclogic.lambdacalculo.App;
+import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.Sust;
 import com.calclogic.lambdacalculo.Var;
@@ -35,9 +36,13 @@ public class ContradictionMethodImpl extends GenericProofMethodImpl implements C
      */
     @Override
     public Term initFormula(Term beginFormula){
-        // This is saying: ¬formula => false, but the notation must be prefix and the first operand goes to the right.
-        // So, here what is really expressed is: (=> false) (¬formula).
-        return new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),beginFormula));
+        // This is saying: ¬formula => false = T, but the notation must be prefix and the first operand goes to the right.
+        // So, here what is really expressed is: (=> false) (¬formula) = T.
+        
+        Term aux = ((App)beginFormula).q.body();
+        aux = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),aux));
+        
+        return new App(new App(new Const(0,"="),((App)((App)beginFormula).p).q.body()),aux).abstractEq();
     }
 
     /**
@@ -86,5 +91,15 @@ public class ContradictionMethodImpl extends GenericProofMethodImpl implements C
         TypedI I = new TypedI(sus);
 
         return new TypedApp(new TypedApp(I,A1),new TypedApp(I,A2));
+    }
+    
+    /**
+     * This function delete the last part of the proof depends of the method
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finish the proof
+     */
+    public Term deleteFinishProof(Term proof) {
+        return ((App)((App)proof).q).q;
     }
 }

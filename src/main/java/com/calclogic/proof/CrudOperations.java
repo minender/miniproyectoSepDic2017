@@ -72,8 +72,21 @@ public interface CrudOperations {
     public Term getSubProof(Term typedTerm, Term method, boolean isRecursive);
 
     /**
+     * This method return the last stack of linear recursive method in the current sub proof
+     * For example if the methodTerm is (AI SS) (AI DM (CO (OE SS))) then return CO (OE SS)
+     * 
+     * @param typedTerm: proof of a theorem
+     * @param method: The method that had the current stack of linear recursive method
+     * @param statement: The statement to be proof
+     * @return For example if the methodTerm is (AI SS) (AI DM (CO (OE SS))) then return 
+     *         CO (OE SS) in T[1], the sub proof that corresponds to the method T[1] write in 
+     *         T[0] and the initStatement in T[2]
+     */
+    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement);
+    
+    /**
      * This method returns the sub Term of typedTerm that represent the derivation tree 
-     * of only the current sub proof and the father tree of this subproof.
+     * of only the current sub proof and the father tree of this sub proof.
      *  
      * @param typedTerm: Term that represent all the current proof.
      * @param method: Term that represent the current state of the proof method. This

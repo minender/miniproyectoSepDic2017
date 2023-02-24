@@ -6,6 +6,7 @@ import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypeVerificationException;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.ProofBoolean;
 import com.calclogic.parse.CombUtilities;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Column;
@@ -127,16 +129,17 @@ public class Solucion implements java.io.Serializable {
         return resuelto;
     }
     
-    private Term branchedOneLineSubProof(Term formula,Term father) {
+    private Term branchedOneLineSubProof(Term formula,Term father, String user) {
         Map<String,String> values1 = new HashMap<>();
         values1.put("ST1",new App(new App(new Const(1,"c_{1}"),formula),formula).toString());
         values1.put("ST2", formula.toString());
         StrSubstitutor sub1 = new StrSubstitutor(values1, "%(",")");
-        String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
+        //String metaTheoT= "S (I^{[x_{113} := %(ST1)]} A^{c_{1} x_{113} (c_{1} x_{113} c_{8})}) (L^{\\lambda x_{122}.%(ST2)} A^{c_{1} x_{113} x_{113}})";
+        String metaTheoT= "I^{[x_{113}:= %(ST2)]} A^{= (\\Phi_{(b,)} c_{1}) (\\Phi_{K} c_{8})} (L^{\\lambda x_{122}. c_{1} x_{122} (%(ST2))} (L^{\\lambda x_{122}.%(ST2)} A^{= (\\Phi_{(b,)} c_{1}) (\\Phi_{K} c_{8})}))";
         String metaTheo = sub1.replace(metaTheoT);
 
         try {
-          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo,null));
+          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo,user));
           newProof = new TypedApp(new TypedApp(((App)((App)father).p).p, newProof),((App)father).q);
           return newProof;
         }
@@ -146,7 +149,7 @@ public class Solucion implements java.io.Serializable {
         }
     }
     
-    private Term mergeSubProofs(Term subProof, List<Term> fathers, GenericProofMethod objectMethod) {
+    private Term mergeSubProofs(Term subProof, List<Term> fathers, String user) {
         if (fathers.size()==1)
             return subProof;
         else {
@@ -154,14 +157,15 @@ public class Solucion implements java.io.Serializable {
             int i;
             if (subProof==null || subProof.type()==null) {
                 i=2;
-                auxProof =(subProof==null?((TypedApp)fathers.get(1)).q:branchedOneLineSubProof(subProof,fathers.get(1)));
+                auxProof =(subProof==null?((TypedApp)fathers.get(1)).q:branchedOneLineSubProof(subProof,fathers.get(1),user));
             }
             else {
                 i=1;
                 auxProof = subProof;
             }
             while (i < fathers.size()) {
-                auxProof = objectMethod.finishedMethodProof(fathers.get(i), auxProof);
+                GenericProofMethod ai = proofCrudOperations.returnProofMethodObject("AI");
+                auxProof = ai.finishedMethodProof(fathers.get(i), auxProof, user, null, null);
                 i++;
             }
             return auxProof;
@@ -174,6 +178,21 @@ public class Solucion implements java.io.Serializable {
         
         return false;
     }
+    
+    public void deleteFinishStack(Term methodTerm, Term statement) {
+        Term[] T = proofCrudOperations.getCurrentMethodStack(typedTerm, methodTerm, statement);
+        if ( T != null && T[0].type()!=null && T[0].type().equals(T[2]) ) {
+           Term aux = T[1];
+           GenericProofMethod objectMethod;
+           while (aux instanceof App) {
+              objectMethod = proofCrudOperations.returnProofMethodObject(((App)aux).p.toString());
+              typedTerm = objectMethod.deleteFinishProof(typedTerm);
+              aux = ((App)aux).q;
+           }
+           objectMethod = proofCrudOperations.returnProofMethodObject(aux.toString());
+           typedTerm = objectMethod.deleteFinishProof(typedTerm);
+        }
+    }
 
     public int retrocederPaso(String user, Term methodTerm, GenericProofMethod objectMethod, 
                               SimboloManager s){
@@ -181,9 +200,14 @@ public class Solucion implements java.io.Serializable {
         List<Term> li = new ArrayList<>();
         li = proofCrudOperations.getFatherAndSubProof(typedTerm,methodTerm,li);
         Term auxTypedTerm = li.get(0);
-
+        /*if( auxTypedTerm instanceof TypedM && ((TypedM)auxTypedTerm).getNumber() == 1)
+                auxTypedTerm = ((TypedM)auxTypedTerm).getSubProof();
+        if( objectMethod.getMethodStr().equals("SS") && auxTypedTerm instanceof TypedApp &&
+            ((TypedApp)auxTypedTerm).inferType == 's' 
+          )
+            auxTypedTerm = ((App)auxTypedTerm).q;*/
         if (ProofBoolean.isOneLineProof(auxTypedTerm)){
-            typedTerm= mergeSubProofs(null, li, objectMethod);
+            typedTerm= mergeSubProofs(null, li, user);
             demostracion =(typedTerm==null?"":typedTerm.toString());
             return 0;
         }
@@ -212,30 +236,30 @@ public class Solucion implements java.io.Serializable {
                 !(auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t')    
                ) 
             {
-                typedTerm = mergeSubProofs(((App)((App)auxTypedTerm).p).q, li, objectMethod);
+                typedTerm = mergeSubProofs(((App)((App)auxTypedTerm).p).q, li, user);
                 if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
                         ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
                         ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
                    )
                 {
-                    typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q, li, objectMethod);
+                    typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q, li, user);
                 }
             }
             else {
-                typedTerm = mergeSubProofs(((App)auxTypedTerm).p, li, objectMethod);
+                typedTerm = mergeSubProofs(((App)auxTypedTerm).p, li, user);
                 if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
                         ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
                         ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
                    )
                 {
-                    typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q, li, objectMethod);
+                    typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q, li, user);
                 }
             }
             demostracion = typedTerm.toString();
             return 2;
         }
         else {
-            typedTerm = mergeSubProofs(((App)auxTypedTerm.type().setToPrint(s)).q, li, objectMethod);
+            typedTerm = mergeSubProofs(((App)auxTypedTerm.type().setToPrint(s)).q, li, user);
             demostracion = typedTerm.toString();
             return 1;
         }

@@ -212,6 +212,7 @@
                         <option value="AI">Conjunction by parts</option>
                         <option value="MI">Mutual implication</option>
                         <option value="CA">Case analysis</option>
+                        <option value="GE">Generalization</option>
                         <option value="WI">Witness</option>
                     </select>
                 </div>
