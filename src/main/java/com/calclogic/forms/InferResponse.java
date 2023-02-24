@@ -200,11 +200,12 @@ public class InferResponse extends GenericResponse{
         }
         // By <current> method, the following must be proved: <statement> 
         header += objectMethod.header(statement);   
-        
         if (methodTerm instanceof App) {
             if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula)){
               if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 4)
                 typedTerm = ((App)((TypedM)((App)((App)((App)((App)((App)((TypedM)typedTerm).getProof()).q).q).q).p).q).getProof()).p;
+              else if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 1)
+                typedTerm = ((App)((App)((TypedM)typedTerm).getProof()).p).q;
               else
                 typedTerm = ((App)typedTerm).q;
             }
@@ -235,7 +236,9 @@ public class InferResponse extends GenericResponse{
     {
         try{
             String statement;
-            Term newFormula = ((App)formula).q; // First branch
+            Term aux = ((App)formula).q.body();
+            Term newFormula = ((App)aux).q; // First branch
+            newFormula = new App(new App(new Const(0,"="),((App)((App)formula).p).q.body()),newFormula).abstractEq();
             statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false, simboloManager) + "$");
             header += objectMethod.header("") + objectMethod.subProofInit(statement);
 
@@ -255,7 +258,7 @@ public class InferResponse extends GenericResponse{
                     if (!clickable.equals("n")){
                         cambiarMetodo = "0"; 
                     }
-                    newFormula = ((App)((App)formula).p).q; // Second branch
+                    newFormula = ((App)((App)aux).p).q; // Second branch
                     statement = centeredBlock("$" + clickableST(user, newFormula, clickable, new Const("AI"), false,simboloManager) + "$");
                     historial += objectMethod.subProofInit(statement);
                 }
@@ -265,7 +268,8 @@ public class InferResponse extends GenericResponse{
                 privateGenerarHistorial(user, newFormula, header, nTeo,
                                 (ProofBoolean.isBranchedProof2Started(methodTerm)?((App)typedTerm).q:typedTerm), 
                                  valida, labeled, ((App)((App)methodTerm).p).q, clickable, false);
-                newFormula = ((App)((App)formula).p).q;
+                newFormula = ((App)((App)aux).p).q;
+                newFormula = new App(new App(new Const(0,"="),((App)((App)formula).p).q.body()),newFormula).abstractEq();
                 statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false,simboloManager) + "$");
                 header = historial + objectMethod.subProofInit(statement);
                 historial = "";
@@ -376,7 +380,8 @@ public class InferResponse extends GenericResponse{
      */
     private void privateGenerarHistorial(String user, Term formula, String header, String nTeo, Term typedTerm, Boolean valida, 
         Boolean labeled, Term methodTerm, String clickable, Boolean isRootTeorem)
-    {   
+    {
+        try{
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
@@ -386,7 +391,7 @@ public class InferResponse extends GenericResponse{
             cambiarMetodo = "2";
         else if(isRootTeorem)
             cambiarMetodo ="0";
-        
+
         // If we're printing a root teorem, print it as a theorem.
         if (isRootTeorem) {
             this.setHistorial("");
@@ -479,7 +484,8 @@ public class InferResponse extends GenericResponse{
             if (!valida){
                 historial = historial + noValidInference();
             }
-        }      
+        }
+        }catch(Exception e) {e.printStackTrace();}
     }
 
     // Returns a HTML centered block with the text "No valid inference"

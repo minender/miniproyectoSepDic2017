@@ -18,9 +18,10 @@ Idear un sistema homogeneo de creacion del arbol, basado en herencia, para todos
 Arreglar inferencia de tipo para el teorema E.p == algo
 Arreglar la automatic substitution cuando hay aplicaciones funcionales en los paratodo y existe
 Utilizar el metateorema 2 del libro para partir de un lado cuando la igualdad = es de terminos
+Agregar en Go Back que se borre el metodo oculto cuando se usa metodo directo de una igualdad de funciones
 Arreglar el problema de que nodejs no puede procesar string en latex muy largos, por ejemplo el 
 teorema 9.9 por metodo directo en el primer paso aplicando 3.52 en el consecuente arroja este error de una
-Arreglar el metateorema del True para teoremas que no contengan T
+Arreglar el metateorema del True para teoremas que no contengan T (listo)
 Revisar el formulario de editar simbolo si carga los campos que estan en la base de datos
 Modificar que los datos inferibles del simbolo como infijo o rightassociativity se carguen en el formulario 
 de editar simbolo sin que esten guardados en la base de datos
@@ -28,4 +29,10 @@ Arreglar el orden en que se ordenan las variables libres y por ende el orden en 
 que se puedan reconocer cuando un teorema ya existe salvo el nombre de las variables en todos los casos
 Se lanza una excepcion cuando se trata de editar un teorema siendo AdminTeoremas
 Siempre que se hace click en el + de un teorema, se hace el ajax para cargar todos los metateoremas, es suficiente 
-que el ajax se haga solo la primera vez
+que el ajax se haga solo la primera vez (listo)
+En initStatementController cuando generarHistorial aborta, al usuario le sale el mensaje de que el metodo de 
+demostracion no aplica a ese enunciado. Se debe separar los abort que dispara generarHostorial de los abort 
+de initStatementController
+Si la ultima linea es c_{1} x_{113} (c_{1} x_{113} x_{113}) se unifica erroneamente con el teorema c_{1} x_{113} x_{113} 
+y sustitucion [x_{113} := (c_{1} x_{113} x_{113})]
+Cambiar la direccion de la segunda subprueba de un AI cuando consta de una sola linea, actualizarla incluyendo MT

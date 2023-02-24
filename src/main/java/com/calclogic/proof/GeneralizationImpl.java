@@ -1,37 +1,38 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.calclogic.proof;
 
 import com.calclogic.lambdacalculo.App;
-import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.Sust;
-import com.calclogic.lambdacalculo.Var;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
+import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 /**
  *
- * @author ronald
+ * @author feder
  */
-@Service
-public class ContradictionMethodImpl extends GenericProofMethodImpl implements ContradictionMethod {
-
-    public ContradictionMethodImpl(){
-        setInitVariables("CO");
+public class GeneralizationImpl extends GenericProofMethodImpl implements Generalization{
+    
+        public GeneralizationImpl(){
+        setInitVariables("GE");
     }
 
     /**
      * The statement that is needed to be proven may change inside a sub proof,
      * so this function calculates which that new statement is.
      *  
-     * @param beginFormula: General statement to be proved, is the base to calculate 
-     *                      all the sub statement in the sub proofs.
+     * @param beginFormula: general statement to be proved, is the base to calculate 
+     *                      al de sub statement in the sub proofs.
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
@@ -40,9 +41,8 @@ public class ContradictionMethodImpl extends GenericProofMethodImpl implements C
         // So, here what is really expressed is: (=> false) (¬formula) = T.
         
         Term aux = ((App)beginFormula).q.body();
-        aux = new App(new App(new Const(2,"c_{2}"),new Const(9,"c_{9}")), new App(new Const(7,"c_{7}"),aux));
         
-        return new App(new App(new Const(0,"="),((App)((App)beginFormula).p).q.body()),aux).abstractEq();
+        return new App(new App(new Const(0,"="),((App)((App)beginFormula).p).q.body()),((App)aux).q.body()).abstractEq();
     }
 
     /**
@@ -54,7 +54,7 @@ public class ContradictionMethodImpl extends GenericProofMethodImpl implements C
      */
     @Override
     public String header(String statement){
-        return "By contradiction method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
+        return "By generalization method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
     /**
@@ -102,4 +102,5 @@ public class ContradictionMethodImpl extends GenericProofMethodImpl implements C
     public Term deleteFinishProof(Term proof) {
         return ((App)((App)proof).q).q;
     }
+
 }

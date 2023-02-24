@@ -17,6 +17,7 @@ import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.DisponeManager;
+import com.calclogic.service.SimboloManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,8 @@ public class CrudOperationsImpl implements CrudOperations {
     private OperatorToEquality operatorToEq;
     @Autowired
     private MutualImplicationMethod mutualImplication;
+    @Autowired
+    private Generalization generalization;
     @Autowired
     private StartingOneSideMethod startingOneSide;
     @Autowired
@@ -94,6 +97,8 @@ public class CrudOperationsImpl implements CrudOperations {
                 return andIntroduction;
             case "MI":
                 return mutualImplication;
+            case "GE":
+                return generalization;
             case "CA":
                 return caseAnalysis;
             default:
@@ -126,11 +131,14 @@ public class CrudOperationsImpl implements CrudOperations {
                 beginFormula = objectMethod.initFormula(beginFormula);
 
                 if ("B".equals(objectMethod.getGroupMethod())){ // Branched recursive methods
+                    if (beginFormula.containT())
+                        beginFormula = ((App)beginFormula).q.body();
                     if ( ((App)method).p instanceof Const ) {
                         beginFormula = ((App)beginFormula).q;
                     } else {
                         beginFormula = ((App)((App)beginFormula).p).q;
                     }
+                    beginFormula = new App(new App(new Const(0,"="),new Const(-1,"T")),beginFormula).abstractEq();
                 }
             } else{
                 return null; // When no possibility matched. 
@@ -201,12 +209,12 @@ public class CrudOperationsImpl implements CrudOperations {
                 return ((Bracket)((TypedL)((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p).type()).t;
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
+                typedTerm = ((TypedM)((App)((App)((App)((App)typedTerm).p).q).q).q).getSubProof(); 
                 if (isRecursive){
-                    return getSubProof(((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q,
-                                                                                 ((App)auxMethod).q,true);
+                    return getSubProof(typedTerm, ((App)auxMethod).q,true);
                 }
                 else{
-                    return ((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q;
+                    return typedTerm;
                 }
             } else{
                 auxMethod = ((App)auxMethod).q;
@@ -215,6 +223,56 @@ public class CrudOperationsImpl implements CrudOperations {
         return typedTerm;
     }
 
+    /**
+     * This method return the last stack of linear recursive method in the current sub proof
+     * For example if the methodTerm is (AI SS) (AI DM (CO (OE SS))) then return CO (OE SS)
+     * 
+     * @param typedTerm: proof of a theorem
+     * @param method: The method that had the current stack of linear recursive method
+     * @param statement: The statement to be proof
+     * @return For example if the methodTerm is (AI SS) (AI DM (CO (OE SS))) then return 
+     *         CO (OE SS) in T[1], the sub proof that corresponds to the method T[1] write in 
+     *         T[0] and the initStatement in T[2]
+     */
+    @Override
+    @Transactional
+    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement) {
+        Term auxMethod = method;
+        Term[] T = new Term[3];
+        while (auxMethod instanceof App) {
+            if (auxMethod instanceof App && ((App)auxMethod).p instanceof Const && 
+                ((Const)((App)auxMethod).p).getCon().equals("AI") 
+               ) {
+                auxMethod = ((App)auxMethod).q;
+                statement = new App(new App(new Const(0,"="),((App)((App)statement).p).q.body()),
+                                               ((App)((App)statement).q.body()).q).abstractEq();
+                method = auxMethod;
+            }
+            else if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
+                    ((App)((App)auxMethod).p).p.toString().equals("AI") && 
+                    !ProofBoolean.isBranchedProof2Started(auxMethod)
+                    ){
+                return null;// no deberia devolver this, no seria mas homogeneo?
+            }
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && ProofBoolean.isAIOneLineProof(typedTerm)){
+                //T[0] = ((Bracket)((TypedL)((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p).type()).t;
+                return null;
+            }
+            else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
+                statement = new App(new App(new Const(0,"="),((App)((App)statement).p).q.body()),
+                                     ((App)((App)((App)statement).q.body()).p).q).abstractEq();
+                typedTerm = ((TypedM)((App)((App)((App)((App)typedTerm).p).q).q).q).getSubProof();
+                return getCurrentMethodStack(typedTerm, ((App)auxMethod).q, statement);
+            } else {
+                auxMethod = ((App)auxMethod).q;
+            }
+        }
+        T[0] = typedTerm;
+        T[1] = method;
+        T[2] = statement;
+        return T;
+    }
+    
     /**
      * This method returns the sub Term of typedTerm that represent the derivation tree 
      * of only the current sub proof and the father tree of this subproof.
@@ -246,8 +304,8 @@ public class CrudOperationsImpl implements CrudOperations {
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
                 li.add(0, typedTerm);
-                return getFatherAndSubProof(((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q,
-                                                                                   ((App)auxMethod).q,li);
+                typedTerm = ((TypedM)((App)((App)((App)((App)typedTerm).p).q).q).q).getSubProof();
+                return getFatherAndSubProof(typedTerm,((App)auxMethod).q,li);
             }
             else{
                 auxMethod = ((App)auxMethod).q;
@@ -490,15 +548,16 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term addFirstLineSubProof(String usr, Term formula, Term typedTerm, Term method) {
+    public Term addFirstLineSubProof(String usr, Term formula, Term typedTerm, Term method, SimboloManager s) {
         Term auxMethod = method; // "method" is entry/exit, so if we use it directly we change its value in the caller
         while (auxMethod instanceof App) {
             if (ProofBoolean.isBranchedProof2Started(auxMethod) && 
                 ProofBoolean.containsBranchedProof2Started(((App)auxMethod).q)
                )
             {
-                Term aux = addFirstLineSubProof(usr,formula, ((App)((App)((App)((App)typedTerm).p).q).q).q, 
-                                                                                    ((App)auxMethod).q);
+                Term aux = addFirstLineSubProof(usr,formula,
+                                    ((TypedM)((App)((App)((App)((App)typedTerm).p).q).q).q).getSubProof(), 
+                                                                                        ((App)auxMethod).q, s);
 
                 GenericProofMethod objectMethod = returnProofMethodObject("AI");
                 return objectMethod.finishedMethodProof(typedTerm,aux);
@@ -518,7 +577,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 String metaTheo = sub1.replace(metaTheoT);
                 Map<String,String> values2 = new HashMap<>();
                 values2.put("MT", metaTheo);
-                values2.put("T1Type", typedTerm.type().setToPrint(null).toString());
+                values2.put("T1Type", typedTerm.type().setToPrint(s).toString());
                 aux = typedTerm.toString();
                 values2.put("T1", (typedTerm instanceof Const?aux:"("+aux+")"));
                 StrSubstitutor sub2 = new StrSubstitutor(values2, "%(",")");

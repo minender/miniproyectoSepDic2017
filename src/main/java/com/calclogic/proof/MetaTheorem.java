@@ -27,7 +27,7 @@ public class MetaTheorem {
         try {
             if (!type.contains("T")) {
                 proof = new TypedM(1, 1, proof, type, user);
-                type = proof.type().traducBD().toString();
+                //type = proof.type().traducBD().toString();
             }
             return new TypedM(3, 0, proof, type, user);
         }
