@@ -23,6 +23,7 @@
         <option title="Having a conjunction, prove each operand separately" value="AI">Conjunction by parts</option>
         <option title="Transform an equivalence in a conjuntion of an implication and a consequence" value="MI">Mutual implication</option>
         <option title="Formulate some expressions (cases), prove that each one implies the theorem, and prove that the disjuntion of all the cases is true" value="CA">Case analysis</option>
+        <option value="GE">Generalization</option>
         <option title="Prove (exists x | R : P) => Q by introducing a witness x' and proving (R and P)[x:=x'] => Q" value="WI">Witness</option>
     </select>
 </div>

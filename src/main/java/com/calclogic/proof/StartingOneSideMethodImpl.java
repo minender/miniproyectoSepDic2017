@@ -271,4 +271,15 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
         new TypedM(resuelveKind, ((Const)operatorTerm).getId(), proof, "", username);
         return proof;
     }
+    
+    /**
+     * This function deletes the last part of the proof
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finishes the proof
+     */
+    @Override
+    public Term deleteFinishProof(Term proof) {
+        return proof.dsc("2");
+    }
 }

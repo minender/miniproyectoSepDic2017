@@ -81,7 +81,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     }
 
     private void setIsRecursiveMethod(String method){
-        if (method.equals("CR") || method.equals("CO") || method.equals("AI") || 
+        if (method.equals("CR") || method.equals("CO") || method.equals("AI") || method.equals("GE") ||
             method.equals("CA") || method.equals("MI") || method.equals("EO") || method.equals("OE")){
             this.isRecursiveMethod = true;
         }
@@ -435,6 +435,16 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     protected Term auxFinBranchedRecursiveMethodProof(String user, Term originalTerm, List<Var> vars, List<Term> terms, Term finalProof)
             throws TypeVerificationException
     {
+        return null;
+    }
+    
+    /**
+     * This function deletes the last part of the proof and depends on the method
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finishes the proof
+     */
+    public Term deleteFinishProof(Term proof) {
         return null;
     }
     

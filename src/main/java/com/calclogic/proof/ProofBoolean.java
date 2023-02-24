@@ -50,6 +50,7 @@ public class ProofBoolean {
                         methodStr.equals("AI") || 
                         methodStr.equals("MI") || 
                         methodStr.equals("CA") || 
+                        methodStr.equals("GE") || 
                         methodStr.equals("WI")
                     )
                 ) 
@@ -63,6 +64,7 @@ public class ProofBoolean {
                         methodStr.equals("OE") ||
                         methodStr.equals("CO") || 
                         methodStr.equals("CR") ||
+                        methodStr.equals("GE") || 
                         methodStr.equals("MI")
                     )
                 ) 
@@ -135,7 +137,7 @@ public class ProofBoolean {
                     methodStr.equals("MI") ||
                     methodStr.equals("EO") || 
                     methodStr.equals("OE") ||
-             //       methodStr.equals("CA") ||
+                    methodStr.equals("GE") ||
                     methodStr.equals("WI");
         }
     }
@@ -184,17 +186,23 @@ public class ProofBoolean {
      * Currently this only analyzes Counter-reciprocal, And Introduction and Mutual Implication
      * 
      * @param newMethod: The demonstration method that the user just selected
-     * @param methodTerm: Tree of the methods that have been used in the proof so far.
-     * @param originalFormula: This is the statement of the theorem to be proved,
-     *                      not of the formula of the current sub-case to be proved,
-     *                      because we use methodTerm to get it.
+     * @param formula: This is the original statement of the theorem to be proven
+     *                 when isNewSol is true, but it is the statement of the sub-proof
+     *                 to be proven when isNewSol is false.
      * @param crudOp
      * 
      * @return True if the operator is not appropriate for the method; false otherwise.
      */
-    public static boolean isOpNotValidForMethod(String newMethod, Term methodTerm, Term originalFormula, CrudOperations crudOp){
-        if (originalFormula.containT()){
-            Integer opId = crudOp.binaryOperatorId(originalFormula.dsc("2").body(),methodTerm);
+    public static boolean isOpNotValidForMethod(String newMethod, Term formula, Boolean isNewSol, CrudOperations crudOp){
+        if (formula.containT()){
+            // QUESTION: Can I use binaryOperatorId in both cases?
+            Integer opId;
+            if (isNewSol){
+                opId = crudOp.binaryOperatorId(formula.dsc("2").body(),null);
+            }
+            else{
+                opId = ((Const)formula.dsc("2").body().dsc("11")).getId();
+            }
 
             switch (newMethod){
                 case "CR":

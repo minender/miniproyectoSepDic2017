@@ -322,6 +322,17 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
         return proof;
     }
     
+    /**
+     * This function deletes the last part of the proof
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finishes the proof
+     */
+    @Override
+    public Term deleteFinishProof(Term proof) {
+        return null;
+    }
+    
     public void setSimboloManager(SimboloManager simboloManager) {
         this.simboloManager = simboloManager;
     }

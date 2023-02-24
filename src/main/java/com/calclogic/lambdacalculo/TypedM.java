@@ -21,14 +21,14 @@ public class TypedM extends TypedA implements TypedTerm {
         super(nTeo, user);
         Term type = super.type_;
         id_ = 1;
-        if (((App)((App)type).p).q.containT()){
+        if (type.dsc("12").containT()){
             proof_ = new TypedA(type,user);
             //A_ = (TypedA)proof_;
         }
         else{
             //A_ = new TypedA(type, variables_, nSt_, combDBType_);
             Term lambType = super.type(); //A_.type();
-            String arg2 = ((App)lambType).q.body().toString();
+            String arg2 = lambType.dsc("2").body().toString();
             Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
             aux = new TypedApp(aux,new TypedA(type, variables_, nSt_, combDBType_));
             proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
@@ -39,20 +39,32 @@ public class TypedM extends TypedA implements TypedTerm {
     public TypedM(int opId,Term type, String user) throws TypeVerificationException {
         super(type, user);
         id_ = 1;
-        if (((App)((App)type).p).q.containT()){
+        if (type.dsc("12").containT()){
             proof_ = new TypedA(type,user);
             //A_ = (TypedA)proof_;
         }
         else{
             //A_ = new TypedA(type, variables_, nSt_, combDBType_);
             Term lambType = super.type(); //A_.type();
-            String arg2 = ((App)lambType).q.body().toString();
+            String arg2 = lambType.dsc("2").body().toString();
             Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
             aux = new TypedApp(aux,new TypedA(type, variables_, nSt_, combDBType_));
             proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
             proof_ = new TypedApp(aux,proof_);          
         }
     }
+    
+    /*
+     *(E^{lambda z.z/\E.Q1}(I^{p:=H}A^{3.39}))
+     * (L^{lambda z.(H/\z)/\E.Q1}(I^{?}(M_{3}^{1} A^{?})))
+     *  (E^{lambda z.(H/\z)/\E.Q1}(I^{p,q:=H,Q1==Q2}A^{3.66}))
+     *   (I^{p,q,r:=H,Q1==Q2,E.Q1}A^{3.37})
+     *    (E^{lambda z.H/\z}(I^{e,f:=Q1,Q2}A^{3.84.a}))
+     *     (I^{p,q,r:=H,Q1==Q2,E.Q2}A^{3.37})
+     *      (E^{lambda z.(H/\z)/\E.Q2}(I^{p,q:=H,Q1==Q2}A^{3.66}))
+     *       (E^{lambda z.(H/\z)/\E.Q2}(I^{?}(M_{3} A^{?})))
+     *        (E^{lambda z.z/\E.Q2}(I^{p:=H}A^{3.39}))
+     */
     
     /*
      * @param type The empty string can be passed when we are not referring to an axiom
@@ -74,27 +86,31 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
     public TypedM(int id, int opId, Term proof, String type, String user) throws TypeVerificationException {
         super(proof.type(),type, user);
         id_ = id;
-        if (id == 1 || id == 2) {
+        if (id==1 || id==2){
             // A_ = ((TypedA)proof);
             Term lambType = super.type();
-            String arg2 = ((App)lambType).q.body().toString();
+            String arg2 = lambType.dsc("2").body().toString();
             Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
             aux = new TypedApp(aux,proof);
             if (id == 1)
-               proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+                proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
             else
-               proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} (A^{= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} c_{"+opId+"})} A^{= T c_{8}})", user);
+                proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} (A^{= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} c_{"+opId+"})} A^{= T c_{8}})", user);
             proof_ = new TypedApp(aux,proof_);
         }
-        else if (id == 3) {
+        else if (id == 3){
             String template = "(S A^{= T c_{8}})";
             proof_ = CombUtilities.getTerm(template, user);
+            //if (proof.containT())
             proof_ = new TypedApp(proof ,proof_);
+            /*else{
+            proof = new TypedM(1,1,proof,type,user);
+            }*/
         }
-        else if (id == 4) {
+        else if (id == 4){
             Term proofType = proof.type();
-            String t1 = ((App)((App)proofType).q.body()).q.toString();
-            String t2 = ((App)((App)((App)proofType).q.body()).p).q.toString();
+            String t1 = proofType.dsc("2").body().dsc("2").toString();
+            String t2 = proofType.dsc("2").body().dsc("12").toString();
             String template1="L^{\\lambda x_{122}. c_{1} ("+t2+") x_{122}} (M_{3} ("+proof+")) (I^{[x_{113}:="+t2+"]} A^{= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})})";
             String template2="S (I^{[x_{112},x_{113},x_{114}:="+t1+","+t2+","+t2+"]} A^{= (\\Phi_{bcb} (\\Phi_{cb} c_{1}) c_{1} \\Phi_{cbcb}) (\\Phi_{cb} c_{1} (\\Phi_{cbcb} c_{1} \\Phi_{cb}))})";
             String template3="L^{\\lambda x_{122}. c_{1} x_{122} ("+t1+")} (I^{[x_{113}:="+t2+"]} A^{= (\\Phi_{(b,)} c_{1}) (\\Phi_{K} c_{8})})";
@@ -105,8 +121,20 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             Term T4 = CombUtilities.getTerm(template4, user);
             proof_ = new TypedApp(T4,new TypedApp(T3,new TypedApp(T2,T1)));
         }
-        else
+        else if (id == 5){ // igual que id=1 pero para identificar que el 2 branch del AI no ha terminado y la prueba hasta ahora tiene raiz [p=q]
+            Term lambType = super.type();
+            String arg2 = lambType.dsc("2").body().toString();
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
+            aux = new TypedApp(aux,proof);
+            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+            proof_ = new TypedApp(aux,proof_);
+            String template = "(S A^{= T c_{8}})";
+            //if (proof.containT())
+            proof_ = new TypedApp(proof_, CombUtilities.getTerm(template, user));
+        }
+        else{
             proof_ = proof;
+        }
     }
     /*public TypedM(String proofTemplate, String usr, String arg1, String arg2) {
         super("M");
@@ -133,21 +161,40 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
         return proof_;
     }
     
+    public Term getSubProof() {
+        switch (id_) {
+            case 1:
+                return proof_.dsc("12");
+            case 2:
+                return proof_.dsc("12");
+            case 3:
+                return proof_.dsc("1");
+            case 4:
+                return ((TypedM)proof_.dsc("22212")).getProof().dsc("1");
+            case 5:
+                return proof_.dsc("112");
+            default:
+                return proof_;
+        }
+    }
+    
     /*public String getCombDBType() {
         return type().traducBD().toString();
     }*/
     
     @Override
-    public String toStringAll() {
+    public String toStringAll() {          
         if (proof_ instanceof TypedA)
             return proof_.toString();
         else if (id_ == 1 || id_ == 2)
-          return "(M_{"+id_+"}^{"+((Const)((App)((App)((App)((TypedA)((App)((App)proof_).q).q).type()).q.body()).p).p).id+"} A^{"+super.getCombDBType()+"})";
+            return "(M_{"+id_+"}^{"+((Const)(((TypedA)proof_.dsc("22")).type()).dsc("2").body().dsc("11")).id+"} ("+proof_.dsc("12")+"))";
         else if (id_ == 3)
-          return "(M_{"+id_+"} ("+((App)proof_).p+"))";
+            return "(M_{"+id_+"} ("+proof_.dsc("1")+"))";
         else if (id_ == 4)
-          return "(M_{"+id_+"} ("+((App)((TypedM)((App)((App)((App)((App)((App)proof_).q).q).q).p).q).getProof()).p+"))";
+            return "(M_{"+id_+"} ("+((TypedM)proof_.dsc("22212")).getProof().dsc("1")+"))";
+        else if (id_ == 5)
+            return "(M_{"+id_+"}^{"+((Const) ((TypedA)proof_.dsc("122")).type().dsc("2").body().dsc("11")).id+"} ("+proof_.dsc("112")+"))";  
         else 
-          return "(M_{"+id_+"} ("+proof_+"))";
+            return "(M_{"+id_+"} ("+proof_+"))";
     }
 }

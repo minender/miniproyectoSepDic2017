@@ -7,6 +7,7 @@ import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
@@ -57,21 +58,33 @@ public class AndIntroductionMethodImpl extends GenericProofMethodImpl implements
             throws TypeVerificationException
     {
         // This string says: (true == q) == q
-        String str = "c_{1} x_{113} (c_{1} x_{113} c_{8})";
-        Term st = CombUtilities.getTerm(str,null);
+        //String str = "= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})";
+        
+        //Term st = CombUtilities.getTerm(str,null);
 
         // We make the formula above to be treated as an axiom
-        TypedA A = new TypedA(st); 
+        //TypedA A = new TypedA(st, user);
+        Term fProofType = finalProof.type();
+        int[] c = new int[1];
+        c[0] = 0;
+        fProofType.setToPrinting(null,simboloManager,c);
+        
+        //finalProof pudo no haber terminado, por lo que puede ser una igualdad distinta de [q=T]
+        if (!fProofType.containT())
+           finalProof = new TypedM(5,c[0],finalProof,"= T c_{8}",user);
+        else
+           finalProof = new TypedM(3,c[0],finalProof,"= T c_{8}",user);
 
         // Substitution [q := lastLine]
-        vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, finalProof.type());
-        Sust sus = new Sust(vars, terms);
+        /*vars.add(0, new Var(113)); // Letter 'q'
+        terms.add(0,finalProof.type().setToPrint(simboloManager));
+        Sust sus = new Sust(vars, terms);*/
 
         // We give the instantiation format to the substitution above
-        TypedI I = new TypedI(sus);
+        //TypedI I = new TypedI(sus);
 
-        Term auxiliarTree = new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),finalProof);
+        //Term auxiliarTree = new TypedApp(new TypedApp(new TypedS(),new TypedApp(I,A)),finalProof);
+        Term auxiliarTree = new TypedApp(new TypedS(),finalProof);
 
         Term firstProof = originalTerm.dsc("2");
         Term firstStAndTrue = originalTerm.dsc("11");

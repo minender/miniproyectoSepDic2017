@@ -20,7 +20,7 @@ Nuevos
 * Utilizar el metateorema 2 del libro para partir de un lado cuando la igualdad = es de terminos.
 * Arreglar el problema de que Node.js no puede procesar string en latex muy largos, por ejemplo el 
   teorema 9.9 por método directo en el primer paso aplicando 3.52 en el consecuente arroja este error de una.
-* Arreglar el metateorema del True para teoremas que no contengan T.
+* Arreglar el metateorema del True para teoremas que no contengan T (listo).
 * Revisar el formulario de editar símbolo si carga los campos que están en la base de datos.
 * Modificar que los datos inferibles del símbolo como infijo o rightassociativity se carguen en el formulario 
   de editar símbolo sin que estén guardados en la base de datos.
@@ -28,8 +28,14 @@ Nuevos
   que se puedan reconocer cuando un teorema ya existe salvo el nombre de las variables en todos los casos.
 * Se lanza una excepción cuando se trata de editar un teorema siendo AdminTeoremas.
 * Siempre que se hace click en el + de un teorema, se hace el ajax para cargar todos los metateoremas, pero es suficiente 
-  que el ajax se haga sólo la primera vez.
+  que el ajax se haga sólo la primera vez (Listo)
 * Los métodos de debilitamiento / fortalecimiento no están funcionando.
+* En initStatementController, cuando generarHistorial aborta, al usuario le sale el mensaje de que el método de 
+  demostracion no aplica a ese enunciado. Se deben separar los abort que dispara generarHistorial de los abort 
+  de initStatementController.
+* Si la ultima linea es c_{1} x_{113} (c_{1} x_{113} x_{113}) se unifica erróneamente con el teorema c_{1} x_{113} x_{113} 
+  y sustitución [x_{113} := (c_{1} x_{113} x_{113})].
+* Cambiar la direccion de la segunda subprueba de un AI cuando consta de una sola linea, actualizarla incluyendo MT
 
 Ronald
 
@@ -37,3 +43,6 @@ Ronald
 * En los finish de Contra-recíproco y Contradicción falta ver si hay que hacer un setToPrint/setToPrinting.
 * El método de transitividad debería no debería poder comenzar con una prueba cuyo operador sea =>, pero lo hace
   porque al buscar su operador, como la fórmula contieneT, devuelve algo que no es.
+* Unificar la obtención del binaryOperatorId en la nueva función de ProofBoolean.
+* Eliminar los parámetros simboloManager en las funciones de CrudOperationsImpl.
+

@@ -1,5 +1,7 @@
 package com.calclogic.proof;
 
+import com.calclogic.lambdacalculo.App;
+import com.calclogic.lambdacalculo.Term;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,5 +24,15 @@ public class StrengtheningMethodImpl extends WeakeningMethodImpl implements Stre
     @Override
     public String header(String nTeo){
         return "By strengthening method<br>";
+    }
+    
+    /**
+     * This function delete the last part of the proof depends of the method
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finish the proof
+     */
+    public Term deleteFinishProof(Term proof) {
+        return null;
     }
 }

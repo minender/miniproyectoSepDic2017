@@ -45,7 +45,10 @@ public class OperatorToEqualityImpl extends GenericProofMethodImpl implements Op
     @Override
     public Term initFormula(Term beginFormula){
         // this convert formulas like lamb x.t1=lamb x.t2 into t1==t2
-        return beginFormula.setToPrint(simboloManager);
+        Term aux = ((App)beginFormula).q.body();
+        Term right = ((App)((App)aux).p).q;
+        Term left = ((App)aux).q;
+        return new App(new App(new Const(0,"="),right), left).abstractEq();
     }
 
     /**
@@ -57,7 +60,7 @@ public class OperatorToEqualityImpl extends GenericProofMethodImpl implements Op
      */
     @Override
     public String header(String statement){
-        return "";
+        return ""+statement;
     }
 
     /**
@@ -73,11 +76,21 @@ public class OperatorToEqualityImpl extends GenericProofMethodImpl implements Op
     public Term finishedLinearRecursiveMethodProof(String user, Term formulaBeingProved, Term proof)
     {
         try {
-            return new TypedM(4, 1, proof, "= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})", user);
-             
+            return new TypedM(1, 1, proof, proof.type().traducBD().toString(), user);
+
         } catch (TypeVerificationException e)  {
             Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
         }
         return proof;
+    }
+    
+    /**
+     * This function delete the last part of the proof depends of the method
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finish the proof
+     */
+    public Term deleteFinishProof(Term proof) {
+        return ((TypedM)proof).getSubProof();
     }
 }

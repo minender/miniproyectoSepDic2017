@@ -195,7 +195,6 @@ public class InferResponse extends GenericResponse{
         }
         // By <current> method, the following must be proved: <statement> 
         header += objectMethod.header(statement);   
-        
         if (methodTerm instanceof App) {
             if ( typedTerm!=null && typedTerm.type()!=null && typedTerm.type().equals(formula)){
                 if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 4){
@@ -203,6 +202,9 @@ public class InferResponse extends GenericResponse{
                     typedTerm = typedTerm.dsc("22212");
                     typedTerm = ((TypedM)typedTerm).getProof();
                     typedTerm = typedTerm.dsc("1");
+                }
+                else if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 1){
+                    typedTerm = ((TypedM)typedTerm).getProof().dsc("12");
                 }
                 else{
                     typedTerm = typedTerm.dsc("2");
@@ -235,8 +237,9 @@ public class InferResponse extends GenericResponse{
     {
         try{
             String statement;
-            formula = formula.containT() ? formula.setToPrint(simboloManager) : formula;
-            Term newFormula = formula.dsc("2"); // First branch
+            Term aux = formula.dsc("2").body();
+            Term newFormula = aux.dsc("2"); // First branch
+            newFormula = new App(new App(new Const(0,"="),formula.dsc("12").body()),newFormula).abstractEq();
             statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false) + "$");
             header += objectMethod.header("") + objectMethod.subProofInit(statement);
 
@@ -257,7 +260,7 @@ public class InferResponse extends GenericResponse{
                     if (!clickable.equals("n")){
                         cambiarMetodo = "0"; 
                     }
-                    newFormula = formula.dsc("12"); // Second branch
+                    newFormula = aux.dsc("12"); // Second branch
                     statement = centeredBlock("$" + clickableST(user, newFormula, clickable, new Const("AI"), false) + "$");
                     historial += objectMethod.subProofInit(statement);
                 }
@@ -268,10 +271,12 @@ public class InferResponse extends GenericResponse{
                                 (ProofBoolean.isBranchedProof2Started(methodTerm) ? typedTerm.dsc("2") : typedTerm), 
                                  valida, labeled, methodTerm.dsc("12"), clickable, false);
 
-                newFormula = formula.dsc("12");
+                newFormula = aux.dsc("12");
+                newFormula = new App(new App(new Const(0,"="),formula.dsc("12").body()),newFormula).abstractEq();
                 statement  = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false) + "$");
                 header     = historial + objectMethod.subProofInit(statement);
                 historial  = "";
+
                 Term newTypedTerm;
                 newTypedTerm = proofCrudOp.getSubProof(typedTerm, methodTerm);
                 privateGenerarHistorial(user, newFormula, header, nTeo, newTypedTerm, valida, labeled, 
@@ -398,7 +403,8 @@ public class InferResponse extends GenericResponse{
      */
     private void privateGenerarHistorial(String user, Term formula, String header, String nTeo, Term typedTerm, Boolean valida, 
         Boolean labeled, Term methodTerm, String clickable, Boolean isRootTeorem)
-    {   
+    {
+        try{
         // siempre que el metodo sea vacio o se este esperando un metodo, hay 
         // que pedirlo, salvo cuando no se haya terminado la primera prueba de
         // un metodo binario
@@ -408,7 +414,7 @@ public class InferResponse extends GenericResponse{
             cambiarMetodo = "2";
         else if(isRootTeorem)
             cambiarMetodo ="0";
-        
+
         // If we're printing a root teorem, print it as a theorem.
         if (isRootTeorem) {
             this.setHistorial("");
@@ -501,7 +507,8 @@ public class InferResponse extends GenericResponse{
             if (!valida){
                 historial = historial + noValidInference();
             }
-        }      
+        }
+        }catch(Exception e) {e.printStackTrace();}
     }
 
     // Returns a HTML centered block with the text "No valid inference"

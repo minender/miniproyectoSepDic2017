@@ -36,9 +36,9 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
     @Override
     public Term initFormula(Term beginFormula){
         // "beginFormula" is of the form [L == R]
-        beginFormula = beginFormula.setToPrint(simboloManager);
-        Term prevLeftSide = beginFormula.dsc("2"); // L  
-        Term prevRightSide = beginFormula.dsc("12"); // R
+        Term aux = beginFormula.dsc("2").body();
+        Term prevLeftSide = aux.dsc("2"); // L  
+        Term prevRightSide = aux.dsc("12"); // R
 
         Term newLeftSide = new App(new App(new Const(2 ,"c_{2}"), prevRightSide), prevLeftSide);  // [L ==> R]  written as  [(==> R) L]
         Term newRightSide = new App(new App(new Const(3 ,"c_{3}"), prevRightSide), prevLeftSide); // [L <== R]  written as  [(<== R) L]
@@ -90,5 +90,15 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
         TypedI I = new TypedI(sus);
 
         return new TypedApp(I,A);
+    }
+    
+    /**
+     * This function deletes the last part of the proof
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finishes the proof
+     */
+    public Term deleteFinishProof(Term proof) {
+        return proof.dsc("2");
     }
 }

@@ -41,6 +41,7 @@ method_base returns [Term value]:
        | AI {$value = new Const("AI");}
        | MI {$value = new Const("MI");}
        | CA {$value = new Const("CA");}
+       | GE {$value = new Const("GE");}
        | WI {$value = new Const("WI");}
        | O_PAR method C_PAR { $value = $method.value; };
 
@@ -73,6 +74,8 @@ AI: 'AI';
 MI: 'MI';
 
 CA: 'CA';
+
+GE: 'GE';
 
 WI: 'WI';
 
