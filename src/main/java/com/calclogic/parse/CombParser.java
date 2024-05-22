@@ -1,11 +1,12 @@
-// Generated from .\Comb.g4 by ANTLR 4.8
+// Generated from Comb.g4 by ANTLR 4.8
 
     
 package com.calclogic.parse; 
 
 import com.calclogic.lambdacalculo.*;   
 import java.util.LinkedList;
-import com.calclogic.entity.Resuelve;   
+import com.calclogic.entity.Resuelve; 
+import com.calclogic.service.SimboloManager;  
     
 
 import org.antlr.v4.runtime.atn.*;
@@ -111,15 +112,17 @@ public class CombParser extends Parser {
 
 	public static class Start_ruleContext extends ParserRuleContext {
 		public String u;
+		public SimboloManager s;
 		public Term value;
 		public ExprContext expr;
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public Start_ruleContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Start_ruleContext(ParserRuleContext parent, int invokingState, String u) {
+		public Start_ruleContext(ParserRuleContext parent, int invokingState, String u, SimboloManager s) {
 			super(parent, invokingState);
 			this.u = u;
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_start_rule; }
 		@Override
@@ -132,14 +135,14 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final Start_ruleContext start_rule(String u) throws RecognitionException {
-		Start_ruleContext _localctx = new Start_ruleContext(_ctx, getState(), u);
+	public final Start_ruleContext start_rule(String u,SimboloManager s) throws RecognitionException {
+		Start_ruleContext _localctx = new Start_ruleContext(_ctx, getState(), u, s);
 		enterRule(_localctx, 0, RULE_start_rule);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(34);
-			((Start_ruleContext)_localctx).expr = expr(u);
+			((Start_ruleContext)_localctx).expr = expr(u,s);
 			 ((Start_ruleContext)_localctx).value = ((Start_ruleContext)_localctx).expr.value; 
 			}
 		}
@@ -156,6 +159,7 @@ public class CombParser extends Parser {
 
 	public static class ExprContext extends ParserRuleContext {
 		public String u;
+		public SimboloManager s;
 		public Term value;
 		public TermContext term;
 		public Variable_listContext vl;
@@ -173,9 +177,10 @@ public class CombParser extends Parser {
 			return getRuleContext(Term_listContext.class,0);
 		}
 		public ExprContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ExprContext(ParserRuleContext parent, int invokingState, String u) {
+		public ExprContext(ParserRuleContext parent, int invokingState, String u, SimboloManager s) {
 			super(parent, invokingState);
 			this.u = u;
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_expr; }
 		@Override
@@ -188,8 +193,8 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final ExprContext expr(String u) throws RecognitionException {
-		ExprContext _localctx = new ExprContext(_ctx, getState(), u);
+	public final ExprContext expr(String u,SimboloManager s) throws RecognitionException {
+		ExprContext _localctx = new ExprContext(_ctx, getState(), u, s);
 		enterRule(_localctx, 2, RULE_expr);
 		try {
 			setState(47);
@@ -211,7 +216,7 @@ public class CombParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(37);
-				((ExprContext)_localctx).term = term(u);
+				((ExprContext)_localctx).term = term(u,s);
 				 ((ExprContext)_localctx).value =  ((ExprContext)_localctx).term.value; 
 				}
 				break;
@@ -225,7 +230,7 @@ public class CombParser extends Parser {
 				setState(42);
 				match(ASSIGN);
 				setState(43);
-				((ExprContext)_localctx).el = term_list(u);
+				((ExprContext)_localctx).el = term_list(u,s);
 				setState(44);
 				match(C_BRACKET2);
 				 
@@ -261,6 +266,7 @@ public class CombParser extends Parser {
 
 	public static class TermContext extends ParserRuleContext {
 		public String u;
+		public SimboloManager s;
 		public Term value;
 		public Term_baseContext term_base;
 		public Term_tailContext term_tail;
@@ -271,9 +277,10 @@ public class CombParser extends Parser {
 			return getRuleContext(Term_tailContext.class,0);
 		}
 		public TermContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public TermContext(ParserRuleContext parent, int invokingState, String u) {
+		public TermContext(ParserRuleContext parent, int invokingState, String u, SimboloManager s) {
 			super(parent, invokingState);
 			this.u = u;
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_term; }
 		@Override
@@ -286,18 +293,20 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final TermContext term(String u) throws RecognitionException {
-		TermContext _localctx = new TermContext(_ctx, getState(), u);
+	public final TermContext term(String u,SimboloManager s) throws RecognitionException {
+		TermContext _localctx = new TermContext(_ctx, getState(), u, s);
 		enterRule(_localctx, 4, RULE_term);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(49);
-			((TermContext)_localctx).term_base = term_base(u);
+			((TermContext)_localctx).term_base = term_base(u,s);
 			setState(50);
-			((TermContext)_localctx).term_tail = term_tail(u);
+			((TermContext)_localctx).term_tail = term_tail(u,s);
 			 
 			                                    Term aux = ((TermContext)_localctx).term_base.value; 
+			                                    if (aux instanceof Const && ((Const)aux).getId()==0 && !((Const)aux).getCon().equals("\\Phi_{K}"))
+			                                       ((Const)aux).setType("x"+Phi.stInd+"->x"+Phi.stInd+"->p");
 			                                    try {
 			                                        for (Term it: ((TermContext)_localctx).term_tail.value) {
 			                                            if (aux instanceof TypedTerm && 
@@ -336,6 +345,7 @@ public class CombParser extends Parser {
 
 	public static class Term_baseContext extends ParserRuleContext {
 		public String u;
+		public SimboloManager s;
 		public Term value;
 		public ConstantContext constant;
 		public VariableContext variable;
@@ -356,9 +366,10 @@ public class CombParser extends Parser {
 		public TerminalNode O_PAR() { return getToken(CombParser.O_PAR, 0); }
 		public TerminalNode C_PAR() { return getToken(CombParser.C_PAR, 0); }
 		public Term_baseContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Term_baseContext(ParserRuleContext parent, int invokingState, String u) {
+		public Term_baseContext(ParserRuleContext parent, int invokingState, String u, SimboloManager s) {
 			super(parent, invokingState);
 			this.u = u;
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_term_base; }
 		@Override
@@ -371,8 +382,8 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final Term_baseContext term_base(String u) throws RecognitionException {
-		Term_baseContext _localctx = new Term_baseContext(_ctx, getState(), u);
+	public final Term_baseContext term_base(String u,SimboloManager s) throws RecognitionException {
+		Term_baseContext _localctx = new Term_baseContext(_ctx, getState(), u, s);
 		enterRule(_localctx, 6, RULE_term_base);
 		try {
 			setState(70);
@@ -391,7 +402,7 @@ public class CombParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(53);
-				((Term_baseContext)_localctx).constant = constant(u);
+				((Term_baseContext)_localctx).constant = constant(u,s);
 				 ((Term_baseContext)_localctx).value =  ((Term_baseContext)_localctx).constant.value; 
 				}
 				break;
@@ -413,7 +424,7 @@ public class CombParser extends Parser {
 				setState(61);
 				match(PERIOD);
 				setState(62);
-				((Term_baseContext)_localctx).e1 = term(u);
+				((Term_baseContext)_localctx).e1 = term(u,s);
 				 ((Term_baseContext)_localctx).value =  new Bracket(((Term_baseContext)_localctx).v.value, ((Term_baseContext)_localctx).e1.value); 
 				}
 				break;
@@ -423,7 +434,7 @@ public class CombParser extends Parser {
 				setState(65);
 				match(O_PAR);
 				setState(66);
-				((Term_baseContext)_localctx).term = term(u);
+				((Term_baseContext)_localctx).term = term(u,s);
 				setState(67);
 				match(C_PAR);
 				 ((Term_baseContext)_localctx).value =  ((Term_baseContext)_localctx).term.value; 
@@ -446,6 +457,7 @@ public class CombParser extends Parser {
 
 	public static class Term_tailContext extends ParserRuleContext {
 		public String u;
+		public SimboloManager s;
 		public LinkedList<Term> value;
 		public Term_baseContext term_base;
 		public Term_tailContext t;
@@ -456,9 +468,10 @@ public class CombParser extends Parser {
 			return getRuleContext(Term_tailContext.class,0);
 		}
 		public Term_tailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Term_tailContext(ParserRuleContext parent, int invokingState, String u) {
+		public Term_tailContext(ParserRuleContext parent, int invokingState, String u, SimboloManager s) {
 			super(parent, invokingState);
 			this.u = u;
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_term_tail; }
 		@Override
@@ -471,8 +484,8 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final Term_tailContext term_tail(String u) throws RecognitionException {
-		Term_tailContext _localctx = new Term_tailContext(_ctx, getState(), u);
+	public final Term_tailContext term_tail(String u,SimboloManager s) throws RecognitionException {
+		Term_tailContext _localctx = new Term_tailContext(_ctx, getState(), u, s);
 		enterRule(_localctx, 8, RULE_term_tail);
 		try {
 			setState(77);
@@ -482,9 +495,9 @@ public class CombParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(72);
-				((Term_tailContext)_localctx).term_base = term_base(u);
+				((Term_tailContext)_localctx).term_base = term_base(u,s);
 				setState(73);
-				((Term_tailContext)_localctx).t = term_tail(u);
+				((Term_tailContext)_localctx).t = term_tail(u,s);
 				 ((Term_tailContext)_localctx).t.value.add(0,((Term_tailContext)_localctx).term_base.value); ((Term_tailContext)_localctx).value =  ((Term_tailContext)_localctx).t.value; 
 				}
 				break;
@@ -616,6 +629,7 @@ public class CombParser extends Parser {
 
 	public static class Term_listContext extends ParserRuleContext {
 		public String u;
+		public SimboloManager s;
 		public LinkedList<Term> value;
 		public TermContext term;
 		public Term_list_tailContext el;
@@ -626,9 +640,10 @@ public class CombParser extends Parser {
 			return getRuleContext(Term_list_tailContext.class,0);
 		}
 		public Term_listContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Term_listContext(ParserRuleContext parent, int invokingState, String u) {
+		public Term_listContext(ParserRuleContext parent, int invokingState, String u, SimboloManager s) {
 			super(parent, invokingState);
 			this.u = u;
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_term_list; }
 		@Override
@@ -641,16 +656,16 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final Term_listContext term_list(String u) throws RecognitionException {
-		Term_listContext _localctx = new Term_listContext(_ctx, getState(), u);
+	public final Term_listContext term_list(String u,SimboloManager s) throws RecognitionException {
+		Term_listContext _localctx = new Term_listContext(_ctx, getState(), u, s);
 		enterRule(_localctx, 14, RULE_term_list);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(90);
-			((Term_listContext)_localctx).term = term(u);
+			((Term_listContext)_localctx).term = term(u,s);
 			setState(91);
-			((Term_listContext)_localctx).el = term_list_tail(u);
+			((Term_listContext)_localctx).el = term_list_tail(u,s);
 			 ((Term_listContext)_localctx).el.value.add(0,((Term_listContext)_localctx).term.value); ((Term_listContext)_localctx).value =  ((Term_listContext)_localctx).el.value; 
 			}
 		}
@@ -667,6 +682,7 @@ public class CombParser extends Parser {
 
 	public static class Term_list_tailContext extends ParserRuleContext {
 		public String u;
+		public SimboloManager s;
 		public LinkedList<Term> value;
 		public Term_listContext term_list;
 		public TerminalNode COMMA() { return getToken(CombParser.COMMA, 0); }
@@ -674,9 +690,10 @@ public class CombParser extends Parser {
 			return getRuleContext(Term_listContext.class,0);
 		}
 		public Term_list_tailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Term_list_tailContext(ParserRuleContext parent, int invokingState, String u) {
+		public Term_list_tailContext(ParserRuleContext parent, int invokingState, String u, SimboloManager s) {
 			super(parent, invokingState);
 			this.u = u;
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_term_list_tail; }
 		@Override
@@ -689,8 +706,8 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final Term_list_tailContext term_list_tail(String u) throws RecognitionException {
-		Term_list_tailContext _localctx = new Term_list_tailContext(_ctx, getState(), u);
+	public final Term_list_tailContext term_list_tail(String u,SimboloManager s) throws RecognitionException {
+		Term_list_tailContext _localctx = new Term_list_tailContext(_ctx, getState(), u, s);
 		enterRule(_localctx, 16, RULE_term_list_tail);
 		try {
 			setState(99);
@@ -702,7 +719,7 @@ public class CombParser extends Parser {
 				setState(94);
 				match(COMMA);
 				setState(95);
-				((Term_list_tailContext)_localctx).term_list = term_list(u);
+				((Term_list_tailContext)_localctx).term_list = term_list(u,s);
 				 ((Term_list_tailContext)_localctx).value =  ((Term_list_tailContext)_localctx).term_list.value; 
 				}
 				break;
@@ -778,6 +795,7 @@ public class CombParser extends Parser {
 
 	public static class ConstantContext extends ParserRuleContext {
 		public String u;
+		public SimboloManager s;
 		public Term value;
 		public Token DIGITS;
 		public Token EQUAL;
@@ -796,9 +814,10 @@ public class CombParser extends Parser {
 			return getRuleContext(Prove_baseContext.class,0);
 		}
 		public ConstantContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public ConstantContext(ParserRuleContext parent, int invokingState, String u) {
+		public ConstantContext(ParserRuleContext parent, int invokingState, String u, SimboloManager s) {
 			super(parent, invokingState);
 			this.u = u;
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_constant; }
 		@Override
@@ -811,8 +830,8 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final ConstantContext constant(String u) throws RecognitionException {
-		ConstantContext _localctx = new ConstantContext(_ctx, getState(), u);
+	public final ConstantContext constant(String u,SimboloManager s) throws RecognitionException {
+		ConstantContext _localctx = new ConstantContext(_ctx, getState(), u, s);
 		enterRule(_localctx, 20, RULE_constant);
 		try {
 			setState(120);
@@ -828,7 +847,10 @@ public class CombParser extends Parser {
 				setState(108);
 				match(C_BRACKET);
 				 int index = Integer.parseInt((((ConstantContext)_localctx).DIGITS!=null?((ConstantContext)_localctx).DIGITS.getText():null));
-				                          ((ConstantContext)_localctx).value =  new Const(index ,"c_{"+index+"}");
+				                          if (s == null)
+				                             ((ConstantContext)_localctx).value =  new Const(index ,"c_{"+index+"}");
+				                          else
+				                             ((ConstantContext)_localctx).value =  new Const(index ,"c_{"+index+"}",s.getSimbolo(index).getTipo());
 				                        
 				}
 				break;
@@ -848,7 +870,7 @@ public class CombParser extends Parser {
 				setState(112);
 				((ConstantContext)_localctx).TRUE = match(TRUE);
 				 String cons = (((ConstantContext)_localctx).TRUE!=null?((ConstantContext)_localctx).TRUE.getText():null) ; // Take string format of the constant
-				                          ((ConstantContext)_localctx).value =  new Const(-1 ,cons);
+				                          ((ConstantContext)_localctx).value =  new Const(-1 ,cons, "p");
 				                        
 				}
 				break;
@@ -856,7 +878,7 @@ public class CombParser extends Parser {
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(114);
-				((ConstantContext)_localctx).constant_phi = constant_phi();
+				((ConstantContext)_localctx).constant_phi = constant_phi(s);
 				 ((ConstantContext)_localctx).value =  ((ConstantContext)_localctx).constant_phi.value; 
 				}
 				break;
@@ -869,7 +891,7 @@ public class CombParser extends Parser {
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(117);
-				((ConstantContext)_localctx).prove_base = prove_base(u);
+				((ConstantContext)_localctx).prove_base = prove_base(u,s);
 				 ((ConstantContext)_localctx).value =  ((ConstantContext)_localctx).prove_base.value; 
 				}
 				break;
@@ -889,14 +911,17 @@ public class CombParser extends Parser {
 	}
 
 	public static class Constant_phiContext extends ParserRuleContext {
+		public SimboloManager s;
 		public Term value;
 		public Phi_tailContext phi_tail;
 		public TerminalNode PHI() { return getToken(CombParser.PHI, 0); }
 		public Phi_tailContext phi_tail() {
 			return getRuleContext(Phi_tailContext.class,0);
 		}
-		public Constant_phiContext(ParserRuleContext parent, int invokingState) {
+		public Constant_phiContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
+		public Constant_phiContext(ParserRuleContext parent, int invokingState, SimboloManager s) {
 			super(parent, invokingState);
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_constant_phi; }
 		@Override
@@ -909,8 +934,8 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final Constant_phiContext constant_phi() throws RecognitionException {
-		Constant_phiContext _localctx = new Constant_phiContext(_ctx, getState());
+	public final Constant_phiContext constant_phi(SimboloManager s) throws RecognitionException {
+		Constant_phiContext _localctx = new Constant_phiContext(_ctx, getState(), s);
 		enterRule(_localctx, 22, RULE_constant_phi);
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -918,7 +943,7 @@ public class CombParser extends Parser {
 			setState(122);
 			match(PHI);
 			setState(123);
-			((Constant_phiContext)_localctx).phi_tail = phi_tail();
+			((Constant_phiContext)_localctx).phi_tail = phi_tail(s);
 			 ((Constant_phiContext)_localctx).value =  ((Constant_phiContext)_localctx).phi_tail.value; 
 			}
 		}
@@ -934,6 +959,7 @@ public class CombParser extends Parser {
 	}
 
 	public static class Phi_tailContext extends ParserRuleContext {
+		public SimboloManager s;
 		public Term value;
 		public Comb_indexContext comb_index;
 		public TerminalNode K() { return getToken(CombParser.K, 0); }
@@ -941,8 +967,10 @@ public class CombParser extends Parser {
 		public Comb_indexContext comb_index() {
 			return getRuleContext(Comb_indexContext.class,0);
 		}
-		public Phi_tailContext(ParserRuleContext parent, int invokingState) {
+		public Phi_tailContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
+		public Phi_tailContext(ParserRuleContext parent, int invokingState, SimboloManager s) {
 			super(parent, invokingState);
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_phi_tail; }
 		@Override
@@ -955,8 +983,8 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final Phi_tailContext phi_tail() throws RecognitionException {
-		Phi_tailContext _localctx = new Phi_tailContext(_ctx, getState());
+	public final Phi_tailContext phi_tail(SimboloManager s) throws RecognitionException {
+		Phi_tailContext _localctx = new Phi_tailContext(_ctx, getState(), s);
 		enterRule(_localctx, 24, RULE_phi_tail);
 		try {
 			setState(133);
@@ -969,7 +997,15 @@ public class CombParser extends Parser {
 				match(K);
 				setState(127);
 				match(C_BRACKET);
-				 ((Phi_tailContext)_localctx).value =  new Const("\\Phi_{K}"); 
+				 if (s != null) {
+				                              int i = Phi.stInd;
+				                              Phi.stInd = Phi.stInd+2;
+				                              Term type = new App(new App(new Const(-3,"->"),new App(new App(new Const(-3,"->"),new Var(i)),
+				                                          new Var(i+1))),new Var(i));
+				                              ((Phi_tailContext)_localctx).value =  new Const("\\Phi_{K}",type); 
+				                           } else
+				                              ((Phi_tailContext)_localctx).value =  new Const("\\Phi_{K}"); 
+				                         
 				}
 				break;
 			case CB:
@@ -982,6 +1018,10 @@ public class CombParser extends Parser {
 				setState(130);
 				match(C_BRACKET);
 				 ((Phi_tailContext)_localctx).value =  new Phi(); ((Phi)_localctx.value).ind=((Phi_tailContext)_localctx).comb_index.value;
+				                               if (s != null){
+				                                  ((Phi)_localctx.value).computeType();
+				                               }
+				                             
 				}
 				break;
 			default:
@@ -1136,6 +1176,7 @@ public class CombParser extends Parser {
 
 	public static class Prove_baseContext extends ParserRuleContext {
 		public String u;
+		public SimboloManager s;
 		public Term value;
 		public ExprContext expr;
 		public Token d;
@@ -1155,9 +1196,10 @@ public class CombParser extends Parser {
 		}
 		public TerminalNode DIGITS() { return getToken(CombParser.DIGITS, 0); }
 		public Prove_baseContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Prove_baseContext(ParserRuleContext parent, int invokingState, String u) {
+		public Prove_baseContext(ParserRuleContext parent, int invokingState, String u, SimboloManager s) {
 			super(parent, invokingState);
 			this.u = u;
+			this.s = s;
 		}
 		@Override public int getRuleIndex() { return RULE_prove_base; }
 		@Override
@@ -1170,8 +1212,8 @@ public class CombParser extends Parser {
 		}
 	}
 
-	public final Prove_baseContext prove_base(String u) throws RecognitionException {
-		Prove_baseContext _localctx = new Prove_baseContext(_ctx, getState(), u);
+	public final Prove_baseContext prove_base(String u,SimboloManager s) throws RecognitionException {
+		Prove_baseContext _localctx = new Prove_baseContext(_ctx, getState(), u, s);
 		enterRule(_localctx, 30, RULE_prove_base);
 		try {
 			setState(179);
@@ -1183,7 +1225,7 @@ public class CombParser extends Parser {
 				setState(152);
 				match(I);
 				setState(153);
-				((Prove_baseContext)_localctx).expr = expr(u);
+				((Prove_baseContext)_localctx).expr = expr(u,s);
 				setState(154);
 				match(C_BRACKET);
 				 ((Prove_baseContext)_localctx).value =  new TypedI((Sust) ((Prove_baseContext)_localctx).expr.value); 
@@ -1195,7 +1237,7 @@ public class CombParser extends Parser {
 				setState(157);
 				match(L);
 				setState(158);
-				((Prove_baseContext)_localctx).expr = expr(u);
+				((Prove_baseContext)_localctx).expr = expr(u,s);
 				setState(159);
 				match(C_BRACKET);
 				 ((Prove_baseContext)_localctx).value =  new TypedL((Bracket) ((Prove_baseContext)_localctx).expr.value); 
@@ -1207,7 +1249,7 @@ public class CombParser extends Parser {
 				setState(162);
 				match(S);
 				setState(163);
-				((Prove_baseContext)_localctx).expr = expr(u);
+				((Prove_baseContext)_localctx).expr = expr(u,s);
 				setState(164);
 				match(C_BRACKET);
 				 
@@ -1241,7 +1283,7 @@ public class CombParser extends Parser {
 				setState(169);
 				match(A);
 				setState(170);
-				((Prove_baseContext)_localctx).expr = expr(u);
+				((Prove_baseContext)_localctx).expr = expr(u,s);
 				setState(171);
 				match(C_BRACKET);
 				 ((Prove_baseContext)_localctx).value =  (u!=null ? new TypedA(((Prove_baseContext)_localctx).expr.value,u) : new TypedA(((Prove_baseContext)_localctx).expr.value)); 

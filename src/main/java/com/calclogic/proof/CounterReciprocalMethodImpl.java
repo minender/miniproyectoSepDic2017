@@ -36,7 +36,7 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
      * @param formula: Expression whose main operator id will be found.
      * @return The id of the main operator.
      */
-    private Integer binaryOperatorId(Term formula){
+    private int binaryOperatorId(Term formula){
         // In applicative notation, the expression "P operator Q" is written as "(operator Q) P",
         // so the attribute 'p' is "(operator Q)" and p.p is "operator". 
         return ((Const)((App)((App)formula).p).p).getId();
@@ -51,7 +51,7 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula){
+    public Term initFormula(Term beginFormula, Term proof){
         // "beginFormula" is of the form  [L op R], where "op" is ==> or <==
         Term aux = ((App)beginFormula).q.body();
         Term leftSide = ((App)aux).q; // L
@@ -60,11 +60,11 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
         leftSide = new App(new Const(7 ,"c_{7}"), leftSide); // !L
         rightSide = new App(new Const(7,"c_{7}"), rightSide); // !R
 
-        Integer operatorId = binaryOperatorId(beginFormula);
-        beginFormula = new App(new App(new Const(operatorId,"c_{"+operatorId.toString()+"}"),leftSide), rightSide);
+        int operatorId = binaryOperatorId(aux);
+        beginFormula = new App(new App(new Const(operatorId,"c_{"+operatorId+"}"),leftSide), rightSide);
         
         // [!R op !L]  written as  [(op !L) R]
-        return new App(new App(new Const(0,"="),((App)((App)beginFormula).p).q.body()),aux).abstractEq();
+        return new App(new App(new Const(0,"="),new Const(-1,"T")),beginFormula).abstractEq(null);
     }
 
     /**
@@ -75,7 +75,7 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement){
+    public String header(String statement, Term beginFormula){
         return "By counter-reciprocal method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
@@ -84,6 +84,9 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
      * logic according to the counter reciprocal method.
      * 
      * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof 
+     *        formulaBeingProved is not the result of initFormula or the current statement to proof
+     *        in this sub-proof. Instead formulaBeingProved is the argument formula of initFormula 
+     *        to produce de current statement to proof in this sub-proof
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
      * @return axiom tree that will later be used to build the complete proof
@@ -91,27 +94,35 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
     @Override
     protected Term auxFinLinearRecursiveMethodProof(String user, Term formulaBeingProved, List<Var> vars, List<Term> terms)
             throws TypeVerificationException
-    {
-        String operatorIdSt = binaryOperatorId(formulaBeingProved).toString();
+    {   formulaBeingProved = ((App)formulaBeingProved).q.body();
+        int operatorIdSt = binaryOperatorId(formulaBeingProved);
+        Term p = ((App)formulaBeingProved).q;
+        Term q = ((App)((App)formulaBeingProved).p).q;
 
-        // This string can say: [p => q == !q => !p] or [p <= q == !q <= !p] as well
-        String str = "c_{1} (c_{"+operatorIdSt+"} (c_{7} x_{112}) (c_{7} x_{113})) (c_{"+operatorIdSt+"} x_{113} x_{112})";
-        Term st = CombUtilities.getTerm(str,null);
+        String str = "";
+        if (operatorIdSt == 3) {
+            str = "I^{[x_{112},x_{113}:="+p+","+q+"]} A^{= (\\Phi_{bb} \\Phi_{b} c_{2}) (\\Phi_{cb} c_{3} \\Phi_{cb})}";
+            str = str+" (I^{[x_{112},x_{113}:="+q+","+p+"]} A^{= (\\Phi_{cbbb} c_{7} \\Phi_{bb} c_{2} c_{7}) (\\Phi_{cb} c_{2} \\Phi_{cb})})";
+            str = str+" (S (I^{[x_{112},x_{113}:=c_{7} ("+q+"),c_{7} ("+p+")]} A^{= (\\Phi_{bb} \\Phi_{b} c_{2}) (\\Phi_{cb} c_{3} \\Phi_{cb})}))";
+        }
+        else {
+          // This string can say: [p => q == !q => !p] or [p <= q == !q <= !p] as well
+          str = "I^{[x_{112},x_{113}:="+p+","+q+"]} A^{= (\\Phi_{cbbb} c_{7} \\Phi_{bb} c_{2} c_{7}) (\\Phi_{cb} c_{2} \\Phi_{cb})}";
+        }
+        Term T = CombUtilities.getTerm(str,user,TypedA.sm_); 
 
-        // We make the formula above to be treated as an axiom
-        TypedA A = new TypedA(st); 
-
-        // Substitution [p,q := ...]
-        vars.add(0, new Var(112)); // Letter 'p'
-        vars.add(0, new Var(113)); // Letter 'q'
-        terms.add(0, ((App)formulaBeingProved).q);
-        terms.add(0, ((App)((App)formulaBeingProved).p).q);
-        Sust sus = new Sust(vars, terms);
-        
-        // We give the instantiation format to the substitution above
-        TypedI I = new TypedI(sus);
-
-        return new TypedApp(new TypedS(),new TypedApp(I,A));
+        return new TypedApp(new TypedS(),T);
+    }
+    
+    /**
+     * This function returns the closing comment of the proof i.e. the conclusion of the proof
+     * 
+     * @param proof: The current proof
+     * @return String with the closing comment of the proof
+     */
+    @Override
+    public String closingComment(Term proof, Term beginFormula) {
+        return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "")+"$";
     }
     
     /**

@@ -43,7 +43,7 @@ public class ClientComp {
 		// Try to parse
 		try {		
 			//System.out.println(parser.expr().value.toString()) ;
-			System.out.println(parser.expr(null).value.type().toString()) ;
+			System.out.println(parser.expr(null,null).value.type().toString()) ;
 		// Catch the error and show it to the user
 		}catch(Exception e) {
 			e.printStackTrace();

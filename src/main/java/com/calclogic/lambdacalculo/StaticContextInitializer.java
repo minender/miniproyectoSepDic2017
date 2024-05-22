@@ -6,6 +6,7 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.service.ResuelveManager;
+import com.calclogic.service.SimboloManager;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -21,10 +22,12 @@ public class StaticContextInitializer {
     @Autowired
     private ResuelveManager resuelveManager;
     @Autowired
+    private SimboloManager simboloManager;
+    @Autowired
     private ApplicationContext context;
     
     @PostConstruct
     public void init() {
-        TypedA.setResuelveManager(resuelveManager);
+        TypedA.setResuelveManager(resuelveManager, simboloManager);
     }
 }

@@ -6,6 +6,7 @@ package com.calclogic.lambdacalculo;
 
 import com.calclogic.entity.PredicadoId;
 import com.calclogic.entity.Simbolo;
+import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.TermUtilities;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.ResuelveManager;
@@ -25,6 +26,11 @@ import java.util.Stack;
 public abstract class Term implements Cloneable, Serializable{
     
     public String alias;
+    protected Term type_;
+    
+    public void setType(Term type) {
+        type_ = type;
+    }
     
     protected static class Id{
         public int id;
@@ -262,38 +268,125 @@ public abstract class Term implements Cloneable, Serializable{
      */
     public abstract String aliases(String position);
     
+    public abstract Term inverseVars();
+    
     public int[] freeVars(){
+        int[] set1 = new int[58];
+        int[] index = new int[1];
+        freeVars(set1, index);
+        int[] set = new int[59];
+        for (int i=0; i<58; i++) {
+            if (set1[i] != 0)
+                set[set1[i]-1] = i+65; 
+                // -1 porque todo indice guardado esta sumado en 1
+        }
+        set[58] = index[0];
+        
+        return set;
+    }
+    
+    public int[] freeVarsProvisional(){
         int[] set =new int[58];
         freeVars(set);
         
         return set;
     }
     
-     public String stFreeVars(){
-        String st = null;
+    public String stFreeVars(){
+        String st = "";
         int[] set = freeVars();
 
-        int i=0;
-        while (st == null && i<58){
-            if (set[i] != 0)
-                st = ((char)set[i])+"";
+        int visits = set[58];
+        int i = 0;
+        while (set[i] == 0 && i < visits)
             i++;
-        } 
-        for (int j=i; j<58; j++)
-            if (set[j] != 0)
-                st += ","+((char)set[j]);
-        
-        if (st == null)
-            return "";
-        
+        if (set[i] != 0) {
+            st = ((char)set[i])+""; 
+            i++;
+            while (i < visits){
+                if (set[i] != 0) {
+                    st += ","+((char)set[i]);
+                }
+                i++;
+            }
+        }
         return st;    
         //return hset.toString().replaceAll("[\\s\\[\\]]", "");
     }
     
+    public String stFreeVarsProvisional(){
+       String st = null;
+       int[] set = freeVarsProvisional();
+
+       int i=0;
+       while (st == null && i<58){
+           if (set[i] != 0)
+               st = ((char)set[i])+"";
+           i++;
+       } 
+       for (int j=i; j<58; j++)
+           if (set[j] != 0)
+               st += ","+((char)set[j]);
+        
+       if (st == null)
+           return "";
+        
+       return st;    
+       //return hset.toString().replaceAll("[\\s\\[\\]]", "");
+   }
+    
+    public abstract String toStringType(String v);
+     
     public String stFreeVars(SimboloManager s) throws TypeVerificationException{
+        String st = "";
+        Term type = ((App)this).q.type_;
+        Term aux = ((App)this).q;
+        if (aux instanceof Bracket) {
+            st = ((App)type).q.toStringType((char)((Bracket)aux).x.indice+"");
+            type = ((App)((App)type).p).q;
+            aux = ((Bracket)aux).t;
+        }
+        while (aux instanceof Bracket) {
+            st = st+","+((App)type).q.toStringType((char)((Bracket)aux).x.indice+"");
+            type = ((App)((App)type).p).q;
+            aux = ((Bracket)aux).t;
+        }
+        /*HashMap<Integer,String> h = new HashMap<>();
+        int[] set = freeVars();
+        getType(h, s);
+        int visits = set[58];
+        int i = 0;
+        while (set[i] == 0 && i < visits)
+            i++;
+        if (set[i] != 0) {
+            if (h.get(set[i]).length() == 4) 
+                st = ((char)set[i])+"(x)";
+            else if (h.get(set[i]).length() > 4)
+                st = ((char)set[i])+"(x,x)";
+            else
+                st = ((char)set[i])+"";
+
+            i++;
+            while (i < visits){
+                if (set[i] != 0) {
+                    if (h.get(set[i]).length() == 4) 
+                        st += ","+((char)set[i])+"(x)";
+                    else if (h.get(set[i]).length() > 4)
+                        st += ","+((char)set[i])+"(x,x)";
+                    else
+                        st += ","+((char)set[i]);
+                }
+                i++;
+            }
+        }*/
+        return st;    
+        //return hset.toString().replaceAll("[\\s\\[\\]]", "");
+    }
+     
+    public String stFreeVarsProvisional(SimboloManager s) throws TypeVerificationException{
         String st = null;
         HashMap<Integer,String> h = new HashMap<>();
-        int[] set = freeVars();
+        int[] set = freeVarsProvisional();
         getType(h, s);
         int i=0;
         while (st == null && i<58){
@@ -323,7 +416,24 @@ public abstract class Term implements Cloneable, Serializable{
         //return hset.toString().replaceAll("[\\s\\[\\]]", "");
     }
     
+    public static String resultType(Term type) {
+        return termResultType(type).toString();
+    }
+    
+    public static Term termResultType(Term type) {
+        Term aux = type;
+        while ( !(aux instanceof Const || aux instanceof Var) ) 
+            aux = ((App)((App)aux).p).q;
+        return aux;
+    }
+    
     public abstract void freeVars(int[] set);
+    
+    /**
+     * visitNum is an array of dimension 1, it is isomorph to an integer, but an
+     * array is in-out parameter instead the int type is only an 'in' parameter
+    **/
+    public abstract void freeVars(int[] set, int[] visitNum);
     
     public abstract void boundVars(String[] vars);
     
@@ -332,62 +442,65 @@ public abstract class Term implements Cloneable, Serializable{
     }
     
     public Term setToPrinting(String variables, SimboloManager s, int[] c) {
-        
+        boolean containT = this.containT();
         if (variables != null && !variables.equals("")) {// if no variables you don't need make any reduction
             this.evaluar(variables);
-            // List<Var> li = TermUtilities.arguments(variables);
-            // //List<Var> li2 = TermUtilities.arguments(variables);
-            // //li.addAll(li2);
-            // int nVar1 = ((App)((App) this).p).q.nPhi();
-            // int nVar2 = ((App) this).q.nPhi();
-            // List<Var> li2 = li.subList(nVar1+nVar2,li.size());
-            // li2.addAll(li.subList(0, nVar1));
-            // li2.addAll(li.subList(nVar1+nVar2,li.size()));
-            // li2.addAll(li.subList(nVar1,nVar2));
-            // //this.evaluar(li);
-            // this.evaluar(li2);
         }
         Term arg2;
         arg2 = ((App)this).q.body();
+        //arg2.type_ = ((App)this).q.type_;
         Term t = null;
-        if (this.containT())
+        if (containT)
             t = arg2;
         else {
             Term arg1 = ((App)((App)this).p).q.body();
-            String type;
-            try {
-              type = arg2.getType(s);
-            }
-            catch (TypeVerificationException e){
-                try {
-                   type = arg1.getType(s);
-                }
-                catch (TypeVerificationException e2){
-                    type = "t";
-                }
-            }
+            //arg1.type_ = ((App)((App)this).p).q.type_;
+            
+            String type = resultType(((App)this).q.type_);
             int opId;
-            if (type.equals("b"))
+            if (type.equals("p"))
                opId = 1;
             else
                opId = 15;
             if (c != null)
                c[0] = opId;
-            t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1.body()),arg2.body());
+            t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1),arg2);
         }
         return t;
+    }
+    
+    public int nBracket() {
+        int i = 0;
+        Term aux = this;
+        while (aux instanceof Bracket) {
+            aux = ((Bracket)aux).t;
+            i++;
+        }
+        return i;
     }
     
     public Term setToPrint(SimboloManager s) {
         Term arg1, arg2;
         arg1 = ((App)((App)this).p).q.body();
+        //arg1.type_ = ((App)((App)this).p).q.type_;
         arg2 = ((App)this).q.body();
+        //arg2.type_ = ((App)this).q.type_;
+        
+        /*try{
+        if (arg2 instanceof Const && ((Const)arg2).id==8 && arg2.type_ instanceof App)
+            throw new TypeVerificationException();
+        }
+        catch (TypeVerificationException e) {
+            e.printStackTrace();
+        }*/
+        // ten cuidado con los setToPrint porque pueden ponerle a true tipo p->p con las
+        // instrucciones anteriores, solo usalo para presentar y nunca para formar una inferencia
         Term t;
         if (arg1.containT())
             t = arg2;
         else {
-            String type;
-            try {
+            String type = resultType(((App)this).q.type_);
+            /*try {
               type = arg2.getType(s);
             }
             catch (TypeVerificationException e){
@@ -401,31 +514,52 @@ public abstract class Term implements Cloneable, Serializable{
             if (type.equals("*") && (arg2 instanceof Var && !(arg1 instanceof Var)) )
                 type = "b";
             else if (type.equals("*") && (arg2 instanceof Var && arg1 instanceof Var) )
-                type = "t";
+                type = "t";*/
             int opId;
-            if (type.equals("b"))
+            if (type.equals("p"))
                opId = 1;
             else
                opId = 15;
-            t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1.body()),arg2.body());
+            t = new App(new App(new Const(opId,"c_{"+opId+"}"),arg1),arg2);
         }
         return t;
     }
     
-    public Term abstractVars (String variables) {
+    public Term abstractVars (String variables, Term[] varTypes) {
         if (!variables.equals("")) {
-           Term arg1;
-           arg1 = this;
+           Term arg1 = this;
+           Term type = arg1.type();
+           type = new App(new Const(-3,"->"),type);
            String[] vars = variables.split(",");
-           for (int i=vars.length-1; 0<=i; i--) 
+           for (int i=vars.length-1; 0<=i; i--) {
                arg1 = new Bracket(new Var((int)vars[i].charAt(0)),arg1);
+               type = new App(type, varTypes!=null?varTypes[(int)vars[i].charAt(0)-65]:null);
+               arg1.type_ = type;
+               type = new App(new Const(-3,"->"),type);
+           }
            return arg1;
         }
         else
            return this;
     }
     
-    public abstract Term abstractEq();
+    public Term[] varTypes(Term type) {
+        Term[] varTypes = new Term[58];
+        varTypes(type, varTypes);
+        
+        return varTypes;
+    }
+    
+    public void varTypes(Term type, Term[] varTypes) {
+        Term aux = this;
+        while (aux instanceof Bracket) {
+            varTypes[((Bracket)aux).x.indice-65] = ((App)type).q;
+            type = ((App)((App)type).p).q;
+            aux = ((Bracket)aux).t;
+        }
+    }
+    
+    public abstract Term abstractEq(Term[] varTypes);
     
     public boolean isEquality() {
         return this instanceof App && ((App)this).p instanceof App && 
@@ -777,6 +911,8 @@ public abstract class Term implements Cloneable, Serializable{
         return this;
     }
     
+    public abstract Term etaReduc();
+    
     public Term reducir(List<Var> vars)
     {
         Redex r=buscarRedexIzqFinal(null,false);
@@ -1079,7 +1215,7 @@ public abstract class Term implements Cloneable, Serializable{
                aux = ((App)aux).p;
                j++;
             }
-            if (aux instanceof Const && s.getSimbolo(((Const)aux).getId()).getArgumentos() == stk.size()) {
+            if (aux instanceof Const && (s==null ||s.getSimbolo(((Const)aux).getId()).getArgumentos() == stk.size())) {
                 stk.push(aux);
                 return stk;
             }
@@ -1295,22 +1431,57 @@ public abstract class Term implements Cloneable, Serializable{
     
     public Term evaluar(List<Var> vars)
     {
-            Term term2=this;
-            Term term1=term2;
+        Term type1;
+          /*System.out.println(this);
+          System.out.println(((App)((App)this).p).p.type_);
+          System.out.println(((App)((App)this).p).q.type_);
+          System.out.println(((App)this).q.type_);*/
+        if (this.type_ != null && this instanceof App && ((App)this).p instanceof App && 
+            ((App)((App)this).p).p instanceof Const && ((Const)((App)((App)this).p).p).id == 0 ) 
+        {
+            type1 = ((App)this).q.type_;
+            Term type2 = ((App)((App)this).p).q.type_;
+            Equation eq = new Equation(type1,type2);
+/*            try{
+            if (((App)this).q instanceof Const && ((Const)((App)this).q).id==8 && type1 instanceof App  )
+                throw new TypeVerificationException();
+            }catch (TypeVerificationException e){e.printStackTrace();}*/
+            Sust sus = eq.mgu(null, true);
+            //if (sus != null)
+            type1 = type1.sustParall(sus);
+            /*((App)this).q.type_ = type1;
+            ((App)((App)this).p).q.type_ = type1;
+            Term termBody = Term.termResultType(type1);
+            ((App)this).q.body().type_ = termBody; 
+            ((App)((App)this).p).q.body().type_ = termBody; */
+        }
+        else
+            type1 = null;
+        Term term2=this;
+        Term term1=term2;
 
             //do
             //{
-                term1=term2;
-                Redex redex=term1.buscarRedexIzqFinal(null, false);
-                while(redex!=null)
-                {
-                    term1=term1.reducir(vars);
-                    redex=term1.buscarRedexIzqFinal(null, false);
-                }
-            //    term2=term1.invBDOneStep();
-            //}while(!term1.equals(term2));
+               // term1=term2;
+        Redex redex=term1.buscarRedexIzqFinal(null, false);
+        while(redex!=null)
+        {
+            term1=term1.reducir(vars);
+            redex=term1.buscarRedexIzqFinal(null, false);
+        }
+        //    term2=term1.invBDOneStep();
+        //}while(!term1.equals(term2));
+        if (type1 != null) {
+            ((App)term1).q.type_ = type1;
+            ((App)((App)term1).p).q.type_ = type1;
+            Term termBody = Term.termResultType(type1);
+            ((App)term1).q.body().type_ = termBody;
+            ((App)((App)term1).p).q.body().type_ = termBody;
+            ((App)((App)((App)term1).p).p.type_).q = type1;
+            ((App)((App)((App)((App)((App)term1).p).p.type_).p).q).q = type1;
+        }
 
-	    return term1;
+	return term1;
     }
     
     public Corrida evaluarFinal()
@@ -1350,8 +1521,8 @@ public abstract class Term implements Cloneable, Serializable{
     public Object clone2() {
     	try {
     		return this.clone();
-    	}catch (Exception e) {
-			System.out.println("CloneNotSupportedException");
+    	}catch (CloneNotSupportedException e) {
+			e.printStackTrace();
 			return null;
 		}
     	

@@ -58,7 +58,8 @@ public interface ResuelveManager {
      * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      * @return The mentioned list of Resuelve objects.
      */
-    public List<Resuelve> getAllResuelveByUserWithSol(String userLogin, Boolean orAdmin);
+    public List<Resuelve> getAllResuelveByUserWithSol(String userLogin, Boolean orAdmin,
+                                                      SimboloManager s);
     
     /**
      * Method to get a list of all the theorems of a specific user that are axioms
@@ -69,7 +70,8 @@ public interface ResuelveManager {
      * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      * @return The list of the Resuelve objects in which the theorems fulfill the mentioned condition.
      */
-    public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin, String teoNum, Boolean orAdmin);
+    public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin, String teoNum, 
+                                                                  Boolean orAdmin, SimboloManager s);
     
     /**
      * Method to get a list of all the entries of the table that correspond to a specific user
@@ -78,7 +80,8 @@ public interface ResuelveManager {
      * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      * @return The mentioned list of Resuelve objects.
      */
-    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin, Boolean orAdmin);
+    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin, Boolean orAdmin,
+                                                       SimboloManager s);
 
     /**
      * Method to get a list of all the entries of the table that correspond 
@@ -106,7 +109,8 @@ public interface ResuelveManager {
      * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      * @return The corresponding Resuelve object.
      */
-    public Resuelve getResuelveByUserAndTeorema(String userLogin, int teoremaID, Boolean orAdmin);
+    public Resuelve getResuelveByUserAndTeorema(String userLogin, int teoremaID, Boolean orAdmin,
+                                                SimboloManager s);
 
     /**
      * Method to get an entry that relates a user with a theorem, 
@@ -116,7 +120,8 @@ public interface ResuelveManager {
      * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      * @return The corresponding Resuelve object.
      */
-    public Resuelve getResuelveByUserAndTeoNum(String userLogin, String teoNum, Boolean orAdmin);
+    public Resuelve getResuelveByUserAndTeoNum(String userLogin, String teoNum, Boolean orAdmin,
+                                               SimboloManager s);
     
     public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves);
     

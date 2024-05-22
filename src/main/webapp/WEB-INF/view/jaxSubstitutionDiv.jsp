@@ -59,7 +59,7 @@
 	    	
 	    	// Next find the first one, the id is all till the one
 	    	for(var k = end; k<n; k++){
-	    		if(formId[k] == '1' || formId[k] == '2'){
+	    		if(!(formId[k-1] === '.') && formId[k].match(/\d/)){ // == '1' || formId[k] == '2'){
 	    			end = k;
 	    			break;
 	    		}

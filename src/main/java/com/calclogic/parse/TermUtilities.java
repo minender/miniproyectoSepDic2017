@@ -71,6 +71,31 @@ public class TermUtilities {
 		
 		return arr;
 	}
+
+    public static ArrayList<Term> explist(String input, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
+		
+		// Feed the argument to the parser
+		CharStream in = CharStreams.fromString(input);
+		
+		// Define the lexer for the input and edit its way of catching error
+		TermLexer lexer = new TermLexer(in);
+		lexer.removeErrorListeners();
+		lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
+		
+		// Generate tokens for the parser
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		
+		// Define the parser for the tokens and edit its way of catching error
+		TermParser parser = new TermParser(tokens);
+		parser.removeErrorListeners();
+		parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+		
+		// get the value of the parser 
+                String[] boundVars = {""};
+		ArrayList<Term> arr = parser.explist(id, pm, sm, boundVars).value;
+		
+		return arr;
+	}    
     
     public static Term lambda(String input, PredicadoId id, PredicadoManager pm, SimboloManager sm) {
 		

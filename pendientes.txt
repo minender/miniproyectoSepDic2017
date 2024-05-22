@@ -31,8 +31,42 @@ Se lanza una excepcion cuando se trata de editar un teorema siendo AdminTeoremas
 Siempre que se hace click en el + de un teorema, se hace el ajax para cargar todos los metateoremas, es suficiente 
 que el ajax se haga solo la primera vez (listo)
 En initStatementController cuando generarHistorial aborta, al usuario le sale el mensaje de que el metodo de 
-demostracion no aplica a ese enunciado. Se debe separar los abort que dispara generarHostorial de los abort 
+demostracion no aplica a ese enunciado. Se debe separar los abort que dispara generarHistorial de los abort 
 de initStatementController
 Si la ultima linea es c_{1} x_{113} (c_{1} x_{113} x_{113}) se unifica erroneamente con el teorema c_{1} x_{113} x_{113} 
 y sustitucion [x_{113} := (c_{1} x_{113} x_{113})]
 Cambiar la direccion de la segunda subprueba de un AI cuando consta de una sola linea, actualizarla incluyendo MT
+Bilsma dice que E:{true}y:=2{y=z} viola Leibniz as an axiom porque queda y=3=>true=false que no es un axioma, 
+lo que no se ha dado cuenta es que y en E es ligada asi que cuando hagas E[z:=y] la y de E se renombraria, 
+recuerda poner este ejemplo en la redaccion como lo importante de que las tripletas liguen las variables del programa
+dependiendo del metodo, el sitio que se hace clickeable de color azul en un teorema de la lista derecha debe cambiar
+si es directo y partir de un lado debe ser las equivalencias centrales, si es transitividad o debil-fortale debe ser 
+el operador transitivo central, si es asumir el antecedente debe ser recursivamente la regla anterior aplicada en 
+los consecuentes si el antecedente es unificable con la hipotesis
+puse en todos abstractEq(null) el null se tiene que reemplazar por Term[] el hash de tipos de las variables, pero para esto cada ecuacion debe tener seteado el tipo en su body()
+Si el teorema anterior se inicia de la izquierda y se quiere reemplazar p por p\/p, se unifica con una letra griega rara
+Cambiar en el parser de tipos que los tipos b y p son sinonimos y hazlo general para que cualquier caracter sea un tipo
+En Term.g quita en la produccion de 'c' NUMBER '(' explist ') que se construye Const seteando los parametros de esInfijo, 
+precedencia, asociatividad, etc
+En TypedApp metodo type() para Leibniz se modifica el z del Leibniz, esto esta mal porque esa modificacion no debe ocurrir alli, sino afuera, ese metodo debe aplicar Leibniz sobre el E textual que indique la regla, esto debe ser asi para poder 
+si se quiere usar un E especifico con cierto truco, la modificacion del z me cambiaria el truco que le meti al E. Luego de 
+que cambies eso, ve para el finish de Generalizarion y modifica el Leibniz poniendo el E adecuado(no me decido sobre esto)
+Los arboles que se han usado para los finish y para los metateoremas usan a lambda z. en los Leibniz, pero esta variable 
+z puede chocar con los esquema de arboles que se diseñen, tienes que hacer un esquema de arboles que cambie esta variable 
+de ser necesaria (se puso un z negativo para que nunca choque con las variables del usuario que son positivas)
+En toStringFormatC tambien tienes que chequear el tipo para saber si en una igualdad imprimes equivalencia o igualdad
+En toStringFormatC hay un if que si el operador raiz es variable se debe chequear si usa la letra E, creo que esto ya no va
+Cuando la prueba es Starting one Side y no ha terminado, el closingComment se imprime, deberia ser solo cuando resuelto
+
+En el libro 
+Marco teorico (for dummies)
+semantica de lenguajes de programacion
+Acomodar el algoritmo de inferencias de tipos en base a combinadores
+Metodos de demostracion que se agregaron
+Busqueda de demostraciones analogas
+Ejecucion simbolica en base a la semantica definida simbolicamente
+Computo guiado por demostraciones y enunciar aplicaciones
+Combinadores paralelos (Combinaton)
+Busquedas de demostraciones, estudio de optimizaciones usando combinadores paralelos
+Desafios y tendencias futuras
+Conclusiones

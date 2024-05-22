@@ -1,4 +1,4 @@
-// Generated from .\Term.g by ANTLR 4.8
+// Generated from Term.g by ANTLR 4.8
 package com.calclogic.parse; 
 
 import com.calclogic.entity.Predicado;
@@ -108,6 +108,18 @@ public class TermBaseListener implements TermListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArguments(TermParser.ArgumentsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArgtail(TermParser.ArgtailContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArgtail(TermParser.ArgtailContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

@@ -37,7 +37,7 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo){
+    public String header(String nTeo, Term formulaBeingProved){
         return "By weakening method<br>";
     }
 
@@ -117,7 +117,7 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         String Q = q.toString();                      //= (\\Phi_{K} (\\Phi_{K} T)) (\\Phi_{c(ccbb,)} "+op+" c_{7} "+op2+" (\\Phi_{(bcbb,cb)} c_{1}) c_{7})
         String neg = "I^{[x_{112}, x_{113} := "+P+", "+Q+"]}A^{= T (c_{1} ("+op2+" (c_{7} x_{113}) (c_{7} x_{112})) ("+op+" x_{113} x_{112}))}";
         
-        return CombUtilities.getTerm(neg,null);
+        return CombUtilities.getTerm(neg,null,null);
     }
     
     /**
@@ -144,7 +144,7 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         String R = r.toString();                         //"= (\\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\\Phi_{c(ccccb,)} "+op+" \\Phi_{cb(bcb,cb)} c_{2} "+op+" "+op1+" (\\Phi_{ccc(ccbcb,)} "+op1+"))"
         String wsl1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op+" ("+op1+" x_{114} x_{113}) ("+op1+" x_{114} x_{112})) ("+op+" x_{113} x_{112}))}";
         
-        return CombUtilities.getTerm(wsl1,null);
+        return CombUtilities.getTerm(wsl1,null,null);
     }
     
     /**
@@ -171,7 +171,7 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         String R = r.toString();                   //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccccb,)} "+op+" \\Phi_{cb(bcb,cb)} c_{2} "+op2+" c_{2} (\\Phi_{ccc(ccbcb,)} c_{2}))
         String wsl2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op2+" (c_{2} x_{114} x_{113}) (c_{2} x_{114} x_{112})) ("+op+" x_{113} x_{112}))}";
         
-        return CombUtilities.getTerm(wsl2,null);
+        return CombUtilities.getTerm(wsl2,null,null);
     }
     
     /**
@@ -197,7 +197,7 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         String R = r.toString();                  //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccbb,)} "+op1+" "+op+" \\Phi_{cb(bb,b)} c_{2} "+op+" \\Phi_{c(ccbcb,b)} "+op1+")
         String wsr1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op+" ("+op1+" x_{113} x_{114}) ("+op1+" x_{112} x_{114})) ("+op+" x_{113} x_{112}))}";
         
-        return CombUtilities.getTerm(wsr1,null);
+        return CombUtilities.getTerm(wsr1,null,null);
     }
     
     /**
@@ -223,7 +223,7 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         String R = r.toString();               //\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccbb,)} c_{3} "+op+" \\Phi_{cb(bb,b)} c_{2} "+op2+" \\Phi_{c(ccbcb,b)} c_{3})
         String wsr2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op2+" (c_{3} x_{113} x_{114}) (c_{3} x_{112} x_{114})) ("+op+" x_{113} x_{112}))}";
         
-        return CombUtilities.getTerm(wsr2,null);
+        return CombUtilities.getTerm(wsr2,null,null);
     }
 
     /**
@@ -262,28 +262,28 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         */
         if (((("WE".equals(this.methodStr)) && leftArrow) || (("ST".equals(this.methodStr)) && rightArrow)) && (transFirstOpInferIndex(proof,true)!=0)){
             // Axiom: (q => p) == (p <= q)
-            TypedA axiom = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})",null) );
+            TypedA axiom = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})",null,null) );
             TypedI instantiation;
 
             if (isInverseImpl(expr,formulaBeingProved)){
                 if ("WE".equals(this.methodStr)){
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]",null));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)expr).p).q+", "+((App)expr).q+"]",null,null));
                 }
                 else {
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]",null));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)expr).q+", "+((App)((App)expr).p).q+"]",null,null));
                 }
                 return new TypedApp(new TypedApp(instantiation,axiom),proof);
             }
             if (isInverseImpl(((App)((App)expr).p).q,formulaBeingProved)){
                 Term aux;
                 if ("WE".equals(this.methodStr)){
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]",null));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)((App)expr).p).q).p).q+", "+((App)((App)((App)expr).p).q).q+"]",null,null));
                     aux = new TypedApp(instantiation,axiom);
 
                     return new TypedApp(new TypedApp(new TypedS(aux.type()),aux),new TypedApp(proof,new TypedA(new Const("c_{8}"))));
                 }
                 else {
-                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]",null));
+                    instantiation = new TypedI((Sust)CombUtilities.getTerm("[x_{112}, x_{113} := "+((App)((App)((App)expr).p).q).q+", "+((App)((App)((App)((App)expr).p).q).p).q+"]",null,null));
                     aux = new TypedApp(instantiation,axiom);
 
                     return new TypedApp(aux,new TypedApp(proof,new TypedA(new Const("c_{8}"))));

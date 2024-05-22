@@ -35,7 +35,7 @@ public interface CrudOperations {
      *                term had the information about what is the current sub proof
      * @return Term that represent the statement to be proved in the current sub proof.
      */
-    public Term initStatement(Term beginFormula, Term method);
+    public Term initStatement(Term beginFormula, Term method, Term caseAnalysis);
 
     public Term currentMethod(Term method);
 
@@ -122,7 +122,7 @@ public interface CrudOperations {
      * @param methodTerm: Tree of methods that the user has selected to do the proof
      * @return The id of the main operator.
      */
-    public int binaryOperatorId(Term formula, Term methodTerm);
+    public int binaryOperatorId(Term formula, Term methodTerm, Term caseAnalysis);
 
     /**
      * This method adds a proof method for currentMethod to get a new compose method. 

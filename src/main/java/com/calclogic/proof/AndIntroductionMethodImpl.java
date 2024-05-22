@@ -34,8 +34,8 @@ public class AndIntroductionMethodImpl extends GenericProofMethodImpl implements
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement){
-        return "By conjunction by parts method:<br><br>";
+    public String header(String statement, Term beginFormula){
+        return "By proof by parts method:<br><br>";
     }
 
     /**

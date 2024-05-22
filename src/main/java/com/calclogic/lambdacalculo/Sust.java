@@ -23,6 +23,7 @@ public class Sust extends Term{
     public Sust(List<Var> vars, List<Term> terms) {
         this.vars = vars;
         this.terms = terms;
+        type_ = null;
     }
 
     public List<Var> getVars() {
@@ -176,6 +177,11 @@ public class Sust extends Term{
         return new App(new Const("K"),this);
     }
     
+    @Override
+    public Term etaReduc() {
+        return this;
+    }
+    
     public String toStringAll()
     {
         String varss = "";
@@ -269,6 +275,10 @@ public class Sust extends Term{
         return toString;
     }
 
+    public String toStringType(String v) {
+        return "NULL";
+    }
+    
     @Override
     public int hashCode() {
         int hash = 7;
@@ -304,9 +314,27 @@ public class Sust extends Term{
     }
     
     @Override
+    public Term inverseVars() {
+        List<Var> vars2 = new ArrayList<Var>();
+        List<Term> terms2 = new ArrayList<Term>();
+        for (int i=0; i < vars.size(); i++)  {
+            vars2.add(i,(Var)vars.get(i).inverseVars());
+            terms2.add(i, terms.get(i).inverseVars());
+        }
+        return new Sust(vars2, terms2);
+    }
+    
+    @Override
     public void freeVars(int[] set){
         for(Term li: terms)
             li.freeVars(set);
+    }
+    
+    @Override
+    public void freeVars(int[] set, int[] index){
+        for(Term li: terms) {
+            li.freeVars(set, index);
+        }
     }
     
     @Override
@@ -315,7 +343,7 @@ public class Sust extends Term{
     }
     
     @Override
-    public Term abstractEq() {
+    public Term abstractEq(Term[] varTypes) {
         return null;
     }
 

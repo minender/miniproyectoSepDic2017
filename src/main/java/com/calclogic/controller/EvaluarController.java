@@ -13,7 +13,10 @@ import com.calclogic.entity.Usuario;
 import com.calclogic.forms.AgregarTeorema;
 import com.calclogic.forms.InsertFormula;
 import com.calclogic.forms.InsertarEvaluar;
+import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Corrida;
+import com.calclogic.lambdacalculo.Equation;
+import com.calclogic.lambdacalculo.Sust;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.Tripla;
 import com.calclogic.parse.TermLexer;
@@ -24,6 +27,7 @@ import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombLexer;
 import com.calclogic.parse.CombParser;
+import com.calclogic.parse.CombUtilities;
 import com.calclogic.service.CategoriaManager;
 import com.calclogic.service.DisponeManager;
 import com.calclogic.service.MetateoremaManager;
@@ -44,8 +48,10 @@ import org.antlr.v4.runtime.RecognitionException;
 import com.calclogic.parse.TermLexer;
 import com.calclogic.parse.TermParser;
 import com.calclogic.parse.IsNotInDBException;
+import com.calclogic.parse.ProofMethodUtilities;
 import com.calclogic.parse.TermUtilities;
 import com.calclogic.parse.ThrowingErrorListener;
+import com.calclogic.parse.TypeUtilities;
 import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -91,12 +97,13 @@ public class EvaluarController {
 
     @RequestMapping(value = "/{username}/applicativeToLatex", method = RequestMethod.GET)
     public String pruebaPredicadoView(@PathVariable String username, ModelMap map) {
+        //Term t = CombUtilities.getTerm("c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda x_{120}.c_{8}) (\\lambda x_{120}.x_{122})", null, TypedA.sm_);
         
         map.addAttribute("insertFormula",new InsertFormula());
-        
+  
         return "insertFormula";
     }
-    
+   
     @RequestMapping(value = "/{username}/applicativeToLatex", method = RequestMethod.POST)
     public String pruebaPredicado(@Valid InsertFormula insertFormula, BindingResult bindingResult,
                                   @PathVariable String username, ModelMap map) {
@@ -127,7 +134,7 @@ public class EvaluarController {
                 
 	Term t = null;
         try {
-           t = parser.start_rule(username).value;
+           t = parser.start_rule(username,simboloManager).value;
            if (t.nPhi() > 0)
                t = new TypedA(t,"AdminTeoremas").type();
            map.addAttribute("predicado", "$"+t.toStringLaTeX(simboloManager, "")+"$");

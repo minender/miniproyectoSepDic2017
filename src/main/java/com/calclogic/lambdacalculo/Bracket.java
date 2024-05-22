@@ -18,7 +18,7 @@ import java.util.List;
  * @author federico
  */
 public class Bracket extends Term{
-    final Var x;
+    public Var x;
     public Term t;
     public String tipo;
 
@@ -26,6 +26,7 @@ public class Bracket extends Term{
         this.x = x;
         this.t = t;
         this.tipo = tipo;
+        type_ = null;
     }
     
     
@@ -33,6 +34,7 @@ public class Bracket extends Term{
     {
         x=x1;
         t=t1;
+        type_ = null;
     }
     
     public int x()
@@ -77,7 +79,7 @@ public class Bracket extends Term{
     
     public Term type()
     {
-        return null;
+        return type_;
     }
     
     public int nPhi()
@@ -210,6 +212,20 @@ public class Bracket extends Term{
         return new Bracket(x,t.invBDOneStep());
     }
     
+    @Override
+    public Term etaReduc() {
+        if (t instanceof Bracket && ((Bracket)t).t instanceof App &&
+            ((App)((Bracket)t).t).q.equals(x) && ((App)((Bracket)t).t).p instanceof App && 
+              ((App)((App)((Bracket)t).t).p).q.equals(((Bracket)t).x) 
+           )
+            return ((App)((App)((Bracket)t).t).p).p;
+        Term aux = t.etaReduc();
+        if (aux instanceof App && ((App)aux).q.equals(x))
+            return ((App)aux).p;
+        else
+            return new Bracket(x, aux);
+    }
+    
     public String toStringAll()
     {   
         if(t.alias == null)
@@ -319,6 +335,10 @@ public class Bracket extends Term{
         }
         
     }
+    
+    public String toStringType(String v) {
+        return "NULL";
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -365,6 +385,11 @@ public class Bracket extends Term{
         }
     }
     
+    @Override
+    public Term inverseVars() {
+       return new Bracket(new Var(-x.indice),t.inverseVars());   
+    }
+    
     @Override     
     public void freeVars(int[] set) {
         if (x.indice >= 65 && x.indice <= 122 && set[x.indice-65] == 0) {//(!set.contains(x)) 
@@ -374,6 +399,15 @@ public class Bracket extends Term{
           t.freeVars(set);
     }
     
+    @Override     
+    public void freeVars(int[] set, int[] visitNum) {
+        if (x.indice >= 65 && x.indice <= 122 && set[x.indice-65] == 0) {//(!set.contains(x)) 
+          t.freeVars(set, visitNum);
+          set[x.indice-65] = 0; // set.remove(x);
+        } else 
+          t.freeVars(set, visitNum);
+    }
+    
     @Override
     public void boundVars(String[] vars) {
         vars[0] = (vars[0].equals("")?"":vars[0]+",")+(char)x.indice;
@@ -381,7 +415,7 @@ public class Bracket extends Term{
     }
     
     @Override
-    public Term abstractEq() {
+    public Term abstractEq(Term[] varTypes) {
         return null;
     }
 

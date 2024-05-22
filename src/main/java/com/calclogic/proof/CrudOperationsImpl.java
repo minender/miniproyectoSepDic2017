@@ -56,6 +56,8 @@ public class CrudOperationsImpl implements CrudOperations {
     @Autowired
     private Generalization generalization;
     @Autowired
+    private WitnessMethod witness;
+    @Autowired
     private StartingOneSideMethod startingOneSide;
     @Autowired
     private StrengtheningMethod strengthening;
@@ -99,6 +101,8 @@ public class CrudOperationsImpl implements CrudOperations {
                 return mutualImplication;
             case "GE":
                 return generalization;
+            case "WI":
+                return witness;
             case "CA":
                 return caseAnalysis;
             default:
@@ -112,14 +116,14 @@ public class CrudOperationsImpl implements CrudOperations {
      * current sub proof
      *  
      * @param beginFormula: general statement to be proved, is the base to calculate 
-     *                      al the sub statements in the sub proofs
+     *                      all the sub statements in the sub proofs
      * @param method: Term that represents the current state of the proof method. This
      *                term had the information about what the current sub proof is.
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
     @Transactional
-    public Term initStatement(Term beginFormula, Term method){
+    public Term initStatement(Term beginFormula, Term method, Term caseAnalysis){
         if (method instanceof Const){ // Base methods
             return beginFormula;
         }
@@ -128,8 +132,7 @@ public class CrudOperationsImpl implements CrudOperations {
             GenericProofMethod objectMethod = returnProofMethodObject(strMethod);
 
             if (objectMethod.getIsRecursiveMethod()){
-                beginFormula = objectMethod.initFormula(beginFormula);
-
+                beginFormula = objectMethod.initFormula(beginFormula,caseAnalysis);
                 if ("B".equals(objectMethod.getGroupMethod())){ // Branched recursive methods
                     if (beginFormula.containT())
                         beginFormula = ((App)beginFormula).q.body();
@@ -138,12 +141,12 @@ public class CrudOperationsImpl implements CrudOperations {
                     } else {
                         beginFormula = ((App)((App)beginFormula).p).q;
                     }
-                    beginFormula = new App(new App(new Const(0,"="),new Const(-1,"T")),beginFormula).abstractEq();
+                    beginFormula = new App(new App(new Const(0,"="),new Const(-1,"T")),beginFormula).abstractEq(null);
                 }
             } else{
                 return null; // When no possibility matched. 
             }
-            return initStatement(beginFormula, ((App)method).q);
+            return initStatement(beginFormula, ((App)method).q, caseAnalysis);
         }
     }
 
@@ -245,7 +248,7 @@ public class CrudOperationsImpl implements CrudOperations {
                ) {
                 auxMethod = ((App)auxMethod).q;
                 statement = new App(new App(new Const(0,"="),((App)((App)statement).p).q.body()),
-                                               ((App)((App)statement).q.body()).q).abstractEq();
+                                               ((App)((App)statement).q.body()).q).abstractEq(null);
                 method = auxMethod;
             }
             else if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
@@ -260,7 +263,7 @@ public class CrudOperationsImpl implements CrudOperations {
             }
             else if (ProofBoolean.isBranchedProof2Started(auxMethod) && !ProofBoolean.isAIOneLineProof(typedTerm)){
                 statement = new App(new App(new Const(0,"="),((App)((App)statement).p).q.body()),
-                                     ((App)((App)((App)statement).q.body()).p).q).abstractEq();
+                                     ((App)((App)((App)statement).q.body()).p).q).abstractEq(null);
                 typedTerm = ((TypedM)((App)((App)((App)((App)typedTerm).p).q).q).q).getSubProof();
                 return getCurrentMethodStack(typedTerm, ((App)auxMethod).q, statement);
             } else {
@@ -275,7 +278,7 @@ public class CrudOperationsImpl implements CrudOperations {
     
     /**
      * This method returns the sub Term of typedTerm that represent the derivation tree 
-     * of only the current sub proof and the father tree of this subproof.
+     * of only the current sub proof and the father tree of this sub proof.
      *  
      * @param typedTerm: Term that represent all the current proof.
      * @param method: Term that represent the current state of the proof method. This
@@ -380,10 +383,10 @@ public class CrudOperationsImpl implements CrudOperations {
      * @return The id of the main operator.
      */
     @Override
-    public int binaryOperatorId(Term formula, Term methodTerm){
+    public int binaryOperatorId(Term formula, Term methodTerm, Term caseAnalysis){
         try{
             if (methodTerm != null){
-                formula = initStatement(formula, methodTerm);
+                formula = initStatement(formula, methodTerm, caseAnalysis);
             }
             // In applicative notation, the expression "P operator Q" is written as "(operator Q) P",
             // so the attribute 'p' is "(operator Q)" and p.p is "operator". 
@@ -496,7 +499,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 catch (ClassCastException e) {
                     throw new TypeVerificationException();
                 }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,null), new TypedM(1,type,user)), infer);
+                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,null,null), new TypedM(1,type,user)), infer);
             }
             else if (index != 0 && !eqInf) {
                 String st = "= T (c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8}))";
@@ -508,7 +511,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 }catch (ClassCastException e) {
                     throw new TypeVerificationException();
                 }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user), proof), infer);
+                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user,null), proof), infer);
             }
             else {
                 Term aux = ((App)((App)type).p).q.body();
@@ -585,7 +588,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 String proof = sub2.replace(template);
                 Term proofTerm = null;
                 try {
-                    proofTerm = new TypedApp(CombUtilities.getTerm(proof,usr),typedTerm);
+                    proofTerm = new TypedApp(CombUtilities.getTerm(proof,usr,null),typedTerm);
                 }
                 catch (TypeVerificationException e) {
                     Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);

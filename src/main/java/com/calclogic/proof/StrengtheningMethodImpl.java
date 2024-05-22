@@ -22,7 +22,7 @@ public class StrengtheningMethodImpl extends WeakeningMethodImpl implements Stre
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo){
+    public String header(String nTeo, Term beginFormula){
         return "By strengthening method<br>";
     }
     

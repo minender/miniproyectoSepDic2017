@@ -53,12 +53,83 @@ function setViewState(elegirMetodo) {
  *
  * @return -> boolean that is only true when the AJAX was send successfully and the method can be applied to the theorem
  */
+async function caseAnalysisAjax(teoid=null, lado=null){
+    var form = $('#inferForm');
+    var inst = $('#instanciacion_id').val();
+    var data = {
+        teoid, 
+        lado,
+        // Remember the parameter method can have the "Clickable" termination, that we don't want to send
+        method: 'CA',
+        instanciacion: inst
+    };
+    var completeSuccess = true;
+
+    await $.ajax({
+        type: 'POST',
+        url: $(form).attr('action') + "/iniStatement",
+        dataType: 'json',
+        data,
+        success: function(newData) {
+            if(newData.errorParser1){
+                alert("The selected method does not apply to the current statement");
+                $("#metodosDiv").show();
+                completeSuccess = false;
+            }
+            else{
+                $('#formula').html(newData.historial);
+                MathJax.Hub.Typeset();
+
+                // When the Ajax does not correspond to a theorem clickable, there is already an associated 
+                // entry in the solucion table, so newData.nSol is not null.
+                
+                setViewState(newData.cambiarMetodo);
+                $("#metodosDiv").show(); // This overrides what was set in "setViewState"
+
+                // Note this can only be made when clickable is false because newData.nSol is not null. 
+                var nSol = $(form).attr('action').split('/').pop();
+                if(nSol === "new"){
+                    var url = $(form).attr('action');
+
+                    // We delete the last 3 characters because we know they are "new" and replace them with the new nSol
+                    url = url.substring(0,url.length-3) + newData.nSol;
+                    $(form).attr('action',url);
+                }
+                window['caseAnalysis'] = 0;
+                setJaxSubstitutionVariables('','substitutionButtonsId');
+                $("#BtnInferir").val('infer');
+                $("#leibnizDiv").show();
+                $("#statementDiv").show();
+                //$('#inferForm').hide();
+                $('#metodosDemostracion').val("0");
+                $('#metodosDiv').show();
+            }
+        }, error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            alert("Status: " + textStatus); alert("Error: " + errorThrown/*XMLHttpRequest.responseText*/); 
+            completeSuccess = false;
+        }
+    });
+    return completeSuccess;
+}
+
+/**
+ * Function to send an AJAX to InferController when the user selects a demonstration method, or when
+ * has selected the initial theorem of a direct proof, or when has selected the side of a "starting from
+ * one side" method.
+ *
+ * @param method -> demonstration method.
+ * @param lado -> when proving with starting from one side, select the side from which the proof may begin.
+ * @param teoid -> id of the theorem that is going to be proved.
+ *
+ * @return -> boolean that is only true when the AJAX was send successfully and the method can be applied to the theorem
+ */
 async function proofMethodAjax(method, teoid=null, lado=null){
     var data = {
         teoid, 
         lado,
         // Remember the parameter method can have the "Clickable" termination, that we don't want to send
         method: method.substring(0,2), 
+        instanciacion: ''
     };
     var form = $('#inferForm');
     var completeSuccess = true;
@@ -329,14 +400,20 @@ $(function() {
             $("#Btn").val("Inferir");
             var formData = form.serialize();
             $("#loadingModal").css('display','inline-block');
-
+            var notCases = window['caseAnalysis'] === undefined || window['caseAnalysis'] == 0;
+            if (!notCases) {
+               caseAnalysisAjax();
+               $("#loadingModal").css('display','none');
+            } else {
             $.ajax({
                 url: $(form).attr('action'),
                 type: 'POST',
                 dataType: 'json',
                 data: formData,
                 success: function(data) {
-
+                    if (!notCases) {
+                       window['caseAnalysis']=0;
+                    }
                     $("#loadingModal").css('display','none');
                     if(data.errorParser2 !== null){
                         alert(data.Parser2);
@@ -381,12 +458,14 @@ $(function() {
                     alert("Status: " + textStatus); alert("Error: " + errorThrown);
                 }
             });
+          }
         }
     });
     
     // "Go back" button
     $("#BtnRetroceder").click(function(ev){
-        if (buttonsEnabled){    
+        if (buttonsEnabled){
+          if (window['caseAnalysis'] === undefined || window['caseAnalysis'] == 0) {
             ev.preventDefault();
             $("#Btn").val("Retroceder");
             var formData = form.serialize();
@@ -415,6 +494,18 @@ $(function() {
                     alert("Status: " + textStatus); alert("Error: " + errorThrown); 
                 }
             });
+          }
+          else {
+              window['caseAnalysis'] = 0;
+              setJaxSubstitutionVariables('','substitutionButtonsId');
+              $("#BtnLimpiar").show();
+              $("#BtnInferir").val('infer');
+              $("#leibnizDiv").show();
+              $("#statementDiv").show();
+              $('#inferForm').hide();
+              $('#metodosDemostracion').val("0");
+              $('#metodosDiv').show();
+          }
         }
     });
     

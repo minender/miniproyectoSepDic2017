@@ -1,10 +1,12 @@
 package com.calclogic.parse;
 
+import com.calclogic.lambdacalculo.Phi;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 //import org.springframework.stereotype.Component;
 import com.calclogic.lambdacalculo.Term;
+import com.calclogic.service.SimboloManager;
 
 /**
 * @author jean 11-05-2020
@@ -12,7 +14,7 @@ import com.calclogic.lambdacalculo.Term;
 
 public class CombUtilities {
 	
-	public static Term getTerm(String input, String usr) {
+	public static Term getTerm(String input, String usr, SimboloManager s) {
 		
 		// Feed the argument to the parser
 		CharStream in = CharStreams.fromString(input);
@@ -33,10 +35,10 @@ public class CombUtilities {
 		// get the value of the parser 
                 
 		Term t = null;
-                //if (usr != null) {
-                    t = parser.start_rule(usr).value;
-                 //   System.out.println(t.type());
-               // }
+                if (s != null) {
+                    Phi.stInd = 1;
+                }
+                    t = parser.start_rule(usr,s).value;
 		return t;
 		
 		

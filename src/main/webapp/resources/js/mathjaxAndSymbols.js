@@ -1,6 +1,60 @@
 // Author Jean 22/05/2020
 
 /**
+ * 
+ * Los diccionarios que se usan como estructura de datos para construir los formularios y formulas 
+ * con inputs son los siguientes:
+ *
+ * window['${rootId}' + 'simboloDic'] = ${simboloDictionaryCode} tiene los datos de los simbolos 
+ * (precedencia, notacion, etc) esta linea esta cableada en el JSP donde este un ingreso de formula. 
+ * El valor de ${simboloDictionaryCode} proviene del controlador perfil o infer adecuado, existe un 
+ * metodo static en PerfilController que construye este string. Un ejemplo de lo que tiene la entrada 
+ * 62 de este formulario es:
+ *
+ * 62:  { arguments: 3, precedence: 11, notacionVariables: ['ea1', 'v1', 'na2', 'na3'], 
+ *        notacionString: '(%(ea1) %(v1) |%(na2):%(na3))'
+ *      }
+ *
+ * window['${rootId}' + 'jaxInputDictionary'] = {}  se inicializa en vacio, pero tiene los datos para 
+ * reconstruir el arbolo de inputs del que consta una formula de entrada. Por ejemplo se primero se le 
+ * dio al boton del And /\ (con id 5) y luego parado en el input del argumento 1 (que es el que esta a 
+ * la derecha del /\) se le da al boton de Or \/ (con id 4), entonces el diccionario queda asi 
+ * 
+ * {'teoremaSymbolsId_-1':{'simboloId':5},'teoremaSymbolsId_-1-1':{'simboloId':4},
+ * 'teoremaSymbolsId_-1-2':{'simboloId':4},'teoremaSymbolsId_-2':{'simboloId':5}}
+ * 
+ * cuando el input inicial tenia id 'teoremaSymbolsId'. Los indices -1-1 y -1-2 en los id se refieren 
+ * al camino para ubicar el respectivo input, por ejemplo -1-1 se refiere al argumento 1 del argumento 1 
+ * y -1-2 a argumento 2 del argumento 1, el 'simboloId' es el id del operador padre que genero el input. 
+ * La posicion del argumento n lo determina el orden en que aparecen en la lista notacionVariables
+ * 
+ * window['${rootId}' + 'parserString'] = 'Input{${rootId}}'; se inicializa con el token 
+ * 'Input{${rootId}}' donde ${rootId} proviene del controlador adecuado. En la medida que se construye 
+ * la formula se edita este string que corresponde a la formula, pero en formato C, solo que en donde 
+ * deben ocurrir variables ocurren tokens de la forma 'Input{${rootId}}', donde rootId en este caso es 
+ * el id del input que tiene la variable. Justo antes de mandar el parser string al servidor, se 
+ * reemplazan todos estos tokens por las respectivas variables que estan en los formularios, por esta 
+ * razon se pusieron estos tokens en el string, para que apuntara al id del input que tiene la 
+ * informacion que va en esa respectiva posicion del string, de esta forma el usuario puede cambiar el 
+ * contenido de los input cuantas veces quiera, porque solo se toma el ultimo valor que estaba antes de 
+ * que se oprima el boton de enviar
+ *
+ * window['${rootId}' + 'prefixMathJax'] = '${prefixMathJax}' Prefix for the jax element. Se inicializa
+ * en vacio en la vista de agregar teorema, pero en la de infer con 'E^{\FormInput{leibnizVar}}:', para
+ * los inputs de sustitucion el prefijo es la lista de variables y el simbolo de sustitucion :=
+ *
+ * window['${rootId}' + 'prefixCnotation'] = '${prefixCnotation}' Prefix for the C notation. Se 
+ * inicializa en vacio en la vista de agregar teorema, pero en la de infer con 'lambda z.' para 
+ * el input de leibniz
+ *
+ * window['${rootId}_InputForm'] = '${inputForm}' set input box associated to this view, here we'll send the data
+ * 
+ * Cuando se crea un nuevo input por causa de presionar el boton de un operador, este nuevo input 
+ * tiene el atributo 'data-rootId' igual al id del primer input padre, esto es para poder ubicar 
+ * el diccionario de toda la formula por su id o el diccionario de todos los simbolos
+ */
+
+/**
    This function takes the id of a div (that must have a mathjax jax element) and some text (latex formated)
    and replaces the input box where the user was holding its mouse with the recently clicked
    operator
@@ -49,11 +103,11 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
     var notacionLatexVariablesSorted = Array.from(notacionLatexVariables, (_,index) => null);
     for (var i = 0; i < notacionLatexVariables.length; i++) {
         var index = parseInt(notacionLatexVariables[i].match(/\d+/)[0]) - 1;
-        notacionLatexVariablesSorted[index] = notacionLatexVariables[i];
+        notacionLatexVariablesSorted[index] = notacionLatexVariables[i]; // no se usa
     }
 
     for (var i = 0; i < notacionLatexVariablesSorted.length; i++) {
-        var varNotation = notacionLatexVariablesSorted[i];
+        var varNotation = notacionLatexVariablesSorted[i]; // no se usa
         var index = i+1;
         var childId = idParentBox + "-" + index;
         newNotation = newNotation.replace("\\FormInput{"+index+"}", "\\FormInput{" + childId + "}");
@@ -525,6 +579,8 @@ function deleteOperatorParserString(formId, rootId){
 
 
 /**
+ * Para quitarle al parserString los tokens que no son de formato C y sustituirlos 
+ * por lo que esta en los inputs justo antes de mandarlos al servidor
  * This function is meant to replace all Input{Id} text in the parser
    String for the current value there is on the actual input boxes
    It will also replace the numericId used for the aliases with their name

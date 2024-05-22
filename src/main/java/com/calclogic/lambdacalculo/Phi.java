@@ -8,6 +8,8 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.SimboloManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+
 /**
  *
  * @author federico
@@ -15,6 +17,7 @@ import java.util.List;
 public class Phi extends Term{
     
     public ListaInd ind;
+    public static int stInd; // start point to index variables in type() method
     
     public Phi(Indice in){
         ind=new ListaInd(in);
@@ -43,12 +46,153 @@ public class Phi extends Term{
     
     public Term sust(Var x,Term t)
     {
-        return this;
+        return this; 
     }
     
-    public Term type()
+    public Term type(){
+        return type_;
+    }
+    
+    public void computeType()
     {
-        return null;
+        if (ind.orden == 0 && !ind.topeEsPar() )
+            type_= new App(new App(new Const(-3,"->"),new Var(1)),new Var(1));
+        else {
+        Term[] A = new Term[ind.orden+1];
+        A[0] = null;
+        Term aux = null;
+        Stack<ListaInd> stack = new Stack();
+        App x = null;
+        Indice index = null;
+        ParInd par = null;
+        int i = stInd;
+        int j = 0;
+        int offset = 0;
+        int pairOrder = 0;
+        int n = ind.orden;
+        boolean jump = false;
+        int[] lastResult = new int[n];
+        lastResult[0] = 0;
+        int lastResultIndex = -1;
+        ListaInd list = ind;
+        ListaInd currentList = ind;
+        while (i-stInd+1 <= n) {
+            try {
+              index = currentList.get(j+offset);
+            }
+            catch (IndexOutOfBoundsException e) {
+                if (offset == 1 || currentList.orden == 0) {
+                    jump = true;
+                    if (!stack.isEmpty())
+                       i--;
+                } else
+                    throw new IndexOutOfBoundsException();
+            }
+            if (!jump) {
+                if (index instanceof ParInd) {
+                    i--;
+                    j--;
+                    stack.push(currentList);
+                    currentList = ((ParInd)index).i2;
+                    offset = 0;
+                }
+                else if (index.toString().equals("b")) {
+                    //System.out.println(index);
+                    if (i == stInd)
+                      A[0] = new Var(i);
+                    else
+                      x.q = new Var(i);
+                    x = new App(new Const(-3,"->"),null);
+                    A[i-stInd+1] = new App(x,(j==0 && offset==0?A[0]:(aux==null?new Var(i):aux) ));
+                    if (aux != null)
+                        aux = null;
+                }
+                else if (index.toString().equals("c")) {
+                    //System.out.println(index);
+                    App y = x;
+                    x = new App(new Const(-3,"->"),null);  
+                    if (i == stInd)
+                      A[0] = new App(x,new Var(i)); 
+                    else {
+                        if (j==0&& offset==0) {
+                            if (A[0] instanceof Var) {
+                                A[0] = new App(x,new Var(i));
+                                ((App)A[1]).q = A[0];
+                            }
+                            else if (A[0] instanceof App) {
+                                aux = (App)A[0];
+                            }
+                        }
+                        else 
+                            y.q = (!(aux instanceof App)?new App(x,new Var(i)):((App)aux).q);
+                    }
+                    if (!(aux instanceof App))
+                       A[i-stInd+1] = new Var(i);
+                    else {
+                       A[i-stInd+1] = ((App)aux).q;
+                       aux = ((App)((App)aux).p).q;
+                    }
+                }
+                j++;
+            }
+            jump = false;
+            /*System.out.println(j);
+            System.out.println("PairOrd:"+pairOrder);
+            System.out.println("Current List:"+currentList);
+            System.out.println(stack);*/
+            if (j + pairOrder == currentList.orden) {
+                //System.out.println(stack);
+                if (!stack.isEmpty()) {
+                    if ( ((ParInd)stack.lastElement().tope()).i2 == currentList) {
+                        currentList = ((ParInd)stack.lastElement().tope()).i1;
+                        offset = 0;
+                        pairOrder = 0;
+                        j = 0;
+                        lastResultIndex++;
+                        lastResult[lastResultIndex] = i+1;
+                        if (((ParInd)stack.lastElement().tope()).i2.orden != 0) 
+                            x.q = new Var(i+1);
+                        else
+                            lastResult[lastResultIndex] = 0;
+                    } else if (((ParInd)stack.lastElement().tope()).i1 == currentList){
+                        // finish lista
+                        pairOrder = ((ParInd)stack.lastElement().tope()).orden;
+                        currentList = stack.pop();
+                        offset = 1;
+                        j = 0;
+                        int lastR = lastResult[lastResultIndex];
+                        //System.out.println("lastResult: "+lastR);
+                        if (i-stInd+2 > n && stack.isEmpty()) {
+                           x.q = new App(new App(new Const(-3,"->"),new Var(i+1)),(lastR==0?A[0]:new Var(lastR)));
+                           //x = new App(new Const(-3,"->"),null);
+                        }
+                        else{
+                           App y = x;
+                           x = new App(new Const(-3,"->"),null);
+                           y.q = new App(x,(lastR==0?A[0]:new Var(lastR)) );
+                        }
+                        lastResultIndex--;
+                        //lastResult = i+1;
+                    } else {
+                        offset = 0;
+                        j=0;
+                    }
+                }
+                else
+                    x.q = new Var(i+1);
+            }
+            if (i-stInd+2 <= n || stack.isEmpty())
+               i++;
+        }
+        stInd = i+1;
+        Term it = new Var(i);
+        i = 0;
+        while (i <= n) {  
+            it = new App(new App(new Const(-3,"->"),it),A[i]);
+            i = i+1;
+        }
+        type_= it;
+        }
     }
     
     public int nPhi()
@@ -169,6 +313,11 @@ public class Phi extends Term{
         return new App(new Const("K"),this);
     }
     
+    @Override
+    public Term etaReduc() {
+        return this;
+    }
+    
     public String toStringAll(){
         return "\\Phi_{"+ind.toString()+"}";
     }
@@ -221,6 +370,10 @@ public class Phi extends Term{
         return toString;
     }
 
+    public String toStringType(String v) {
+        return "NULL";
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -251,7 +404,17 @@ public class Phi extends Term{
     }
 
     @Override
+    public Term inverseVars() {
+        return this;
+    }
+    
+    @Override
     public void freeVars(int[] set){
+        ;
+    }
+    
+    @Override
+    public void freeVars(int[] set, int[] visitNum){
         ;
     }
     
@@ -261,7 +424,7 @@ public class Phi extends Term{
     }
     
     @Override
-    public Term abstractEq() {
+    public Term abstractEq(Term[] varTypes) {
         return null;
     }
     

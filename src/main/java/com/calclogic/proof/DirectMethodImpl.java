@@ -36,7 +36,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo){
+    public String header(String nTeo, Term beginFormula){
         return "By direct method<br>";
     }
 
@@ -52,7 +52,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
      *         according to the demonstrarion method used
      */
     @Override
-    public Term initFormula(Term beginFormula){
+    public Term initFormula(Term beginFormula, Term proof){
         return beginFormula;
     }
     
@@ -81,9 +81,9 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
         formulaBeingProved = ((App)formulaBeingProved).q.body();
         finalExpr = finalExpr.body();
         initialExpr = initialExpr.body();
-        if(formulaBeingProved.equals(initialExpr.body())) {
+        if(formulaBeingProved.traducBD().equals(initialExpr.traducBD())) {
             // List of theorems solved by the user. We examine them to check if the current proof already reached one 
-            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username,true);
+            List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username,true,s);
             Term theorem; //, mt;
             Term equanimityExpr = null; // Expression with which equanimity will be applied
             int[] c = new int[1];
@@ -95,7 +95,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                 //System.out.println(c);
                 //mt = new App(new App(new Const("c_{1}"),new Const("true")),noEqTheo); // theorem == true
                 // acomodar esto para crear mt dependiendo de los metateoremas que se tienen guardados
-                
+
                 // We don't want to unify with the formulaBeingProved itself if it was already demonstrated
                 if (noEqTheo.equals(formulaBeingProved)){
                     ;
@@ -108,7 +108,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                     // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
                     // >>> It would not work if we did it backwards: (finalExpr, theorem)
                     Equation eq = new Equation(noEqTheo, finalExpr);
-                    Sust sust = eq.mgu(s);
+                    Sust sust = eq.mgu(s,false);
 
                     // Case whe lanst line is an instantiation of the compared theorem
                     if (sust != null) {
@@ -123,13 +123,13 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
         }
         // Case when we started from another theorem
         else if(finalExpr.equals(formulaBeingProved)) { 
-            Term aux = new App(new App(new Const(0,"="),new Const(-1,"T")),initialExpr).abstractEq();
+            Term aux = new App(new App(new Const(0,"="),new Const(-1,"T")),initialExpr).abstractEq(null);
             TypedA A = new TypedA(aux.traducBD(),username);
 
             if (A.getNSt().equals("")) { 
                 int idOp = ((Const)((App)((App)initialExpr).p).p).getId();
                 initialExpr= new App(new App(new Const(0,"="),((App)((App)initialExpr).p).q),((App)initialExpr).q);
-                initialExpr = initialExpr.abstractEq().traducBD(); 
+                initialExpr = initialExpr.abstractEq(null).traducBD(); 
                 Term M = new TypedM(idOp,initialExpr,username); 
                 return new TypedApp(proof, M);
             }

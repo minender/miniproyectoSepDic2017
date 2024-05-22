@@ -20,7 +20,7 @@ function setJaxSubstitutionVariables(newVariables, rootId){
     //Array with the form ['P(x)','a','Q(x)']
     var funVariables =newVariables.split(',');
     //Array with the form ['x','y','z']
-    window[rootId + '_variables']=newVariables.replace(/\([a-zA-z]\)/g, '').split(',');;
+    window[rootId + '_variables']=newVariables.replace(/\([a-zA-z]([a-zA-z])*\)/g, '').split(',');
     var variables = window[rootId + '_variables'];
     
     //Get the simbolo dicctionary defined within the jaxSubstitution tile
@@ -34,15 +34,25 @@ function setJaxSubstitutionVariables(newVariables, rootId){
     var id;
     var newDiv;
     varsDiv.innerHTML = '&nbsp;&nbsp;';
+    if (funVariables[0] != 1) {
     for(var i = 0; i < funVariables.length; i++){
-        if (funVariables[i].length == 1)
+        if (funVariables[i].length == 1) {
             varsDiv.innerHTML += funVariables[i];
-        else {
+        }else {
             newDiv = document.createElement('div');
             id = rootId + 'Bound'+ variables[i] ;
             newDiv.id = id + 'MathJaxDiv';
             newDiv.style.display = 'inline-block';
-            newDiv.innerHTML = variables[i]+'(\\( { \\FormInput{'+id+'} } \\))' 
+            var nArgs = funVariables[i].length-3;
+            if (variables[i] === "s"){
+                var HTML = '&#9733;(\\( { \\FormInput{'+id+'1} } ';
+            }
+            else
+                var HTML = variables[i]+'(\\( { \\FormInput{'+id+'1} } ';
+            for(var j =2; j <= nArgs; j++) {
+                HTML = HTML + ', ' + '{ \\FormInput{'+id+j+'} }';
+            }
+            newDiv.innerHTML =HTML + '\\))' 
 
             varsDiv.appendChild(newDiv);
         }
@@ -50,7 +60,12 @@ function setJaxSubstitutionVariables(newVariables, rootId){
             varsDiv.innerHTML += ',&nbsp;';
         }   
     }
-    varsDiv.innerHTML += ' := '
+    }
+    if (funVariables[0] == 1) {
+        varsDiv.innerHTML += ' Case 1: ';
+    }else {
+        varsDiv.innerHTML += ' := ';
+    }
     for(var i = 0; i < variables.length; i++){
         
         //CREATE A NEW DIV AND SET ITS ATTRIBUTES
@@ -62,7 +77,10 @@ function setJaxSubstitutionVariables(newVariables, rootId){
 
         varsDiv.appendChild(newDiv);
         if(i != variables.length - 1){
-            varsDiv.innerHTML += ',&nbsp;';
+            if (funVariables[0] == 1)
+                varsDiv.innerHTML += ',&nbsp;Case '+variables[i+1]+':';
+            else
+                varsDiv.innerHTML += ',&nbsp;';
         }
         
         //SET GLOBAL VARIABLES ASSOCIATED TO THE NEW DIV 
@@ -78,10 +96,13 @@ function setJaxSubstitutionVariables(newVariables, rootId){
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, varsDivId], function(){
         var id;
         for(var i = 0; i < funVariables.length; i++){
-            if (funVariables[i].length != 1) {
-                id = rootId + 'Bound'+ variables[i] ;
-                document.getElementById(id).value = funVariables[i].substr(2,1);
+            //if (funVariables[i].length != 1) {
+            var leng = funVariables[i].length;
+            for (var j=1; j <= leng-3; j++) {
+                id = rootId + 'Bound'+ variables[i]+j;
+                document.getElementById(id).value = funVariables[i].substr(2,leng-1)[j-1];
             }
+            //}
         }
         buttonsEnabled = true;
     });
@@ -133,7 +154,7 @@ function setSubstitutionOnInput(rootId){
         
         boundVarInput = document.getElementById(boundVarRootId + 'MathJaxDiv');
         if (boundVarInput !== null)
-            boundVarInput = boundVarInput.getElementsByClassName("MathJax_Input")[0];
+            boundVarInput = boundVarInput.getElementsByClassName("MathJax_Input");
         // Key will be the id of the form, the value its content
         for(var j = 0; j < inputs.length; j++){
             parserString = parserString.replace("Input{" + inputs[j].id + '}',inputs[j].value)
@@ -148,7 +169,13 @@ function setSubstitutionOnInput(rootId){
         if( !parserStringEmpty ) {
             leftSide += variables[i];
             if (boundVarInput !== null && boundVarInput.length !== 0) {
-                leftSide += '('+boundVarInput.value+')';
+                leftSide += '('+boundVarInput[0].value;
+                for (var j=1; j < boundVarInput.length; j++) {
+                    if (boundVarInput[j].dataset['rootid'] !== undefined) {
+                       leftSide += ','+boundVarInput[j].value;
+                    }
+                }
+                leftSide += ')';
             }
             leftSide += ',';
             rightSide += parserString + ',';

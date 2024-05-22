@@ -5,6 +5,7 @@ import com.calclogic.dao.SolucionDAO;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
+import com.calclogic.lambdacalculo.App;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.TermUtilities;
@@ -76,9 +77,9 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * @param resuelve The mentioned Resuelve object.
      * throws Exception
      */
-    private void parseTheoremFromResuelveObject(Resuelve resuelve){
+    private void parseTheoremFromResuelveObject(Resuelve resuelve, SimboloManager s){
         Teorema teo = resuelve.getTeorema();
-        teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null));
+        teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null,s));
     }
 
     /*
@@ -88,9 +89,10 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * @return The list of Resuelve objects with their theorems parsed.
      * throws Exception
      */
-    private List<Resuelve> parseTheoremsFromResuelves(List<Resuelve> resuelves) throws Exception{
+    private List<Resuelve> parseTheoremsFromResuelves(List<Resuelve> resuelves,
+                                                      SimboloManager s) throws Exception{
         for (Resuelve resuelve : resuelves) {
-            this.parseTheoremFromResuelveObject(resuelve);
+            this.parseTheoremFromResuelveObject(resuelve,s);
         }
         return resuelves;
     }
@@ -127,12 +129,13 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * @return The list of Resuelve objects with their theorems parsed.
      * throws Exception
      */
-    private List<Resuelve> parseTheoremsWithSolFromResuelves(List<Resuelve> resuelves) throws Exception{
-        for (Resuelve resuelve : resuelves) {              
+    private List<Resuelve> parseTheoremsWithSolFromResuelves(List<Resuelve> resuelves,
+                                                             SimboloManager s) throws Exception{
+        for (Resuelve resuelve : resuelves) {
             int numberOfSolutions = this.setDemopendienteToSolsFromResuelve(resuelve);
             Boolean isAxiom = (resuelve.isResuelto()) && (numberOfSolutions == 0);
             resuelve.setEsAxioma(isAxiom);
-            this.parseTheoremFromResuelveObject(resuelve);
+            this.parseTheoremFromResuelveObject(resuelve,s);
         }
         return resuelves;
     }
@@ -147,12 +150,13 @@ public class ResuelveManagerImpl implements ResuelveManager {
      * @param orAdmin Determines if in the query we must include the Resuelve objects of the admin of the app.
      * @return The modified list of Resuelve objects
      */
-    private List<Resuelve> parsedResuelvesList(String userLogin, List<Resuelve> resuelves, Boolean orAdmin){
+    private List<Resuelve> parsedResuelvesList(String userLogin, List<Resuelve> resuelves, Boolean orAdmin
+                                               , SimboloManager s){
         if (orAdmin){
             resuelves = this.removeResuelveDuplicates(userLogin, resuelves);
         }
         try {
-            resuelves = this.parseTheoremsWithSolFromResuelves(resuelves);
+            resuelves = this.parseTheoremsWithSolFromResuelves(resuelves,s);
         } 
         catch (Exception e) {
             e.printStackTrace();
@@ -169,7 +173,7 @@ public class ResuelveManagerImpl implements ResuelveManager {
     @Override
     @Transactional
     public Resuelve addResuelve(Resuelve resuelve){
-        Resuelve res = this.getResuelveByUserAndTeorema(resuelve.getUsuario().getLogin(),resuelve.getTeorema().getId(),false);
+        Resuelve res = this.getResuelveByUserAndTeorema(resuelve.getUsuario().getLogin(),resuelve.getTeorema().getId(),false,null);
         if (res != null){
             return res;
         }
@@ -239,9 +243,10 @@ public class ResuelveManagerImpl implements ResuelveManager {
      */
     @Override
     @Transactional
-    public List<Resuelve> getAllResuelveByUserWithSol(String userLogin, Boolean orAdmin){
+    public List<Resuelve> getAllResuelveByUserWithSol(String userLogin, Boolean orAdmin,
+                                                      SimboloManager s){
         List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUser(userLogin, orAdmin);
-        return this.parsedResuelvesList(userLogin, resuelves, orAdmin);
+        return this.parsedResuelvesList(userLogin, resuelves, orAdmin, s);
     }
     
     /**
@@ -255,9 +260,10 @@ public class ResuelveManagerImpl implements ResuelveManager {
      */
     @Override
     @Transactional
-    public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin, String teoNum, Boolean orAdmin){
+    public List<Resuelve> getAllResuelveByUserWithSolWithoutAxiom(String userLogin, String teoNum, 
+                                                                  Boolean orAdmin, SimboloManager s){
         List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserWithoutAxiom(userLogin, teoNum, orAdmin);
-        return this.parsedResuelvesList(userLogin, resuelves, orAdmin);
+        return this.parsedResuelvesList(userLogin, resuelves, orAdmin, s);
     }
     
     /**
@@ -269,9 +275,10 @@ public class ResuelveManagerImpl implements ResuelveManager {
      */
     @Override
     @Transactional
-    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin, Boolean orAdmin){
+    public List<Resuelve> getAllResuelveByUserResuelto(String userLogin, Boolean orAdmin,
+                                                       SimboloManager s){
         List<Resuelve> resuelves = resuelveDAO.getAllResuelveByUserResuelto(userLogin, orAdmin);
-        return this.parsedResuelvesList(userLogin, resuelves, orAdmin);
+        return this.parsedResuelvesList(userLogin, resuelves, orAdmin, s);
     }
     
     /**
@@ -307,10 +314,11 @@ public class ResuelveManagerImpl implements ResuelveManager {
      */
     @Override
     @Transactional
-    public Resuelve getResuelveByUserAndTeorema(String userLogin, int teoremaID, Boolean orAdmin){
+    public Resuelve getResuelveByUserAndTeorema(String userLogin, int teoremaID, Boolean orAdmin,
+                                                SimboloManager s){
         Resuelve resuelve = resuelveDAO.getResuelveByUserAndTeorema(userLogin, teoremaID, orAdmin);
         if (resuelve != null) {
-            this.parseTheoremFromResuelveObject(resuelve);
+            this.parseTheoremFromResuelveObject(resuelve,s);
         }
         return resuelve;
     }
@@ -325,11 +333,12 @@ public class ResuelveManagerImpl implements ResuelveManager {
      */
     @Override
     @Transactional
-    public Resuelve getResuelveByUserAndTeoNum(String userLogin, String teoNum, Boolean orAdmin){
+    public Resuelve getResuelveByUserAndTeoNum(String userLogin, String teoNum, Boolean orAdmin,
+                                               SimboloManager s){
         Resuelve resuelve = resuelveDAO.getResuelveByUserAndTeoNum(userLogin, teoNum, orAdmin);
         if (resuelve != null) {
             this.setDemopendienteToSolsFromResuelve(resuelve);
-            this.parseTheoremFromResuelveObject(resuelve);
+            this.parseTheoremFromResuelveObject(resuelve,s);
         }
         return resuelve;
     }

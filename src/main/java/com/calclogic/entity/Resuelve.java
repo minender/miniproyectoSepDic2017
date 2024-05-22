@@ -1,6 +1,9 @@
 package com.calclogic.entity;
 // Generated Mar 20, 2017 12:50:11 PM by Hibernate Tools 3.2.1.GA
 
+import com.calclogic.lambdacalculo.App;
+import com.calclogic.lambdacalculo.Const;
+import com.calclogic.lambdacalculo.Term;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Comparator;
@@ -50,6 +53,25 @@ public class Resuelve  implements java.io.Serializable {
     
     public String getVariables() {
         return this.variables;
+    }
+    
+    public String getVarAndTypes() {
+        Term type = ((App)teorema.getTeoTerm()).q.type();
+        if (!(type instanceof Const)) {
+            String st = this.variables.split(";")[1];
+            String[] vars = st.split(",");
+            st = "";
+            Term aux = type;
+            int i = 0;
+            while (i < vars.length) {
+                st = st+(i==0?"":", ")+vars[i]+":"+((App)aux).q;
+                aux = ((App)((App)aux).p).q;
+                i++;
+            }
+            return st;
+        }
+        else
+            return "";
     }
 
     public boolean isEsAxioma() {

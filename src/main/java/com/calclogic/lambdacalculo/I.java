@@ -166,6 +166,11 @@ public class I extends Term {
         return new App(new Const("K"),this);
     }
     
+    @Override
+    public Term etaReduc() {
+        return this;
+    }
+    
     public String toStringAll()
     {
         return ""; //"|";
@@ -220,6 +225,10 @@ public class I extends Term {
         return toString;
     }
         
+    public String toStringType(String v) {
+        return "NULL";
+    }
+    
     @Override
     protected Object clone() throws CloneNotSupportedException{
         return this;
@@ -231,7 +240,17 @@ public class I extends Term {
     }
 
     @Override
+    public Term inverseVars() {
+        return this;   
+    }
+    
+    @Override
     public void freeVars(int[] set){
+        ;
+    }
+    
+    @Override
+    public void freeVars(int[] set, int[] visitNum){
         ;
     }
     
@@ -241,7 +260,7 @@ public class I extends Term {
     }
     
     @Override
-    public Term abstractEq() {
+    public Term abstractEq(Term[] varTypes) {
         return null;
     }
     

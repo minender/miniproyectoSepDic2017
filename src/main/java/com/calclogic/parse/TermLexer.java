@@ -1,4 +1,4 @@
-// Generated from .\Term.g by ANTLR 4.8
+// Generated from Term.g by ANTLR 4.8
 package com.calclogic.parse; 
 
 import com.calclogic.entity.Predicado;

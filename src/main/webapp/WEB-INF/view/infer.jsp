@@ -209,7 +209,7 @@
                         <!--<option value="ND">Natural deduction</option>-->
                         <option value="CO">Proof by contradiction</option>
                         <option value="CR">Counter-reciprocal</option>
-                        <option value="AI">Conjunction by parts</option>
+                        <option value="AI">Proof by parts</option>
                         <option value="MI">Mutual implication</option>
                         <option value="CA">Case analysis</option>
                         <option value="GE">Generalization</option>
@@ -314,7 +314,7 @@
                                 <tiles:insertDefinition name="jaxButtons"/>
                             </div>
                             <div id="stSustLeibDiv" class="row justify-content-center">
-                                <div class="col-l-2" style="padding-left: 5px; padding-right: 5px;">
+                                <div id="statementDiv" class="col-l-2" style="padding-left: 5px; padding-right: 5px;">
                                     <div class="form-group card text-center border-primary">
                                         <div class="card-header" style="padding-bottom: 2px; padding-top: 2px;">
                                             Statement:
@@ -337,7 +337,7 @@
                                     <tiles:insertDefinition name="jaxSubstitutionDiv"/>
                                 </div>
 
-                                <div class="col-l-4" style="padding-left: 5px; padding-right: 5px;">
+                                <div id="leibnizDiv" class="col-l-4" style="padding-left: 5px; padding-right: 5px;">
                                     <div style="display: none;">
                                         Leibniz: <br><input name="leibniz" id="leibniz_id" value="${leibniz}"/></br>
                                     </div>
@@ -353,7 +353,7 @@
                         <div class="col-l-1">
                             <!-- Note: The logic of the onclick functions for these buttons is in InferForm.js -->
                             <input id ="BtnInferir" class="btn btn-default" type="submit" name="submitBtnI" value="Infer"/>
-                            <br><br><input id ="BtnRetroceder" class="btn btn-default" name="submitBtnR" type="submit" value="Go back"> 
+                            <br><br><input id ="BtnRetroceder" class="btn btn-default" name="submitBtnR" type="button" value="Go back"> 
                             <br><br><input id="BtnLimpiar" class="btn btn-default" type="button" value="Clean">
                             <input id="Btn" type="hidden" name="submitBtn" value=""/>
                         </div>

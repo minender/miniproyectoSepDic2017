@@ -1,0 +1,444 @@
+id   |                enunciado
+   1 | = (\Phi_{bcb} (\Phi_{cb} c_{1}) c_{1} \Phi_{cbcb}) (\Phi_{cb} c_{1} (\Phi_{cbcb} c_{1} \Phi_{cb}))
+   2 | = (\Phi_{bb} \Phi_{b} c_{1}) (\Phi_{cb} c_{1} \Phi_{cb})
+   3 | = (\Phi_{cbb} c_{1} \Phi_{b(b,)} c_{1}) (\Phi_{b} \Phi_{K})
+   4 | = (\Phi_{bb} (\Phi_{(bb,)} c_{1}) c_{1}) (\Phi_{b} \Phi_{K})
+   5 | = (\Phi_{b} \Phi_{K}) (\Phi_{cb} c_{1} (\Phi_{(b,cb)} c_{1}))
+   6 | = (\Phi_{b} \Phi_{K}) (\Phi_{ccb} c_{1} c_{1} \Phi_{cb(b,)})
+   7 | = (\Phi_{(b,)} c_{1}) (\Phi_{K} c_{8})
+   8 | = \Phi_{} (\Phi_{cb} c_{8} c_{1})
+   9 | = T c_{8}
+  11 | = (c_{7} c_{8}) c_{9}
+  13 | = (\Phi_{cb} c_{1} (\Phi_{bcb} c_{7})) (\Phi_{cb} c_{6} \Phi_{cb})
+  14 | = (\Phi_{ccb} c_{7} c_{1} \Phi_{cbb}) (\Phi_{cbb} c_{1} \Phi_{cb} c_{7})
+  15 | = \Phi_{} (\Phi_{bb} c_{7} c_{7})
+  16 | = c_{8} (c_{7} c_{9})
+  17 | = (\Phi_{cbb} c_{1} \Phi_{cb} c_{7}) (\Phi_{cb} c_{6} \Phi_{cb})
+  18 | = (\Phi_{b} (c_{1} c_{9})) (\Phi_{b} c_{7})
+  19 | = (\Phi_{bb} \Phi_{b} c_{6}) (\Phi_{cb} c_{6} \Phi_{cb})
+  20 | = (\Phi_{bcb} (\Phi_{cb} c_{6}) c_{6} \Phi_{cbcb}) (\Phi_{cb} c_{6} (\Phi_{cbcb} c_{6} \Phi_{cb}))
+  21 | = (\Phi_{bcb} (\Phi_{cb} c_{1}) c_{6} \Phi_{cbcb}) (\Phi_{cb} c_{6} (\Phi_{cbcb} c_{1} \Phi_{cb}))
+  22 | = (\Phi_{bcb} (\Phi_{cb} c_{6}) c_{1} \Phi_{cbcb}) (\Phi_{cb} c_{6} (\Phi_{cbcb} c_{1} \Phi_{cb}))
+  23 | = (\Phi_{bb} \Phi_{b} c_{4}) (\Phi_{cb} c_{4} \Phi_{cb})
+  24 | = (\Phi_{bcb} (\Phi_{cb} c_{4}) c_{4} \Phi_{cbcb}) (\Phi_{cb} c_{4} (\Phi_{cbcb} c_{4} \Phi_{cb}))
+  25 | = \Phi_{} (\Phi_{(b,)} c_{4})
+  26 | = (\Phi_{c(ccb,)} c_{4} \Phi_{cbcb} c_{1} (\Phi_{cccbcb} c_{4})) (\Phi_{bcb} (\Phi_{cb} c_{1}) c_{4} \Phi_{cbcb})  66 | = (\Phi_{cbb} c_{4} \Phi_{cb} c_{7}) (\Phi_{cb} c_{2} \Phi_{cb})
+  67 | = (\Phi_{c(bb,)} c_{5} \Phi_{bcb} c_{1}) (\Phi_{cb} c_{2} \Phi_{cb})
+  27 | = (\Phi_{K} T) (\Phi_{(bb,)} c_{4} c_{7})
+  28 | = (\Phi_{K} c_{8}) (\Phi_{b} (c_{4} c_{8}))
+  29 | = \Phi_{} (\Phi_{b} (c_{4} c_{9}))
+  30 | = (\Phi_{c(ccb,)} c_{4} \Phi_{cbcb} c_{4} (\Phi_{cccbcb} c_{4})) (\Phi_{bcb} (\Phi_{cb} c_{4}) c_{4} \Phi_{cbcb})  31 | = (\Phi_{cc(bb,)} c_{7} c_{4} \Phi_{bcbb} c_{1}) (\Phi_{cb} c_{4} \Phi_{cb})
+  32 | = (\Phi_{b} \Phi_{K}) (\Phi_{c(ccb,)} c_{4} c_{7} c_{4} (\Phi_{(bcbb,cb)} c_{1}))
+  33 | = (\Phi_{cb} c_{4} (\Phi_{(bcb,)} c_{1})) (\Phi_{c(bb,)} c_{5} \Phi_{bcb} c_{1})
+  34 | = (\Phi_{c(cb,)} c_{1} c_{4} (\Phi_{(bcb,cb)} c_{1})) (\Phi_{cb} c_{5} \Phi_{cb})
+  35 | = (\Phi_{c(ccb,)} c_{4} c_{1} c_{1} \Phi_{cb(bcb,)}) (\Phi_{cb} c_{5} \Phi_{cb})
+  36 | = (\Phi_{cb} c_{4} \Phi_{cb}) (\Phi_{c(cb,)} c_{5} c_{1} (\Phi_{(bcb,cb)} c_{1}))
+  37 | = (\Phi_{cb} c_{4} \Phi_{cb}) (\Phi_{c(bb,)} c_{5} (\Phi_{(b,bcb)} c_{1}) c_{1})
+  38 | = (\Phi_{bb} \Phi_{b} c_{5}) (\Phi_{cb} c_{5} \Phi_{cb})
+  39 | = (\Phi_{bcb} (\Phi_{cb} c_{5}) c_{5} \Phi_{cbcb}) (\Phi_{cb} c_{5} (\Phi_{cbcb} c_{5} \Phi_{cb}))
+  40 | = \Phi_{} (\Phi_{(b,)} c_{5})
+  41 | = \Phi_{} (\Phi_{b} (c_{5} c_{8}))
+  42 | = (\Phi_{K} c_{9}) (\Phi_{b} (c_{5} c_{9}))
+  43 | = (\Phi_{c(ccb,)} c_{5} \Phi_{cbcb} c_{5} (\Phi_{cccbcb} c_{5})) (\Phi_{bcb} (\Phi_{cb} c_{5}) c_{5} \Phi_{cbcb})  44 | = (\Phi_{K} c_{9}) (\Phi_{(bb,)} c_{5} c_{7})
+  45 | = (\Phi_{b} \Phi_{K}) (\Phi_{c(cb,)} c_{4} c_{5} \Phi_{cbcb})
+  46 | = (\Phi_{b} \Phi_{K}) (\Phi_{c(cb,)} c_{5} c_{4} \Phi_{cbcb})
+  47 | = (\Phi_{cb} c_{5} \Phi_{cb}) (\Phi_{c(cb,b)} c_{4} c_{5} \Phi_{cbcb} c_{7})
+  48 | = (\Phi_{cb} c_{4} \Phi_{cb}) (\Phi_{c(cb,b)} c_{5} c_{4} \Phi_{cbcb} c_{7})
+  49 | = (\Phi_{c(ccb,)} c_{4} \Phi_{cbcb} c_{5} (\Phi_{cccbcb} c_{4})) (\Phi_{bcb} (\Phi_{cb} c_{5}) c_{4} \Phi_{cbcb})  50 | = (\Phi_{c(ccb,)} c_{5} \Phi_{cbcb} c_{4} (\Phi_{cccbcb} c_{5})) (\Phi_{bcb} (\Phi_{cb} c_{4}) c_{5} \Phi_{cbcb})  51 | = (\Phi_{ccbb} c_{7} c_{4} \Phi_{cbb} c_{7}) (\Phi_{cb} c_{5} (\Phi_{bcb} c_{7}))
+  52 | = (\Phi_{ccbb} c_{7} c_{5} \Phi_{cbb} c_{7}) (\Phi_{cb} c_{4} (\Phi_{bcb} c_{7}))
+  53 | = (\Phi_{cc(bbb,)} c_{7} c_{5} \Phi_{bcbb} c_{1} c_{7}) (\Phi_{cb} c_{5} \Phi_{cb})
+  54 | = (\Phi_{bb} \Phi_{K} c_{7}) (\Phi_{c(ccb,)} c_{5} c_{7} c_{5} (\Phi_{(bcbb,cb)} c_{1}))
+  55 | = (\Phi_{bc(bb,)} \Phi_{K} c_{5} \Phi_{bcb} c_{1}) (\Phi_{c(ccb,)} c_{5} c_{1} \Phi_{bcbcb} (\Phi_{c(ccbbcb,)} c_{1} c_{5}))
+  56 | = (\Phi_{c((cb,bb),)} c_{5} c_{1} (\Phi_{cccbcb} c_{5}) \Phi_{bcbcb} c_{1}) (\Phi_{bcb} (\Phi_{cb} c_{1}) c_{5} \Phi_{cbcb})
+  57 | = (\Phi_{c(cc(b,b),)} c_{5} \Phi_{cbbcb} c_{1} (\Phi_{ccccbcb} c_{5}) c_{1}) (\Phi_{bcb} (\Phi_{cb} c_{1}) c_{5} \Phi_{cbcb})
+  58 | = (\Phi_{bb} \Phi_{K} \Phi_{K}) (\Phi_{c(cc(cb,),)} c_{5} (\Phi_{(bcbcb,cbcb)} c_{1}) c_{1} c_{5} (\Phi_{c(cccccbcb,)} c_{1} c_{5}))
+  59 | = (\Phi_{bb} \Phi_{K} \Phi_{K}) (\Phi_{c(c(b,cb),)} c_{5} c_{1} (\Phi_{c(ccbbcb,)} c_{1} c_{5}) c_{5} (\Phi_{(bcb,bcbcb)} c_{1}))
+  60 | = (\Phi_{cb} c_{5} \Phi_{cb}) (\Phi_{(cb,b)} c_{5} \Phi_{cbb} c_{1})
+  61 | = (\Phi_{ccb} c_{1} c_{1} (\Phi_{(cbcb,b)} c_{5} \Phi_{cbb})) (\Phi_{c(ccbb,)} c_{1} \Phi_{cbb} c_{5} \Phi_{ccbcb} c_{1})
+  62 | = (\Phi_{c(ccbb,)} c_{5} c_{7} c_{5} (\Phi_{(bcbb,cb)} c_{4}) c_{7}) (\Phi_{cb} c_{1} \Phi_{cb})
+  63 | = (\Phi_{c(ccb,b)} c_{5} c_{7} c_{5} (\Phi_{(bcbb,cb)} c_{4}) c_{7}) (\Phi_{cb} c_{6} \Phi_{cb})
+  64 | = (\Phi_{cb} c_{4} (\Phi_{(b,cb)} c_{1})) (\Phi_{cb} c_{2} \Phi_{cb})
+  65 | = (\Phi_{bb} \Phi_{b} c_{2}) (\Phi_{cb} c_{3} \Phi_{cb})
+  68 | = (\Phi_{cbbb} c_{7} \Phi_{bb} c_{2} c_{7}) (\Phi_{cb} c_{2} \Phi_{cb})
+  69 | = (\Phi_{c(ccb,)} c_{5} \Phi_{cbcb} c_{1} (\Phi_{cccbcb} c_{5})) (\Phi_{bcb} (\Phi_{cb} c_{1}) c_{2} \Phi_{cbcb})  70 | = (\Phi_{c(ccb,)} c_{2} \Phi_{cbcb} c_{1} (\Phi_{cccbcb} c_{2})) (\Phi_{bcb} (\Phi_{cb} c_{1}) c_{2} \Phi_{cbcb})  71 | = (\Phi_{c(ccb,)} c_{2} \Phi_{cbcb} c_{2} (\Phi_{cccbcb} c_{2})) (\Phi_{bcb} (\Phi_{cb} c_{2}) c_{2} \Phi_{cbcb})  72 | = (\Phi_{bcb} (\Phi_{cb} c_{2}) c_{2} \Phi_{cbcb}) (\Phi_{cb} c_{5} (\Phi_{cbcb} c_{2} \Phi_{cb}))
+  12 | = (\Phi_{cbb} c_{7} \Phi_{bb} c_{1}) (\Phi_{bb} (\Phi_{bb} c_{7}) c_{1})
+  73 | = (\Phi_{cb} c_{5} \Phi_{cb}) (\Phi_{c(cb,)} c_{2} c_{5} \Phi_{cbcb})
+  74 | = (\Phi_{b} \Phi_{K}) (\Phi_{(cb,b)} c_{5} \Phi_{cbb} c_{2})
+  75 | = (\Phi_{K} (\Phi_{K} c_{8})) (\Phi_{c(cb,)} c_{2} c_{4} \Phi_{cbcb})
+  76 | = (\Phi_{bb} \Phi_{b} c_{2}) (\Phi_{(cb,b)} c_{4} \Phi_{cbb} c_{2})
+  77 | = (\Phi_{cb} c_{1} \Phi_{cb}) (\Phi_{c(cb,)} c_{4} c_{5} (\Phi_{(bcb,cb)} c_{2}))
+  78 | = (\Phi_{K} c_{8}) (\Phi_{(b,)} c_{2})
+  79 | = (\Phi_{K} c_{8}) (\Phi_{b} (c_{2} c_{8}))
+  80 | = \Phi_{} (\Phi_{cb} c_{8} c_{2})
+  81 | = (\Phi_{b} c_{7}) (\Phi_{b} (c_{2} c_{9}))
+  82 | = (\Phi_{K} c_{8}) (\Phi_{cb} c_{9} c_{2})
+  83 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c(cb,)} c_{4} c_{2} \Phi_{cbcb})
+  84 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c(bb,)} c_{5} \Phi_{bcb} c_{2})
+  85 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c(cb,)} c_{5} c_{4} (\Phi_{(bcb,cb)} c_{2}))
+  86 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(ccb,)} c_{4} c_{2} \Phi_{bcbcb} (\Phi_{c(ccbbcb,)} c_{5} c_{4}))
+  87 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(ccb,)} c_{5} \Phi_{cbcbcb} c_{2} (\Phi_{c(cccbcb,)} c_{4} c_{5}))
+  88 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c(cb,)} c_{2} c_{5} (\Phi_{(b,cbcb)} c_{2}))
+  89 | = (\Phi_{cb} c_{4} (\Phi_{cbcb} c_{2} \Phi_{cb})) (\Phi_{ccb} (\Phi_{(bcb,cb)} c_{5}) c_{2} (\Phi_{cccb} c_{2}))
+  90 | = (\Phi_{K} \Phi_{}) (\Phi_{c(cbb,)} c_{2} c_{2} (\Phi_{(bcb,cb)} c_{5}) c_{7})
+  91 | = (\Phi_{cb} c_{1} \Phi_{cb}) (\Phi_{c(bb,)} c_{2} (\Phi_{(bb,cb)} c_{5}) c_{2})
+  92 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c((ccb,b),)} c_{2} c_{5} c_{1} (\Phi_{(bcb,(bb,cb))} c_{2}) c_{2})
+  93 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(bcb,)} c_{2} (\Phi_{c(cbcb,)} c_{2} c_{5}) c_{2} (\Phi_{(bcb,cbcb)} c_{2}))
+  94 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(bcb,)} c_{1} (\Phi_{c(cbcb,)} c_{2} c_{5}) c_{2} (\Phi_{(bcb,cbcb)} c_{2}))
+  95 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(bcb,)} c_{2} (\Phi_{c(cbcb,)} c_{1} c_{5}) c_{2} (\Phi_{(bcb,cbcb)} c_{2}))
+  96 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{(ccb,)} (\Phi_{(bcbb,cb)} c_{2}) c_{1} (\Phi_{c(ccbb,)} c_{1}))
+  97 | = (\Phi_{bb} (\Phi_{cb} c_{1}) (\Phi_{(bb,cb)} c_{5})) (\Phi_{b} (\Phi_{c(bbb,)} c_{1} \Phi_{bcb} c_{5}))
+  99 | = (\Phi_{bcb} (\Phi_{cb} c_{1}) c_{5} (\Phi_{(bbb,bcb)} \Phi_{bb} c_{2})) (\Phi_{b} (\Phi_{c(cbbbb,)} c_{1} c_{5} \Phi_{bbcb} \Phi_{bb} c_{2}))
+ 100 | = (\Phi_{bbc} \Phi_{b} c_{2} c_{8}) (\Phi_{b} (\Phi_{(bb,)} c_{2}))
+ 101 | = (\Phi_{cbbbc} c_{5} \Phi_{bb} \Phi_{bb} c_{2} c_{8}) (\Phi_{cb} c_{5} (\Phi_{(bbb,b)} \Phi_{bb} c_{2}))
+ 102 | = (\Phi_{cbc} c_{2} \Phi_{cb} c_{9}) (\Phi_{b} (\Phi_{(b,b)} c_{2}))
+ 103 | = (\Phi_{bcbc} (\Phi_{cb} c_{4}) c_{2} \Phi_{cbcb} c_{9}) (\Phi_{b} (\Phi_{c(cbb,)} c_{4} c_{2} \Phi_{cbcb}))
+ 104 | = (\Phi_{bbc} \Phi_{b} c_{5} c_{8}) (\Phi_{b} (\Phi_{(bb,)} c_{5}))
+ 105 | = (\Phi_{bbc} \Phi_{b} c_{4} c_{9}) (\Phi_{b} (\Phi_{(bb,)} c_{4}))
+ 106 | = (\Phi_{(cbbc,bc)} c_{7} (\Phi_{(bbb,b)} c_{4}) c_{5} c_{9} c_{5} c_{8}) (\Phi_{b} \Phi_{b})
+ 107 | = T (c_{11} (\Phi_{bcc(ccb,b)} c_{11} c_{16} (\Phi_{(bb,b)} c_{1}) c_{11} c_{15} (\Phi_{(bcb,bcbb)} c_{2}) c_{16}))
+ 108 | = T (c_{13} (\Phi_{bbb} c_{11} (\Phi_{bb} c_{7}) c_{16}))
+ 109 | = T (c_{11} (\Phi_{bcc(ccb,b)} c_{11} c_{16} (\Phi_{(bb,b)} c_{1}) c_{11} c_{15} (\Phi_{(bcb,bcbb)} c_{1}) c_{16}))
+ 110 | = T (c_{11} (\Phi_{bccbb} c_{11} c_{15} (\Phi_{(b(bb,b),b)} c_{1} c_{4}) (\Phi_{bcbcbb} c_{13} c_{16} (\Phi_{bbb} c_{11})) c_{15}))
+ 111 | = (\Phi_{K} T) (\Phi_{bccb} c_{11} c_{16} (\Phi_{(b(bcb,b),b)} c_{1} c_{5}) (\Phi_{bcb(cb,b)} c_{13} c_{16} (\Phi_{bbb} c_{11})))
+ 112 | = T (c_{11} (\Phi_{bcbcccbbb} c_{13} c_{16} (\Phi_{bbb} c_{11}) \Phi_{cb} c_{16} c_{14} (\Phi_{(bcbcb,b)} c_{1}) \Phi_{b} c_{16}))
+ 113 | = T (c_{12} (\Phi_{(bccbbbb,bb)} c_{14} c_{16} \Phi_{b} \Phi_{bbb} c_{12} \Phi_{b} c_{17} \Phi_{b} c_{16}) (\Phi_{b} (c_{59} c_{18})))
+ 114 | = T (c_{13} (\Phi_{(bb(ccbb,b),cb)} c_{5} c_{11} c_{20} c_{24} (\Phi_{(bb(bb,),b)} c_{2}) c_{16} c_{16} c_{18} c_{16}))
+ 115 | = T (c_{11} (\Phi_{bcbbb} c_{13} c_{16} (\Phi_{bbb} c_{11}) (\Phi_{(bb,b)} c_{1}) c_{27}))
+  98 | = (\Phi_{bb} (\Phi_{cb} c_{15}) (\Phi_{(bb,cb)} c_{2})) (\Phi_{b} (\Phi_{c(bbb,)} c_{15} \Phi_{bcb} c_{2}))
+ 116 | = c_{8} (c_{11} (\Phi_{K} c_{8}))
+  10 | = (\Phi_{K} T) (\Phi_{(b,)} c_{1})
+ 117 | = (\Phi_{bb} (\Phi_{bb} c_{11}) (\Phi_{(bb,b)} c_{2})) (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{12} \Phi_{b})
+ 118 | = (\Phi_{bcb} (\Phi_{bb} c_{11}) c_{7} (\Phi_{(bb,bb)} c_{4})) (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{12} \Phi_{b})
+ 119 | = (\Phi_{ccb} (\Phi_{(bb,(bb,b))} c_{1}) c_{5} (\Phi_{b(ccb,)} c_{11})) (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{12} \Phi_{b})
+ 120 | = (\Phi_{b(cb,)} (\Phi_{bb} c_{11}) c_{4} (\Phi_{(bb,(bb,b))} c_{1})) (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{12} \Phi_{b})
+ 121 | = (\Phi_{cccbb} \Phi_{b} \Phi_{cbb} c_{12} \Phi_{ccbb} (\Phi_{(bb,b)} c_{2})) (\Phi_{bbbb} (\Phi_{cb} (\Phi_{(bb,b)} c_{5})) \Phi_{bcb} c_{12} \Phi_{b})
+ 122 | = (\Phi_{cccbcb} \Phi_{b} \Phi_{cbb} c_{12} \Phi_{ccbb} c_{7} (\Phi_{(bb,bb)} c_{4})) (\Phi_{bbbb} (\Phi_{cb} (\Phi_{(bb,b)} c_{5})) \Phi_{bcb} c_{12} \Phi_{b})
+ 123 | = (\Phi_{cccb} \Phi_{b} \Phi_{cb(ccb,)} c_{12} (\Phi_{ccccbb} (\Phi_{(bb,(bb,b))} c_{1}) c_{5})) (\Phi_{bbbb} (\Phi_{cb} (\Phi_{(bb,b)} c_{5})) \Phi_{bcb} c_{12} \Phi_{b})
+ 124 | = (\Phi_{cccb(cb,)} \Phi_{b} \Phi_{cbb} c_{12} \Phi_{ccbb} c_{4} (\Phi_{(bb,(bb,b))} c_{1})) (\Phi_{bbbb} (\Phi_{cb} (\Phi_{(bb,b)} c_{5})) \Phi_{bcb} c_{12} \Phi_{b})
+ 125 | = (\Phi_{bcb} (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{12}) c_{4} \Phi_{cbb}) (\Phi_{ccbcb} \Phi_{b} c_{12} (\Phi_{cbbb} \Phi_{b}) c_{4} \Phi_{cbbb})
+ 126 | = (\Phi_{cccb} (\Phi_{bb} c_{7}) c_{11} c_{4} \Phi_{cbbb}) (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{12} \Phi_{K})
+ 127 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{(cccbcb,cb)} c_{12} \Phi_{b} c_{12} (\Phi_{cccc(cbbb,bb)} (\Phi_{bb} c_{7}) c_{11} c_{7} \Phi_{b} \Phi_{b}) c_{5} (\Phi_{(b(bcbbb,bb),bbb)} c_{2} c_{1}) c_{5} \Phi_{cbb})
+ 128 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(cccccbbb,)} (\Phi_{(bb,b)} c_{1}) c_{12} \Phi_{b} c_{12} (\Phi_{(b(bbb,bb),bb)} c_{2} c_{1}) \Phi_{b} (\Phi_{c(cccbbb,bcb)} \Phi_{b} \Phi_{b}) c_{12} \Phi_{b})
+ 129 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(ccbbb,bb)} \Phi_{b} c_{2} \Phi_{bbcb} (\Phi_{c(cbbbb,)} (\Phi_{(bb,b)} c_{4})) c_{12} \Phi_{b} c_{12} \Phi_{b})
+ 130 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(cbcbbb,)} (\Phi_{(bb,b)} c_{5}) c_{12} (\Phi_{cbbcb} \Phi_{b}) \Phi_{b} (\Phi_{(bbb,bb)} c_{2}) c_{12} \Phi_{b})
+ 131 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{(cccbcbbb,b)} c_{12} \Phi_{b} c_{12} (\Phi_{c(cbbb,bb)} \Phi_{b} \Phi_{b}) \Phi_{b} (\Phi_{(b(bbb,bb),bb)} c_{2} c_{2}) c_{12} \Phi_{b} (\Phi_{(bb,b)} c_{2}))
+ 132 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{(cbbb,)} c_{2} \Phi_{cbb} c_{11} \Phi_{b})
+ 133 | = (\Phi_{cbbb} \Phi_{b} (\Phi_{bbb} c_{7}) c_{12} (\Phi_{bb} c_{7})) (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{14} \Phi_{b})
+ 134 | = (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{12} \Phi_{b}) (\Phi_{cbbb} \Phi_{b} (\Phi_{bbb} c_{7}) c_{14} (\Phi_{bb} c_{7}))
+ 135 | = (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{12} (\Phi_{bb} c_{7})) (\Phi_{cbbb} \Phi_{b} (\Phi_{bbb} c_{7}) c_{14} \Phi_{b})
+ 136 | = (\Phi_{cbbb} \Phi_{b} (\Phi_{bbb} c_{7}) c_{12} \Phi_{b}) (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{14} (\Phi_{bb} c_{7}))
+ 137 | = (\Phi_{bb} (\Phi_{bb} c_{13}) (\Phi_{(bb,b)} c_{5})) (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{14} \Phi_{b})
+ 138 | = (\Phi_{cccbb} \Phi_{b} \Phi_{cbb} c_{14} \Phi_{ccbb} (\Phi_{(bb,b)} c_{5})) (\Phi_{bbbb} (\Phi_{cb} (\Phi_{(bb,b)} c_{5})) \Phi_{bcb} c_{14} \Phi_{b})
+ 139 | = (\Phi_{bcb} (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{14}) c_{5} \Phi_{cbb}) (\Phi_{ccbcb} \Phi_{b} c_{14} (\Phi_{cbbb} \Phi_{b}) c_{5} \Phi_{cbbb})
+ 140 | = (\Phi_{cccb} \Phi_{b} c_{13} c_{5} \Phi_{cbbb}) (\Phi_{cbbb} \Phi_{b} \Phi_{bb} c_{14} \Phi_{K})
+ 141 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{(cccbcb,cb)} c_{14} \Phi_{b} c_{14} (\Phi_{ccc(cbbb,bb)} \Phi_{b} c_{13} \Phi_{b} \Phi_{b}) c_{4} (\Phi_{(b(bcbbb,bb),bb)} c_{2} c_{1}) c_{4} \Phi_{cbb})
+ 142 | = (\Phi_{K} c_{9}) (\Phi_{bb} (c_{14} (\Phi_{K} c_{9})) \Phi_{b})
+ 143 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{(cbbb,bbb)} (\Phi_{(bb,b)} c_{4}) (\Phi_{cccb} \Phi_{b}) c_{14} \Phi_{b} (\Phi_{(bbcb,bb)} c_{2}) c_{14} \Phi_{b})
+ 144 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(cccbbb,)} (\Phi_{(bb,b)} c_{4}) c_{14} (\Phi_{(bbb,bb)} c_{2}) \Phi_{b} (\Phi_{cccbbcb} \Phi_{b}) c_{14} \Phi_{b})
+ 145 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{(cccbcbbb,b)} c_{12} \Phi_{b} c_{14} (\Phi_{c(cbbb,bb)} \Phi_{b} \Phi_{b}) \Phi_{b} (\Phi_{(b(bbb,bb),bb)} c_{2} c_{2}) c_{14} \Phi_{b} (\Phi_{(bb,b)} c_{2}))
+ 146 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{b} (\Phi_{(bbb,c)} c_{2} c_{13} \Phi_{b}))
+ 147 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{cccc(cccccb,)} \Phi_{b} \Phi_{cbbb} c_{12} \Phi_{b} c_{14} \Phi_{b} (\Phi_{(bcbcccbb,bb)} c_{2}) c_{12} \Phi_{cb} (\Phi_{c(ccccccbb,bcccbb)} \Phi_{b} \Phi_{b} \Phi_{cbcb} c_{14}))
+ 148 | = (\Phi_{bb} (\Phi_{bb} c_{7}) c_{16}) (\Phi_{bb} \Phi_{b} c_{17})
+ 149 | = T (c_{11} (\Phi_{b} (c_{17} c_{18})))
+ 151 | = (\Phi_{bb} \Phi_{b} c_{15}) (\Phi_{bbb} \Phi_{b} c_{16} c_{20})
+ 152 | = (\Phi_{ccbb} c_{16} (\Phi_{(bb,b)} c_{4}) \Phi_{cbb} c_{16}) (\Phi_{cb} c_{21} (\Phi_{bbbcb} \Phi_{b} c_{16} c_{20}))
+ 153 | = (\Phi_{cccbbb} \Phi_{cb} c_{16} c_{14} \Phi_{cbcb} \Phi_{b} c_{16}) (\Phi_{bbb} \Phi_{b} c_{16} c_{22})
+ 154 | = (\Phi_{cb} c_{21} (\Phi_{bbcb} c_{22} c_{20})) (\Phi_{cb} c_{24} \Phi_{cb})
+ 155 | = (\Phi_{c(cccbb,)} c_{24} \Phi_{K} c_{16} (\Phi_{(bb,b)} c_{5}) (\Phi_{(bcbb,bcb)} c_{19}) c_{16}) (\Phi_{cb} c_{25} \Phi_{cb})
+ 157 | = (\Phi_{cc(cbb,b)} c_{17} (\Phi_{(bb,b)} c_{5}) c_{19} \Phi_{cbcbb} \Phi_{K} c_{16}) (\Phi_{cb} c_{30} \Phi_{cb})
+ 158 | = (\Phi_{ccbb} c_{16} (\Phi_{(bb,b)} c_{2}) (\Phi_{bcbb} c_{11}) c_{16}) (\Phi_{cb} c_{27} \Phi_{cb})
+ 159 | = (\Phi_{bb} \Phi_{b} c_{27}) (\Phi_{cb} c_{29} \Phi_{cb})
+ 160 | = (\Phi_{c(cb,)} c_{27} c_{59} (\Phi_{(bcb,cb)} c_{5})) (\Phi_{cb} c_{26} \Phi_{cb})
+ 161 | = (\Phi_{bb} \Phi_{b} c_{26}) (\Phi_{cb} c_{28} \Phi_{cb})
+ 162 | = (\Phi_{c(ccbb,)} c_{21} c_{20} c_{21} (\Phi_{bcbbcb} c_{20}) c_{20}) (\Phi_{cb} c_{31} \Phi_{cb})
+ 163 | = (\Phi_{bb} \Phi_{b} c_{27}) (\Phi_{bbb} \Phi_{b} c_{16} c_{35})
+ 164 | = (\Phi_{(bb,)} c_{24} c_{20}) (\Phi_{b} c_{52})
+ 165 | = T (c_{11} (\Phi_{bbb} c_{13} \Phi_{b} c_{17}))
+ 156 | = (\Phi_{(bcccbbb,bb)} c_{19} \Phi_{cb} c_{16} c_{12} \Phi_{cbcb} \Phi_{b} c_{16} \Phi_{K} c_{22}) (\Phi_{b} c_{23})
+ 167 | = (\Phi_{c(cccccbcbb,)} c_{24} c_{35} c_{35} \Phi_{K} c_{16} (\Phi_{(bb,bcbcb)} c_{5}) (\Phi_{(bcbbb,bbbcb)} c_{19} (\Phi_{bc(ccbbb,)} c_{13} c_{31} c_{15})) c_{5} (\Phi_{bcccb} c_{13}) c_{16}) (\Phi_{cb} c_{32} \Phi_{cb})
+ 150 | = (\Phi_{ccb} c_{16} (\Phi_{(bcb,b)} c_{5}) \Phi_{(cb,b)}) (\Phi_{ccb} \Phi_{K} \Phi_{cb} (\Phi_{bb(bcb,b)} \Phi_{b} c_{16} c_{19}))
+ 169 | = (\Phi_{K} c_{9}) (\Phi_{(b,b)} c_{1} c_{7})
+ 170 | = (\Phi_{c(cb,)} c_{5} c_{2} \Phi_{cbcb}) (\Phi_{cb} c_{2} \Phi_{cb})
+ 171 | = (\Phi_{bb} c_{11} \Phi_{b}) (\Phi_{cbb} (\Phi_{K} c_{8}) c_{12} \Phi_{b})
+ 172 | = (\Phi_{K} c_{8}) (\Phi_{cbb} (\Phi_{K} c_{9}) c_{12} \Phi_{b})
+ 173 | = (\Phi_{cb} (\Phi_{(bb,b)} c_{5}) (\Phi_{cbbcb} \Phi_{b} \Phi_{bb} c_{12})) (\Phi_{ccccbbb} \Phi_{b} c_{12} (\Phi_{(bbb,bb)} c_{5}) \Phi_{b} (\Phi_{cccbbb} \Phi_{b}) c_{12} \Phi_{b})
+ 174 | = (\Phi_{c(ccbbb,bb)} \Phi_{b} \Phi_{cbbb} c_{5} (\Phi_{cccbbb} \Phi_{b}) c_{12} \Phi_{b} c_{12} \Phi_{b}) (\Phi_{bbbb} (\Phi_{cb} (\Phi_{(bb,b)} c_{4})) \Phi_{bcb} c_{12} \Phi_{b})
+ 175 | = (\Phi_{ccccb} \Phi_{b} \Phi_{cbcccbb} c_{12} \Phi_{cb} (\Phi_{ccccccbb} \Phi_{b} \Phi_{cbcb} c_{12})) (\Phi_{ccccb} \Phi_{b} \Phi_{cbbb} c_{12} \Phi_{b} (\Phi_{cbbcccbb} \Phi_{b} \Phi_{bb} c_{12}))
+ 176 | = (\Phi_{bb} c_{13} \Phi_{b}) (\Phi_{cbb} (\Phi_{K} c_{8}) c_{14} \Phi_{b})
+ 177 | = T (c_{11} (\Phi_{bcccc(cb,bbb)} c_{11} c_{17} \Phi_{b} c_{11} c_{5} c_{15} (\Phi_{(bcb,cbbbb)} c_{2}) c_{11} \Phi_{b} c_{17}))
+ 178 | = (\Phi_{K} T) (\Phi_{bcc(ccb,)} c_{11} c_{16} (\Phi_{(b(bcb,b),b)} c_{1} c_{5}) c_{16} (\Phi_{(b(bcb,b),b)} c_{1} c_{5}) (\Phi_{bc(cccccb(cb,b),(cb,b))} c_{11} c_{16} c_{11} (\Phi_{(bcb,cbbbb)} c_{2}) c_{15} c_{5} c_{11} (\Phi_{bcccc(cb,bbb)} c_{11} c_{16})))
+ 179 | = T (c_{11} (\Phi_{bcc(ccbb,b)} c_{11} c_{15} (\Phi_{(b(bb,b),b)} c_{1} c_{4}) c_{15} (\Phi_{(b(bb,b),b)} c_{1} c_{4}) (\Phi_{bc(cccccbcbb,cbb)} c_{11} c_{16} c_{11} (\Phi_{(bcb,cbbbb)} c_{2}) c_{15} c_{5} c_{11} (\Phi_{bcccc(cb,bbb)} c_{11} c_{16})) c_{15} c_{15}))
+ 180 | = T (c_{11} (\Phi_{bc(cccccbcccbbb,cccbbb)} c_{11} c_{16} c_{11} (\Phi_{(bcb,cbbbb)} c_{2}) c_{15} c_{5} c_{11} (\Phi_{bcccc(cb,bbb)} c_{11} c_{16}) \Phi_{cb} c_{16} c_{14} (\Phi_{(bcbcb,b)} c_{1}) \Phi_{b} c_{16} \Phi_{cb} c_{16} c_{14} (\Phi_{(bcbcb,b)} c_{1}) \Phi_{b} c_{16}))
+ 181 | = T (c_{11} (\Phi_{bcccc(ccbbb,bb)} c_{11} (\Phi_{(bcb,(bbbb,bbb))} c_{2}) c_{15} c_{5} c_{11} c_{16} c_{11} (\Phi_{bccccccccb} c_{11} c_{16}) (\Phi_{(bb,b)} c_{1}) c_{27} (\Phi_{(bb,b)} c_{1}) c_{27}))
+ 182 | = (\Phi_{ccbb} c_{16} (\Phi_{(bb,b)} c_{4}) \Phi_{cbb} c_{16}) (\Phi_{cb} c_{24} (\Phi_{bbcb} \Phi_{b} c_{16}))
+ 183 | = (\Phi_{ccbb} c_{16} (\Phi_{(bb,b)} c_{5}) \Phi_{cbb} c_{16}) (\Phi_{cb} c_{25} (\Phi_{bbcb} \Phi_{b} c_{16}))
+ 184 | = (\Phi_{K} c_{9}) (\Phi_{b} (c_{16} c_{18}))
+ 185 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{(ccc(ccbb,bb),bb)} \Phi_{cb} c_{16} c_{12} c_{1} c_{2} \Phi_{cb(bcbcb,b)} (c_{59} c_{18}) \Phi_{b} c_{16} c_{16} c_{23})
+ 186 | = (\Phi_{ccbb} c_{17} (\Phi_{(bb,b)} c_{5}) \Phi_{cbb} c_{16}) (\Phi_{cb} c_{30} (\Phi_{bbcb} \Phi_{b} c_{16}))
+ 187 | = c_{18} (c_{22} c_{18})
+ 188 | = c_{18} (c_{23} c_{18})
+ 189 | = (\Phi_{bb} \Phi_{b} c_{24}) (\Phi_{cb} c_{24} \Phi_{cb})
+ 190 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c((ccb,b),)} c_{27} c_{5} c_{15} (\Phi_{(bcb,(bb,cb))} c_{2}) c_{27})
+ 191 | = (\Phi_{bbb} c_{13} \Phi_{b} c_{16}) (\Phi_{b} (c_{59} c_{18}))
+ 192 | = (\Phi_{c(ccb,)} c_{24} \Phi_{cbcb} c_{25} (\Phi_{cccbcb} c_{24})) (\Phi_{bcb} (\Phi_{cb} c_{25}) c_{24} \Phi_{cbcb})
+ 193 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c(bbb,)} c_{27} (\Phi_{(bb,bcb)} c_{2} (c_{59} c_{18})) c_{5} (c_{59} c_{18}))
+ 194 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c((cbbb,bbbb),)} c_{27} c_{23} (\Phi_{(bbb,bcb)} c_{2}) c_{27} c_{23} c_{5} c_{13} \Phi_{b} c_{16})
+ 195 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c(cc(ccbbb,b),)} c_{27} (c_{59} c_{18}) c_{5} c_{5} c_{23} (\Phi_{(bbb,(bcbb,cb))} c_{2}) c_{27} c_{23} (c_{59} c_{18}))
+ 196 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{cb} c_{16} (\Phi_{(bb,cb)} c_{2} (c_{59} c_{18})))
+ 197 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(cccccb,)} c_{16} c_{23} (\Phi_{(bbcb,cbbcb)} c_{2} (c_{15} c_{18})) c_{25} c_{5} (c_{15} c_{18}) (\Phi_{cccc(cbb,cb)} c_{25}))
+ 198 | = c_{18} (c_{23} (c_{20} c_{18}))
+ 199 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{cb} c_{21} (\Phi_{bbcb} (c_{59} c_{18}) c_{20}))
+ 200 | = (\Phi_{cb} c_{25} \Phi_{cb}) (\Phi_{cb} c_{21} (\Phi_{bbcb} c_{23} c_{20}))
+ 201 | = (\Phi_{K} T) (\Phi_{bb} (c_{59} c_{18}) c_{20})
+ 202 | = \Phi_{} (\Phi_{bb} c_{23} c_{20})
+ 203 | = (\Phi_{K} T) (\Phi_{(b,)} c_{17})
+ 204 | = T (c_{7} (c_{13} (\Phi_{bc(bb,)} c_{13} c_{16} (\Phi_{(bb,cb)} c_{5}) c_{16})))
+ 205 | = T (c_{7} (c_{13} (\Phi_{bc(cccbb,)} c_{13} c_{16} \Phi_{cb(bb,cb)} c_{5} c_{5} (\Phi_{bc(cccbcb,)} c_{13} c_{16}) c_{16})))
+ 206 | = (\Phi_{cb} c_{21} (\Phi_{bcb} c_{20})) (\Phi_{cb} c_{31} (\Phi_{bcb} c_{22}))
+ 207 | = (\Phi_{bb} \Phi_{K} c_{20}) (\Phi_{cb} c_{31} (\Phi_{bcb} c_{23}))
+ 208 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c(c(bb,),)} c_{59} c_{31} (\Phi_{(b(bb,cb),cb)} c_{2} c_{59}) c_{31})
+ 209 | = (\Phi_{cb} c_{15} \Phi_{cb}) (\Phi_{ccbb} c_{20} c_{15} \Phi_{cbb} c_{20})
+ 210 | = (\Phi_{cccb} (\Phi_{cccbcb} c_{15}) c_{5} \Phi_{cbcb} (\Phi_{ccccb} c_{15})) (\Phi_{cb} c_{31} (\Phi_{bcbcb} (\Phi_{cb} c_{31}) c_{15} \Phi_{cbcb}))
+ 211 | = (\Phi_{cbccbb} c_{16} (\Phi_{cbb} (\Phi_{bc(ccccbb,)} c_{13} c_{31} c_{15})) c_{5} (\Phi_{(bcbb,cbcb)} c_{5}) (\Phi_{bccccb} c_{13}) c_{16}) (\Phi_{cb} c_{32} (\Phi_{bbcb} \Phi_{b} c_{16}))
+ 212 | = (\Phi_{ccccbb} c_{16} \Phi_{ccbb} c_{5} \Phi_{cbb} \Phi_{cccbb} c_{16}) (\Phi_{cb} c_{32} (\Phi_{bbbcb} (\Phi_{cb} c_{31}) \Phi_{bcb} c_{16}))
+ 213 | = (\Phi_{ccbb} (c_{15} c_{18}) c_{4} \Phi_{cbb} (c_{15} c_{18})) (\Phi_{cb} c_{32} (\Phi_{bcb} (c_{15} c_{18})))
+ 214 | = (\Phi_{cc(cccbb,b)} c_{17} (\Phi_{(bb,b)} c_{5}) c_{13} c_{16} (\Phi_{(bb,b)} c_{5}) (\Phi_{(bbcbb,bcbb)} c_{4} c_{13}) c_{17} c_{16}) (\Phi_{cb} c_{59} \Phi_{cb})
+ 215 | = (\Phi_{cc(cb,b)} (c_{15} c_{18}) c_{4} c_{15} (\Phi_{(bcb,cbb)} c_{4}) (c_{15} c_{18})) (\Phi_{c(bb,)} c_{32} (\Phi_{(bb,cb)} c_{15}) c_{32})
+ 216 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{cb} c_{32} (\Phi_{bbcb} (\Phi_{(bbbcb,b)} c_{2} c_{13} (\Phi_{bcb} c_{13} c_{31}) c_{15} \Phi_{cbcb}) c_{16}))
+ 217 | = (\Phi_{c(ccb,)} c_{32} \Phi_{cbcb} c_{25} (\Phi_{cccbcb} c_{32})) (\Phi_{bcb} (\Phi_{cb} c_{25}) c_{32} \Phi_{cbcb})
+ 218 | = (\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\Phi_{c(ccb,)} c_{34} c_{16} c_{24} (\Phi_{(bbbbcb,bcb)} (\Phi_{(bb,b)} c_{2}) c_{16} c_{22} c_{22}))
+ 219 | = (\Phi_{ccbbb} c_{16} (\Phi_{(bbb,bcb)} c_{5}) (\Phi_{ccbbb} (\Phi_{bc(cccccb,)} c_{13} c_{31} c_{15}) c_{31}) (\Phi_{bccccb} c_{13} (\Phi_{(bbcccbb,cbcb)} c_{5} c_{13} c_{31})) c_{16}) (\Phi_{bb} (\Phi_{bbb} \Phi_{b} c_{16}) c_{34})
+ 220 | = (\Phi_{(ccbb,b)} \Phi_{cbb} c_{24} \Phi_{ccbb} c_{34} c_{34}) (\Phi_{bbb} (\Phi_{cb} c_{24}) \Phi_{bcb} c_{34}) 221 | = (\Phi_{K} (\Phi_{K} T)) (\Phi_{c(cccbb,)} c_{25} c_{60} c_{60} c_{25} (\Phi_{(bcbb,bcb)} c_{27}) c_{60})
+ 222 | = (\Phi_{(bbbb,bbb)} c_{19} (\Phi_{bcb} c_{13} c_{31}) \Phi_{bcb} c_{16} \Phi_{K} c_{22} c_{22}) (\Phi_{b} c_{60})
+ 223 | = (\Phi_{(bcbbb,bbb)} c_{19} c_{31} (\Phi_{bbb} c_{13}) \Phi_{bb} c_{16} \Phi_{K} c_{22} c_{22}) (\Phi_{b} c_{61})
+ 224 | = (\Phi_{bbb} (\Phi_{bcb} c_{13} c_{31}) \Phi_{bcb} c_{16}) (\Phi_{bbb} \Phi_{b} c_{16} c_{60})
+ 225 | = (\Phi_{cbbb} c_{31} (\Phi_{bbb} c_{13}) \Phi_{bb} c_{16}) (\Phi_{bbb} \Phi_{b} c_{16} c_{61})
+ 226 | = (\Phi_{(b,)} c_{15}) (\Phi_{K} c_{8})
+
+
+ id  | teoremaid |       variables
+-----+-----------+-----------------------
+ 138 |       133 | x,x,x,x;P,R
+  10 |        10 | ;q
+   8 |         8 | ;q
+  11 |        11 | ;
+  13 |        13 | ;p,q
+  23 |        23 | ;p,q
+  24 |        24 | ;p,q,r
+  25 |        25 | ;p
+ 139 |       134 | x,x,x,x;P,R
+ 140 |       135 | x,x,x,x;P,R
+ 165 |       160 | ;A,B
+ 122 |       117 | x,x,x;P,R
+ 123 |       118 | x,x,x;P,R
+ 124 |       119 | x,x,x;P,R
+ 125 |       120 | x,x,x;P,R
+ 126 |       121 | x,x,x,x;P,Q,R
+ 127 |       122 | x,x,x,x;P,Q,R
+ 128 |       123 | x,x,x,x;P,Q,R
+ 129 |       124 | x,x,x,x;P,Q,R
+ 141 |       136 | x,x,x,x;P,R
+   7 |         7 | ;q
+ 142 |       137 | x,x,x;P,R
+ 143 |       138 | x,x,x,x;P,Q,R
+ 144 |       139 | x,x,x,x;P,Q,R
+ 145 |       140 | x,x,x;P,R
+ 146 |       141 | x,x,x,x,x;P,Q,R
+  14 |        14 | ;p,q
+  15 |        15 | ;p
+  16 |        16 | ;
+  17 |        17 | ;p,q
+ 147 |       142 | x,x;R
+  19 |        19 | ;p,q
+  20 |        20 | ;p,q,r
+  21 |        21 | ;p,q,r
+  22 |        22 | ;p,q,r
+ 148 |       143 | x,x,x,x;P,Q,R
+ 149 |       144 | x,x,x,x;P,Q,R
+ 130 |       125 | x,x,x,x;P,Q,R
+ 131 |       126 | x,x,x;P,R
+ 132 |       127 | x,x,x,x,x;P,Q,R
+ 133 |       128 | x,x,x,x,x,x;P,Q,R
+ 134 |       129 | x,x,x,x;P,Q,R
+ 135 |       130 | x,x,x,x;P,Q,R
+ 136 |       131 | x,x,x,x,x,x;P,Q,R
+ 137 |       132 | x;P,e
+ 150 |       145 | x,x,x,x,x,x;P,Q,R
+ 151 |       146 | x;E,P
+ 152 |       147 | x,x,y,y,y,y,x,x;P,Q,R
+ 161 |       156 | x,C,C,x;B
+ 107 |       107 | A,B,x;
+  18 |        18 | ;p
+   1 |         1 | ;p,q,r
+   2 |         2 | ;p,q
+  26 |        26 | ;p,q,r
+  27 |        27 | ;p
+  34 |        34 | ;p,q
+  64 |        64 | ;p,q
+  65 |        65 | ;p,q
+ 171 |       165 | B,A;
+ 111 |       110 | a,b,A,x;
+  28 |        28 | ;p
+  29 |        29 | ;p
+  30 |        30 | ;p,q,r
+  31 |        31 | ;p,q
+  32 |        32 | ;p,q
+  33 |        33 | ;p,q
+  35 |        35 | ;p,q
+  36 |        36 | ;p,q
+  37 |        37 | ;p,q
+  38 |        38 | ;p,q
+  39 |        39 | ;p,q,r
+  40 |        40 | ;p
+  41 |        41 | ;p
+  42 |        42 | ;p
+  43 |        43 | ;p,q,r
+  44 |        44 | ;p
+  45 |        45 | ;p,q
+  46 |        46 | ;p,q
+  47 |        47 | ;p,q
+  48 |        48 | ;p,q
+  49 |        49 | ;p,q,r
+  50 |        50 | ;p,q,r
+  51 |        51 | ;p,q
+  52 |        52 | ;p,q
+  53 |        53 | ;p,q
+  54 |        54 | ;p,q
+  55 |        55 | ;p,q,r
+  56 |        56 | ;p,q,r
+  57 |        57 | ;p,q,r
+  58 |        58 | ;p,q,r
+  59 |        59 | ;p,q,r
+  60 |        60 | ;p,q
+  61 |        61 | ;p,q,r
+  62 |        62 | ;p,q
+  63 |        63 | ;p,q
+  66 |        66 | ;p,q
+  67 |        67 | ;p,q
+  68 |        68 | ;p,q
+  69 |        69 | ;p,q,r
+  70 |        70 | ;p,q,r
+  71 |        71 | ;p,q,r
+  72 |        72 | ;p,q,r
+  73 |        73 | ;p,q
+  74 |        74 | ;p,q
+   9 |         9 | ;
+   3 |         3 | ;p,q
+   4 |         4 | ;p,q
+   5 |         5 | ;p,q
+   6 |         6 | ;p,q
+ 162 |       157 | x,x;A,B
+ 173 |       167 | x,a,b,x;A,B
+ 109 |       108 | A,x;
+ 153 |       148 | ;A,x
+ 154 |       149 | x;
+ 163 |       158 | x;A,B
+ 164 |       159 | ;A,B
+ 166 |       161 | ;A,B
+ 167 |       162 | ;a,b
+ 168 |       163 | ;A,B
+ 169 |       164 | ;x
+ 170 |       109 | A,B,x;
+  96 |        96 | ;E,e,f
+ 248 |       175 | y,x,x,y,x,y,y,x;P,Q,R
+ 159 |       154 | ;A,B
+ 155 |       150 | x,x;P,U,y
+  98 |        98 | ;E,e,f
+  91 |        91 | ;p,q
+ 235 |       169 | ;p
+ 113 |       112 | B,A,x,C,C;
+ 114 |       113 | A,A,x,x,y,y;
+ 115 |       114 | A,x;
+ 116 |       115 | B,A,x;
+ 237 |       170 | ;p,q
+ 158 |       153 | C,C;B,x
+  75 |        75 | ;p,q
+  76 |        76 | ;p,q
+  77 |        77 | ;p,q
+  78 |        78 | ;p
+  79 |        79 | ;p
+  80 |        80 | ;p
+  81 |        81 | ;p
+  82 |        82 | ;p
+  83 |        83 | ;p,q
+  84 |        84 | ;p,q
+  85 |        85 | ;p,q
+  86 |        86 | ;p,q,r
+  87 |        87 | ;p,q,r
+  88 |        88 | ;p,q
+  89 |        89 | ;p,q,r
+  90 |        90 | ;p,r
+  92 |        92 | ;p,q
+  93 |        93 | ;p,q,r
+  94 |        94 | ;p,q,r
+  95 |        95 | ;p,q,r
+  97 |        97 | ;E,e,f
+  99 |        99 | ;E,e,f,q
+ 100 |       100 | ;E,p
+ 101 |       101 | ;E,p,q
+ 102 |       102 | ;E,p
+ 103 |       103 | ;E,p,q
+ 104 |       104 | ;E,p
+ 105 |       105 | ;E,p
+ 106 |       106 | ;E,p
+ 112 |       111 | U,A,x;P
+ 156 |       151 | ;a,x
+ 157 |       152 | ;a,b,x
+ 160 |       155 | x,x;A,B
+ 121 |       116 | x;
+ 244 |       171 | x,x,x;P
+ 245 |       172 | x,x;P
+ 246 |       173 | x,x,x,x,x,x;P,Q,R
+ 247 |       174 | x,x,x,x,x,x;P,R,S
+ 290 |       176 | x,x,x;P
+ 299 |       177 | A,B,x,x;
+ 300 |       178 | U,A,B,x,x;P
+ 301 |       179 | a,b,A,B,x,x;
+ 302 |       180 | B,A,D,x,C,C,x,C,C;
+ 303 |       181 | B,A,C,x,x;
+ 304 |       182 | ;A,B,x
+ 305 |       183 | ;A,B,x
+ 306 |       184 | ;x
+ 307 |       185 | C,C;B,x
+ 308 |       186 | ;A,B,x
+ 309 |       187 | ;
+ 310 |       188 | ;
+ 311 |       189 | ;A,B
+ 312 |       190 | ;A,B
+ 313 |       191 | x;A
+ 314 |       192 | ;A,B,C
+ 315 |       193 | ;A,B
+ 316 |       194 | C;A,B
+ 317 |       195 | ;A,B
+ 318 |       196 | ;A,B
+ 319 |       197 | ;A,B,C
+ 320 |       198 | ;
+ 321 |       199 | ;A,B
+ 322 |       200 | ;A,B
+ 323 |       201 | ;A
+ 324 |       202 | ;A
+ 325 |       203 | ;A
+ 326 |       204 | A,B;
+ 327 |       205 | A,B,C;
+ 328 |       206 | ;a,b
+ 329 |       207 | ;a,b
+ 330 |       208 | ;a,b
+ 331 |       209 | ;a,b
+ 332 |       210 | ;a,b,c,d
+ 333 |       211 | a,b;A,B,x
+ 334 |       212 | ;A,B,a,b
+ 335 |       213 | ;A,B
+ 336 |       214 | x,x;A,B
+ 337 |       215 | ;A,B
+ 338 |       216 | a,b;A,B,x
+ 339 |       217 | ;A,B,C
+ 340 |       218 | ;R,S,w
+ 341 |       219 | x,y,z;R,S,w
+ 342 |       220 | ;A,B,C
+ 343 |       221 | ;R,S
+ 344 |       222 | x,y,x;R
+ 345 |       223 | y,x,y;R
+ 346 |       224 | y;R,z
+ 347 |       225 | x;R,z
+ 350 |       226 | ;q
+  12 |        12 | ;q,p

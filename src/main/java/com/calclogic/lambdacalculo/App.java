@@ -32,6 +32,44 @@ public class App extends Term{
     public App(Term p1,Term q1){
         p=p1;
         q=q1;
+        if (p1.type() == null || q1.type() == null)
+            type_ = null;
+        else {
+            Term pType = p1.type();
+            Term qType = q1.type();
+            Sust s = new Equation(((App)pType).q, qType).mgu(null, true);
+            if (s != null) 
+                type_ = ((App)((App)pType).p).q.sustParall(s);
+            else if ( ((App)pType).q.equals(qType) ) 
+                type_ = ((App)((App)pType).p).q;
+            else
+                type_ = null;
+            if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).id==0) {
+                s = new Equation(qType,((App)p).q.type()).mgu(null, true);
+                q.setType(s!=null?qType.sustParall(s):qType);
+            }
+        }
+    }
+    
+    public App(Term p1,Term q1,boolean computeType){
+        p=p1;
+        q=q1;
+        if (computeType) {
+            if (p1.type() == null || q1.type() == null)
+                type_ = null;
+            else {
+                Term pType = p1.type();
+                Term qType = q1.type();
+
+                Sust s = new Equation(((App)pType).q, qType).mgu(null, true);
+                if (s != null)
+                    type_ = ((App)((App)pType).p).q.sustParall(s);
+                else if ( ((App)pType).q.equals(qType) ) 
+                    type_ = ((App)((App)pType).p).q;
+                else
+                    type_ = null;
+            }
+        }
     }
     
     public boolean occur(Var x){
@@ -120,9 +158,20 @@ public class App extends Term{
     }
     
     @Override
+    public Term inverseVars() {
+        return new App(p.inverseVars(),q.inverseVars());
+    }
+    
+    @Override
     public void freeVars(int[] set){
         p.freeVars(set);
         q.freeVars(set);
+    }
+    
+    @Override
+    public void freeVars(int[] set, int[] visitNum){
+        p.freeVars(set, visitNum);
+        q.freeVars(set, visitNum);
     }
     
     @Override
@@ -132,11 +181,15 @@ public class App extends Term{
     }
     
     @Override
-    public Term abstractEq() {
+    public Term abstractEq(Term[] varTypes) {
         String sVars = this.stFreeVars();
         if (sVars!=null) {
-           q = q.abstractVars(sVars);
-           ((App)p).q = ((App)p).q.abstractVars(sVars);
+           q = q.abstractVars(sVars,varTypes);
+           ((App)p).q = ((App)p).q.abstractVars(sVars,varTypes);
+           if (((App)p).p.type_ != null) {
+              ((App)((App)p).p.type_).q = ((App)p).q.type_;
+              ((App)((App)((App)((App)p).p.type_).p).q).q = q.type_;
+           }
         }
         return this;
     }
@@ -351,12 +404,16 @@ public class App extends Term{
         Var xc=new Var(n);
         int[] max = new int[1];
         if(obtenerIzq(this,-1).p instanceof Phi){
-            return new Bracket(xc, (new App(this,xc)).kappaIndexado(n,xc,max));
+            Term exit = new Bracket(xc, (new App(this,xc)).kappaIndexado(n,xc,max));
+            exit.type_ = this.type_;
+            return exit;
         }
         else
         {
             //Var x=new Var(this.maxVar()+1);
-            return new Bracket(xc,(new App(this,xc)).kappaIndexado(n,xc,max));
+            Term exit = new Bracket(xc,(new App(this,xc)).kappaIndexado(n,xc,max));
+            exit.type_ = this.type_;
+            return exit;
         }
     }
     
@@ -419,7 +476,7 @@ public class App extends Term{
     }
     
     public Term type(){
-        return null;
+        return type_;
     }
     
     public int nPhi()
@@ -450,6 +507,11 @@ public class App extends Term{
             return new App(newTerm.p.leibniz(z, subtermId, thisId+"1", s), newTerm.q.leibniz(z, subtermId, thisId+"2", s));
     }
     
+    @Override
+    public Term etaReduc() {
+        return this;
+    }
+    
     /**
      * Returns a string formatted with variables codification (x_{}) and
      * constants codification (c_{}) with all possible parentheses (that could be
@@ -467,12 +529,12 @@ public class App extends Term{
         }
         else
             izq = p.alias.split("@")[0].replace("_", "\\_");
-        
+
         if(q.alias == null)
             der=q.toStringAll();
         else
             der=q.alias.split("@")[0].replace("_","\\_");
-        
+
         return "("+izq+" "+der+")";
     }
     
@@ -493,7 +555,7 @@ public class App extends Term{
       *     - 'S': simple
       *     - 'I': with inputs -> For the Substitution and Leibniz fields.
       *     - 'L': labeled -> For the last line of a proof.
-      *     - 'A': abreviaton -> For aliases.
+      *     - 'A': abbreviation -> For aliases.
       * @param s
       * @param numTeo
       * @param position
@@ -547,9 +609,9 @@ public class App extends Term{
         else {
             c = (Const) aux;
             if (c.getId()==0) {
-                HashMap<Integer, String> D = new HashMap<>();
+                //HashMap<Integer, String> D = new HashMap<>();
                 String tipo;
-                try {
+                /*try {
                     String t1 = stk.get(0).getType(D, s);
                     String t2 = stk.get(1).getType(D, s);
                     String t3 = Simbolo.matchTipo(t1, t2);
@@ -558,8 +620,9 @@ public class App extends Term{
                 } catch (TypeVerificationException ex) {
                     tipo = "*";
                     Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                if (tipo.equals("b")) {
+                }*/
+                tipo = resultType(stk.get(0).type());
+                if (tipo.equals("p")) {
                     sym = s.getSimbolo(1);
                     opId = 1;
                 }
@@ -632,6 +695,7 @@ public class App extends Term{
                 values.put("na"+i,tStr.term);
                 values.put("a"+i,tStr.term);
                 values.put("aa"+i,tStr.term);
+                values.put("ea"+i,tStr.term);
             }
             else {
                 if (c!=null && c.getId()==0) 
@@ -651,15 +715,41 @@ public class App extends Term{
                  
                 if (notation.contains("%(na"+i+")")){
                     if ('A' == kind){
-                        arg.toStringLaTeXAbrv(tStr,s,pm,"");
+                        if (sym.getId() == 62 && i==2 && arg.body() instanceof Const && 
+                              ((Const)arg.body()).getId()==8 
+                           )
+                           (new Const(0,"~")).toStringLaTeXAbrv(tStr,s,pm,"");
+                        else
+                           arg.toStringLaTeXAbrv(tStr,s,pm,"");
                         values.put("na"+i,tStr.term);
                     }
                     else{
-                        values.put("na"+i,arg.toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                        if (kind != 'I' && sym.getId() == 62 && i==2 && arg.body() instanceof Const &&
+                              ((Const)arg.body()).getId()==8 
+                           )
+                           values.put("na"+i,(new Const(0,"~")).toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                        else
+                           values.put("na"+i,arg.toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
                         if ('L' == kind){
                             setVar += l2.get(l2.size()-1);
                         }
                     }
+                }
+                else if (notation.contains("%(ea"+i+")")){
+                    String etaSt;
+                    if (kind == 'I') {
+                       etaSt = arg.toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
+                    }else {
+                       Term etaR = arg.etaReduc();
+                       if (etaR instanceof Const && ((Const)etaR).id == 4)
+                         etaSt = "\\exists";
+                       else if (etaR instanceof Const && ((Const)etaR).id == 5)
+                         etaSt = "\\forall";
+                       else
+                         etaSt = etaR.toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
+                    }
+                       
+                    values.put("ea"+i,etaSt);
                 }
                 else {
                     Boolean alwaysParentheses = notation.contains("%(a"+i+")");
@@ -701,7 +791,7 @@ public class App extends Term{
             if (opId != s.getPropFunApp() && opId != s.getTermFunApp()){
                 l.add(t.leibniz(z, appPosition, "", s));
             }
-            id.id++;       
+            id.id++;
         }
         else if ('A' == kind){
             tStr.term = term;
@@ -789,17 +879,17 @@ public class App extends Term{
      */
     @Override
     public String toStringFormatC(SimboloManager s, String pos, int id, String rootId) {
-        
         if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
             && ((App)p).q.containT() )
             return q.toStringFormatC(s, pos, id, rootId);
         
+        int eaArgument = -1;
         Stack<Term> stk = new Stack<Term>();
         String term;
         stk.push(q);
         Term aux = p;
         int j = 1;
-        while ( aux instanceof App ){
+        while ( aux instanceof App ){//System.out.println(aux);System.out.println(stk);
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
            j++;
@@ -824,6 +914,11 @@ public class App extends Term{
             id = sym.getId();
             nArgs = sym.getArgumentos();
             isQuantifier = sym.isQuantifier();
+            if (isQuantifier) {
+                String[] splitArray = sym.getNotacion().split(".*%[(]ea");
+                if (splitArray.length > 1)
+                  eaArgument = Integer.parseInt(splitArray[1].split("[)]")[0]);
+            }
         }
         if ( j > nArgs) {
             Simbolo sym;
@@ -846,7 +941,7 @@ public class App extends Term{
         List<Var> boundVars = null;
         while (!stk.empty()) {
             Term arg = stk.pop();
-            if (arg instanceof Bracket && isQuantifier && boundVars == null) {
+            if (i!=eaArgument && arg instanceof Bracket && isQuantifier && boundVars == null) {
                 boundVars = new ArrayList<Var>();
                 Term aux_arg = arg;
                 while (aux_arg instanceof Bracket) {
@@ -928,7 +1023,18 @@ public class App extends Term{
         return toString;
     }
     
-    
+    public String toStringType(String v) {
+        String st = v+"(";
+        int boundV = 23;
+        st = st+q.toStringType((char)(97+boundV)+"");
+        Term aux = ((App)p).q;
+        int i =1;
+        while ( aux instanceof App ) {
+            st = st+((App)aux).q.toStringType((char)(97+((boundV+i)%26) )+"");
+            aux = ((App)((App)aux).p).q;
+        }
+        return st+")";
+    }
 
     @Override
     public boolean equals(Object obj) {

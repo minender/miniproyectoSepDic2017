@@ -16,6 +16,7 @@ import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombUtilities;
+import com.calclogic.parse.TypeUtilities;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,12 +44,17 @@ public class OperatorToEqualityImpl extends GenericProofMethodImpl implements Op
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula){
+    public Term initFormula(Term beginFormula, Term proof){
         // this convert formulas like lamb x.t1=lamb x.t2 into t1==t2
         Term aux = ((App)beginFormula).q.body();
         Term right = ((App)((App)aux).p).q;
         Term left = ((App)aux).q;
-        return new App(new App(new Const(0,"="),right), left).abstractEq();
+        Term result = new App(new App(new Const(0,"="),right), left).abstractEq(null);
+        String freeVars = result.stFreeVars();
+        String bndVars = result.getBoundVarsComma();
+        String vars = bndVars + ";" + freeVars;
+        result = CombUtilities.getTerm(result.traducBD().toString(), null, TypedA.sm_).evaluar(vars);
+        return result;
     }
 
     /**
@@ -59,7 +65,7 @@ public class OperatorToEqualityImpl extends GenericProofMethodImpl implements Op
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement){
+    public String header(String statement, Term beginFormula){
         return ""+statement;
     }
 

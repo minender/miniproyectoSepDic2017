@@ -2,6 +2,7 @@ package com.calclogic.proof;
 
 import com.calclogic.entity.Resuelve;
 import com.calclogic.lambdacalculo.App;
+import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
@@ -36,7 +37,7 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo){
+    public String header(String nTeo, Term beginFormula){
         return "By starting from one side";
     }
 
@@ -78,7 +79,7 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
             }
             ultInfType = iter.type();
             Term aux = ((App)((App)iter.type()).p).q.body();       
-            lastline = (solved?aux.toStringLaTeX(s,"")+"$":aux.toStringLaTeXLabeled(s));
+            lastline = (solved?aux.toStringLaTeX(s,"")+closingComment(typedTerm)+"$":aux.toStringLaTeXLabeled(s));
         }
         // Case when direct method is applied and the starting point is the expression to be proved
         else { 
@@ -162,8 +163,8 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
      * @return The new step of the demonstration as a string
      */
     protected String stepOneSideEq(String user, Term typedTerm, ResuelveManager resuelveManager, DisponeManager disponeManager, SimboloManager s) {
-        String teo, leib, inst, newStep;
-        teo = leib = inst = newStep = "";
+        String teo, leib, z, inst, newStep;
+        teo = leib = z = inst = newStep = "";
         Term st = null;
 
         // if the inference is a modus pones that simulates natural deduction is true this
@@ -179,7 +180,8 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
                     inst = ((App)((App)((App)ultInf).q).q).p.type().toStringLaTeX(s,"");
                     inst = "~\\text{with}~" + inst;
                     leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
-                    leib = "~\\text{and}~"+"E^{z}:" + leib;
+                    z = (char)((Bracket)((App)((App)ultInf).q).p.type()).x.indice+"";
+                    leib = "~\\text{and}~"+"E^{"+z+"}:" + leib;
                 }
                 else {
                     st = ((App)((App)ultInf).q).q;//.type().traducBD().toString();
@@ -190,13 +192,15 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
                         }
                         else {
                             leib = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
-                            leib = "~\\text{and}~"+"E^{z}:" + leib;
+                            z = (char)((Bracket)((App)((App)ultInf).q).p.type()).x.indice+"";
+                            leib = "~\\text{and}~"+"E^{"+z+"}:" + leib;
                         }
                     } else {
                         inst = ((App)((App)ultInf).q).p.type().toStringLaTeX(s,"");
                         inst = "~\\text{with}~" + inst;
                         leib = ((App)ultInf).p.type().toStringLaTeX(s,"");
-                        leib = "~\\text{and}~"+"E^{z}:" + leib;
+                        z = (char)((Bracket)((App)ultInf).p.type()).x.indice+"";
+                        leib = "~\\text{and}~"+"E^{"+z+"}:" + leib;
                     }
                 }
             } else {
@@ -206,7 +210,8 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
                     inst = "~\\text{with}~" + inst;
                 }
                 else if (((App)ultInf).p instanceof TypedL){
-                    leib = "~\\text{and}~"+"E^{z}:" + pType.toStringLaTeX(s,"");
+                    z = (char)((Bracket)pType).x.indice+"";
+                    leib = "~\\text{and}~"+"E^{"+z+"}:" + pType.toStringLaTeX(s,"");
                 }
                 // The SA case does not fulfill any of the two conditions above, and only "teo" is assigned
                 st = ((App)ultInf).q; //.type().traducBD().toString();
@@ -262,14 +267,28 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
         // If Formula that the user is trying to prove in this proof/sub-proof is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
-        if(initialExpr.equals(((App)((App)formulaBeingProved).p).q) && finalExpr.equals(((App)formulaBeingProved).q)){
+        if(initialExpr.body().equals(((App)((App)formulaBeingProved).p).q.body()) 
+                && finalExpr.body().equals(((App)formulaBeingProved).q.body())){
             proof = new TypedApp(new TypedS(proof.type()), proof);
-        }
+        }// en el if anterior tienes que usar body() porque puede ser que el orden de la cadena de 
+        // abstracciones, aunque tienen las mismas variables, estan en otro orden con respecto al 
+        // enunciado inicial ya que esta volteado o simetrico y esto hace que la busqueda de variables
+        // en inorden encuentre las variables en otro orden
         Term operatorTerm = ((App)((App)formulaBeingProved).p).p;
         // The Starting From One Side method only admits reflexive operators
         int resuelveKind = resuelveManager.isReflexiveOperatorForUser(username, operatorTerm.toString());
         new TypedM(resuelveKind, ((Const)operatorTerm).getId(), proof, "", username);
         return proof;
+    }
+    
+    /**
+     * This function returns the closing comment of the proof i.e. the conclusion of the proof
+     * 
+     * @param proof: The current proof
+     * @return String with the closing comment of the proof
+     */
+    public String closingComment(Term proof) {
+        return  "\\\\ ~ \\\\ \\therefore~"+proof.type().toStringLaTeX(simboloManager, "")+" ";
     }
     
     /**

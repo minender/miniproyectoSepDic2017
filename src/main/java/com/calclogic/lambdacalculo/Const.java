@@ -10,6 +10,8 @@ import com.calclogic.service.SimboloManager;
 import com.calclogic.service.SimboloManagerImpl;
 import com.calclogic.dao.SimboloDAO;
 import com.calclogic.dao.SimboloDaoImpl;
+import com.calclogic.parse.CombUtilities;
+import com.calclogic.parse.TypeUtilities;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,11 +31,22 @@ public class Const extends Term
     
     public Const(String cons)
     {
+        id =-1;
+        con=cons;
+        funNotation = false;
+        preced = 0;
+        asociat = 0;
+        type_ = null;
+    }
+    
+    public Const(String cons, Term type)
+    {
         id =0;
         con=cons;
         funNotation = false;
         preced = 0;
         asociat = 0;
+        type_ = type;
     }
     
     public Const(int idd, String cons, boolean funNota, int prec, int asoc)
@@ -43,6 +56,7 @@ public class Const extends Term
         funNotation = funNota;
         preced = prec;
         asociat = asoc;
+        type_ = null;
     }
     
     public Const(int idd, String cons) 
@@ -52,9 +66,24 @@ public class Const extends Term
         funNotation = false;
         preced = 0;
         asociat = 0;
-        
+        type_ = null;
     }
 
+    public Const(int idd, String cons, String type) 
+    {
+    	id = idd;
+        con=cons;
+        funNotation = false;
+        preced = 0;
+        asociat = 0;
+        type_ = TypeUtilities.getTerm(type);
+    }
+    
+    public void setType(String type)
+    {
+        type_ = TypeUtilities.getTerm(type);
+    }
+    
     public int getId() {
         return id;
     }
@@ -97,9 +126,14 @@ public class Const extends Term
         return this;
     }
     
+    @Override
+    public Term etaReduc() {
+        return this;
+    }
+    
    public Term type()
    {
-       return null;
+       return type_;
    }
    
    public int nPhi()
@@ -216,8 +250,8 @@ public class Const extends Term
     
     public String toStringAll()
     {
-        Term typ = this.type();
-        if (typ == null || con.equals("S")) //|| con.equals("U"))
+        //Term typ = this.type();
+        if (!(this instanceof TypedTerm)/*typ == null*/|| con.equals("S")) //|| con.equals("U"))
             return con;
         else
             return con+"^{"+((TypedTerm)this).getCombDBType()+"}";
@@ -292,6 +326,10 @@ public class Const extends Term
         return toString;
     }
 
+    public String toStringType(String v) {
+        return v;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -318,7 +356,17 @@ public class Const extends Term
     }
 
     @Override
+    public Term inverseVars() {
+        return this;    
+    }
+    
+    @Override
     public void freeVars(int[] set){
+        ;
+    }
+    
+    @Override
+    public void freeVars(int[] set, int[] visitNum){
         ;
     }
     
@@ -328,7 +376,7 @@ public class Const extends Term
     }
     
     @Override
-    public Term abstractEq() {
+    public Term abstractEq(Term[] varTypes) {
         return null;
     }
     

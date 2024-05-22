@@ -1,0 +1,10 @@
+X=1
+DIGITS=2
+P=3
+TO=4
+O_PAR=5
+C_PAR=6
+WHITESPACE=7
+'->'=4
+'('=5
+')'=6

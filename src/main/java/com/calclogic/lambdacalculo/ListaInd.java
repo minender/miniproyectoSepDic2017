@@ -63,6 +63,10 @@ public class ListaInd extends Indice {
         return I;
     }
     
+    public Indice get(int i) {
+        return list.get(i);
+    }
+    
     public Indice tope()
     {
         return list.get(0);

@@ -1,4 +1,4 @@
-// Generated from .\Term.g by ANTLR 4.8
+// Generated from Term.g by ANTLR 4.8
 package com.calclogic.parse; 
 
 import com.calclogic.entity.Predicado;
@@ -90,4 +90,14 @@ public interface TermListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArguments(TermParser.ArgumentsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TermParser#argtail}.
+	 * @param ctx the parse tree
+	 */
+	void enterArgtail(TermParser.ArgtailContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TermParser#argtail}.
+	 * @param ctx the parse tree
+	 */
+	void exitArgtail(TermParser.ArgtailContext ctx);
 }

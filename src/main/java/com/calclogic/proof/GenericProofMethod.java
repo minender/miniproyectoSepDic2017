@@ -27,7 +27,7 @@ public interface GenericProofMethod {
      * @return Term that represents the statement to be proved in the current sub proof,
      *         according to the demonstrarion method used
      */
-    public Term initFormula(Term beginFormula);
+    public Term initFormula(Term beginFormula, Term proof);
 
     /**
      * Indicates the header that a proof that starts with the current demonstration
@@ -36,7 +36,7 @@ public interface GenericProofMethod {
      * @param phrase: Argument to complete the header, that will vary according to the method
      * @return The header message to be added to the proof
      */
-    public String header(String phrase);
+    public String header(String phrase, Term beginFormula);
 
     /**
      * Indicates the header of a sub-proof of a branched recursive method
@@ -172,6 +172,14 @@ public interface GenericProofMethod {
      * @return proof of conjunction of two sub proofs
      */
     public Term finishedBranchedRecursiveMethodProof(String user, Term originalTerm, Term finalProof);
+    
+    /**
+     * This function returns the closing comment of the proof i.e. the conclusion of the proof
+     * 
+     * @param proof: The current proof
+     * @return String with the closing comment of the proof
+     */
+    public String closingComment(Term proof, Term beginFormula);
     
     /**
      * This function delete the last part of the proof depends of the method

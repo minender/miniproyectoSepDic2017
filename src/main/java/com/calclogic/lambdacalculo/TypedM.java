@@ -29,9 +29,9 @@ public class TypedM extends TypedA implements TypedTerm {
             //A_ = new TypedA(type, variables_, nSt_, combDBType_);
             Term lambType = super.type(); //A_.type();
             String arg2 = ((App)lambType).q.body().toString();
-            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user,sm_);
             aux = new TypedApp(aux,new TypedA(type, variables_, nSt_, combDBType_));
-            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user,sm_);
             proof_ = new TypedApp(aux,proof_);
         }
     }
@@ -47,9 +47,9 @@ public class TypedM extends TypedA implements TypedTerm {
             //A_ = new TypedA(type, variables_, nSt_, combDBType_);
             Term lambType = super.type(); //A_.type();
             String arg2 = ((App)lambType).q.body().toString();
-            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user,sm_);
             aux = new TypedApp(aux,new TypedA(type, variables_, nSt_, combDBType_));
-            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user,sm_);
             proof_ = new TypedApp(aux,proof_);          
         }
     }
@@ -90,17 +90,17 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             // A_ = ((TypedA)proof);
             Term lambType = super.type();
             String arg2 = ((App)lambType).q.body().toString();
-            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user,sm_);
             aux = new TypedApp(aux,proof);
             if (id == 1)
-               proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+               proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user,sm_);
             else
-               proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} (A^{= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} c_{"+opId+"})} A^{= T c_{8}})", user);
+               proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} (A^{= (\\Phi_{K} c_{8}) (\\Phi_{(b,)} c_{"+opId+"})} A^{= T c_{8}})", user,sm_);
             proof_ = new TypedApp(aux,proof_);
         }
         else if (id == 3) {
             String template = "(S A^{= T c_{8}})";
-            proof_ = CombUtilities.getTerm(template, user);
+            proof_ = CombUtilities.getTerm(template, user, sm_);
             //if (proof.containT()) 
             proof_ = new TypedApp(proof ,proof_);
             /*else{
@@ -112,26 +112,26 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             String t1 = ((App)((App)proofType).q.body()).q.toString();
             String t2 = ((App)((App)((App)proofType).q.body()).p).q.toString();
             String template1="L^{\\lambda x_{122}. c_{1} ("+t2+") x_{122}} (M_{3} ("+proof+")) (I^{[x_{113}:="+t2+"]} A^{= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})})";
-            String template2="S (I^{[x_{112},x_{113},x_{114}:="+t1+","+t2+","+t2+"]} A^{= (\\Phi_{bcb} (\\Phi_{cb} c_{1}) c_{1} \\Phi_{cbcb}) (\\Phi_{cb} c_{1} (\\Phi_{cbcb} c_{1} \\Phi_{cb}))})";
+            String template2="S (I^{[x_{114},x_{113},x_{112}:="+t2+","+t2+","+t1+"]} A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{1}) c_{1}) (\\Phi_{cbbb} c_{1} \\Phi_{bb} \\Phi_{bb} c_{1})})";
             String template3="L^{\\lambda x_{122}. c_{1} x_{122} ("+t1+")} (I^{[x_{113}:="+t2+"]} A^{= (\\Phi_{(b,)} c_{1}) (\\Phi_{K} c_{8})})";
             String template4="S ((I^{[x_{112},x_{113}:="+t1+",c_{8}]} A^{= (\\Phi_{bb} \\Phi_{b} c_{1}) (\\Phi_{cb} c_{1} \\Phi_{cb})}) (I^{[x_{113}:="+t1+"]} A^{= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})}))";
-            Term T1 = CombUtilities.getTerm(template1, user);
-            Term T2 = CombUtilities.getTerm(template2, user);
-            Term T3 = CombUtilities.getTerm(template3, user);
-            Term T4 = CombUtilities.getTerm(template4, user);
+            Term T1 = CombUtilities.getTerm(template1, user,sm_);
+            Term T2 = CombUtilities.getTerm(template2, user,sm_);
+            Term T3 = CombUtilities.getTerm(template3, user,sm_);
+            Term T4 = CombUtilities.getTerm(template4, user,sm_);
             proof_ = new TypedApp(T4,new TypedApp(T3,new TypedApp(T2,T1)));
         }
         else if (id == 5) { // igual que id=1 pero para identificar que el 2 branch del AI no ha terminado y la prueba hasta ahora tiene raiz [p=q]
             Term lambType = super.type();
             String arg2 = ((App)lambType).q.body().toString();
-            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user);
+            Term aux = CombUtilities.getTerm("L^{\\lambda x_{122}. c_{"+opId+"} x_{122} ("+arg2+")}",user,sm_);
             aux = new TypedApp(aux,proof);
-            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user);
+            proof_ = CombUtilities.getTerm("I^{[x_{113}:="+arg2+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{"+opId+"})}", user,sm_);
             proof_ = new TypedApp(aux,proof_);
             
             String template = "(S A^{= T c_{8}})";
             //if (proof.containT()) 
-            proof_ = new TypedApp(proof_, CombUtilities.getTerm(template, user));
+            proof_ = new TypedApp(proof_, CombUtilities.getTerm(template, user,sm_));
         }
         else
             proof_ = proof;

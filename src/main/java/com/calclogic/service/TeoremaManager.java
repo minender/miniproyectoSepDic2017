@@ -39,7 +39,7 @@ public interface TeoremaManager {
 	 * If it exists, it parses the string associated with the object.
      * @param id Is the principal key of the theorem.
      */
-    public Teorema getTeorema(int id);
+    public Teorema getTeorema(int id, SimboloManager s);
     
     /**
      * Method to get a list of all the entries of the table (all the theorems),

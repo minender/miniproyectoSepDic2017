@@ -6,8 +6,10 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.entity.Resuelve;
+import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.TermUtilities;
 import com.calclogic.service.ResuelveManager;
+import com.calclogic.service.SimboloManager;
 import java.util.List;
 
 /**
@@ -16,17 +18,19 @@ import java.util.List;
  */
 public class TypedA extends Const implements TypedTerm{
     
-    protected final Term type_;
+    //protected final Term type_;
     protected final String variables_;
     protected final String nSt_;
     protected final String combDBType_;
     private static ResuelveManager rm_;
+    public static SimboloManager sm_;
     
-    public static void setResuelveManager(ResuelveManager rm) {
+    public static void setResuelveManager(ResuelveManager rm, SimboloManager s) {
         rm_ = rm;
+        sm_ = s;
     }
     
-    protected TypedA(Term type, String variables, String nSt, String combDBType) {
+    public TypedA(Term type, String variables, String nSt, String combDBType) {
         super("A");
         type_ = type;
         variables_ = variables;
@@ -38,7 +42,7 @@ public class TypedA extends Const implements TypedTerm{
     {
         super("A");
         variables_ = type.stFreeVars();
-        type_ = type.abstractEq();
+        type_ = type.abstractEq(null);
         combDBType_ = type_.traducBD().toString();
         nSt_ = "";
     }
@@ -62,7 +66,7 @@ public class TypedA extends Const implements TypedTerm{
     public TypedA(String nTeo, String user)
     {
         super("A");
-        Resuelve r = rm_.getResuelveByUserAndTeoNum(user, nTeo,true);
+        Resuelve r = rm_.getResuelveByUserAndTeoNum(user, nTeo,true,sm_);
         type_ = r.getTeorema().getTeoTerm();
         combDBType_ = type_.toString();
         if (r != null) {
@@ -94,7 +98,7 @@ public class TypedA extends Const implements TypedTerm{
     public TypedA(int idTeo, String user)
     {
         super("A");
-        Resuelve r = rm_.getResuelveByUserAndTeorema(user, idTeo,true);
+        Resuelve r = rm_.getResuelveByUserAndTeorema(user, idTeo,true,sm_);
         type_ = r.getTeorema().getTeoTerm();
         combDBType_ = type_.toString();
         if (r != null) {

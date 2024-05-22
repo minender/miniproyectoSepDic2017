@@ -7,6 +7,7 @@ import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedM;
+import com.calclogic.lambdacalculo.TypedTerm;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.ProofBoolean;
 import com.calclogic.parse.CombUtilities;
@@ -44,7 +45,7 @@ public class Solucion implements java.io.Serializable {
     private Resuelve resuelve;
     private boolean resuelto;
     private String demostracion;
-    private String metodo;
+    private String method;
     private CrudOperations proofCrudOperations;
 
 
@@ -78,13 +79,43 @@ public class Solucion implements java.io.Serializable {
     public String getDemostracion() {
     	return demostracion;
     }
-    
+   
     public String getMetodo() {
-	return metodo;
+        return method;
+    }
+    
+    public String getMethod() {
+        String[] arr = method.split(":");
+        if (arr.length == 2)
+            return arr[0];
+        else
+	    return method;
+    }
+    
+    public String getCaseAnalysis() {
+        String[] arr = method.split(":");
+        if (arr.length == 2)
+            return arr[1];
+        else
+	    return "";
+    }
+    
+    public void eraseCaseAnalysis() {
+        String[] arr = method.split(":");
+        if (arr.length == 2)
+            this.method = arr[0];
     }
 
     public void setMetodo(String metodo) {
-	this.metodo = metodo;
+        String[] arr;
+        if (method != null ){
+           arr = method.split(":");
+           if (arr.length == 2)
+	      this.method = metodo+":"+arr[1];
+           else
+              this.method = metodo;
+        } else
+           this.method = metodo;
     }
     
     public Solucion(Term typeTerm) {
@@ -97,7 +128,7 @@ public class Solucion implements java.io.Serializable {
         this.resuelto = resuelto;
         this.typedTerm = typeTerm;
         this.demostracion = (typeTerm != null?typeTerm.toString():"");
-        this.metodo = metodo;
+        this.method = metodo;
         this.proofCrudOperations = proofCrudOperations;
     }
 
@@ -139,7 +170,7 @@ public class Solucion implements java.io.Serializable {
         String metaTheo = sub1.replace(metaTheoT);
 
         try {
-          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo,user));
+          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo,user,null));
           newProof = new TypedApp(new TypedApp(((App)((App)father).p).p, newProof),((App)father).q);
           return newProof;
         }
@@ -155,7 +186,7 @@ public class Solucion implements java.io.Serializable {
         else {
             Term auxProof;
             int i;
-            if (subProof==null || subProof.type()==null) {
+            if (subProof==null || !(subProof.type() instanceof TypedTerm) ) {//subProof.type()==null) {
                 i=2;
                 auxProof =(subProof==null?((TypedApp)fathers.get(1)).q:branchedOneLineSubProof(subProof,fathers.get(1),user));
             }
@@ -181,7 +212,7 @@ public class Solucion implements java.io.Serializable {
     
     public void deleteFinishStack(Term methodTerm, Term statement) {
         Term[] T = proofCrudOperations.getCurrentMethodStack(typedTerm, methodTerm, statement);
-        if ( T != null && T[0].type()!=null && T[0].type().equals(T[2]) ) {
+        if ( T != null && T[0].type() instanceof TypedTerm/*T[0].type()!=null*/ && T[0].type().equals(T[2]) ) {
            Term aux = T[1];
            GenericProofMethod objectMethod;
            while (aux instanceof App) {

@@ -38,7 +38,7 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo){
+    public String header(String nTeo, Term formulaBeingProved){
         return "By transitivity method<br>";
     }
 

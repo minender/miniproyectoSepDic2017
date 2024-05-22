@@ -1,0 +1,50 @@
+Es relativmente facil diseñar un algoritmo para calcular el tipo de un combinador de Broda y Damas cuando la lista de b y c no tiene parentesis. Esto se hace calculando linealmente el tipo de cada argumento de derecha a izquierda. Cuando hay parentesis, realmente hay dos listas, por lo que se debe aplicar el algoritmo 
+anterior recursivamente y luego hacer los ajustes para enlazar los dos tipos resultantes. Sin embargo no se quiere 
+implementar un algoritmo recursivo para evitar el overhead de los empilamientos y desempilamientos de marcos de pila.
+Para eso usamos un solo ciclo que aumenta segun un contador i, este indice sirve para llenar linealmente un arreglo 
+con los tipos de cada uno de los argumentos. Aunque para determinar el tipo de un argumento i, en ocasiones es necesario estudiar el tipo del argumento i+n, se puede volver atras sin romper el proceso lineal, dejando un apuntador sobre el tipo del argumento i.
+
+Para hacer un algoritmo con un solo ciclo se deben tener dos indices, el i que recorre el algoritmo de tipos de todos 
+los argumentos y el j que recorre la lista actomica de b y c (sin parentesis). La variable j se resetea a cero cada vez que se inicia el recorrido de una nueva lista atomica, mientras el i continua linealmente. Cada vez que se inicia el recorrido de una lista atomica se deberia resetear todas las variables del ciclo salvo la i, pero no es posible porque es necesario enlasar los resultados de las listas.
+
+La primera relacion que tienen dos listas de un parentesis, es que comparten el mismo tipo de ese primer argumento que se aplica con el segundo. El tipo de este primer argumento (contando de derecha a izquierda) se encuentra siempre en A[0], el cual se necesita para calcular el tipo del siguiente argumento, por lo tanto este trozo de codigo debe ser el mismo para cada inicio de lista. Debe existir un trozo de codigo de finalizacion de lista, el cual se ejecute cada vez que j llegue a su final, trozo de codigo que "deberia estar repetido afuera del ciclo para finalizar la ultima lista" (capaz no hace falta si antes de salir del ciclo entras donde j llega a su final). La finalizacion de lista son de dos tipos, no es lo mismo finalizar la lista derecha que la lista izquierda. La lista derecha finaliza de la misma manera que una lista atomica que no proviene de un parentesis, en cambio la lista izquierda finaliza considerando que el tipo resultante tiene que ser aplicable al tipo resultante de la lista derecha. Las variables que no sirvan para enlazar A[0] con una nueva lista o para la finalizacion de lista, deben ser reseteadas cada vez que j llegue a su final.
+
+Recuerda que el ciclo mientras aumenta i debe ir reseteando j por cada lista, pero este recorrido de j debe considerar el caso en que la lista es de longitud cero.
+App x = null;        // se resetea luego que aplicas el codigo de finalizacion de lista
+Indice index = null; // probablemente no hace falta ser reseteado, porque no importa si empieza en null
+ParInd par = null;   // no se puede resetear porque sino se pierde el apuntador para obtener la lista izquierda
+int i = 1;           // no se resetea
+int j = 0;           // se resetea luego de aplicar el codigo de finalizacion de lista
+int n = ind.orden;   // es constante por lo tanto no se resetea
+ListaInd list = ind; // es el apuntador constante que sirve para obtener las nuevas listas
+ListaInd currentList = ind; // se resetea con la nueva lista
+
+yo creo que la asignacion de A[0] se puede hacer aqui revisando el tope de la lista
+do i <= n -->  // debes iterar aunque i > n si el tope de la lista es un par
+  tomas el elemento j-esimo de currentList (esto puede coincidir con el j'-1 elemento de list si se ignora un tope par)
+  if b -->
+    construye el tipo i-esimo segun el caso
+  [] c -->
+    construye el tipo i-esimo segun el caso
+  [] , -->
+    no incrementes aqui las variables i y j
+    en currentList tomas la lista derecha
+    metes en una pila el par de listas
+    seteas las variables que recuerden que la 
+    lista seleccionada es la derecha
+  fi;
+  if j llego al final -->
+     if lista derecha -->
+        finalizar el tipo de la lista segun el caso
+        currentList = par.i1
+	setea que las variables que indiquen que la lista nueva es la izquierda
+     [] lista izquierda -->
+        finalizar el tipo de la lista segun el caso
+        currentList = debe ser una pila de la que se hace pop()
+        se debe poner un valor -1 en una variable que recuerde que ahora para buscar la posicion i 
+        en la currentList en realidad se buscara i-1 para ignorar el tope que es un par
+     fi;
+     resetear las variables que se necesiten resetear
+  fi;
+  i, j := i+1, j+1
+od

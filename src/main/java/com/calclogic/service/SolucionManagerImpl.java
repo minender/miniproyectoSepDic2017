@@ -7,6 +7,7 @@ import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Usuario;
 import com.calclogic.lambdacalculo.Term;
+import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.proof.CrudOperations;
 
@@ -150,7 +151,7 @@ public class SolucionManagerImpl implements SolucionManager {
     public Solucion getSolucion(int id, String user){
         Solucion solucion = solucionDAO.getSolucion(id);
         if (!solucion.getDemostracion().equals("")) {
-            solucion.setTypedTermNotStrProof(CombUtilities.getTerm(solucion.getDemostracion(),user));
+            solucion.setTypedTermNotStrProof(CombUtilities.getTerm(solucion.getDemostracion(),user,TypedA.sm_));
             solucion.setProofCrudOperations(crudOp);
         }
         /*else // case when all the proof was erased by the go back button
@@ -169,7 +170,7 @@ public class SolucionManagerImpl implements SolucionManager {
         List<Solucion> sols = solucionDAO.getAllSolucionesByResuelve(resuelveId);
         for (Solucion sol: sols)
             if (!sol.getDemostracion().equals(""))
-                sol.setTypedTermNotStrProof(CombUtilities.getTerm(sol.getDemostracion(),null));
+                sol.setTypedTermNotStrProof(CombUtilities.getTerm(sol.getDemostracion(),null,null));
             /*else
                 sol.setTypedTerm(null);*/
         return sols;

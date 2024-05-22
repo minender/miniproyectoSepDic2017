@@ -66,7 +66,7 @@
         TR: "Transitivity",
         CO: "Contradiction",
         CR: "Counter-reciprocal",     
-        AI: "Conjunction by parts",
+        AI: "Proof by parts",
         MI: "Mutual implication",
         CA: "Case analysis",
         WI: "Witness",
@@ -172,14 +172,20 @@
                     break;
             }
 
-            let success = await proofMethodAjax(method);
-
-            if (success && (message!=null)){ // Case in which we must put a message
-                await setModalBody(message);
+            if (method === 'CA') {
+                setModalBody(message);
                 switchToOkButtons();
             }
             else {
+              let success = await proofMethodAjax(method);
+
+              if (success && (message!=null)){ // Case in which we must put a message
+                await setModalBody(message);
+                switchToOkButtons();
+              }
+              else {
                 closeModal();
+              }
             }
         }
     }
@@ -193,9 +199,31 @@
     // Closes modal and adds formula inputs for proof by cases
     function okButton() {
         if(this.selectedMethod === "CA"){
-            $("#formulaInput").removeClass('d-none');
-            $("#formula").addClass('d-none');
+           var input = $('#nCases_id');
+           var nCases = parseInt(input.val());
+           input.val('');
+           if (!isNaN(nCases) && nCases >= 1) {
+             $('#metodosDiv').hide();
+             $('#inferForm').show();
+             //$('#jaxButtonsDiv').show();
+             //$("#stSustLeibDiv").show();//.removeClass('d-none');
+             $("#statementDiv").hide();
+             $("#leibnizDiv").hide();
+             $("#BtnInferir").val('Ok');
+             $("#BtnLimpiar").hide();
+             var casesList = '1';
+             for (let i=2; i<=nCases; i++) {
+                 casesList += ','+i; 
+             }
+             setJaxSubstitutionVariables(casesList,'substitutionButtonsId');
+             $('#input_cases').addClass('d-none');
+             window['caseAnalysis'] = 1;
+             closeModal();
+           }
+           else
+             alert("The number of cases must be a positive number");
         }
-        closeModal();
+        else
+          closeModal();
     }
 </script>

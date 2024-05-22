@@ -39,6 +39,9 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.externalservices.MicroServices;
+import com.calclogic.lambdacalculo.TypedTerm;
+import com.calclogic.parse.CombUtilities;
+import com.calclogic.proof.CaseAnalysisMethodImpl;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.GenericProofMethod;
 import com.calclogic.proof.ProofBoolean;
@@ -106,7 +109,8 @@ public class InferController {
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username,true);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username,true,
+                                                                               simboloManager);
         
         for (Resuelve r: resuelves) // Este for debes mandarlo para el manager y quitar
         {                           // la construccion del metateorema del true
@@ -178,11 +182,11 @@ public class InferController {
         {
             return "redirect:/index";
         }
-        Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
+        Resuelve resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false,simboloManager);
 
         // Case when the user could only see the theorem but had not a Resuelve object associated to it
         if (resuel == null) {
-            resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo,false);
+            resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo,false,simboloManager);
             Usuario user = usuarioManager.getUsuario(username);
             resuel.setUsuario(user);
             resuel.setDemopendiente(-1);
@@ -195,7 +199,8 @@ public class InferController {
         String solId = "new";
         if (resuel.getDemopendiente() != -1)
             solId ="" + resuel.getDemopendiente();
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSolWithoutAxiom(username,nTeo,true); // Maybe: getAllResuelveByUserResuelto
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSolWithoutAxiom(username,nTeo,
+                                                                                           true,simboloManager); // Maybe: getAllResuelveByUserResuelto
 
         // Usando algoritmo de punto fijo
         List<Resuelve> unResuelve = new ArrayList<Resuelve>();
@@ -232,17 +237,18 @@ public class InferController {
             infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"")+"$</center> Proof:");  
             InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
             Term typedTerm = solucion.getTypedTerm();
-
+            
             response.generarHistorial(
                 username,
                 formula, 
                 nTeo, 
                 typedTerm, 
                 true,
-                (solucion.getMetodo().equals("") || 
-                        ProofBoolean.isWaitingMethod(ProofMethodUtilities.getTerm(solucion.getMetodo()))?
+                (solucion.getMethod().equals("") || 
+                        ProofBoolean.isWaitingMethod(ProofMethodUtilities.getTerm(solucion.getMethod()))?
                                 false:true),
-                (solucion.getMetodo().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMetodo()))
+                (solucion.getMethod().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMethod())),
+                (solucion.getCaseAnalysis().equals("")?null:CombUtilities.getTerm(solucion.getCaseAnalysis(), username, simboloManager))
             );
             map.addAttribute("elegirMetodo",response.getCambiarMetodo());
             map.addAttribute("formula",response.getHistorial());
@@ -316,7 +322,6 @@ public class InferController {
         if (response.getError() != null){
             return response;
         }
-       
         // CREATE THE INSTANTIATION
         ArrayList<Object> arr = null;
         if (!instanciacion.equals("")){
@@ -401,13 +406,13 @@ public class InferController {
             String[] freeVars = freeV.split(",");
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
 
-            String method = solucion.getMetodo();
+            String method = solucion.getMethod();
             Term methodTerm = ProofMethodUtilities.getTerm(method);
             Term typedTerm = crudOp.getSubProof(solucion.getTypedTerm(),methodTerm,true);
 
             Term lastLine = typedTerm.type();
             
-            if (lastLine == null)
+            if (!(typedTerm instanceof TypedTerm))
                 lastLine = typedTerm;
             else {
                 method = crudOp.currentMethod(methodTerm).toString();
@@ -434,9 +439,9 @@ public class InferController {
             if (!leibniz.equals("")){
                 leibnizTerm =TermUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
                 eq = new Equation(leibnizTerm,lastLine);
-                sust = eq.mgu(simboloManager);
+                sust = eq.mgu(simboloManager,true);
                 if (sust != null) // si z no es de tipo atomico, no se puede unificar en primer orden
-                    leibnizTerm = eq.mgu(simboloManager).getTerms().get(0);
+                    leibnizTerm = sust.getTerms().get(0);
                 else
                     zUnifiable = false;
             }
@@ -445,10 +450,10 @@ public class InferController {
 
             if (zUnifiable)  {
                 eq = new Equation(((App)statementTerm).q,leibnizTerm);
-                sust = eq.mgu(simboloManager);
+                sust = eq.mgu(simboloManager,false);
                 if (sust == null) {
                     eq = new Equation(((App)((App)statementTerm).p).q,leibnizTerm);
-                    sust = eq.mgu(simboloManager);
+                    sust = eq.mgu(simboloManager,false);
                 }
             }
 
@@ -503,7 +508,6 @@ public class InferController {
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
         PredicadoId predicadoid = new PredicadoId();
         predicadoid.setLogin(username);
-
         Term statementTerm = crudOp.findStatement(response, nStatement, username, resuelveManager, disponeManager);
         if (response.getError() != null){
             return response;
@@ -525,13 +529,15 @@ public class InferController {
             }
         }   
 
-        Resuelve resuel     = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
+        Resuelve resuel     = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false,simboloManager);
         Solucion solucion   = solucionManager.getSolucion(Integer.parseInt(nSol),username);
         Term typedTerm      = solucion.getTypedTerm();
         Term formula        = resuel.getTeorema().getTeoTerm().evaluar(resuel.getVariables());//.setToPrinting(resuel.getVariables(),simboloManager);
         // CHECK formula pudiera ser una igualdad y pasar por equival trans usando arboles de derivacion
-        String metodo       = solucion.getMetodo();
+        String metodo       = solucion.getMethod();
+        String cases        = solucion.getCaseAnalysis();
         Term methodTerm     = ProofMethodUtilities.getTerm(metodo);
+        Term caseAn         = (cases.equals("")?null:CombUtilities.getTerm(cases, username, simboloManager));
         Term methodTermIter = methodTerm;
         
         Stack<Term> methodStk       = new Stack<>();
@@ -542,12 +548,12 @@ public class InferController {
 
         while (!(methodTermIter instanceof Const)) {
             methodStk.push(((App)methodTermIter).p);
-            initSt = crudOp.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")));
+            initSt = crudOp.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")),caseAn);
             formulasToProof.push(initSt);
 
             if (
                   ((App)methodTermIter).p instanceof App &&
-                  ("B".equals(crudOp.returnProofMethodObject( ((App)((App)methodTermIter).p).p.toString() ).getGroupMethod())) &&
+                  ("B".equals(crudOp.returnProofMethodObject(((App)((App)methodTermIter).p).p.toString() ).getGroupMethod())) &&
                   (ProofBoolean.isBranchedProof2Started(methodTermIter))         
                )
             {
@@ -567,7 +573,7 @@ public class InferController {
             infer = objectMethod.createOneStepInfer(username,statementTerm, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
         }
         catch(TypeVerificationException e) { // If something went wrong building the new step of the proof
-            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm);
+            response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm, caseAn);
             return response;
         }
 
@@ -612,7 +618,7 @@ public class InferController {
             }
             catch (TypeVerificationException e) {
                 if (i==1/*(i == 1 && !onlyOneLine) || (i == 1 && j == 1)*/){
-                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true, methodTerm);
+                    response.generarHistorial(username,formula, nTeo,typedTerm,false,true,methodTerm,caseAn);
                     return response;
                 }
                 /*if (onlyOneLine && j == 0) {
@@ -645,7 +651,7 @@ public class InferController {
 
         // We need this because in branched recursive methods we use And Introduction structure anyway
         GenericProofMethod aiObject = crudOp.returnProofMethodObject("AI");
-
+        //Term formulaBeingProvedAux = formulaBeingProved;
         while (!methodStk.isEmpty()){
             Term methodTermAux = methodStk.pop();
             String strMethodTermAux = methodTermAux.toString();
@@ -674,9 +680,12 @@ public class InferController {
                     objectMethod = crudOp.returnProofMethodObject(strM);
                     if ("B".equals(objectMethod.getGroupMethod())){
                         finalProof = aiObject.finishedBranchedRecursiveMethodProof(username,fatherProofs.pop(), finalProof);
-                        if (isFinalSolution && !("AI".equals(strM))){
+                        if (isFinalSolution && !("AI".equals(strM))){ // tal vez este if nunca se use
                             finalProof = objectMethod.finishedBranchedRecursiveMethodProof(username,null, finalProof);
+                            formulasToProof.pop(); //no se donde poner esto
                         }
+                        else if (isFinalSolution)
+                            formulasToProof.pop();
                     }
                 }
             }
@@ -700,7 +709,8 @@ public class InferController {
             finalProof,
             true,
             true,
-            methodTerm
+            methodTerm,
+            caseAn
         );
 
         solucionManager.updateSolucion(solucion);
@@ -728,19 +738,21 @@ public class InferController {
     {   
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
 
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false,simboloManager);
         Solucion solucion = solucionManager.getSolucion(resuelve.getDemopendiente(),username);
         int respRetroceder;
         Term method = null;
+        Term caseAn = null;
         
         if(nSol.equals("new")){
             respRetroceder = 0;
         }
         else{
-            method = (solucion.getMetodo().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMetodo()));
+            method = (solucion.getMethod().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMethod()));
+            caseAn = (solucion.getCaseAnalysis().equals("")?null:CombUtilities.getTerm(solucion.getCaseAnalysis(), username, simboloManager));
             Term currentMethod = crudOp.currentMethod(method);
             boolean isWaitingMethod = !ProofBoolean.isBaseMethod(currentMethod);
-            if (!solucion.getMetodo().equals("") && isWaitingMethod){
+            if (!solucion.getMethod().equals("") && isWaitingMethod){
                 respRetroceder = 0;
             }
             else {
@@ -750,7 +762,9 @@ public class InferController {
                 respRetroceder = solucion.retrocederPaso(username,method,objectMethod,simboloManager);
             }
             if (respRetroceder == 0) {
-               method = crudOp.eraseMethod(solucion.getMetodo());
+               if (currentMethod.toString().equals("CA"))
+                   solucion.eraseCaseAnalysis();
+               method = crudOp.eraseMethod(solucion.getMethod());
                currentMethod = crudOp.currentMethod(method);
                if (currentMethod!=null && 
                       (currentMethod.toString().equals("EO") || currentMethod.toString().equals("OE")))
@@ -771,7 +785,8 @@ public class InferController {
             nSol.equals("new")?null:solucion.getTypedTerm(), 
             true, 
             true, 
-            method
+            method,
+            caseAn
         );
         
         // estos set se podrían calcular dentro de generar historial
@@ -808,11 +823,11 @@ public class InferController {
                                             @PathVariable String nTeo)
     {   
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false,simboloManager);
         Teorema t = resuelve.getTeorema();
-        Term term = t.getTeoTerm().evaluar(resuelve.getVariables());
-        Term methodTerm, typedTerm;
-        methodTerm = typedTerm = null;
+        Term term = t.getTeoTerm();
+        Term caseAn, methodTerm, typedTerm;
+        methodTerm = typedTerm = caseAn = null;
 
         if ("SS".equals(newMethod)){
             // if (((App)((App)term).p).q.containT()){
@@ -827,9 +842,12 @@ public class InferController {
         if (!nSol.equals("new")){       
             Solucion solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username);
             
-            String previousMethod = solucion.getMetodo();
-            if (!previousMethod.equals(""))
+            String previousMethod = solucion.getMethod();
+            String cases = solucion.getCaseAnalysis();
+            if (!previousMethod.equals("")) {
                 methodTerm = ProofMethodUtilities.getTerm(previousMethod);
+                caseAn = (cases.equals("")?null:CombUtilities.getTerm(cases, username, simboloManager));
+            }
 
             typedTerm = solucion.getTypedTerm();
         }
@@ -843,6 +861,7 @@ public class InferController {
             true, 
             false, 
             methodTerm, 
+            caseAn,
             newMethod,
             true
         );
@@ -854,10 +873,11 @@ public class InferController {
                                             @RequestParam(value="teoid") String teoid,
                                             @RequestParam(value="lado") String lado, 
                                             @RequestParam(value="method") String newMethod,
+                                            @RequestParam(value="instanciacion") String instanciacion,
                                             @PathVariable String nSol, 
                                             @PathVariable String username, 
                                             @PathVariable String nTeo)
-    {
+    {   
         GenericProofMethod objectMethod = crudOp.returnProofMethodObject(newMethod);
         Boolean isRecursive = objectMethod.getIsRecursiveMethod();
         String groupMethod = objectMethod.getGroupMethod();
@@ -865,7 +885,7 @@ public class InferController {
 
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
 
-        Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false);
+        Resuelve resuelveAnterior = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,false,simboloManager);
 
         // This is the theorem statement but parsed as a binary tree. 
         // We call it as "previous" because it may change when the proof starts
@@ -873,17 +893,20 @@ public class InferController {
 
         Integer opId; // Id of the symbol of the main operator of an expression
         Solucion solucion = null;
-        Term methodTerm, typedTerm;
-        methodTerm = typedTerm = null;
+        Term methodTerm, typedTerm, caseAn;
+        methodTerm = typedTerm = caseAn = null;
         try{
             // ---- In this section we determine the value of "formulaTerm" -----
-            Term formulaTerm = "T".equals(groupMethod) ? formulaAnterior : null;
+            //Term formulaTerm = "T".equals(groupMethod) ? formulaAnterior : null;
+            Term formulaTerm = formulaAnterior;
 
             if ("DM".equals(newMethod)){
                 if (teoid.substring(0, 3).equals("ST-")){
-                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()),false);
+                    Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()),false
+                                                                                   ,simboloManager);
                     if (resuelve == null){
-                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()),false);
+                        resuelve = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",teoid.substring(3,teoid.length()),false
+                                                                              ,simboloManager);
                     }
                     formulaTerm = resuelve.getTeorema().getTeoTerm().evaluar(resuelve.getVariables());//.setToPrinting(resuelve.getVariables(),simboloManager);
                     
@@ -908,48 +931,62 @@ public class InferController {
             // ---- End of assigning "formulaTerm" 
 
             if (nSol.equals("new")){
-                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
-                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null) != 5) ) || // Conjunction /\
-                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null) != 1) )    // Equivalence ==
+                if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null,caseAn)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
+                     ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null,caseAn) != 5) ) || // Conjunction /\
+                     ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null,caseAn) != 1) )    // Equivalence ==
                     )
                 {
                     throw new ClassCastException("Error");
                 }
-
                 if (sideOrTransitive){
                     boolean containT = (formulaTerm == null?false:formulaTerm.containT());
                     if (newMethod.equals("SS") && containT && 
-                        crudOp.binaryOperatorId(formulaTerm, null) == 15
+                        crudOp.binaryOperatorId(formulaTerm, null, caseAn) == 15
                        )
                         solucion = new Solucion(resuelveAnterior, false, null, "OE "+newMethod, crudOp);
                     else
                         solucion = new Solucion(resuelveAnterior, false, null, newMethod, crudOp);
                 }
-                else{
+                else {
                     // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
-                    boolean containT = (formulaTerm == null?false:formulaTerm.containT());
+                    boolean containT = (formulaTerm == null?true:formulaTerm.containT());
                     formulaTerm = (formulaTerm == null?null:formulaTerm.setToPrint(simboloManager));
                     if ((newMethod.equals("DM")||newMethod.equals("CO")||newMethod.equals("MI")||newMethod.equals("CA")) 
                          && !containT)
-                        solucion = new Solucion(resuelveAnterior, false, formulaTerm, "EO "+newMethod, crudOp);
-                    else 
-                        solucion = new Solucion(resuelveAnterior, false, formulaTerm, newMethod, crudOp);
-                    typedTerm = formulaTerm;
+                        if (newMethod.equals("CA")) {
+                           caseAn = CaseAnalysisMethodImpl.parseCases(username, instanciacion.split(":=")[1], 
+                                                          formulaTerm, predicadoManager, simboloManager);
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DM")?formulaTerm:null), "EO "+newMethod+":"+caseAn, crudOp);
+                        } else
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DM")?formulaTerm:null), "EO "+newMethod, crudOp);
+                    else
+                        if (newMethod.equals("CA")) {
+                           caseAn = CaseAnalysisMethodImpl.parseCases(username, instanciacion.split(":=")[1], 
+                                                          formulaTerm, predicadoManager, simboloManager);
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DM")?formulaTerm:null), newMethod+":"+caseAn, crudOp);
+                        }
+                        else
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DM")?formulaTerm:null), newMethod, crudOp);
+                    if (newMethod.equals("DM"))
+                       typedTerm = formulaTerm;
+                    //solucion.setMetodo(methodTerm.toString());
                     solucionManager.addSolucion(solucion); // This adds a new row to the "solucion" table
                     response.setnSol(solucion.getId()+""); // The concatenation with "" converts the id to a string
                 }
 
-                methodTerm = ProofMethodUtilities.getTerm(solucion.getMetodo()); //new Const(newMethod);        
+                methodTerm = ProofMethodUtilities.getTerm(solucion.getMethod()); //new Const(newMethod);        
             }
             else{
                 // When the proof already exists in the DB, we obtain the solution from it.
                 solucion = solucionManager.getSolucion(Integer.parseInt(nSol),username); 
-                methodTerm = crudOp.updateMethod(solucion.getMetodo(), newMethod);
-                Term previousSt = crudOp.initStatement(formulaAnterior, methodTerm);
+                methodTerm = crudOp.updateMethod(solucion.getMethod(), newMethod);
+                String cases = solucion.getCaseAnalysis();
+                caseAn = (cases.equals("")?null:CombUtilities.getTerm(cases, username, simboloManager));
+                Term previousSt = crudOp.initStatement(formulaAnterior, methodTerm,caseAn);
                 if ( ("CR".equals(newMethod) && previousSt.containT() && ((opId=((Const)((App)((App)((App)previousSt).q.body()).p).p).getId()) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && previousSt.containT() && (((Const)((App)((App)((App)previousSt).q.body()).p).p).getId() != 5) ) || // Conjunction /\
                      ("MI".equals(newMethod) && previousSt.containT() && (((Const)((App)((App)((App)previousSt).q.body()).p).p).getId() != 1) )    // Equivalence ==
-                    )
+                   )
                 {
                     throw new ClassCastException("Error");
                 }
@@ -959,7 +996,12 @@ public class InferController {
                          && !containT) {
                     methodTerm = crudOp.eraseMethod(methodTerm.toString());
                     methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "EO");
-                    methodTerm = crudOp.updateMethod(methodTerm.toString(), newMethod);
+                    if (newMethod.equals("CA")) {
+                        caseAn = CaseAnalysisMethodImpl.parseCases(username, instanciacion.split(":=")[1], 
+                                                          formulaTerm.setToPrint(simboloManager), predicadoManager, simboloManager);
+                        methodTerm = crudOp.updateMethod(methodTerm.toString(), newMethod+":"+caseAn);
+                    } else
+                        methodTerm = crudOp.updateMethod(methodTerm.toString(), newMethod);
                     solucion.setMetodo(methodTerm.toString());       
                 } else
                    // We save in the database the concatenation of the previous list of methods with the new one
@@ -969,11 +1011,11 @@ public class InferController {
                     if ("SS".equals(newMethod)) {
                        Term aux = formulaAnterior;
                        if (!(methodTerm instanceof Const)) {
-                           aux = crudOp.initStatement(formulaAnterior, methodTerm);
+                           aux = crudOp.initStatement(formulaAnterior, methodTerm,caseAn);
                            containT = true;
                        }
                        // Este setToPrint es muy necesario
-                       int inerOp = crudOp.binaryOperatorId(aux.setToPrint(simboloManager), null);
+                       int inerOp = crudOp.binaryOperatorId(aux.setToPrint(simboloManager), null,caseAn);
                        if (newMethod.equals("SS") && containT && (inerOp == 1 || inerOp == 15)) {
                            methodTerm = crudOp.eraseMethod(methodTerm.toString());
                            methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "OE");
@@ -981,13 +1023,13 @@ public class InferController {
                            solucion.setMetodo(methodTerm.toString());
                        }
                     }
-                    formulaTerm = crudOp.initStatement(formulaTerm,methodTerm);
+                    formulaTerm = crudOp.initStatement(formulaTerm,methodTerm,caseAn);
                 }
                 else{
                     if ("DM".equals(newMethod)){
                         Term aux = formulaAnterior;
                         if (!(methodTerm instanceof Const)) {
-                           aux = crudOp.initStatement(formulaAnterior, methodTerm);
+                           aux = crudOp.initStatement(formulaAnterior, methodTerm,caseAn);
                         }
                         if (!aux.containT()) {
                            methodTerm = crudOp.eraseMethod(methodTerm.toString());
@@ -996,7 +1038,7 @@ public class InferController {
                            solucion.setMetodo(methodTerm.toString());
                         }
                         if (teoid.substring(3,teoid.length()).equals(nTeo)) {
-                           formulaTerm = crudOp.initStatement(formulaTerm, methodTerm);
+                           formulaTerm = crudOp.initStatement(formulaTerm, methodTerm, caseAn);
                         }
                         formulaTerm = formulaTerm.setToPrint(simboloManager);
                         typedTerm = crudOp.addFirstLineSubProof(username,formulaTerm, solucion.getTypedTerm(),
@@ -1013,7 +1055,10 @@ public class InferController {
             if (sideOrTransitive){
                 // CAUTION: The controller sets the String null parameters as ""
                 if ("".equals(lado)){ // This does not occur in Starting from one side method, so we are in a transitive one
-                    opId = crudOp.binaryOperatorId(formulaTerm,null);
+                    if (!formulaTerm.containT())
+                        throw new ClassCastException();
+                    formulaTerm = ((App)formulaTerm).q.body();
+                    opId = crudOp.binaryOperatorId(formulaTerm,null,caseAn);
 
                     switch (opId){
                         case 2: // Right arrow ==> 
@@ -1031,7 +1076,7 @@ public class InferController {
                 }
                 if (!"".equals(lado)){ // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
                     response.setLado(lado);
-                    formulaTerm = lado.equals("i") ? ((App)formulaTerm).q : ((App)((App)formulaTerm).p).q;  
+                    formulaTerm = lado.equals("i") ? ((App)formulaTerm).q.body() : ((App)((App)formulaTerm).p).q.body();  
                 } 
                 else {
                     throw new ClassCastException("Error");
@@ -1069,7 +1114,8 @@ public class InferController {
             typedTerm,
             true, // valida
             !isRecursive, // labeled
-            methodTerm
+            methodTerm,
+            caseAn
         );
 
         // In the recursive case, the user still needs to choose another proof method for the sub-proof

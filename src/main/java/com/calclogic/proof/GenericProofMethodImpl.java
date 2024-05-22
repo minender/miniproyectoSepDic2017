@@ -70,7 +70,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
         else if (method.equals("TR") || method.equals("WE") || method.equals("ST")){
             this.groupMethod = "T"; // All transitive methods
         }
-        else if (method.equals("AI") || method.equals("CA")){
+        else if (method.equals("AI") ){
             this.groupMethod = "B"; // All recursive but branched methods (they split in more than one sub-proof)
         }
     }
@@ -82,7 +82,8 @@ public class GenericProofMethodImpl implements GenericProofMethod{
 
     private void setIsRecursiveMethod(String method){
         if (method.equals("CR") || method.equals("CO") || method.equals("AI") || method.equals("GE") ||
-            method.equals("CA") || method.equals("MI") || method.equals("EO") || method.equals("OE")){
+            method.equals("CA") || method.equals("MI") || method.equals("EO") || method.equals("OE") ||
+            method.equals("WI")){
             this.isRecursiveMethod = true;
         }
     }
@@ -101,10 +102,10 @@ public class GenericProofMethodImpl implements GenericProofMethod{
      * @param beginFormula: general statement to be proved, is the base to calculate 
      *                      al de sub statement in the sub proofs.
      * @return Term that represents the statement to be proved in the current sub proof,
-     *         according to the demonstrarion method used
+     *         according to the proof method used
      */
     @Override
-    public Term initFormula(Term beginFormula){
+    public Term initFormula(Term beginFormula, Term proof){
         return beginFormula;
     }
 
@@ -118,7 +119,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String phrase){
+    public String header(String phrase, Term beginFormula){
         return "";
     }
 
@@ -364,7 +365,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
 
             return new TypedApp(axiomTree, proof);
              
-        } catch (TypeVerificationException e)  {
+        } catch (TypeVerificationException e) {
             Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
         }
         return proof;
@@ -378,6 +379,9 @@ public class GenericProofMethodImpl implements GenericProofMethod{
      * 
      * @param user
      * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof 
+     *        formulaBeingProved is not the result of initFormula or the current statement to proof
+     *        in this sub-proof. Instead formulaBeingProved is the argument formula of initFormula 
+     *        to produce de current statement to proof in this sub-proof
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
      * @return axiom tree that will later be used to build the complete proof
@@ -432,6 +436,16 @@ public class GenericProofMethodImpl implements GenericProofMethod{
             throws TypeVerificationException
     {
         return null;
+    }
+    
+    /**
+     * This function returns the closing comment of the proof i.e. the conclusion of the proof
+     * 
+     * @param proof: The current proof
+     * @return String with the closing comment of the proof
+     */
+    public String closingComment(Term proof, Term beginFormula) {
+        return "";
     }
     
     /**

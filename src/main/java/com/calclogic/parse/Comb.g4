@@ -6,7 +6,8 @@ package com.calclogic.parse;
 
 import com.calclogic.lambdacalculo.*;   
 import java.util.LinkedList;
-import com.calclogic.entity.Resuelve;   
+import com.calclogic.entity.Resuelve; 
+import com.calclogic.service.SimboloManager;  
     
 }   
 
@@ -16,11 +17,11 @@ import com.calclogic.entity.Resuelve;
  */
 
 // All kind of expresions
-start_rule[String u] returns [Term value] : expr[u] { $value=$expr.value; };
+start_rule[String u,SimboloManager s] returns [Term value] : expr[u,s] { $value=$expr.value; };
   
-expr[String u] returns [Term value]
-    :   term[u]                                 { $value = $term.value; }
-    |   O_BRACKET2 vl=variable_list ASSIGN el=term_list[u] C_BRACKET2  
+expr[String u,SimboloManager s] returns [Term value]
+    :   term[u,s]                               { $value = $term.value; }
+    |   O_BRACKET2 vl=variable_list ASSIGN el=term_list[u,s] C_BRACKET2  
                                                 { 
                                                     if ($vl.value.size() != $el.value.size()) {
                                                         try {
@@ -36,9 +37,11 @@ expr[String u] returns [Term value]
                                                     }
                                                 };
 
-term[String u] returns [Term value]
-    :  term_base[u] term_tail[u] { 
+term[String u,SimboloManager s] returns [Term value]
+    :  term_base[u,s] term_tail[u,s] { 
                                     Term aux = $term_base.value; 
+                                    if (aux instanceof Const && ((Const)aux).getId()==0 && !((Const)aux).getCon().equals("\\Phi_{K}"))
+                                       ((Const)aux).setType("x"+Phi.stInd+"->x"+Phi.stInd+"->p");
                                     try {
                                         for (Term it: $term_tail.value) {
                                             if (aux instanceof TypedTerm && 
@@ -63,15 +66,15 @@ term[String u] returns [Term value]
                                     $value = aux;  
                                 };
 
-term_base[String u] returns [Term value]
-    : constant[u]          { $value = $constant.value; }
-    | variable         { $value = $variable.value; }
-    | LAMBDA v=variable PERIOD e1=term[u]   { $value = new Bracket($v.value, $e1.value); }
-    | O_PAR term[u] C_PAR  { $value = $term.value; };
+term_base[String u,SimboloManager s] returns [Term value]
+    : constant[u,s]          { $value = $constant.value; }
+    | variable               { $value = $variable.value; }
+    | LAMBDA v=variable PERIOD e1=term[u,s]   { $value = new Bracket($v.value, $e1.value); }
+    | O_PAR term[u,s] C_PAR  { $value = $term.value; };
     
-term_tail[String u] returns [LinkedList<Term> value]
-    : term_base[u] t=term_tail[u] { $t.value.add(0,$term_base.value); $value = $t.value; }
-    |                             { $value = new LinkedList<Term>(); };
+term_tail[String u,SimboloManager s] returns [LinkedList<Term> value]
+    : term_base[u,s] t=term_tail[u,s] { $t.value.add(0,$term_base.value); $value = $t.value; }
+    |                                 { $value = new LinkedList<Term>(); };
     
 variable_list returns [LinkedList<Var> value]
     : variable vl=variable_list_tail    { $vl.value.add(0,$variable.value); $value = $vl.value; };
@@ -80,11 +83,11 @@ variable_list_tail returns [LinkedList<Var> value]
     :  COMMA variable_list { $value = $variable_list.value; }
     |                      { $value = new LinkedList<Var>(); };
     
-term_list[String u] returns [LinkedList<Term> value]
-    : term[u] el=term_list_tail[u]  { $el.value.add(0,$term.value); $value = $el.value; };   
+term_list[String u,SimboloManager s] returns [LinkedList<Term> value]
+    : term[u,s] el=term_list_tail[u,s]  { $el.value.add(0,$term.value); $value = $el.value; };   
     
-term_list_tail[String u] returns [LinkedList<Term> value]
-    : COMMA term_list[u]   { $value = $term_list.value; }   
+term_list_tail[String u,SimboloManager s] returns [LinkedList<Term> value]
+    : COMMA term_list[u,s]   { $value = $term_list.value; }   
     |                      { $value = new LinkedList<Term>(); };
 
 // Variables for example x_{34}
@@ -99,9 +102,12 @@ variable returns [Var value]
            };*/
 
 // All kind of constants
-constant[String u] returns [Term value]
+constant[String u,SimboloManager s] returns [Term value]
     : C DIGITS C_BRACKET { int index = Integer.parseInt($DIGITS.text);
-                          $value = new Const(index ,"c_{"+index+"}");
+                          if (s == null)
+                             $value = new Const(index ,"c_{"+index+"}");
+                          else
+                             $value = new Const(index ,"c_{"+index+"}",s.getSimbolo(index).getTipo());
                         } 
     /*: CONSTANT_C    { String cons = $CONSTANT_C.text ; // Take string format of the constant
               int index = Integer.parseInt(cons.substring(3,cons.length()-1));// Take only the the index of the constant
@@ -111,18 +117,30 @@ constant[String u] returns [Term value]
                           $value = new Const(0 ,cons);
                         }
     | TRUE              { String cons = $TRUE.text ; // Take string format of the constant
-                          $value = new Const(-1 ,cons);
+                          $value = new Const(-1 ,cons, "p");
                         }
-    | constant_phi  { $value = $constant_phi.value; }
-    | prove_base[u] { $value = $prove_base.value; };
+    | constant_phi[s]  { $value = $constant_phi.value; }
+    | prove_base[u,s] { $value = $prove_base.value; };
  
 // All forms of Phi constants for example \Phi_{(cbc,(cb,b))} 
-constant_phi returns [Term value]
-    :   PHI phi_tail  { $value = $phi_tail.value; };
+constant_phi[SimboloManager s] returns [Term value]
+    :   PHI phi_tail[s]  { $value = $phi_tail.value; };
     
-phi_tail returns [Term value]
-    :   K C_BRACKET      { $value = new Const("\\Phi_{K}"); }
-    |   comb_index C_BRACKET { $value = new Phi(); ((Phi)$value).ind=$comb_index.value;};
+phi_tail[SimboloManager s] returns [Term value]
+    :   K C_BRACKET      { if (s != null) {
+                              int i = Phi.stInd;
+                              Phi.stInd = Phi.stInd+2;
+                              Term type = new App(new App(new Const(-3,"->"),new App(new App(new Const(-3,"->"),new Var(i)),
+                                          new Var(i+1))),new Var(i));
+                              $value = new Const("\\Phi_{K}",type); 
+                           } else
+                              $value = new Const("\\Phi_{K}"); 
+                         }
+    |   comb_index C_BRACKET { $value = new Phi(); ((Phi)$value).ind=$comb_index.value;
+                               if (s != null){
+                                  ((Phi)$value).computeType();
+                               }
+                             };
 
 // All kind of combinatory indexes for example cbcbcc(cc,cc)
 comb_index returns [ListaInd value]
@@ -142,10 +160,10 @@ cb_pair returns [Indice value]
 /*
  * PROVE RELATED RULES
  */
- prove_base[String u] returns [Term value]
-    : I expr[u] C_BRACKET { $value = new TypedI((Sust) $expr.value); }
-    | L expr[u] C_BRACKET { $value = new TypedL((Bracket) $expr.value); }
-    | S expr[u] C_BRACKET { 
+ prove_base[String u,SimboloManager s] returns [Term value]
+    : I expr[u,s] C_BRACKET { $value = new TypedI((Sust) $expr.value); }
+    | L expr[u,s] C_BRACKET { $value = new TypedL((Bracket) $expr.value); }
+    | S expr[u,s] C_BRACKET { 
                             try {
                                 $value = new TypedS($expr.value,0); 
                             } catch (TypeVerificationException e) {
@@ -161,7 +179,7 @@ cb_pair returns [Indice value]
                 return null;
             } 
         }
-    | A expr[u] C_BRACKET { $value = (u!=null ? new TypedA($expr.value,u) : new TypedA($expr.value)); }
+    | A expr[u,s] C_BRACKET { $value = (u!=null ? new TypedA($expr.value,u) : new TypedA($expr.value)); }
     | M d=DIGITS factorize { 
                             int id;
                             id = Integer.parseInt($d.text);
@@ -181,7 +199,7 @@ cb_pair returns [Indice value]
  * fragments
  */
     
-DIGITS : ( '1'..'9' [0-9]* | '0' );  
+DIGITS : ('-'|)( '1'..'9' [0-9]* | '0' );  
 C : ('C_{' | 'c_{' );
 X : ('X_{' | 'x_{' );
 

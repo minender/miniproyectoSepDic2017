@@ -23,10 +23,17 @@ public class Var extends Term{
     
     public Var(){
         this.indice=-1;
+        this.type_=null;
     }
     
     public Var(int indice){
         this.indice=indice;
+        this.type_=null;
+    }
+    
+    public Var(int indice, Term type){
+        this.indice=indice;
+        this.type_=type;
     }
 
     public void setIndice(int indice) {
@@ -68,9 +75,14 @@ public class Var extends Term{
             return this;
     }
     
+    @Override
+    public Term etaReduc() {
+        return this;
+    }
+    
     public Term type()
     {
-        return null;
+        return type_;
     }
     
     public int nPhi()
@@ -205,7 +217,7 @@ public class Var extends Term{
     public String toStringLaTeX(SimboloManager s,String numTeo) {
         if(alias == null ) {
             boolean inRange = (65 <= indice && indice <= 90) || (97 <= indice && indice <= 122);
-            return (inRange?""+(char) indice:"x_{"+indice+"}");
+            return (inRange?(indice==115?"\\star":""+(char) indice):"x_{"+indice+"}");
         }else {
             return alias;
         }
@@ -330,6 +342,10 @@ public class Var extends Term{
         return toString;
     }
 
+    public String toStringType(String v) {
+        return v;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -375,9 +391,24 @@ public class Var extends Term{
     }
 
     @Override
+    public Term inverseVars() {
+        return new Var(-indice);
+    }
+    
+    @Override
     public void freeVars(int[] set) {
         if (indice >= 65 && indice <= 122)
            set[indice-65] = indice;
+    }
+    
+    @Override
+    public void freeVars(int[] set, int[] index) {
+        if (indice >= 65 && indice <= 122) {
+            if (set[indice-65] == 0) {
+               set[indice-65] = index[0]+1; // +1 para que niguna entrada sea 0
+               index[0]++;
+            }
+        }
     }
     
     @Override
@@ -386,7 +417,7 @@ public class Var extends Term{
     }
     
     @Override
-    public Term abstractEq() {
+    public Term abstractEq(Term[] varTypes) {
         return null;
     }
     

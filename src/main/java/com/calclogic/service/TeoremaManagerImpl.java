@@ -185,10 +185,10 @@ public class TeoremaManagerImpl implements TeoremaManager {
      */
     @Override
     @Transactional
-    public Teorema getTeorema(int id) {
+    public Teorema getTeorema(int id, SimboloManager s) {
         Teorema teo = teoremaDAO.getTeorema(id);
         if (teo != null) {
-            teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null));
+            teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null,s));
         }
         return teo;
     }
@@ -204,7 +204,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
         try {
             for (Teorema teo : teoList) {
                 //ter.setTermObject((Term)ToString.fromString(ter.getSerializado()));
-                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null));
+                teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null,null));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -221,7 +221,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
     public Teorema getTeoremaByEnunciados(String enunciado) {
         Teorema teo = teoremaDAO.getTeoremaByEnunciados(enunciado);
         if (teo != null) {
-            teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null));
+            teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null,null));
         }
         return teo;
     }
@@ -241,7 +241,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
         
         for (Resuelve res : resList) {
             teorema = res.getTeorema();
-            teorema.setTeoTerm(CombUtilities.getTerm(teorema.getEnunciado(),null));
+            teorema.setTeoTerm(CombUtilities.getTerm(teorema.getEnunciado(),null,null));
             teoList.add(teorema);
         }
 
@@ -278,7 +278,7 @@ public class TeoremaManagerImpl implements TeoremaManager {
         }
         if (teos != null) {
             for (Teorema teo : teos){
-               teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null));
+               teo.setTeoTerm(CombUtilities.getTerm(teo.getEnunciado(),null,null));
             }
         }
         return teos;

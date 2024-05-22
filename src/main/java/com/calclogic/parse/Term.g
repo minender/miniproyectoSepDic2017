@@ -50,16 +50,35 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st] returns 
                                                     }
                                                     Collections.reverse(boundVars);
                                                     ArrayList<Term> abstractedTerms = new ArrayList<Term>();
+                                                    int len = unboundVars.size();
+                                                    j = 1;
                                                     for (Term base_term: unboundVars) {
                                                         Term t = base_term;
-                                                        for (Term var: boundVars) {
+                                                        if (len<=2 || (j == 1 && !(t instanceof Var))
+                                                            || j != 1
+                                                           )
+                                                        {
+                                                          if (Integer.parseInt($NUMBER.text) == 62 && 
+                                                              j == 1 &&
+                                                              t instanceof App &&
+                                                              ((App)t).q instanceof Var &&
+                                                              ((App)((App)t).p).q instanceof Var
+                                                             )
+                                                          {
+                                                              t = new Bracket((Var)((App)((App)t).p).q,new Bracket((Var)((App)t).q,t));
+                                                          }
+                                                          else {
+                                                          for (Term var: boundVars) {
                                                             if (st[0].equals(""))
                                                                 st[0] = "" + ((char) ((Var) var).indice);
                                                             else
                                                                 st[0] = ((char) ((Var) var).indice) + "," + st[0];
                                                             t = new Bracket((Var) var, t);
+                                                          }
+                                                          }
                                                         }
                                                         abstractedTerms.add(t);
+                                                        j = j+1;
                                                     }
                                                     aux = new Const(Integer.parseInt($NUMBER.text),"c_{"+$NUMBER.text+"}",
                                                                      !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
@@ -144,8 +163,13 @@ instantiate[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st]
                                                  if (arguments.get(i) instanceof Var)
                                                     args.add((Var)arguments.get(i));
                                                  else{
-                                                    args.add((Var)((App)arguments.get(i)).p);
-                                                    Term t = new Bracket((Var)((App)arguments.get(i)).q,explist.get(i));
+                                                    Term t = explist.get(i);
+                                                    Term aux = arguments.get(i);
+                                                    while (aux instanceof App) {
+                                                       t = new Bracket((Var)((App)aux).q,t);
+                                                       aux = ((App)aux).p;
+                                                    }
+                                                    args.add((Var)aux);
                                                     explist.set(i,t);
                                                  }
                                                }
@@ -154,37 +178,49 @@ instantiate[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st]
                                                $value = arr;
                                               };
 
-
 arguments returns [ArrayList<Term> value]: 
-                                         | L=(LETTER|CAPITALLETTER)          
-                                                           {ArrayList<Term> list=new ArrayList<Term>();
-                                                            Var v=new Var((new Integer($L.text.charAt(0))).intValue());
-                                                            list.add(0,v);
-                                                            $value = list;
-                                                           }
+       
+     L=(LETTER|CAPITALLETTER) argtail           {ArrayList<Term> list=$argtail.value;
+                                                 Var v=new Var((int)$L.text.charAt(0));
+                                                 Term first;
+                                                 if (!list.isEmpty() && (first=list.get(0)) instanceof App) {
+                                                   Term aux = first;
+                                                   while ( ((App)aux).p instanceof App) {
+                                                      aux = ((App)aux).p;
+                                                   }
+                                                   if (((App)aux).p instanceof Const)
+                                                      ((App)aux).p = v;
+                                                   else
+                                                      list.add(0,v);
+                                                 }
+                                                 else
+                                                   list.add(0,v);
+                                                 $value=list;
+                                                };
+argtail returns [ArrayList<Term> value]:
+                                          
+       ',' arguments                            {$value=$arguments.value;} 
 
-                                          | L=(LETTER|CAPITALLETTER) ',' arg=arguments 
-                                                           {ArrayList<Term> aux=$arg.value; 
-                                                            Var v=new Var((new Integer((int)$L.text.charAt(0))).intValue());
-                                                            aux.add(0,v); 
-                                                            $value=aux;
-                                                           }
+    | '(' arg1=arguments ')' ',' arg=arguments  {ArrayList<Term> list=$arg1.value;
+                                                 Term aux = new Const("0");
+                                                 for (int i=0; i< list.size(); i++)
+                                                     aux = new App(aux,list.get(i));
+                                                 ArrayList<Term> list2=$arg.value;
+                                                 if (list2 != null) 
+                                                  list2.add(0,aux);  
+                                                 $value = list2;
+                                                }
 
-                                         | L=(LETTER|CAPITALLETTER) '(' M=(LETTER|CAPITALLETTER) ')' ',' arg=arguments 
-                                                           {ArrayList<Term> aux=$arg.value; 
-                                                            Var v=new Var((new Integer((int)$L.text.charAt(0))).intValue());
-                                                            Var v2=new Var((new Integer((int)$M.text.charAt(0))).intValue());
-                                                            aux.add(0,new App(v,v2)); 
-                                                            $value=aux;
-                                                           }
+    | '(' arguments ')'                         {ArrayList<Term> list=$arguments.value;
+                                                 Term aux = new Const("0");
+                                                 for (int i=0; i< list.size(); i++)
+                                                     aux = new App(aux,list.get(i));
+                                                 ArrayList<Term> list2 = new ArrayList<Term>();
+                                                 list2.add(0,aux);
+                                                 $value = list2;
+                                                }
 
-                                         | L=(LETTER|CAPITALLETTER) '(' L2=(LETTER|CAPITALLETTER) ')'
-                                                           {ArrayList<Term> list=new ArrayList<Term>();
-                                                            Var v=new Var((new Integer($L.text.charAt(0))).intValue());
-                                                            Var v2=new Var((new Integer($L2.text.charAt(0))).intValue());
-                                                            list.add(0,new App(v,v2));
-                                                            $value = list;
-                                                           };
+    |                                           {$value = new ArrayList<Term>();};                               
 
 
 CAPITALLETTER: 'A'..'Z';

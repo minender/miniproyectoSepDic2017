@@ -46,9 +46,9 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula){
+    public Term initFormula(Term beginFormula, Term proof){
         // this convert formulas like lamb x.t1=lamb x.t2 into t1==t2
-        return new App(new App(new Const(0, "="),new Const(-1,"T")), beginFormula.setToPrint(simboloManager)).abstractEq();
+        return new App(new App(new Const(0, "="),new Const(-1,"T")), beginFormula.setToPrint(simboloManager)).abstractEq(null);
     }
 
     /**
@@ -59,7 +59,7 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement){
+    public String header(String statement, Term beginFormula){
         return ""+statement;
     }
 
@@ -68,6 +68,9 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      * logic according to the contradiction method.
      * 
      * @param formulaBeingProved: Formula that the user is trying to prove in this proof/sub-proof 
+     *        formulaBeingProved is not the result of initFormula or the current statement to proof
+     *        in this sub-proof. Instead formulaBeingProved is the argument formula of initFormula 
+     *        to produce de current statement to proof in this sub-proof
      * @param vars: List of variables for doing parallel substitution
      * @param terms: List of terms for doing parallel substitution
      * @return axiom tree that will later be used to build the complete proof

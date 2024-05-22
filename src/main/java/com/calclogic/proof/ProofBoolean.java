@@ -9,6 +9,7 @@ import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedI;
 import com.calclogic.lambdacalculo.TypedL;
 import com.calclogic.lambdacalculo.TypedS;
+import com.calclogic.lambdacalculo.TypedTerm;
 import com.calclogic.service.SimboloManager;
 
 /**
@@ -65,6 +66,7 @@ public class ProofBoolean {
                         methodStr.equals("CO") || 
                         methodStr.equals("CR") ||
                         methodStr.equals("GE") || 
+                        methodStr.equals("WI") || 
                         methodStr.equals("MI")
                     )
                 ) 
@@ -138,7 +140,8 @@ public class ProofBoolean {
                     methodStr.equals("EO") || 
                     methodStr.equals("OE") ||
                     methodStr.equals("GE") ||
-                    methodStr.equals("WI");
+                    methodStr.equals("WI") ||
+                    methodStr.equals("CA");
         }
     }
     
@@ -176,7 +179,7 @@ public class ProofBoolean {
      * @return Boolean indicating if the proof onlu has one line or not
      */
     public static boolean isOneLineProof(Term proof){
-        return (proof.type() == null);
+        return !(proof instanceof TypedTerm);//(proof.type() == null);
     }
     
     /**
@@ -192,8 +195,8 @@ public class ProofBoolean {
         String methodStr;
         return method instanceof App && ((App)method).p instanceof App && 
                 (
-                    (methodStr=((App)((App)method).p).p.toString()).equals("AI") ||
-                    methodStr.equals("CA")
+                    (methodStr=((App)((App)method).p).p.toString()).equals("AI") //||
+                    //methodStr.equals("CA")
                 )
                 && isProofStarted(((App)method).q);
     }
@@ -216,8 +219,8 @@ public class ProofBoolean {
         if (aux instanceof App)
            return ((App)aux).p instanceof App && 
                    (
-                    (methodStr=((App)((App)aux).p).p.toString()).equals("AI") ||
-                     methodStr.equals("CA")
+                    (methodStr=((App)((App)aux).p).p.toString()).equals("AI") //||
+                     //methodStr.equals("CA")
                    ) && isProofStarted(((App)aux).q);
         else
            return false;

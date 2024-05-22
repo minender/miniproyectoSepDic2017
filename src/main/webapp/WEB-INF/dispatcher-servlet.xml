@@ -150,6 +150,7 @@
     <bean id="operatorToEq" class="com.calclogic.proof.OperatorToEqualityImpl"></bean>
     <bean id="mutualImplication" class="com.calclogic.proof.MutualImplicationMethodImpl"></bean>
     <bean id="generalization" class="com.calclogic.proof.GeneralizationImpl"></bean>
+    <bean id="witness" class="com.calclogic.proof.WitnessMethodImpl"></bean>
     <bean id="startingOneSide" class="com.calclogic.proof.StartingOneSideMethodImpl"></bean>
     <bean id="strengthening" class="com.calclogic.proof.StrengtheningMethodImpl"></bean>
     <bean id="transitivity" class="com.calclogic.proof.TransitivityMethodImpl"></bean>

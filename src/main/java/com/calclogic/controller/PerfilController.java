@@ -346,6 +346,72 @@ public class PerfilController {
         return "help";
     }
     
+    @RequestMapping(value="/{username}/migration", method=RequestMethod.GET)
+    public String migration(@PathVariable String username, ModelMap map) {
+        if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
+           && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
+           )
+        {
+            return "redirect:/index";
+        }
+        /*String stTerm = "= (\\Phi_{ccccbb} c_{16} (\\Phi_{bccccb} c_{13}) (\\Phi_{(bcbb,cbcb)} c_{5}) c_{5} (\\Phi_{ccccbb} (\\Phi_{bc(ccccbb,)} c_{13} c_{31} c_{15})) c_{16}) (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{16}) c_{32})";
+        Term comb = CombUtilities.getTerm(stTerm,null);
+        TypedA A = new TypedA(comb, "AdminTeoremas");
+        Term term = A.type();
+        term = new App(new App(new Const(1,"c_{1}"),((App)((App)term).p).q.body()),((App)term).q.body());
+        String freeVars = term.stFreeVars();
+        System.out.println(freeVars);*/
+        
+        List<Teorema> l = teoremaManager.getAllTeoremas();
+        for (Teorema t: l) {
+            String stTerm = t.getEnunciado();
+            Term comb = CombUtilities.getTerm(stTerm,null,null);
+            TypedA A = new TypedA(comb, "AdminTeoremas");
+            Term term = A.type();
+            term = new App(new App(new Const(1,"c_{1}"),((App)((App)term).p).q.body()),((App)term).q.body());
+            int i = 0;
+            int j = 0;
+            while (i < 1) {
+                try {
+                String bndVars = term.getBoundVarsComma();
+                String freeVars = term.stFreeVars(simboloManager);
+                freeVars = term.stFreeVars();
+                term = term.toEquality(freeVars);
+                System.out.println("UPDATE teorema SET enunciado='"+term.traducBD()+"' where id="+t.getId()+";");
+                System.out.println("UPDATE resuelve SET variables='"+bndVars+";"+freeVars+"' where teoremaid="+t.getId()+";");
+                i++;
+                } catch (TypeVerificationException e) {
+                    j++;
+                    if (j != 2) {
+                        term = new App(new App(new Const(15,"c_{15}"),((App)((App)term).p).q.body()),((App)term).q.body());
+                    }
+                    else {
+                       System.out.println("Error");
+                       break;
+                    }
+                }
+            }
+        }
+        Usuario usr = usuarioManager.getUsuario(username);
+        List<Teoria> teorias = teoriaManager.getAllTeoria();
+        
+        map.addAttribute("usuario", usr);
+        map.addAttribute("mensaje","");
+        map.addAttribute("guardarMenu","");
+        map.addAttribute("listarTerminosMenu","");
+        map.addAttribute("misTeoremasMenu","");        
+        map.addAttribute("agregarTeoremaMenu","");        
+        map.addAttribute("perfilMenu","active");
+        map.addAttribute("students","");
+        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
+        map.addAttribute("helpMenu","");
+        map.addAttribute("overflow","hidden");
+        map.addAttribute("anchuraDiv","1100px");
+        map.addAttribute("teorias", teorias);
+
+        return "perfil";
+    }
+    
     @RequestMapping(value="/{username}/myTheorems", method=RequestMethod.GET)
     public String myTheoremsView(@PathVariable String username, ModelMap map) {
         if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
@@ -354,7 +420,7 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username,true,simboloManager);
         for (Resuelve r: resuelves){
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
@@ -403,7 +469,7 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username, true);
+        List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserWithSol(username,true,simboloManager);
         for (Resuelve r: resuelves){
             Teorema t = r.getTeorema();
             t.setTeoTerm(t.getTeoTerm());
@@ -467,7 +533,7 @@ public class PerfilController {
     {   
         //validar si esta el usuario en sesion
         teoremasSolucion response = new teoremasSolucion();
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid,false);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,teoid,false,simboloManager);
         Integer resuelveId = resuelve.getId();
         
         response.soluciones = solucionManager.getAllSolucionesIdByResuelve(resuelveId);
@@ -481,14 +547,20 @@ public class PerfilController {
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
         try{
             // Validate that the user is in session
-            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
+            Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false
+                                                                            ,simboloManager);
             Term teorema = resuelve.getTeorema().getTeoTerm().evaluar(resuelve.getVariables());//.setToPrinting(resuelve.getVariables(),simboloManager);
             String nTeo = resuelve.getNumeroteorema();
             Solucion solucion = solucionManager.getSolucion(idSol,username);
 
             Term typedTerm = solucion.getTypedTerm();
-
-            response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,ProofMethodUtilities.getTerm(solucion.getMetodo()));
+            Term cases;
+            if (solucion.getCaseAnalysis().equals("")) 
+                cases = null;
+            else
+                cases = CombUtilities.getTerm(solucion.getCaseAnalysis(), username, simboloManager);
+            
+            response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,ProofMethodUtilities.getTerm(solucion.getMethod()),cases);
             return response;
         }
         catch(Exception e){
@@ -500,7 +572,7 @@ public class PerfilController {
     public @ResponseBody InferResponse buscarMetaFormula(@RequestParam(value="idTeo") int idTeo, @PathVariable String username)
     {
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username,idTeo,false,simboloManager);
         Term teo = resuelve.getTeorema().getTeoTerm();
         Simbolo s = simboloManager.getSimbolo(1);
         Simbolo s2 = simboloManager.getSimbolo(8);
@@ -538,7 +610,7 @@ public class PerfilController {
             Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"));
+        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"),null);
         return response;
     }
     
@@ -661,9 +733,9 @@ public class PerfilController {
         List<Predicado> predicadoList = predicadoManager.getAllPredicadosByUser(username);
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
-        
         boolean nTheoExists = false;
-        if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(),false) != null)
+        if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(),false
+                                                       ,simboloManager) != null)
             nTheoExists = true;
         
         if(nTheoExists || bindingResult.hasErrors()){
@@ -693,7 +765,6 @@ public class PerfilController {
         
         PredicadoId predicadoid2 = new PredicadoId();
         predicadoid2.setLogin(username);
-        
         CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
         TermLexer lexer = new TermLexer(in);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -708,11 +779,16 @@ public class PerfilController {
             String variables = bndVars + ";" + freeVars;
             teoTerm = teoTerm.toEquality(freeVars);
             
-            teoTerm.getType(simboloManager);
+            Term teoTermBD = teoTerm.traducBD();
+            String stTeoTermBD = teoTermBD.toString();
+            teoTermBD = CombUtilities.getTerm(stTeoTermBD, username, simboloManager);
+            if (teoTermBD.type() == null)
+                throw new TypeVerificationException();
+            // teoTerm.getType(simboloManager);
             
-            Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
+            Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, stTeoTermBD, false);
             if (null != test) {
-                throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
+                throw new CategoriaException("an equal one already exists in "+test.getNumeroteorema());
             }
             // ESTO DEBE MOSTRAR LAS CATEGORIAS
             Categoria categoria;
@@ -723,10 +799,10 @@ public class PerfilController {
             // public Teorema(Categoria categoria, String enunciado, Term teoTerm, boolean esquema)
             
             String aliases = teoTerm.aliases("");
-            Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(teoTerm.traducBD().toString());
+            Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(stTeoTermBD);
             Teorema teorema;
             if (teoremaAdd == null) 
-                teorema = teoremaManager.addTeorema(new Teorema(teoTerm.traducBD().toString(),teoTerm,false,aliases)); 
+                teorema = teoremaManager.addTeorema(new Teorema(stTeoTermBD,teoTerm,false,aliases)); 
             else
                 teorema = teoremaAdd;
             Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),
@@ -877,9 +953,10 @@ public class PerfilController {
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
         int teoId = Integer.parseInt(idTeo);
-        Teorema teorema = teoremaManager.getTeorema(teoId);
+        Teorema teorema = teoremaManager.getTeorema(teoId,simboloManager);
         Term teoTerm = teorema.getTeoTerm();
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, teoId, false
+                                                                        ,simboloManager);
         
         String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
         String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
@@ -942,10 +1019,12 @@ public class PerfilController {
         predicadoList.addAll(predicadoManager.getAllPredicadosByUser("AdminTeoremas"));
         String simboloDictionaryCode = simboloDictionaryCode(simboloList, predicadoList);
         int intIdTeo = Integer.parseInt(idTeo);
-        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, intIdTeo, false);
+        Resuelve resuelve = resuelveManager.getResuelveByUserAndTeorema(username, intIdTeo, false
+                                                                        ,simboloManager);
         
         boolean nTheoExists = false;
-        if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(), false) != null)
+        if (resuelveManager.getResuelveByUserAndTeoNum(username, agregarTeorema.getNumeroTeorema(), 
+                                                       false,simboloManager) != null)
             nTheoExists = true;
         
         if(bindingResult.hasErrors()){
@@ -974,7 +1053,6 @@ public class PerfilController {
         
         PredicadoId predicadoid2=new PredicadoId();
         predicadoid2.setLogin(username);
-        
         CharStream in = CharStreams.fromString(agregarTeorema.getTeorema());
         TermLexer lexer = new TermLexer(in);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -988,15 +1066,24 @@ public class PerfilController {
             String bndVars = teoTerm.getBoundVarsComma();
             //System.out.println(teoTerm+"\nold: "+boundVars[0]+" new: "+bndVars);
             // Guardando info en caso de error
-            String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
+            //String teoC = teoTerm.evaluar(resuelve.getVariables()).toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
+            String teoC = teoTerm.toStringFormatC(simboloManager,"",0,"teoremaSymbolsId_").replace("\\", "\\\\");
             String teoInputs = teoTerm.toStringLaTeXWithInputs(simboloManager,"","teoremaSymbolsId_").replace("\\", "\\\\");
             map.addAttribute("teoremaC", teoC);
             map.addAttribute("teoremaInputs", teoInputs);
 //                teoTerm.setAlias(0);
             
             // Verificando el tipo de la expresión
-            System.out.println(teoTerm.getType(simboloManager));
+            //System.out.println(teoTerm.getType(simboloManager));
             
+            String vars = teoTerm.stFreeVars();
+            teoTerm = teoTerm.toEquality(vars);
+            vars = bndVars + ";" + vars;
+            Term teoTermBD = teoTerm.traducBD();
+            String stTeoTermBD = teoTermBD.toString();
+            teoTermBD = CombUtilities.getTerm(stTeoTermBD, username, simboloManager);
+            if (teoTermBD.type() == null)
+                throw new TypeVerificationException();
 
             // ESTO DEBE MOSTRAR LAS CATEGORIAS
             Categoria categoria;
@@ -1016,16 +1103,12 @@ public class PerfilController {
                 teorema = teoremaAdd;
             */
            
-            Teorema teorema = teoremaManager.getTeorema(intIdTeo);
-            String vars = null;
-            if (!teorema.getEnunciado().equals(agregarTeorema.getTeorema())) {
+            Teorema teorema = teoremaManager.getTeorema(intIdTeo,simboloManager);
+            if (!teorema.getEnunciado().equals(stTeoTermBD)) {
                 Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
                 if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                 }
-                vars = teoTerm.stFreeVars();
-                teoTerm = teoTerm.toEquality(vars);
-                vars = bndVars + ";" + vars;
                 teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString(), teoTerm, vars);
                 if (teorema == null) {
                     throw new CategoriaException("Couldn't edit theorem");
@@ -1541,7 +1624,7 @@ public class PerfilController {
         Predicado p=predicadoManager.getPredicado(id);
         Tokenizar tk = new Tokenizar();
         tk.tokenArgs(p.getArgumentos());
-        Term aux = CombUtilities.getTerm(p.getPredicado(),null);
+        Term aux = CombUtilities.getTerm(p.getPredicado(),null,null);
         for (String var : tk.getVars()) 
             aux=new App(aux,new Var(var.charAt(0)));
         aux = aux.evaluar();

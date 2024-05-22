@@ -5,6 +5,7 @@
  */
 package com.calclogic.lambdacalculo;
 
+import com.calclogic.parse.CombUtilities;
 import com.calclogic.parse.TermUtilities;
 import java.util.List;
 
@@ -24,12 +25,11 @@ public class TypedApp extends App implements TypedTerm{
     
     public TypedApp(Term t1, Term t2)  throws TypeVerificationException
     {
-        super(t1, t2);
+        super(t1, t2, false);
         Term t1Type = t1.type();
         Term t2Type = t2.type();
         Const op;
         try {
-
             App rootRight = (App)t2Type;
             App leftChild = (App)rootRight.p;
             op = (Const)leftChild.p;
@@ -73,10 +73,9 @@ public class TypedApp extends App implements TypedTerm{
                     if (op1 != 2) //&& !op1.equals("c_{3}"))// el c_{3} como que esta de mas
                         throw new TypeVerificationException();
                 }
-                
                 if ( !(((App)((App)t2Type).p).q.containT() && 
                         !(((App)((App)t2Type).p).q.body() instanceof App) && 
-                        t1Izq.equals(((App)t2Type).q.body())
+                        t1Izq.traducBD().equals(((App)t2Type).q.body().traducBD())
                       )
                    ) // Esto dice que no es modus pones ni equanimity
                 {//(q==r)=q q=r pilas con este caso no se sabe si es equanimity o transitividad
@@ -160,6 +159,9 @@ public class TypedApp extends App implements TypedTerm{
     }
     
     public Term type() {
+        if (type_ != null)
+            return type_;
+        else {
         Term pType = p.type();
         Term qType = q.type();
         if(inferType == 'i'){
@@ -197,7 +199,13 @@ public class TypedApp extends App implements TypedTerm{
                     aux = ((Bracket)aux).t;
                 }
                 String vars = ";"+((TypedA)q).variables_.split(";")[0];
-                return new App(new App(new Const(0,"="),right),left).evaluar(vars).abstractEq();
+                Term result=new App(new App(new Const(0,"="),right),left).evaluar(vars).abstractEq(null);
+                String freeVars = result.stFreeVars();
+                String bndVars = result.getBoundVarsComma();
+                vars = bndVars + ";" + freeVars;
+                result = CombUtilities.getTerm(result.traducBD().toString(), null, TypedA.sm_).evaluar(vars);
+                type_ = result;
+                return type_;
             }
             catch (CloneNotSupportedException e){
                 e.printStackTrace();
@@ -215,33 +223,65 @@ public class TypedApp extends App implements TypedTerm{
             ((App)((App)qType).p).q.body().boundVars(boundVars);
             ((App)qType).q.body().boundVars(boundVars);
             Term t1 = E.sust(((Bracket)pType).x,((App)qType).q);
-            Term t2 = E.sust(((Bracket)pType).x,((App)((App)qType).p).q);
-            //Term op2 = ((App)((App)qType).p).p; 
-            return 
-    new App(new App(new Const(0,"="), t2),t1).evaluar(TermUtilities.arguments(boundVars[0])).abstractEq();
+            Term t2 = ((Term)E.clone2()).sust(((Bracket)pType).x,((App)((App)qType).p).q);
+            // aunque sust crea instancias digamos clones, el comparte las constantes, por lo tanto
+            // si no clonas t1 y t2 van a compartir los Phi y al evaluar un lado los Phi del otro
+            // cambiarian, esto se puede evitar sin clonar si los Phi fueran verdaderas constantes que 
+            // no cambian y sus listas de indices no se agotan
+            Term result = new App(new App(new Const(0,"="), t2),t1).evaluar(TermUtilities.arguments(boundVars[0])).abstractEq(null);
+            String freeVars = result.stFreeVars();
+            String bndVars = result.getBoundVarsComma();
+            String vars = bndVars + ";" + freeVars;
+            result = CombUtilities.getTerm(result.traducBD().toString(), null, TypedA.sm_).evaluar(vars);
+            type_ = result;
+            return type_;
         }
         if (inferType == 's'){
-            return new App(new App(new Const("="), ((App)qType).q), ((App)((App)qType).p).q);
+            // el orden de las variables abstraidas se calcula en inorden, pero si haces simetria
+            // pudieras cambiar el orden en que aparecen en la busqueda inorden esas variables
+            // en CalcLogic todas las cadenas de abstracciones tienen que tener el mismo orden de la 
+            // busqueda del algoritmo inorden, a esto lo llamamos lambda forma normal del teorema 
+            // hacer simetria sin chequear esto puede ocasionar un teorema con la cadena de abstracciones 
+            // diferente a la de su lambda forma normal
+            Const eq = (Const)((App)((App)qType).p).p;
+            Term[] varTypes = ((App)qType).q.varTypes(((App)eq.type_).q);
+            eq = new Const(0,"=","x0->x0->p");
+            type_ = new App(new App(eq, ((App)qType).q.body()), ((App)((App)qType).p).q.body());
+            type_ = type_.abstractEq(varTypes);
+            return type_;
         }
         else if (inferType == 'm'){
             Const eq = (Const)((App)((App)pType).p).p;
+            Term[] varTypes = ((App)pType).q.varTypes(((App)eq.type_).q);
             pType = ((App)((App)((App)pType).q.body()).p).q;
             Const T = (Const)((App)((App)qType).p).q.body();
-            return new App(new App(eq,T),pType).abstractEq();
+            type_ = new App(new App(new Const(0,"=","x0->x0->p"),T),pType).abstractEq(varTypes);
+            return type_;
         }
         else if (inferType == 'e'){
             Const eq = (Const)((App)((App)pType).p).p;
+            Term[] varTypes = ((App)pType).q.varTypes(((App)eq.type_).q);
             pType = ((App)((App)pType).p).q.body();
             Const T = (Const)((App)((App)qType).p).q.body();
-            return new App(new App(eq,T),pType).abstractEq();
+            Term result = new App(new App(new Const(0,"=","x0->x0->p"),T),pType).abstractEq(varTypes);
+            type_ = result;
+            return type_;
         }
         else{
-            Term pIzq = ((App)pType).q.body(); 
+            Term pIzq;
+            if (((App)pType).q.equals(((App)((App)pType).p).q))
+                pIzq = ((App)qType).q;// en este caso pIzq siempre tiene tipo !=null ya que 
+            else                             // ((App)pType).q pudiera tener tipo==null para la prim linea
+                pIzq = ((App)pType).q;
             Term qDer = ((App)((App)qType).p).q.body();
-            Const op1 = (Const)((App)((App)pType).p).p;
-           
-            return new App(new App(op1, qDer), pIzq).abstractEq();
+            Const op1 = (Const)((App)((App)qType).p).p;
+            Term[] varTypes = pIzq.varTypes(((App)((App)((App)pType).p).p.type()).q);
+            qType.varTypes(((App)op1.type()).q, varTypes);
+            Term result=new App(new App(new Const(0,"=","x0->x0->p"), qDer), pIzq.body()).abstractEq(varTypes); 
+            type_ = result;
+            return type_;
             // verificar si compartir terminos no trae problemas con reducir
+        }
         }
     }
     
