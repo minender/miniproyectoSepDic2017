@@ -1,21 +1,23 @@
 package com.calclogic.service;
 
 import com.calclogic.dao.IncluyeDAO;
+import com.calclogic.dao.PureCombsTheoremDAO;
 import com.calclogic.dao.ResuelveDAO;
 import com.calclogic.dao.SimboloDAO;
 import com.calclogic.dao.SolucionDAO;
 import com.calclogic.dao.TeoremaDAO;
 import com.calclogic.dao.TeoriaDAO;
 import com.calclogic.entity.Incluye;
+import com.calclogic.entity.PureCombsTheorem;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Simbolo;
 import com.calclogic.entity.Solucion;
 import com.calclogic.entity.Teorema;
 import com.calclogic.entity.Teoria;
-import java.sql.BatchUpdateException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +38,8 @@ public class SimboloManagerImpl implements SimboloManager {
     private TeoremaDAO teoremaDAO;
     @Autowired
     private ResuelveDAO resuelveDAO;
+    @Autowired
+    private PureCombsTheoremDAO pureCombsTheoremDAO;
     @Autowired
     private ResuelveManager resuelveManager;
     @Autowired
@@ -218,4 +222,107 @@ public class SimboloManagerImpl implements SimboloManager {
         return list;
     }
     
+    /**
+     * Method to get a list of all transitive symbols. 
+     */
+    @Override
+    @Transactional
+    public List<Simbolo> getAllTransitiveOps() {
+        PureCombsTheorem pct = pureCombsTheoremDAO.getTeoremaByEnunciado("= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T)))) (\\Phi_{((bb,),)} (\\Phi_{(cccbb,b)} c_{2} \\Phi_{b(bb,cb)} c_{5}) \\Phi_{c(ccbbb,)})");
+        Set<Teorema> set = pct.getTeoremas();
+        List<String> transOpSt = new ArrayList<String>();
+        for (Teorema t : set) {
+            transOpSt.add(t.getConstlist());
+        }
+        PureCombsTheorem pct2 = pureCombsTheoremDAO.getTeoremaByEnunciado("= (\\Phi_{bb} \\Phi_{K} (\\Phi_{bb} \\Phi_{b})) (\\Phi_{K} (\\Phi_{cb} \\Phi_{cb} \\Phi_{cb}))");
+        Set<Teorema> set2 = pct2.getTeoremas();
+        for (Teorema t : set2) {
+            String[] list = t.getConstlist().split(",");
+            if (list.length == 2 && transOpSt.contains(list[0]))
+                transOpSt.add(list[1]);
+            else if (list.length == 2 && transOpSt.contains(list[1]))
+                transOpSt.add(list[0]);
+        }
+        List<Simbolo> transOpList = new ArrayList<Simbolo>();
+        for (String st: transOpSt)
+            transOpList.add(getSimbolo(Integer.parseInt(st)));
+        return transOpList;
+    }
+    
+    /**
+     * Method to check if exists a proof of the transitivity of c_{id}
+     * @param id Is the primary key of the Simbolo object.
+     * @return character 'e' if exists transitivity proof of c_{id},
+     *         character 'i' if exists definition p op q = q this p and transitivity proof of 'this'
+     *         character 's' if exists definition p this q = q op p and transitivity proof of 'this'
+     *         character 'n' otherwise
+     */
+    @Override
+    @Transactional
+    public String isTransitiveOp(int id) {
+        PureCombsTheorem pct = pureCombsTheoremDAO.getTeoremaByEnunciado("= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T)))) (\\Phi_{((bb,),)} (\\Phi_{(cccbb,b)} c_{2} \\Phi_{b(bb,cb)} c_{5}) \\Phi_{c(ccbbb,)})");
+        String isIn = "n";
+        Set<Teorema> set = pct.getTeoremas();
+        for (Teorema t : set) {
+            if (t.getConstlist().equals(id+"")) {
+                isIn = "ec_{"+id+"}";
+                break;
+            }
+        }
+        if (isIn.charAt(0) == 'e') {
+            return isIn;
+        }
+        else {
+            PureCombsTheorem pct2 = pureCombsTheoremDAO.getTeoremaByEnunciado("= (\\Phi_{bb} \\Phi_{K} (\\Phi_{bb} \\Phi_{b})) (\\Phi_{K} (\\Phi_{cb} \\Phi_{cb} \\Phi_{cb}))");
+            Set<Teorema> set2 = pct2.getTeoremas();
+            String is = "";
+            for (Teorema t : set2) {
+                String[] list = t.getConstlist().split(",");
+                if (list.length == 2 && list[1].equals(id+"")) {
+                    is = "ic_{"+list[0]+"}";
+                    break;
+                }
+                else if (list.length == 2 && list[0].equals(id+"")) {
+                    is = "sc_{"+list[1]+"}";
+                    break;                   
+                }
+            }
+            if (!is.equals("")) {
+                String newId = is.substring(4, is.length()-1);
+                for (Teorema t : set) 
+                  if (t.getConstlist().equals(newId)) {
+                     isIn = is;
+                     break;
+                  }
+            }
+            return isIn;
+        }
+    }
+    
+    /**
+     * Method to check if exists a proof of the transitivity of c_{id}
+     * @param id Is the primary key of the Simbolo object.
+     * @return character 'sc_{id'}' if exists theorem p c_{id'} q = q c_{id} p,
+     *         character 'yc_{id'}' if exists theorem p c_{id} q = q c_{id'} p,
+     *         character 'n' otherwise
+     */
+    @Override
+    @Transactional
+    public String isSymetric(int id) {
+        PureCombsTheorem pct = pureCombsTheoremDAO.getTeoremaByEnunciado("= (\\Phi_{bb} \\Phi_{K} (\\Phi_{bb} \\Phi_{b})) (\\Phi_{K} (\\Phi_{cb} \\Phi_{cb} \\Phi_{cb}))");
+        String isIn = "n";
+        Set<Teorema> set = pct.getTeoremas();
+        for (Teorema t : set) {
+            String[] list = t.getConstlist().split(",");
+            if (list.length == 2 && list[1].equals(id+"")) {
+                isIn = "yc_{"+list[0]+"}";
+                break;
+            }
+            else if (list.length == 2 && list[0].equals(id+"")) {
+                isIn = "sc_{"+list[1]+"}";
+                break;                   
+            }
+        }
+        return isIn;
+    }
 }

@@ -199,7 +199,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
      */
     @Override
     public String closingComment(Term proof, Term beginFormula) {
-        return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "")+"$";
+        return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "", null)+"$";
     }
     
     /**

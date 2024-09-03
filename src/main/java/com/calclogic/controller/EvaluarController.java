@@ -97,7 +97,8 @@ public class EvaluarController {
 
     @RequestMapping(value = "/{username}/applicativeToLatex", method = RequestMethod.GET)
     public String pruebaPredicadoView(@PathVariable String username, ModelMap map) {
-        //Term t = CombUtilities.getTerm("c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda x_{120}.c_{8}) (\\lambda x_{120}.x_{122})", null, TypedA.sm_);
+        //Term t = CombUtilities.getTerm("(M_{6} (A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} c_{2} \\Phi_{b(bb,cb)} c_{5} (\\Phi_{c(ccbbb,)} c_{3}) c_{3} c_{3})}))", null, TypedA.sm_);
+        //System.out.println(t);
         
         map.addAttribute("insertFormula",new InsertFormula());
   
@@ -137,7 +138,7 @@ public class EvaluarController {
            t = parser.start_rule(username,simboloManager).value;
            if (t.nPhi() > 0)
                t = new TypedA(t,"AdminTeoremas").type();
-           map.addAttribute("predicado", "$"+t.toStringLaTeX(simboloManager, "")+"$");
+           map.addAttribute("predicado", "$"+t.toStringLaTeX(simboloManager, "", null)+"$");
         }catch (ParseCancellationException e) {
            map.addAttribute("mensaje", e.getMessage());
            return "insertFormula";

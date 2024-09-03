@@ -1,7 +1,9 @@
 package com.calclogic.service;
+import com.calclogic.dao.PureCombsTheoremDAO;
 import com.calclogic.dao.TeoremaDAO;
 import com.calclogic.dao.ResuelveDAO;
 import com.calclogic.dao.SolucionDAO;
+import com.calclogic.entity.PureCombsTheorem;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Teorema;
 import com.calclogic.lambdacalculo.Term;
@@ -28,6 +30,8 @@ public class TeoremaManagerImpl implements TeoremaManager {
     @Autowired
     private TeoremaDAO teoremaDAO;
     @Autowired
+    private PureCombsTheoremDAO pureCombsTheoremDAO;
+    @Autowired
     private ResuelveDAO resuelveDAO;
     @Autowired
     private SolucionDAO solucionDAO;
@@ -47,13 +51,24 @@ public class TeoremaManagerImpl implements TeoremaManager {
         Teorema teorema2 = this.getTeoremaByEnunciados(teorema.getEnunciado().toString());
         if (teorema2 != null) {
             return teorema2;
-        } /*else {
+        } 
+        String[] cons = new String[1];
+        String statement = teorema.getTeoTerm().abstractConstEq(cons).toString();
+        PureCombsTheorem pct = pureCombsTheoremDAO.getTeoremaByEnunciado(statement);
+        if (pct == null) {
+           pct = new PureCombsTheorem(statement);
+           pureCombsTheoremDAO.addPureCombsTheorem(pct);
+           pct = pureCombsTheoremDAO.getTeoremaByEnunciado(statement);
+        }
+        /*else {
             // Este teorema sera utilizado para ver si el inverso ya existe en la BD
             Teorema teorema3 = this.getTeoremaByEnunciados(teorema.getEnunciadoder().toString(), teorema.getEnunciadoizq().toString());
             if (teorema3 != null) {
                 return teorema3;
             }
         }*/
+        teorema.setConstlist(cons[0]);
+        teorema.setPureCombsTheorem(pct);
         teoremaDAO.addTeorema(teorema);
         return teorema;
     }
@@ -70,7 +85,12 @@ public class TeoremaManagerImpl implements TeoremaManager {
         // Si solo hay 1 usuario usandolo, entonces aplica teoremaDAO.deleteTeorema(id)
         List <Resuelve> resuelves = resuelveDAO.getResuelveByTeorema(id);
         if (resuelves == null || resuelves.size() == 0) {
+            PureCombsTheorem pct;
+            int pctId = teoremaDAO.getTeorema(id).getPureCombsTheorem().getId();
             teoremaDAO.deleteTeorema(id);
+            if (teoremaDAO.getTeoremasByPureCombTheo(pctId).isEmpty()) {
+                pureCombsTheoremDAO.deletePureCombsTheorem(pctId);
+            }
             return true;
         }
         if (resuelves.size() == 1) {
@@ -85,7 +105,11 @@ public class TeoremaManagerImpl implements TeoremaManager {
             }
             if (resuelve.getUsuario().getLogin().equals(username)) {
                 resuelveDAO.deleteResuelve((resuelve.getId()));
+                int pctId = teoremaDAO.getTeorema(id).getPureCombsTheorem().getId();
                 teoremaDAO.deleteTeorema(id);
+                if (teoremaDAO.getTeoremasByPureCombTheo(pctId).isEmpty()) {
+                   pureCombsTheoremDAO.deletePureCombsTheorem(pctId);
+                }
                 return true;
             }
         }
@@ -106,7 +130,6 @@ public class TeoremaManagerImpl implements TeoremaManager {
             }
         }
         return false;
-        
     }
     
     @Transactional
@@ -134,7 +157,25 @@ public class TeoremaManagerImpl implements TeoremaManager {
                 Teorema teorema2 = teoremaDAO.getTeoremaByEnunciados(statement);
                 if (teorema2 == null) {
                     teorema.setEnunciado(statement);
+                    String[] cons = new String[1];
+                    String pctStatement = teoterm.abstractConstEq(cons).toString();
+                    teorema.setConstlist(cons[0]);
+                    int pctId = teorema.getPureCombsTheorem().getId();
+                    boolean pctNotLinkedToAnyTheo = false;
+                    if (!teorema.getPureCombsTheorem().getStatement().equals(pctStatement)) {
+                       PureCombsTheorem pct = pureCombsTheoremDAO.getTeoremaByEnunciado(pctStatement);
+                       if (pct == null) {
+                          pct = new PureCombsTheorem(pctStatement);
+                          pureCombsTheoremDAO.addPureCombsTheorem(pct);
+                          pct = pureCombsTheoremDAO.getTeoremaByEnunciado(pctStatement);
+                       }
+                       if (teoremaDAO.getTeoremasByPureCombTheo(pctId).size()==1)
+                           pctNotLinkedToAnyTheo = true;
+                       teorema.setPureCombsTheorem(pct);
+                    }
                     teoremaDAO.updateTeorema(teorema);
+                    if (pctNotLinkedToAnyTheo)
+                        pureCombsTheoremDAO.deletePureCombsTheorem(pctId);
                     resuelveDAO.updateResuelve(resuelve);
                     return teorema;
                 }
@@ -164,6 +205,16 @@ public class TeoremaManagerImpl implements TeoremaManager {
                Teorema teorema2 = this.getTeoremaByEnunciados(statement);
                if (teorema2 == null) {
                     teorema = new Teorema(statement, teoterm, false, "");
+                    String[] cons = new String[1];
+                    String pctStatement = teoterm.abstractConstEq(cons).toString();
+                    teorema.setConstlist(cons[0]);
+                    PureCombsTheorem pct = pureCombsTheoremDAO.getTeoremaByEnunciado(pctStatement);
+                    if (pct == null) {
+                      pct = new PureCombsTheorem(pctStatement);
+                      pureCombsTheoremDAO.addPureCombsTheorem(pct);
+                      pct = pureCombsTheoremDAO.getTeoremaByEnunciado(pctStatement);
+                   }
+                    teorema.setPureCombsTheorem(pct);
                     //teorema.setEnunciado(statement);
                     //teorema.setId(0);
                     teoremaDAO.addTeorema(teorema);
@@ -176,6 +227,16 @@ public class TeoremaManagerImpl implements TeoremaManager {
         }
         return null;
         
+    }
+    
+    /** 
+     * Updates theorem on the table.
+     * @param teorema The new theorem to be added.
+     * @return Nothing.
+     */    
+    @Override
+    public void updateTeorema(Teorema teorema) {
+        teoremaDAO.updateTeorema(teorema);
     }
 
 	/**

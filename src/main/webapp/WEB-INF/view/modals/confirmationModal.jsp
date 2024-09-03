@@ -60,10 +60,10 @@
     var methodPhrase = {
         DM: "Direct",
         SS: "Starting from one side",
-        WE: "Weakening",
-        ST: "Strengthening",
+        WL: "Weakening",
+        WR: "Strengthening",
         ND: "Natural Deduction",
-        TR: "Transitivity",
+        TL: "Transitivity",
         CO: "Contradiction",
         CR: "Counter-reciprocal",     
         AI: "Proof by parts",
@@ -165,9 +165,17 @@
                     message = "Please, select another method to do the sub-proof.";
                     break;
 
-                case "WE": // Weakening method
-                case "ST": // Strengthening method
-                case "TR": // Transitivity method
+                case "WL": // Weakening method
+                    break;
+                case "WR": // Strengthening method
+                    break;
+                case "TL": // Transitivity method
+                    message = 'Please, select the side from which the proof will begin.';
+
+                    // If the AJAX is called from here, we must put the current expression as clickable.
+                    // The other case will be called from the view "infer.jsp"
+                    method = "TL Clickable"; 
+                    break;
                 default:
                     break;
             }

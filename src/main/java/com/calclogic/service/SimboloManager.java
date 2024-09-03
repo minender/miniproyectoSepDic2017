@@ -54,4 +54,28 @@ public interface SimboloManager {
     public List<Simbolo> getAllSimbolo();
     
     public List<Simbolo> getAllSimboloByTeoria(int teoriaid);
+    
+    /**
+     * Method to get a list of all transitive symbols. 
+     */
+    public List<Simbolo> getAllTransitiveOps();
+    
+    /**
+     * Method to check if exists a proof of the transitivity of c_{id}
+     * @param id Is the primary key of the Simbolo object.
+     * @return character 'e' if exists transitivity proof of c_{id},
+     *         character 'i' if exists definition p op q = q this p and transitivity proof of 'this'
+     *         character 's' if exists definition p this q = q op p and transitivity proof of 'this'
+     *         character 'n' otherwise
+     */
+    public String isTransitiveOp(int op);
+    
+    /**
+     * Method to check if exists a proof of the transitivity of c_{id}
+     * @param id Is the primary key of the Simbolo object.
+     * @return character 'yc_{id'}' if exists theorem p c_{id'} q = q c_{id} p,
+     *         character 'sc_{id'}' if exists theorem p c_{id} q = q c_{id'} p,
+     *         character 'n' otherwise
+     */
+    public String isSymetric(int id);
 }

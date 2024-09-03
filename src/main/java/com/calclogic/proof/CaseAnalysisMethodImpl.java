@@ -9,6 +9,7 @@ import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedL;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedS;
 import com.calclogic.lambdacalculo.TypedTerm;
 import com.calclogic.lambdacalculo.Var;
@@ -121,6 +122,32 @@ public class CaseAnalysisMethodImpl extends GenericProofMethodImpl implements Ca
      *        to produce de current statement to proof in this sub-proof
      * @param proof: The proof tree so far
      * @return proof of formulaBeingProved if finished, else return the same proof
+     * 
+     *  (c1\/(c2\/c3))/\((c1=>T)/\((c2=>T)/\(c3=>T)))
+     * =
+     *  (c1\/(c2\/c3))/\((!c1\/T)/\((c2=>T)/\(c3=>T)))
+     * =
+     *  (c1\/(c2\/c3))/\((T\/!c1)/\((c2=>T)/\(c3=>T)))
+     * =
+     *  (c1\/(c2\/c3))/\((T\/!c1)/\((!c2\/T)/\(c3=>T)))
+     * =
+     *  (c1\/(c2\/c3))/\((T\/!c1)/\((T\/!c2)/\(c3=>T)))
+     * =
+     *  (c1\/(c2\/c3))/\((T\/!c1)/\((T\/!c2)/\(!c3\/T)))
+     * =
+     *  (c1\/(c2\/c3))/\((T\/!c1)/\((T\/!c2)/\(T\/!c3)))
+     * =
+     *  (c1\/(c2\/c3))/\((T\/!c1)/\(T\/(!c2/\!c3)))
+     * =
+     *  (c1\/(c2\/c3))/\((T\/!c1)/\(T\/!(c2\/c3)))
+     * =
+     *  (c1\/(c2\/c3))/\(T\/(!c1/\!(c2\/c3)))
+     * =
+     *  (c1\/(c2\/c3))/\(T\/!(c1\/(c2\/c3)))
+     * =
+     *  (c1\/(c2\/c3))/\(!(c1\/(c2\/c3))\/T)
+     * =
+     *  (c1\/(c2\/c3))/\T
      */
     @Override
     public Term finishedLinearRecursiveMethodProof(String user, Term formulaBeingProved, Term proof) {
@@ -130,6 +157,10 @@ public class CaseAnalysisMethodImpl extends GenericProofMethodImpl implements Ca
             Term implcations = ((App)((App)((App)st).q.body()).p).q;
             ArrayList<Term> arr = new ArrayList<Term>();
             ArrayList<Term> arr2 = new ArrayList<Term>();
+            ArrayList<Term> arr3 = new ArrayList<Term>();
+            /*ArrayList<Term> arr4 = new ArrayList<Term>();
+            ArrayList<Term> arr5 = new ArrayList<Term>();
+            ArrayList<Term> arr6 = new ArrayList<Term>();*/
             Term aux = implcations;
             while (((App)((App)aux).p).p instanceof Const && 
                     ((Const)((App)((App)aux).p).p).getId() == 5 ) {
@@ -141,41 +172,117 @@ public class CaseAnalysisMethodImpl extends GenericProofMethodImpl implements Ca
             Term leibniz;
             Term finalProof = null;
             for (int z = 0; z < arr.size(); z++) {
-              if (0==z) {
+              if (arr.size()-1==z) {
                 leibniz = new Var(-126);
-                implDefSt = "(I^{[x_{113},x_{112} := "+((App)formulaBeingProved).q.body()+","+arr.get(z)+"]} A^{= (\\Phi_{cbb} c_{7} \\Phi_{bb} c_{4}) (\\Phi_{bb} \\Phi_{b} c_{2})})";
-              } else if (0>z)
-                leibniz = new App(new App(new Const(2,"c_{2}"),((App)formulaBeingProved).q.body()),arr.get(0));
+                implDefSt = "(I^{[x_{113},x_{112} := "+((App)formulaBeingProved).q.body()+","+arr.get(z)+"]} A^{= (\\Phi_{cbb} c_{7} \\Phi_{bb} c_{4}) (\\Phi_{bb} \\Phi_{b} c_{2})}) (I^{[x_{112},x_{113} := c_{7} ("+arr.get(z)+"),"+((App)formulaBeingProved).q.body()+" ]} A^{= (\\Phi_{bb} \\Phi_{b} c_{4}) (\\Phi_{cb} c_{4} \\Phi_{cb})})";
+              } else if (arr.size()-1>z)
+                leibniz = new App(new App(new Const(2,"c_{2}"),((App)formulaBeingProved).q.body()),arr.get(arr.size()-1));
               else
-                leibniz = arr2.get(0);
-              int i = 1;
-              while (i < arr.size()) {
+                leibniz = arr2.get(arr.size()-1);
+              int i = arr.size()-2;
+              while (0 <= i) {
                 Term implAux;
                 if (i==z) {
                   implAux = new Var(-126);
-                  implDefSt = "(I^{[x_{113},x_{112} := "+((App)formulaBeingProved).q.body()+","+arr.get(z)+"]} A^{= (\\Phi_{cbb} c_{7} \\Phi_{bb} c_{4}) (\\Phi_{bb} \\Phi_{b} c_{2})})";
+                  implDefSt = "(I^{[x_{113},x_{112} := "+((App)formulaBeingProved).q.body()+","+arr.get(z)+"]} A^{= (\\Phi_{cbb} c_{7} \\Phi_{bb} c_{4}) (\\Phi_{bb} \\Phi_{b} c_{2})}) (I^{[x_{112},x_{113} := c_{7} ("+arr.get(z)+"),"+((App)formulaBeingProved).q.body()+" ]} A^{= (\\Phi_{bb} \\Phi_{b} c_{4}) (\\Phi_{cb} c_{4} \\Phi_{cb})})";
                 }
                 else if (i>z)
                   implAux = new App(new App(new Const(2,"c_{2}"),((App)formulaBeingProved).q.body()),arr.get(i));
                 else
                   implAux = arr2.get(i);
-                leibniz = new App(new App(new Const(5,"c_{5}"),implAux),leibniz); 
-                i++;
+                leibniz = new App(new App(new Const(5,"c_{5}"),leibniz),implAux);
+                i--;
               }
               Term implDef = CombUtilities.getTerm(implDefSt, user, simboloManager);
               arr2.add(z, ((App)((App)implDef.type()).p).q.body());
               leibniz = CombUtilities.getTerm("L^{\\lambda x_{-126}.c_{5} ("+leibniz+") ("+cases+")} ", user, simboloManager);
               finalProof = (finalProof==null?new TypedApp(leibniz,implDef):new TypedApp(finalProof,new TypedApp(leibniz,implDef)));
             }
-            String absorptionProofSt = "(I^{[x_{113},x_{112} := "+((App)formulaBeingProved).q.body()+","+arr.get(0)+"]} A^{= (\\Phi_{bb} \\Phi_{b} c_{5}) (\\Phi_{cbb} c_{7} (\\Phi_{(bbb,)} c_{5}) c_{4})})";
-            String transProofSt = "I^{[x_{102},x_{101} := c_{5} ("+((App)formulaBeingProved).q.body()+") ("+cases+"),c_{5} (c_{2} ("+((App)formulaBeingProved).q.body()+") ("+cases+")) ("+cases+")]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccb,)} c_{1} c_{1} (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)})}";
+            arr3.add(0,((App)((App)((App)arr2.get(arr.size()-1)).p).q).q);
+            String distribSt = "";
+            Term distrib = null;
+            for (int z = arr.size()-2; 0 <= z; z--) {
+              //if (1==z) {
+                leibniz = new Var(-126);
+                distribSt = "(S (I^{[x_{114},x_{112},x_{113} := c_{7} ("+arr3.get(arr.size()-z-2)+"),"+((App)formulaBeingProved).q.body()+",c_{7} ("+arr.get(z)+")]} A^{= (\\Phi_{bb} (\\Phi_{c(bbb,)} c_{4} \\Phi_{bcb} c_{5}) c_{4}) (\\Phi_{ccbb} \\Phi_{cbb} c_{4} \\Phi_{ccb} c_{5})})) ";
+                distribSt += "(S (L^{\\lambda x_{-126}.c_{4} x_{-126} ("+((App)formulaBeingProved).q.body()+")} (I^{[x_{113},x_{112} := "+arr3.get(arr.size()-z-2)+", "+arr.get(z)+"]} A^{= (\\Phi_{cbbb} c_{7} \\Phi_{bb} c_{5} c_{7}) (\\Phi_{bb} (\\Phi_{bb} c_{7}) c_{4})})))";
+              /*} else if (1>z)
+                leibniz = new App(new App(new Const(2,"c_{5}"),((App)formulaBeingProved).q.body()),arr2.get(1));
+              else
+                leibniz = arr3.get(1);*/
+              int i = z-1;
+              while (0 <= i) {
+                leibniz = new App(new App(new Const(5,"c_{5}"),leibniz),arr2.get(i));
+                i--;
+              }
+              leibniz = new Bracket(new Var(-126),new App(new App(new Const(5,"c_{5}"),leibniz),cases));
+              leibniz = new TypedL((Bracket)leibniz);
+              distrib = CombUtilities.getTerm(distribSt, user, simboloManager);
+              arr3.add(arr.size()-z-1,((App)((App)((App)((App)((App)distrib.type()).p).q.body()).p).q).q);
+              finalProof = new TypedApp(finalProof,new TypedApp(leibniz,distrib));
+            }
+            /*String assocProofSt = "";
+            Term assocProof = null;
+            arr4.add(0,arr.get(arr.size()-1));
+            for (int z = 1; z < arr.size()-1; z++) {
+              assocProofSt = "(I^{[x_{114},x_{113},x_{112}:= "+arr4.get(z-1)+","+arr.get(arr.size()-z-1)+","+arr3.get(arr.size()-z-2)+"]} A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{4}) c_{4}) (\\Phi_{cbbb} c_{4} \\Phi_{bb} \\Phi_{bb} c_{4})})";
+              assocProofSt = "L^{\\lambda x_{-126}.c_{5} (c_{4} (c_{7} x_{-126}) ("+((App)formulaBeingProved).q.body()+")) ("+cases+")} "+assocProofSt;
+              assocProof = CombUtilities.getTerm(assocProofSt, user, simboloManager);
+              arr4.add(z,new App(new App(new Const(4,"c_{4}"),arr4.get(z-1)),arr.get(arr.size()-z-1)));
+              finalProof = new TypedApp(finalProof,assocProof);
+            }*/
+            String symetryProofSt = "L^{\\lambda x_{-126}.c_{5} x_{-126} ("+cases+")} (I^{[x_{112},x_{113}:="+((App)formulaBeingProved).q.body()+",c_{7} ("+cases+")]} A^{= (\\Phi_{bb} \\Phi_{b} c_{4}) (\\Phi_{cb} c_{4} \\Phi_{cb})})";
+            Term symetryProof = CombUtilities.getTerm(symetryProofSt,user,TypedA.sm_);
+            finalProof = new TypedApp(finalProof,symetryProof);
+            String absorptionProofSt = "(I^{[x_{113},x_{112} := "+((App)formulaBeingProved).q.body()+","+cases+"]} A^{= (\\Phi_{bb} \\Phi_{b} c_{5}) (\\Phi_{cbb} c_{7} (\\Phi_{(bbb,)} c_{5}) c_{4})})";
             Term absorptionProof = CombUtilities.getTerm(absorptionProofSt,user,TypedA.sm_);
             finalProof = new TypedApp(finalProof,absorptionProof);
+            symetryProofSt = "(I^{[x_{112},x_{113}:="+cases+","+((App)formulaBeingProved).q.body()+"]} A^{= (\\Phi_{bb} \\Phi_{b} c_{5}) (\\Phi_{cb} c_{5} \\Phi_{cb})})";
+            symetryProof = CombUtilities.getTerm(symetryProofSt,user,TypedA.sm_);
+            finalProof = new TypedApp(finalProof,symetryProof);
+            //finalProof = new TypedApp(new TypedS(),finalProof);
+            Term type = finalProof.type();
+            String transProofSt = "(I^{[x_{69},x_{101},x_{102} := \\lambda x_{-126}.c_{2} ("+((App)formulaBeingProved).q.body()+") x_{-126},"+((App)type).q.body()+","+((App)((App)type).p).q.body()+"]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(ccb,)} c_{2} (\\Phi_{(bbb,cb)} c_{2}) (\\Phi_{c(cbbb,)} c_{1}))})";
+            Term transProof = CombUtilities.getTerm(transProofSt,user,TypedA.sm_);
+            finalProof = new TypedApp(transProof,new TypedM(1,1,finalProof,type.traducBD().toString(),user));
+            transProofSt = "(I^{[x_{112},x_{113}:="+((App)formulaBeingProved).q.body()+","+cases+"]} A^{= (\\Phi_{K} (\\Phi_{K} T)) (\\Phi_{c(bb,)} c_{5} \\Phi_{bcb} c_{2})})";
+            transProof = CombUtilities.getTerm(transProofSt,user,TypedA.sm_);
+            finalProof = new TypedApp(finalProof,transProof);
+            /*arr6.add(0,arr.get(arr5.size()-1));
+            for (int z = 1; z < arr5.size()-1; z++) {
+              assocProofSt = "(I^{[x_{114},x_{113},x_{112}:= "+arr6.get(z-1)+","+arr5.get(arr5.size()-z-1)+","+arr3.get(arr5.size()-z-2)+"]} A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{5}) c_{5}) (\\Phi_{cbbb} c_{5} \\Phi_{bb} \\Phi_{bb} c_{5})})";
+              assocProofSt = "L^{\\lambda x_{-126}.c_{5} x_{-126} ("+cases+")} "+assocProofSt;
+              assocProof = CombUtilities.getTerm(assocProofSt, user, simboloManager);
+              arr5.add(z,new App(new App(new Const(5,"c_{5}"),arr5.get(z-1)),arr5.get(arr5.size()-z-1)));
+              finalProof = new TypedApp(finalProof,assocProof);
+            }*/
+            finalProof = new TypedApp(finalProof,proof);
             return finalProof;
              
         } catch (TypeVerificationException e)  {
             Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
         }
         return proof;
+    }
+    
+    /**
+     * This function returns the closing comment of the proof i.e. the conclusion of the proof
+     * 
+     * @param proof: The current proof
+     * @return String with the closing comment of the proof
+     */
+    @Override
+    public String closingComment(Term proof, Term beginFormula) {
+        return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "",null)+"$";
+    }
+    
+    /**
+     * This function delete the last part of the proof depends of the method
+     * 
+     * @param proof: The current proof
+     * @return proof without the last part of the proof that finish the proof
+     */
+    public Term deleteFinishProof(Term proof) {
+        return ((App)proof).q;
     }
 }

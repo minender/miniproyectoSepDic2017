@@ -1,26 +1,25 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.calclogic.dao;
 
-import com.calclogic.entity.Categoria;
-import com.calclogic.entity.Teorema;
+import com.calclogic.entity.PureCombsTheorem;
 import java.util.List;
 
 /**
- * This interface is the API of the database queries that 
- * have to do with the table "Teorema". 
  *
- * That table has all the theorems that have been added to the
- * application.
- *
- * @author miguel
+ * @author feder
  */
-public interface TeoremaDAO {
+public interface PureCombsTheoremDAO {
     
     /** 
      * Adds a new theorem to the table.
      * @param teorema The new theorem to be added.
      * @return Nothing.
      */
-    public void addTeorema(Teorema teorema);
+    public void addPureCombsTheorem(PureCombsTheorem teorema);
     
     /**
      * Updates one of the Teorema objects of the table.
@@ -28,34 +27,31 @@ public interface TeoremaDAO {
      * @param teorema Is the Teorema object to be updated.
      * @return Nothing.
      */   
-    public void updateTeorema(Teorema teorema);
+    public void updatePureCombsTheorem(PureCombsTheorem teorema);
     
     /**
      * Deletes one of the theorems of the table.
      * @param id Is the principal key of the theorem to delete.
      * @return Nothing.
      */ 
-    public void deleteTeorema(int id);
+    public void deletePureCombsTheorem(int id);
     
     /**
      * Method to get a theorem by its principal key.
      * @param id Is the principal key of the theorem.
      */
-    public Teorema getTeorema(int id);
+    public PureCombsTheorem getPureCombsTheorem(int id);
     
     /**
      * Method to get a list of all the entries of the table (all the theorems).
      */
-    public List<Teorema> getAllTeoremas();
+    public List<PureCombsTheorem> getAllPureCombsTheorem();
     
     /**
      * Method to get a theorem that corresponds to a statement.
      * @param enunciado Is the statement used to filter the search.
      */
-    public Teorema getTeoremaByEnunciados(String enunciado);
+    public PureCombsTheorem getTeoremaByEnunciado(String enunciado);
     
-    public List<Teorema> getTeoremasByPureCombTheo(int id);
-    //
-//    public List<Teorema> getPublicTeoremas(Categoria categoria);
-    public List<Teorema> getAllTeoremasWithSimbolo(int idSimbolo);
 }
+

@@ -21,13 +21,11 @@ import org.springframework.stereotype.Service;
  * @author ronald
  */
 @Service
-public class WeakeningMethodImpl extends TransitivityMethodImpl implements WeakeningMethod {
+public class WeakeningStrengtheningLeftMethodImpl extends TransitivityFromLeftMethodImpl implements WeakeningStrengtheningLeftMethod {
     
-    @Autowired
-    private TransitivityMethod transitivity;
 
-    public WeakeningMethodImpl(){
-        setInitVariables("WE");
+    public WeakeningStrengtheningLeftMethodImpl(){
+        setInitVariables("WL");
     }
 
     /**
@@ -54,23 +52,22 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
     @Override
     protected Term parityLeibniz(Term leibniz, Term nabla) throws TypeVerificationException {      
         Term t = leibniz.traducBD();
-        
         while (t instanceof App) {
             Term nabla2 = nabla; // si no entra en ninguna guardia aborta el TApp(nabla,nabla)
             if (((App)t).q instanceof Const && ((Const)((App)t).q).getId() == 7 ) {
-                Term root = nabla.type();
+                Term root = ((App)nabla.type()).q.body();
                 nabla2 = neg(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p);
                 t = ((App)t).p;
             }
             else if (((App)t).q instanceof App && ((App)((App)t).q).p instanceof Const) {
                 if (((Const)((App)((App)t).q).p).getId() == 2 ) {
-                    Term root = nabla.type();
+                    Term root = ((App)nabla.type()).q.body();
                     nabla2 = wsl2(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p, ((App)((App)t).q).q);
                 }
                 else if ( (((Const)((App)((App)t).q).p).getId() != 1 ) ) {
-                    Term root = nabla.type();
+                    Term root = ((App)nabla.type()).q.body();
                     nabla2 = wsl1(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p, ((App)((App)t).q).q,
                                              (Const)((App)((App)t).q).p);
@@ -79,12 +76,12 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
             }
             else if (((App)t).q instanceof Const && ((App)t).p instanceof App) {
                 if ( ((Const)((App)t).q).getId()==3 ) {
-                    Term root = nabla.type();
+                    Term root = ((App)nabla.type()).q.body();
                     nabla2 = wsr2(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p, ((App)((App)t).p).q);
                 }
                 else if (((Const)((App)t).q).getId() != 1) {
-                    Term root = nabla.type();
+                    Term root = ((App)nabla.type()).q.body();
                     nabla2 = wsr1(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p, ((App)((App)t).p).q,
                                              (Const)((App)t).q);
@@ -114,10 +111,10 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
         String P = p.toString();
-        String Q = q.toString();                      //= (\\Phi_{K} (\\Phi_{K} T)) (\\Phi_{c(ccbb,)} "+op+" c_{7} "+op2+" (\\Phi_{(bcbb,cb)} c_{1}) c_{7})
-        String neg = "I^{[x_{112}, x_{113} := "+P+", "+Q+"]}A^{= T (c_{1} ("+op2+" (c_{7} x_{113}) (c_{7} x_{112})) ("+op+" x_{113} x_{112}))}";
+        String Q = q.toString();                              
+        String neg = "I^{[x_{113}, x_{112} := "+Q+", "+P+"]}A^{= (\\Phi_{cbbb} c_{7} \\Phi_{bb} "+op2+" c_{7}) (\\Phi_{bb} \\Phi_{b} "+op+")}";
         
-        return CombUtilities.getTerm(neg,null,null);
+        return CombUtilities.getTerm(neg,"AdminTeoremas",TypedA.sm_);
     }
     
     /**
@@ -141,10 +138,10 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         
         String P = p.toString();
         String Q = q.toString();
-        String R = r.toString();                         //"= (\\Phi_{K} (\Phi_{K} (\Phi_{K} T))) (\\Phi_{c(ccccb,)} "+op+" \\Phi_{cb(bcb,cb)} c_{2} "+op+" "+op1+" (\\Phi_{ccc(ccbcb,)} "+op1+"))"
-        String wsl1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op+" ("+op1+" x_{114} x_{113}) ("+op1+" x_{114} x_{112})) ("+op+" x_{113} x_{112}))}";
-        
-        return CombUtilities.getTerm(wsl1,null,null);
+        String R = r.toString();                                           
+        String wsl1 = "I^{[x_{114}, x_{113}, x_{112} := "+R+", "+Q+", "+P+"]}A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccbb,b)} "+op+" "+op+" (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)} "+op1+" "+op1+")}";
+
+        return CombUtilities.getTerm(wsl1,"AdminTeoremas",TypedA.sm_);
     }
     
     /**
@@ -168,10 +165,10 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
         String P = p.toString();
         String Q = q.toString();
-        String R = r.toString();                   //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccccb,)} "+op+" \\Phi_{cb(bcb,cb)} c_{2} "+op2+" c_{2} (\\Phi_{ccc(ccbcb,)} c_{2}))
-        String wsl2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op2+" (c_{2} x_{114} x_{113}) (c_{2} x_{114} x_{112})) ("+op+" x_{113} x_{112}))}";
+        String R = r.toString();                                              //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccbb,b)} c_{3} c_{2} (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)} c_{2} c_{2})
+        String wsl2 = "I^{[x_{114}, x_{113}, x_{112} := "+R+", "+Q+", "+P+"]}A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccbb,b)} "+op+" "+op2+" (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)} c_{2} c_{2})}";
         
-        return CombUtilities.getTerm(wsl2,null,null);
+        return CombUtilities.getTerm(wsl2,"AdminTeoremas",TypedA.sm_);
     }
     
     /**
@@ -194,10 +191,10 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         
         String P = p.toString();
         String Q = q.toString();
-        String R = r.toString();                  //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccbb,)} "+op1+" "+op+" \\Phi_{cb(bb,b)} c_{2} "+op+" \\Phi_{c(ccbcb,b)} "+op1+")
-        String wsr1 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op+" ("+op1+" x_{113} x_{114}) ("+op1+" x_{112} x_{114})) ("+op+" x_{113} x_{112}))}";
+        String R = r.toString();                                              
+        String wsr1 = "I^{[x_{113}, x_{114}, x_{112} := "+Q+", "+R+", "+P+"]}A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} "+op+" (\\Phi_{(bbcb,b)} c_{2}) "+op1+" \\Phi_{cc(bbb,)} "+op+" "+op1+")}";
         
-        return CombUtilities.getTerm(wsr1,null,null);
+        return CombUtilities.getTerm(wsr1,"AdminTeoremas",TypedA.sm_);
     }
     
     /**
@@ -220,10 +217,10 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
         String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
         String P = p.toString();
         String Q = q.toString();
-        String R = r.toString();               //\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccbb,)} c_{3} "+op+" \\Phi_{cb(bb,b)} c_{2} "+op2+" \\Phi_{c(ccbcb,b)} c_{3})
-        String wsr2 = "I^{[x_{112}, x_{113}, x_{114} := "+P+", "+Q+", "+R+"]}A^{= T (c_{2} ("+op2+" (c_{3} x_{113} x_{114}) (c_{3} x_{112} x_{114})) ("+op+" x_{113} x_{112}))}";
+        String R = r.toString();                                              
+        String wsr2 = "I^{[x_{113}, x_{114}, x_{112} := "+Q+", "+R+", "+P+"]}A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} "+op+" (\\Phi_{(bbcb,b)} c_{2}) c_{3} \\Phi_{cc(bbb,)} "+op+" c_{3})}";
         
-        return CombUtilities.getTerm(wsr2,null,null);
+        return CombUtilities.getTerm(wsr2,"AdminTeoremas",TypedA.sm_);
     }
 
     /**
@@ -242,7 +239,7 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
      * @return new proof if finished, else returns the same proof
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
-    @Override
+    /*@Override
     public Term auxFinBaseMethodProof(Term formulaBeingProved, Term proof, String username,
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
@@ -256,10 +253,9 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
             // In this case we use the same finalization as in the transitivity method
             return transitivity.auxFinBaseMethodProof(formulaBeingProved,proof,username,resuelveManager,simboloManager,expr,initialExpr,finalExpr);
         }
-        /* If we are weakening and the statement is A<=B or we are strengthening and the statement is A=>B, 
-           and at least one inference was made.
-           >>>> NOTE: if the app forces to start from the left side, this case may be impossible (not sure)
-        */
+        // If we are weakening and the statement is A<=B or we are strengthening and the statement is A=>B, 
+        //   and at least one inference was made.
+        //   >>>> NOTE: if the app forces to start from the left side, this case may be impossible (not sure)
         if (((("WE".equals(this.methodStr)) && leftArrow) || (("ST".equals(this.methodStr)) && rightArrow)) && (transFirstOpInferIndex(proof,true)!=0)){
             // Axiom: (q => p) == (p <= q)
             TypedA axiom = new TypedA(CombUtilities.getTerm("c_{1} (c_{2} x_{112} x_{113}) (c_{3} x_{113} x_{112})",null,null) );
@@ -291,7 +287,7 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
             }
         }
         return proof;
-    }
+    }*/
     
     /**
      * This function delete the last part of the proof depends of the method
@@ -300,6 +296,6 @@ public class WeakeningMethodImpl extends TransitivityMethodImpl implements Weake
      * @return proof without the last part of the proof that finish the proof
      */
     public Term deleteFinishProof(Term proof) {
-        return null;
+        return proof;
     }
 }

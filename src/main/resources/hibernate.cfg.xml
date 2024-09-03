@@ -12,6 +12,7 @@
     <mapping resource="com/calclogic/entity/Publicacion.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Predicado.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Teorema.hbm.xml"/>
+    <mapping resource="com/calclogic/entity/PureCombsTheorem.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Solucion.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Resuelve.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Categoria.hbm.xml"/>

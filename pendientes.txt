@@ -57,6 +57,8 @@ de ser necesaria (se puso un z negativo para que nunca choque con las variables 
 En toStringFormatC tambien tienes que chequear el tipo para saber si en una igualdad imprimes equivalencia o igualdad
 En toStringFormatC hay un if que si el operador raiz es variable se debe chequear si usa la letra E, creo que esto ya no va
 Cuando la prueba es Starting one Side y no ha terminado, el closingComment se imprime, deberia ser solo cuando resuelto
+En la impresion de los hint se esta actualmente cableando z como el nombre de la variable de reemplazo,debe parametrizarse
+Cuando se edita el numero de un teorema no se valida si el numero ya existe en otro resuelve de otro teorema del usuario
 
 En el libro 
 Marco teorico (for dummies)
@@ -70,3 +72,37 @@ Combinadores paralelos (Combinaton)
 Busquedas de demostraciones, estudio de optimizaciones usando combinadores paralelos
 Desafios y tendencias futuras
 Conclusiones
+Di en el libro que cada metodo tiene su propio imprimir, crear inferencia base, retroceder, addInferToProof, interfazm y 
+getLastLineOfProof
+
+Para Baralt
+Definiciones y axiomas para la aplicacion funcional a nivel sintactico
+Definiciones y axiomas alternativos para la aplicacion funcional basado en combinadores (hacerlo para cualquier base de combinadores)
+Definir la teoria de la funcionalidad, que es una teoria ecuacional de funciones
+Dar la idea de lo que es logica de combinadores ilativa
+Decir que no hace falta la logica de combinadores ilativa sino con la teoria ecuacional funcional pero considerando los conectores logicos y cuant
+El resultado principal es que se tiene un algoritmo que es capaz de traducir inyectivamente cualquier prueba de la teoria de conjuntos ZF usando 
+el sistema de deduccion natural, a una prueba en un fragmento ecuacional de la logica de Curry sin combinadores ilativos y sin esquema de axiomas. 
+Por lo tanto, la validez de todo enunciado respecto a la consistencia de la teoria de conjuntos de Zermelo-Fraenkel, usando el sistema de deduccion 
+natural, seria la misma en el fragmento de la logica de Curry antes mencionado
+La traduccion se hace por medio de varias etapas: Primero se codifica una prueba usando el sistema de deduccion natural, en una prueba usando la 
+logica de Dijkstra-Scholten, luego se explica una forma de codificar toda prueba de la logica de Dijkstra-Scholten en el sistema de conversion 
+lambda (lambda-Calculo) de Church, por ultimo se explica una forma de codificar este fragmento de pruebas hechas con lambda-calculo en pruebas 
+usando logica combinatoria.
+
+Decir que se definio nuevamente el sistema de inferencia de Dijkstra-Scholten completando las ambiguedades que existen en la bibliografica, de 
+forma que sea extrictamente formal y mecanizable
+
+En el capitulo x se extiende la idea de la traduccion para ser usando en otras teorias distintas a la de conjuntos pero usando el sistema formal de 
+Dijkstra-Scholten. Sin embargo el sistema de Dijkstra-Scholten requiere que los funcionales sean funciones totales, por lo que la parcialidad de 
+las funciones debe interpretarse de una forma no convencional, por lo que la semantica de Dijkstra-Scholten no seria convencional. En este 
+capitulo se explica dicha semantica. Se da un algoritmo de forma tal que convierte cualquier semantica convencional para teorias que se prentenden 
+usar en un sistema de deduccion natural con funcionales parciales, en una semantica para la misma teoria pero destinada a ser usada en el 
+sistema formal de inferencia de Dijkstra-Scholten.
+
+En el ultimo capitulo se muestran varios teoremas de la teoria de conjuntos no estandar hechas con el nuevo sistema de Dijkstra-Scholten dpropuesto 
+para mostrar que efectivamente se pueden hacer las derivaciones necesarias con el nuevo sistema sobre la teoria de conuntos no estandar. De estos 
+teoremas se identifican cuales son demostrados en el fragmento intuicionista de Dijkstra-Scholten y cuales no. De aquellos que fueron demostrados 
+intuicionistamente, se conjetura un algoritmo que para estos casos en especifico corresponde a un realizability para estos teoremas. Abriendo el 
+camino para una nueva investigacion sobre realizabilities de la teoria de conjuntos no estandar usando el sistema de Dijkstra-Scholten 
+intuicionistamente

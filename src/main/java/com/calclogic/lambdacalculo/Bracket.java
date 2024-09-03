@@ -237,11 +237,11 @@ public class Bracket extends Term{
     }
     
     @Override
-    public String toStringLaTeX(SimboloManager s,String numTeo)
+    public String toStringLaTeX(SimboloManager s,String numTeo,List transOp)
     {
         if(t.alias == null) {
             //FALTA IMPLEMENTAR FINAL
-            return t.toStringLaTeX(s,"");
+            return t.toStringLaTeX(s,"",null);
             //return t.toStringInf(s,numTeo);
         }
         else {
@@ -302,11 +302,11 @@ public class Bracket extends Term{
     }
     
     @Override
-    public ToString toStringLaTeXAbrv(ToString toString,SimboloManager s, PredicadoManager p,String nTeo)
+    public ToString toStringLaTeXAbrv(ToString toString,SimboloManager s, PredicadoManager p,String nTeo,List transOp)
     {
         if(t.alias == null)
         {
-            t.toStringLaTeXAbrvFinal(toString,s,p,nTeo);
+            t.toStringLaTeXAbrvFinal(toString,s,p,nTeo,transOp);
             //toString.term= "(\\lambda "+x.toStringLaTeX(s,"")+"."+toString.term+")";
             return toString;
         }
@@ -409,9 +409,19 @@ public class Bracket extends Term{
     }
     
     @Override
+    public String stFreeVarsWithAnyIndex(String st) {
+        return st;
+    }
+    
+    @Override
     public void boundVars(String[] vars) {
         vars[0] = (vars[0].equals("")?"":vars[0]+",")+(char)x.indice;
         t.boundVars(vars);
+    }
+    
+    @Override
+    public Term replaceConstByVars() {
+        return null;
     }
     
     @Override

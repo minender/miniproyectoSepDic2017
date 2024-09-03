@@ -258,7 +258,6 @@ public class ResuelveDaoImpl implements ResuelveDAO {
     public List<Resuelve> getResuelveByCategoria(int categoriaId) {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Resuelve WHERE categoria.id = :categoriaId").setParameter("categoriaId", categoriaId).list();
     }
-        
     
     @Override
     public List<Resuelve> getResuelveDependent(String userLogin, List<Resuelve> resuelves) {

@@ -1,4 +1,4 @@
-// Generated from ProofMethod.g4 by ANTLR 4.8
+// Generated from .\ProofMethod.g4 by ANTLR 4.8
 
 
 package com.calclogic.parse;
@@ -26,8 +26,8 @@ public class ProofMethodParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		DM=1, EO=2, OE=3, SS=4, TR=5, WE=6, ST=7, ND=8, CO=9, CR=10, AI=11, MI=12, 
-		CA=13, GE=14, WI=15, O_PAR=16, C_PAR=17, WHITESPACE=18;
+		DM=1, EO=2, OE=3, SS=4, TL=5, TR=6, WL=7, WR=8, ND=9, CO=10, CR=11, AI=12, 
+		MI=13, CA=14, GE=15, WI=16, O_PAR=17, C_PAR=18, WHITESPACE=19;
 	public static final int
 		RULE_start_rule = 0, RULE_method = 1, RULE_method_tail = 2, RULE_method_base = 3;
 	private static String[] makeRuleNames() {
@@ -39,15 +39,16 @@ public class ProofMethodParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'DM'", "'EO'", "'OE'", "'SS'", "'TR'", "'WE'", "'ST'", "'ND'", 
-			"'CO'", "'CR'", "'AI'", "'MI'", "'CA'", "'GE'", "'WI'", "'('", "')'"
+			null, "'DM'", "'EO'", "'OE'", "'SS'", "'TL'", "'TR'", "'WL'", "'WR'", 
+			"'ND'", "'CO'", "'CR'", "'AI'", "'MI'", "'CA'", "'GE'", "'WI'", "'('", 
+			"')'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "DM", "EO", "OE", "SS", "TR", "WE", "ST", "ND", "CO", "CR", "AI", 
-			"MI", "CA", "GE", "WI", "O_PAR", "C_PAR", "WHITESPACE"
+			null, "DM", "EO", "OE", "SS", "TL", "TR", "WL", "WR", "ND", "CO", "CR", 
+			"AI", "MI", "CA", "GE", "WI", "O_PAR", "C_PAR", "WHITESPACE"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -231,9 +232,10 @@ public class ProofMethodParser extends Parser {
 			case EO:
 			case OE:
 			case SS:
+			case TL:
 			case TR:
-			case WE:
-			case ST:
+			case WL:
+			case WR:
 			case ND:
 			case CO:
 			case CR:
@@ -281,9 +283,10 @@ public class ProofMethodParser extends Parser {
 		public TerminalNode EO() { return getToken(ProofMethodParser.EO, 0); }
 		public TerminalNode OE() { return getToken(ProofMethodParser.OE, 0); }
 		public TerminalNode SS() { return getToken(ProofMethodParser.SS, 0); }
+		public TerminalNode TL() { return getToken(ProofMethodParser.TL, 0); }
 		public TerminalNode TR() { return getToken(ProofMethodParser.TR, 0); }
-		public TerminalNode WE() { return getToken(ProofMethodParser.WE, 0); }
-		public TerminalNode ST() { return getToken(ProofMethodParser.ST, 0); }
+		public TerminalNode WL() { return getToken(ProofMethodParser.WL, 0); }
+		public TerminalNode WR() { return getToken(ProofMethodParser.WR, 0); }
 		public TerminalNode ND() { return getToken(ProofMethodParser.ND, 0); }
 		public TerminalNode CO() { return getToken(ProofMethodParser.CO, 0); }
 		public TerminalNode CR() { return getToken(ProofMethodParser.CR, 0); }
@@ -315,7 +318,7 @@ public class ProofMethodParser extends Parser {
 		Method_baseContext _localctx = new Method_baseContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_method_base);
 		try {
-			setState(57);
+			setState(59);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case DM:
@@ -350,102 +353,110 @@ public class ProofMethodParser extends Parser {
 				((Method_baseContext)_localctx).value =  new Const("SS");
 				}
 				break;
-			case TR:
+			case TL:
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(30);
+				match(TL);
+				((Method_baseContext)_localctx).value =  new Const("TL");
+				}
+				break;
+			case TR:
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(32);
 				match(TR);
 				((Method_baseContext)_localctx).value =  new Const("TR");
 				}
 				break;
-			case WE:
-				enterOuterAlt(_localctx, 6);
-				{
-				setState(32);
-				match(WE);
-				((Method_baseContext)_localctx).value =  new Const("WE");
-				}
-				break;
-			case ST:
+			case WL:
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(34);
-				match(ST);
-				((Method_baseContext)_localctx).value =  new Const("ST");
+				match(WL);
+				((Method_baseContext)_localctx).value =  new Const("WL");
 				}
 				break;
-			case ND:
+			case WR:
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(36);
+				match(WR);
+				((Method_baseContext)_localctx).value =  new Const("WR");
+				}
+				break;
+			case ND:
+				enterOuterAlt(_localctx, 9);
+				{
+				setState(38);
 				match(ND);
 				((Method_baseContext)_localctx).value =  new Const("ND");
 				}
 				break;
 			case CO:
-				enterOuterAlt(_localctx, 9);
+				enterOuterAlt(_localctx, 10);
 				{
-				setState(38);
+				setState(40);
 				match(CO);
 				((Method_baseContext)_localctx).value =  new Const("CO");
 				}
 				break;
 			case CR:
-				enterOuterAlt(_localctx, 10);
+				enterOuterAlt(_localctx, 11);
 				{
-				setState(40);
+				setState(42);
 				match(CR);
 				((Method_baseContext)_localctx).value =  new Const("CR");
 				}
 				break;
 			case AI:
-				enterOuterAlt(_localctx, 11);
+				enterOuterAlt(_localctx, 12);
 				{
-				setState(42);
+				setState(44);
 				match(AI);
 				((Method_baseContext)_localctx).value =  new Const("AI");
 				}
 				break;
 			case MI:
-				enterOuterAlt(_localctx, 12);
+				enterOuterAlt(_localctx, 13);
 				{
-				setState(44);
+				setState(46);
 				match(MI);
 				((Method_baseContext)_localctx).value =  new Const("MI");
 				}
 				break;
 			case CA:
-				enterOuterAlt(_localctx, 13);
+				enterOuterAlt(_localctx, 14);
 				{
-				setState(46);
+				setState(48);
 				match(CA);
 				((Method_baseContext)_localctx).value =  new Const("CA");
 				}
 				break;
 			case GE:
-				enterOuterAlt(_localctx, 14);
+				enterOuterAlt(_localctx, 15);
 				{
-				setState(48);
+				setState(50);
 				match(GE);
 				((Method_baseContext)_localctx).value =  new Const("GE");
 				}
 				break;
 			case WI:
-				enterOuterAlt(_localctx, 15);
+				enterOuterAlt(_localctx, 16);
 				{
-				setState(50);
+				setState(52);
 				match(WI);
 				((Method_baseContext)_localctx).value =  new Const("WI");
 				}
 				break;
 			case O_PAR:
-				enterOuterAlt(_localctx, 16);
+				enterOuterAlt(_localctx, 17);
 				{
-				setState(52);
-				match(O_PAR);
-				setState(53);
-				((Method_baseContext)_localctx).method = method();
 				setState(54);
+				match(O_PAR);
+				setState(55);
+				((Method_baseContext)_localctx).method = method();
+				setState(56);
 				match(C_PAR);
 				 ((Method_baseContext)_localctx).value =  ((Method_baseContext)_localctx).method.value; 
 				}
@@ -466,23 +477,24 @@ public class ProofMethodParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\24>\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\25@\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\5\4"+
 		"\27\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3"+
 		"\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5"+
-		"\3\5\3\5\5\5<\n\5\3\5\2\2\6\2\4\6\b\2\2\2I\2\n\3\2\2\2\4\r\3\2\2\2\6\26"+
-		"\3\2\2\2\b;\3\2\2\2\n\13\5\4\3\2\13\f\b\2\1\2\f\3\3\2\2\2\r\16\5\b\5\2"+
-		"\16\17\5\6\4\2\17\20\b\3\1\2\20\5\3\2\2\2\21\22\5\b\5\2\22\23\5\6\4\2"+
-		"\23\24\b\4\1\2\24\27\3\2\2\2\25\27\b\4\1\2\26\21\3\2\2\2\26\25\3\2\2\2"+
-		"\27\7\3\2\2\2\30\31\7\3\2\2\31<\b\5\1\2\32\33\7\4\2\2\33<\b\5\1\2\34\35"+
-		"\7\5\2\2\35<\b\5\1\2\36\37\7\6\2\2\37<\b\5\1\2 !\7\7\2\2!<\b\5\1\2\"#"+
-		"\7\b\2\2#<\b\5\1\2$%\7\t\2\2%<\b\5\1\2&\'\7\n\2\2\'<\b\5\1\2()\7\13\2"+
-		"\2)<\b\5\1\2*+\7\f\2\2+<\b\5\1\2,-\7\r\2\2-<\b\5\1\2./\7\16\2\2/<\b\5"+
-		"\1\2\60\61\7\17\2\2\61<\b\5\1\2\62\63\7\20\2\2\63<\b\5\1\2\64\65\7\21"+
-		"\2\2\65<\b\5\1\2\66\67\7\22\2\2\678\5\4\3\289\7\23\2\29:\b\5\1\2:<\3\2"+
-		"\2\2;\30\3\2\2\2;\32\3\2\2\2;\34\3\2\2\2;\36\3\2\2\2; \3\2\2\2;\"\3\2"+
-		"\2\2;$\3\2\2\2;&\3\2\2\2;(\3\2\2\2;*\3\2\2\2;,\3\2\2\2;.\3\2\2\2;\60\3"+
-		"\2\2\2;\62\3\2\2\2;\64\3\2\2\2;\66\3\2\2\2<\t\3\2\2\2\4\26;";
+		"\3\5\3\5\3\5\3\5\5\5>\n\5\3\5\2\2\6\2\4\6\b\2\2\2L\2\n\3\2\2\2\4\r\3\2"+
+		"\2\2\6\26\3\2\2\2\b=\3\2\2\2\n\13\5\4\3\2\13\f\b\2\1\2\f\3\3\2\2\2\r\16"+
+		"\5\b\5\2\16\17\5\6\4\2\17\20\b\3\1\2\20\5\3\2\2\2\21\22\5\b\5\2\22\23"+
+		"\5\6\4\2\23\24\b\4\1\2\24\27\3\2\2\2\25\27\b\4\1\2\26\21\3\2\2\2\26\25"+
+		"\3\2\2\2\27\7\3\2\2\2\30\31\7\3\2\2\31>\b\5\1\2\32\33\7\4\2\2\33>\b\5"+
+		"\1\2\34\35\7\5\2\2\35>\b\5\1\2\36\37\7\6\2\2\37>\b\5\1\2 !\7\7\2\2!>\b"+
+		"\5\1\2\"#\7\b\2\2#>\b\5\1\2$%\7\t\2\2%>\b\5\1\2&\'\7\n\2\2\'>\b\5\1\2"+
+		"()\7\13\2\2)>\b\5\1\2*+\7\f\2\2+>\b\5\1\2,-\7\r\2\2->\b\5\1\2./\7\16\2"+
+		"\2/>\b\5\1\2\60\61\7\17\2\2\61>\b\5\1\2\62\63\7\20\2\2\63>\b\5\1\2\64"+
+		"\65\7\21\2\2\65>\b\5\1\2\66\67\7\22\2\2\67>\b\5\1\289\7\23\2\29:\5\4\3"+
+		"\2:;\7\24\2\2;<\b\5\1\2<>\3\2\2\2=\30\3\2\2\2=\32\3\2\2\2=\34\3\2\2\2"+
+		"=\36\3\2\2\2= \3\2\2\2=\"\3\2\2\2=$\3\2\2\2=&\3\2\2\2=(\3\2\2\2=*\3\2"+
+		"\2\2=,\3\2\2\2=.\3\2\2\2=\60\3\2\2\2=\62\3\2\2\2=\64\3\2\2\2=\66\3\2\2"+
+		"\2=8\3\2\2\2>\t\3\2\2\2\4\26=";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

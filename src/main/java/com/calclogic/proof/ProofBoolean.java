@@ -33,9 +33,10 @@ public class ProofBoolean {
                 (
                     (methodStr=((Const)method).getCon()).equals("DM") || 
                     methodStr.equals("SS") || 
-                    methodStr.equals("TR") || 
-                    methodStr.equals("WE") || 
-                    methodStr.equals("ST")    
+                    methodStr.equals("TL") ||
+                    methodStr.equals("TR") ||
+                    methodStr.equals("WL") || 
+                    methodStr.equals("WR")    
                 )
            ) 
         {
@@ -113,9 +114,10 @@ public class ProofBoolean {
             String methodStr;
             return (methodStr=((Const)method).getCon()).equals("DM") || 
                     methodStr.equals("SS") ||
+                    methodStr.equals("TL") ||
                     methodStr.equals("TR") ||
-                    methodStr.equals("WE") ||
-                    methodStr.equals("ST");
+                    methodStr.equals("WL") ||
+                    methodStr.equals("WR");
         }
     }
     
@@ -166,9 +168,10 @@ public class ProofBoolean {
                 (
                     (methodStr=((Const)aux).getCon()).equals("DM") || 
                     methodStr.equals("SS") ||   
+                    methodStr.equals("TL") ||
                     methodStr.equals("TR") ||
-                    methodStr.equals("WE") ||
-                    methodStr.equals("ST")
+                    methodStr.equals("WL") ||
+                    methodStr.equals("WR")
                 );
     }
 
@@ -256,7 +259,7 @@ public class ProofBoolean {
                 ((App)((App)root).p).q instanceof TypedA &&
                 
                 leftSide instanceof App && ((App)leftSide).p instanceof App &&
-                (((App)((App)leftSide).p).p).toStringLaTeX(s, "").equals("\\Rightarrow") &&
+                (((App)((App)leftSide).p).p).toStringLaTeX(s, "", null).equals("\\Rightarrow") &&
                 ((App)leftSide).q.equals(((App)root).q.type());    
     }
     
@@ -273,7 +276,7 @@ public class ProofBoolean {
                 ((App)((App)root).p).q instanceof TypedA &&
                 
                 leftSide instanceof App && ((App)leftSide).p instanceof App &&
-                (((App)((App)leftSide).p).p).toStringLaTeX(s, "").equals("\\Rightarrow") &&
+                (((App)((App)leftSide).p).p).toStringLaTeX(s, "", null).equals("\\Rightarrow") &&
                 ((App)leftSide).q.equals(((App)root).q.type());         
     }
     

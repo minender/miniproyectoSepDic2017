@@ -122,7 +122,7 @@ public class CounterReciprocalMethodImpl extends GenericProofMethodImpl implemen
      */
     @Override
     public String closingComment(Term proof, Term beginFormula) {
-        return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "")+"$";
+        return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "",null)+"$";
     }
     
     /**

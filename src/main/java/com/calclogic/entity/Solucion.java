@@ -6,6 +6,7 @@ import com.calclogic.lambdacalculo.Const;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypeVerificationException;
+import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedTerm;
 import com.calclogic.proof.CrudOperations;
@@ -253,6 +254,7 @@ public class Solucion implements java.io.Serializable {
                 &&
                 (
                     (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t') ||
+                    (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e') ||
                     (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='m' &&
                         ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
                         ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='m' && 
@@ -264,10 +266,16 @@ public class Solucion implements java.io.Serializable {
            )
         {
             if (currentGroupMethod.equals("T")&& 
-                !(auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t')    
+                !(auxTypedTerm instanceof TypedApp && 
+                   (((TypedApp)auxTypedTerm).inferType=='t' || ((TypedApp)auxTypedTerm).inferType=='e')
+                 )    
                ) 
             {
-                typedTerm = mergeSubProofs(((App)((App)auxTypedTerm).p).q, li, user);
+                String axiom = "= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(ccb,)} c_{2} (\\Phi_{(bbb,cb)} c_{2}) (\\Phi_{c(cbbb,)} c_{1}))";
+                if (((TypedA)((TypedApp)((TypedApp)((TypedApp)auxTypedTerm).p).p).q).getCombDBType().equals(axiom))
+                   typedTerm = mergeSubProofs(((TypedM)((TypedApp)((TypedApp)auxTypedTerm).p).q).getSubProof(), li, user);
+                else
+                   typedTerm = mergeSubProofs(((App)((App)auxTypedTerm).p).q, li, user);
                 if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
                         ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
                         ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
@@ -277,14 +285,17 @@ public class Solucion implements java.io.Serializable {
                 }
             }
             else {
-                typedTerm = mergeSubProofs(((App)auxTypedTerm).p, li, user);
-                if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
+                if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e')
+                   typedTerm = mergeSubProofs(((App)auxTypedTerm).q, li, user);
+                else
+                   typedTerm = mergeSubProofs(((App)auxTypedTerm).p, li, user);
+                /*if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
                         ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
                         ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
                    )
                 {
                     typedTerm = mergeSubProofs(((TypedApp)auxTypedTerm).q, li, user);
-                }
+                }*/
             }
             demostracion = typedTerm.toString();
             return 2;

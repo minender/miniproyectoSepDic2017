@@ -22,6 +22,7 @@ import com.calclogic.entity.TerminoId;
 import com.calclogic.entity.MostrarCategoria;
 import com.calclogic.entity.Predicado;
 import com.calclogic.entity.PredicadoId;
+import com.calclogic.entity.PureCombsTheorem;
 import com.calclogic.forms.AgregarCategoria;
 import com.calclogic.forms.AgregarSimbolo;
 import com.calclogic.forms.AgregarTeorema;
@@ -61,6 +62,7 @@ import com.calclogic.service.MateriaManager;
 import com.calclogic.service.MetateoremaManager;
 import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.PredicadoManager;
+import com.calclogic.service.PureCombsTheoremManager;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.service.SolucionManager;
@@ -101,6 +103,8 @@ public class PerfilController {
     private DisponeManager disponeManager;
     @Autowired
     private TeoremaManager teoremaManager;
+    @Autowired
+    private PureCombsTheoremManager pureCombsTheoremManager;
     @Autowired
     private CategoriaManager categoriaManager;
     @Autowired
@@ -346,7 +350,7 @@ public class PerfilController {
         return "help";
     }
     
-    @RequestMapping(value="/{username}/migration", method=RequestMethod.GET)
+    /*@RequestMapping(value="/{username}/migration", method=RequestMethod.GET)
     public String migration(@PathVariable String username, ModelMap map) {
         if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
            && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
@@ -354,13 +358,6 @@ public class PerfilController {
         {
             return "redirect:/index";
         }
-        /*String stTerm = "= (\\Phi_{ccccbb} c_{16} (\\Phi_{bccccb} c_{13}) (\\Phi_{(bcbb,cbcb)} c_{5}) c_{5} (\\Phi_{ccccbb} (\\Phi_{bc(ccccbb,)} c_{13} c_{31} c_{15})) c_{16}) (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{16}) c_{32})";
-        Term comb = CombUtilities.getTerm(stTerm,null);
-        TypedA A = new TypedA(comb, "AdminTeoremas");
-        Term term = A.type();
-        term = new App(new App(new Const(1,"c_{1}"),((App)((App)term).p).q.body()),((App)term).q.body());
-        String freeVars = term.stFreeVars();
-        System.out.println(freeVars);*/
         
         List<Teorema> l = teoremaManager.getAllTeoremas();
         for (Teorema t: l) {
@@ -410,7 +407,61 @@ public class PerfilController {
         map.addAttribute("teorias", teorias);
 
         return "perfil";
-    }
+    }*/
+    
+    /*@RequestMapping(value="/{username}/migration2", method=RequestMethod.GET)
+    public String migration2(@PathVariable String username, ModelMap map) {
+        if (  ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).isAdmin()) 
+           && ((Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)) 
+           )
+        {
+            return "redirect:/index";
+        }
+        List<Teorema> l = teoremaManager.getAllTeoremas();
+        for (Teorema t: l) { 
+            Term aux = t.getTeoTerm().replaceConstByVars();
+            String cons = ""; 
+            cons = aux.stFreeVarsWithAnyIndex(cons);
+            if (!cons.equals("")) {
+                String[] consList = cons.split(",");
+                String[] newConsList = new String[consList.length];
+                int maxIndex = 0;
+                boolean alreadyThere = false;
+                for (String consList1 : consList) {
+                    int j=0;
+                    while (!alreadyThere && j < maxIndex) {
+                        alreadyThere = consList1.equals(newConsList[j]);
+                        j++;
+                    }
+                    if (!alreadyThere) {
+                        newConsList[maxIndex] = consList1;
+                        maxIndex++;
+                    } else {
+                        alreadyThere = false;
+                    }
+                }
+                cons = "";
+                for (int i=0; i<maxIndex; i++)
+                    cons += (i==0?"":",")+newConsList[i];
+            }
+            t.setConstlist(cons);
+            //PureCombsTheorem pct = t.getPureCombsTheorem();
+            aux = ((App)aux).abstractEqAnyIndex(cons);
+            String statement = aux.traducBD().toString();
+            PureCombsTheorem pct = pureCombsTheoremManager.getTeoremaByEnunciado(statement);
+            if (pct == null) {
+                pct = new PureCombsTheorem(statement);
+                pureCombsTheoremManager.addPureCombsTheorem(pct);
+                pct = pureCombsTheoremManager.getTeoremaByEnunciado(statement);
+            }
+            t.setPureCombsTheorem(pct);
+            teoremaManager.updateTeorema(t);
+            //pct.setStatement(statement);
+            //pureCombsTheoremManager.updatePureCombsTheorem(pct);
+        }
+        
+        return "myTheorems";
+    }*/
     
     @RequestMapping(value="/{username}/myTheorems", method=RequestMethod.GET)
     public String myTheoremsView(@PathVariable String username, ModelMap map) {
@@ -801,9 +852,20 @@ public class PerfilController {
             String aliases = teoTerm.aliases("");
             Teorema teoremaAdd = teoremaManager.getTeoremaByEnunciados(stTeoTermBD);
             Teorema teorema;
-            if (teoremaAdd == null) 
-                teorema = teoremaManager.addTeorema(new Teorema(stTeoTermBD,teoTerm,false,aliases)); 
-            else
+            if (teoremaAdd == null) {
+                //String[] cons = new String[1];
+                //String statement = teoTermBD.abstractConstEq(cons).toString();
+                //PureCombsTheorem pct = pureCombsTheoremManager.getTeoremaByEnunciado(statement);
+                //if (pct == null) {
+                //   pct = new PureCombsTheorem(statement);
+                //   pureCombsTheoremManager.addPureCombsTheorem(pct);
+                //   pct = pureCombsTheoremManager.getTeoremaByEnunciado(statement);
+                //}
+                teorema = new Teorema(stTeoTermBD,teoTermBD,false,aliases);
+                //teorema.setConstlist(cons[0]);
+                //teorema.setPureCombsTheorem(pct);
+                teorema = teoremaManager.addTeorema(teorema); 
+            } else
                 teorema = teoremaAdd;
             Resuelve resuelveAdd = new Resuelve(user,teorema,agregarTeorema.getNombreTeorema(),agregarTeorema.getNumeroTeorema(),
                                             agregarTeorema.isAxioma(), categoria, variables, usr.getTeoria());
@@ -1628,7 +1690,7 @@ public class PerfilController {
         for (String var : tk.getVars()) 
             aux=new App(aux,new Var(var.charAt(0)));
         aux = aux.evaluar();
-        String term=aux.toStringLaTeX(simboloManager,"").replace("\\", "\\\\");
+        String term=aux.toStringLaTeX(simboloManager,"",null).replace("\\", "\\\\");
         //String termino;
         //termino = term.replace("\\","" ).replace("}", "").replaceAll("[_][{]", "");
         Usuario usr = usuarioManager.getUsuario(username);

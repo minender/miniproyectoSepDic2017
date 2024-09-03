@@ -51,14 +51,14 @@ public abstract class Term implements Cloneable, Serializable{
             alias=new LinkedList<String>();
         }
         
-        public void setNuevoAlias(String alia,Term t,SimboloManager s,PredicadoManager p,String nTeo){  
+        public void setNuevoAlias(String alia,Term t,SimboloManager s,PredicadoManager p,String nTeo,List<Simbolo> transOp){  
             PredicadoId pid = new PredicadoId(alia, "admin");
             String[] positions = p.getPredicado(pid).getArgumentos().split(",");
             alia = "\\style{cursor:pointer; color:#08c;}{"+alia+"}";
             for (int k=0; k < positions.length; k++)
-                alia += (k==0?"(":", ")+t.subterm(positions[k].split("@")[1].trim()).toStringLaTeXAbrvFinal(this,s,p,nTeo).term;
+                alia += (k==0?"(":", ")+t.subterm(positions[k].split("@")[1].trim()).toStringLaTeXAbrvFinal(this,s,p,nTeo,transOp).term;
             alia = alia + ")";
-            valores.add(t.toStringLaTeXAbrv(this,s,p,nTeo).term.replace("\\", "\\\\"));
+            valores.add(t.toStringLaTeXAbrv(this,s,p,nTeo,transOp).term.replace("\\", "\\\\"));
             String aux;
             aux="\\cssId{agru@alias@"+currentnAlias+"}{"+alia +"}";
             alias.add(alia.replace("\\", "\\\\"));
@@ -184,18 +184,18 @@ public abstract class Term implements Cloneable, Serializable{
       * @param pm
       * @return String representation in LaTeX Format.
       */
-    public String toStringLaTeX(char kind, SimboloManager s, String numTeo, String position, String appPosition, String rootId, int z, Term t, 
+    public String toStringLaTeX(char kind, SimboloManager s, String numTeo, List<Simbolo> transOp, String position, String appPosition, String rootId, int z, Term t, 
                                 List<Term> l, List<String> l2, Id id, int nivel, ToString tStr, PredicadoManager pm)
     {
         switch (kind){
             case 'S':
-                return toStringLaTeX(s, numTeo);
+                return toStringLaTeX(s, numTeo,transOp);
             case 'I':
                 return toStringLaTeXWithInputs(s, position, rootId);
             case 'L':
                 return toStringLaTeXLabeled(s,z,t,appPosition,l,l2,id,nivel);
             case 'A':
-                return toStringLaTeXAbrv(tStr,s,pm,numTeo).term;
+                return toStringLaTeXAbrv(tStr,s,pm,numTeo,transOp).term;
             default:
                 return null;
         }
@@ -208,7 +208,7 @@ public abstract class Term implements Cloneable, Serializable{
      * @param numTeo
      * @return String representation in LaTeX Format.
      */
-    public abstract String toStringLaTeX(SimboloManager s,String numTeo);
+    public abstract String toStringLaTeX(SimboloManager s,String numTeo,List<Simbolo> transOp);
     
     /**
      * Creates a LaTeX string with the span HTML tags use to control the subexpresions
@@ -248,7 +248,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract ToString toStringAbrv(ToString toString);
     
-    public abstract ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager p, String numTeo);
+    public abstract ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager p, String numTeo, List<Simbolo> transOp);
     
     protected String addParentheses(String str) {   
         int i =0;
@@ -312,6 +312,47 @@ public abstract class Term implements Cloneable, Serializable{
         }
         return st;    
         //return hset.toString().replaceAll("[\\s\\[\\]]", "");
+    }
+    
+    public abstract String stFreeVarsWithAnyIndex(String st);
+    
+    public String stFreeVarsWithAnyIndex() {
+        String cons = ""; 
+            cons = this.stFreeVarsWithAnyIndex(cons);
+            if (!cons.equals("")) {
+                String[] consList = cons.split(",");
+                String[] newConsList = new String[consList.length];
+                int maxIndex = 0;
+                boolean alreadyThere = false;
+                for (String consList1 : consList) {
+                    int j=0;
+                    while (!alreadyThere && j < maxIndex) {
+                        alreadyThere = consList1.equals(newConsList[j]);
+                        j++;
+                    }
+                    if (!alreadyThere) {
+                        newConsList[maxIndex] = consList1;
+                        maxIndex++;
+                    } else {
+                        alreadyThere = false;
+                    }
+                }
+                cons = "";
+                for (int i=0; i<maxIndex; i++)
+                    cons += (i==0?"":",")+newConsList[i];
+            }
+            return cons;
+    }
+    
+    public Term abstractConstEq(String[] cons) {
+        if (this instanceof App) {
+           Term aux = this.replaceConstByVars();
+           cons[0] = aux.stFreeVarsWithAnyIndex();
+           aux = ((App)aux).abstractEqAnyIndex(cons[0]);
+           return aux.traducBD();
+        }
+        else
+           return null;
     }
     
     public String stFreeVarsProvisional(){
@@ -437,6 +478,8 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract void boundVars(String[] vars);
     
+    public abstract Term replaceConstByVars();
+    
     public Term setToPrinting(String variables, SimboloManager s) {
         return this.setToPrinting(variables, s, null);
     }
@@ -543,6 +586,19 @@ public abstract class Term implements Cloneable, Serializable{
            return this;
     }
     
+    public Term abstractVarsAnyIndex(String variables) {
+        if (!variables.equals("")) {
+            Term arg1 = this;
+            String[] vars = variables.split(",");
+            for (int i=vars.length-1; 0<=i; i--) {
+               arg1 = new Bracket(new Var(Integer.parseInt(vars[i])),arg1);
+           }
+           return arg1;
+        }
+        else
+           return this;
+    }
+    
     public Term[] varTypes(Term type) {
         Term[] varTypes = new Term[58];
         varTypes(type, varTypes);
@@ -594,7 +650,7 @@ public abstract class Term implements Cloneable, Serializable{
     // Deprecated
     public String toStringLaTeXFinal(SimboloManager s) { 
         String term;
-        String aux= this.toStringLaTeX(s,"");
+        String aux= this.toStringLaTeX(s,"",null);
         if(aux.startsWith("("))            
             term = aux.substring(1, aux.length()-1);            
         else{
@@ -659,7 +715,7 @@ public abstract class Term implements Cloneable, Serializable{
     // Deprecate
     public void toStringLaTeXAbrvFinal(ToString toString) {
         String term;
-        ToString st=this.toStringLaTeXAbrv(toString,null,null,"");
+        ToString st=this.toStringLaTeXAbrv(toString,null,null,"",null);
         String aux= st.term;
         if(aux.startsWith("("))
             term=aux.substring(1, aux.length()-1);
@@ -769,18 +825,18 @@ public abstract class Term implements Cloneable, Serializable{
         return st;
     }
     
-    public ToString toStringLaTeXAbrvFinal(ToString toString, SimboloManager s, PredicadoManager p, String numTeo){
+    public ToString toStringLaTeXAbrvFinal(ToString toString, SimboloManager s, PredicadoManager p, String numTeo, List<Simbolo> transOp){
         if (alias != null) {
-           toString.setNuevoAlias(alias, this, s, p, numTeo);
+           toString.setNuevoAlias(alias, this, s, p, numTeo, transOp);
            return toString;
         }
-        toStringLaTeXAbrv(toString,s,p,numTeo);
+        toStringLaTeXAbrv(toString,s,p,numTeo,transOp);
         return toString;
     }
     
-    public String toStringLaTeXJavascript(SimboloManager s, PredicadoManager p, String nTeo, String id){
+    public String toStringLaTeXJavascript(SimboloManager s, PredicadoManager p, String nTeo,List<Simbolo> transOp, String id){
         ToString tStr=new ToString();
-        this.toStringLaTeXAbrvFinal(tStr,s,p,nTeo);
+        this.toStringLaTeXAbrvFinal(tStr,s,p,nTeo,transOp);
         
         String st;
 
@@ -1204,8 +1260,30 @@ public abstract class Term implements Cloneable, Serializable{
         return (new AppIzq(p1,appizq,aizqnivel2,i));
     }
     
+    public Stack<Term> unfold() {
+        Stack<Term> stk = new Stack<Term>();
+        if (this instanceof App) {
+            stk.push(((App)this).q);
+            Term aux = ((App)this).p;
+            int j = 1;
+            while ( aux instanceof App ){
+               stk.push(((App)aux).q);
+               aux = ((App)aux).p;
+               j++;
+            }
+            stk.push(aux);
+            return stk;
+        }
+        else if (this instanceof Const) {
+            stk.push(this);
+            return stk;
+        }
+        else
+            return null;
+    }
+    
     public Stack<Term> unfold(SimboloManager s) {
-        Stack<Term> stk = new Stack<>();
+        Stack<Term> stk = new Stack<Term>();
         if (this instanceof App) {
             stk.push(((App)this).q);
             Term aux = ((App)this).p;
@@ -1446,7 +1524,7 @@ public abstract class Term implements Cloneable, Serializable{
             if (((App)this).q instanceof Const && ((Const)((App)this).q).id==8 && type1 instanceof App  )
                 throw new TypeVerificationException();
             }catch (TypeVerificationException e){e.printStackTrace();}*/
-            Sust sus = eq.mgu(null, true);
+            Sust sus = eq.mgu(/*null,*/ true);
             //if (sus != null)
             type1 = type1.sustParall(sus);
             /*((App)this).q.type_ = type1;
@@ -1613,5 +1691,17 @@ public abstract class Term implements Cloneable, Serializable{
         else {
             return "";
         }
+    }
+    
+    public String freeVarsFromAbstractedEq() {
+        String varlist = "";
+        Term aux = ((App)this).q;
+        int i = 0;
+        while (aux instanceof Bracket) {
+          varlist += (i==0?"":",")+(char)((Bracket)aux).x();
+          aux = ((Bracket)aux).t;
+          i++;
+        }
+        return varlist;
     }
 }

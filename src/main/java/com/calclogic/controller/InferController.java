@@ -39,6 +39,7 @@ import com.calclogic.service.PredicadoManager;
 import com.calclogic.service.MostrarCategoriaManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.externalservices.MicroServices;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedTerm;
 import com.calclogic.parse.CombUtilities;
 import com.calclogic.proof.CaseAnalysisMethodImpl;
@@ -186,7 +187,7 @@ public class InferController {
 
         // Case when the user could only see the theorem but had not a Resuelve object associated to it
         if (resuel == null) {
-            resuel = resuelveManager.getResuelveByUserAndTeoNum("AdminTeoremas",nTeo,false,simboloManager);
+            resuel = resuelveManager.getResuelveByUserAndTeoNum(username,nTeo,true,simboloManager);
             Usuario user = usuarioManager.getUsuario(username);
             resuel.setUsuario(user);
             resuel.setDemopendiente(-1);
@@ -216,6 +217,7 @@ public class InferController {
         //resuelves.removeAll(depend);
         //resuelves = new ArrayList<Resuelve>();
 
+        List<Simbolo> transOp = null;
         Usuario usr = usuarioManager.getUsuario(username);
         map.addAttribute("usuario", usr);
         InfersForm infersForm = new InfersForm();
@@ -228,26 +230,38 @@ public class InferController {
         map.addAttribute("leibniz","");
         
         if (solId.equals("new")){
-            map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"")+"$</center> Proof:");
+            map.addAttribute("formula","Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"",null)+"$</center> Proof:");
             map.addAttribute("elegirMetodo","1");
             map.addAttribute("teoInicial", "");
         }
         else{
             Solucion solucion = solucionManager.getSolucion(resuel.getDemopendiente(),username);
-            infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"")+"$</center> Proof:");  
+            infersForm.setHistorial("Theorem "+nTeo+":<br> <center>$"+formula.toStringLaTeX(simboloManager,"",null)+"$</center> Proof:");  
             InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
             Term typedTerm = solucion.getTypedTerm();
-            
+            Term method = null;
+            if (!solucion.getMethod().equals("")) {
+                method = ProofMethodUtilities.getTerm(solucion.getMethod());
+                if (((Const)crudOp.currentMethod(method)).getCon().equals("WL") ||
+                    ((Const)crudOp.currentMethod(method)).getCon().equals("WR")
+                   ) {
+                    transOp = new ArrayList<Simbolo>();
+                    transOp.add(simboloManager.getSimbolo(2));
+                    transOp.add(simboloManager.getSimbolo(3));
+                }
+                else {
+                    transOp = simboloManager.getAllTransitiveOps();
+                }
+            }
+        
             response.generarHistorial(
                 username,
                 formula, 
                 nTeo, 
                 typedTerm, 
                 true,
-                (solucion.getMethod().equals("") || 
-                        ProofBoolean.isWaitingMethod(ProofMethodUtilities.getTerm(solucion.getMethod()))?
-                                false:true),
-                (solucion.getMethod().equals("")?null:ProofMethodUtilities.getTerm(solucion.getMethod())),
+                (method == null || ProofBoolean.isWaitingMethod(method)?false:true),
+                method,
                 (solucion.getCaseAnalysis().equals("")?null:CombUtilities.getTerm(solucion.getCaseAnalysis(), username, simboloManager))
             );
             map.addAttribute("elegirMetodo",response.getCambiarMetodo());
@@ -271,6 +285,7 @@ public class InferController {
         else
             map.addAttribute("autoSust","false");
         
+        map.addAttribute("transOp",transOp);
         map.addAttribute("usuario",usr);
         map.addAttribute("guardarMenu","");
         map.addAttribute("selecTeo",false);
@@ -329,11 +344,11 @@ public class InferController {
         }
         
         if (arr == null)
-            response.setInstantiation(statementTerm.type().toStringLaTeX(simboloManager, ""));
+            response.setInstantiation(statementTerm.type().toStringLaTeX(simboloManager, "", null));
         else {// (ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)
             try {
             TypedI I = new TypedI(new Sust((ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)));
-            response.setInstantiation(new TypedApp(I,statementTerm).type().toStringLaTeX(simboloManager, ""));
+            response.setInstantiation(new TypedApp(I,statementTerm).type().toStringLaTeX(simboloManager, "", null));
             }
             catch (TypeVerificationException e) {
                 e.printStackTrace();
@@ -420,10 +435,10 @@ public class InferController {
 
                 if (objectMethod.getGroupMethod().equals("T")){
                     int index = objectMethod.transFirstOpInferIndex(typedTerm,false);
-                    if (index == 0 || index == 1)
+                    if (index == 0 /*|| index == 1*/)
                         lastLine = ((App)((App)typedTerm.type()).p).q;
                     else
-                        lastLine = ((App)((App)((App)((App)typedTerm.type()).p).q).p).q;
+                        lastLine = ((App)((App)((App)typedTerm.type()).q.body()).p).q;
                 }
                 else
                     lastLine = ((App)((App)lastLine).p).q;
@@ -439,7 +454,7 @@ public class InferController {
             if (!leibniz.equals("")){
                 leibnizTerm =TermUtilities.getTerm(leibniz, predicadoid, predicadoManager, simboloManager);
                 eq = new Equation(leibnizTerm,lastLine);
-                sust = eq.mgu(simboloManager,true);
+                sust = eq.mgu(/*simboloManager,*/true);
                 if (sust != null) // si z no es de tipo atomico, no se puede unificar en primer orden
                     leibnizTerm = sust.getTerms().get(0);
                 else
@@ -450,10 +465,10 @@ public class InferController {
 
             if (zUnifiable)  {
                 eq = new Equation(((App)statementTerm).q,leibnizTerm);
-                sust = eq.mgu(simboloManager,false);
+                sust = eq.mgu(/*simboloManager,*/false);
                 if (sust == null) {
                     eq = new Equation(((App)((App)statementTerm).p).q,leibnizTerm);
-                    sust = eq.mgu(simboloManager,false);
+                    sust = eq.mgu(/*simboloManager,*/false);
                 }
             }
 
@@ -599,7 +614,16 @@ public class InferController {
 
             try {
                 if (i == 1 /*&& j == 0*/){
-                    infer = new TypedApp(new TypedS(), infer);
+                    Term aux = infer;
+                    while (aux instanceof TypedApp) {
+                        aux = ((TypedApp)aux).q;
+                    }
+                    if (aux.type().containT()){//This is to invert transitive op expression
+                        int opId = ((Const)((App)((App)((App)aux.type()).q.body()).p).p).getId();
+                        infer = new TypedM(7,opId,aux,((TypedA)aux).getCombDBType(),username);
+                        infer = objectMethod.createOneStepInfer(username,infer, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+                    } else
+                        infer = new TypedApp(new TypedS(), infer);
                 }
                 // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
                 // NOTE: The parameter "currentProof" changes with the application of this method, so this method cannot be omitted when "onlyOneLine" is true
@@ -829,7 +853,7 @@ public class InferController {
         Term caseAn, methodTerm, typedTerm;
         methodTerm = typedTerm = caseAn = null;
 
-        if ("SS".equals(newMethod)){
+        if ("SS".equals(newMethod) || "TL".equals(newMethod)){
             // if (((App)((App)term).p).q.containT()){
             //     response.setErrorParser1(true);
             //     return response;
@@ -1053,28 +1077,41 @@ public class InferController {
             }
 
             if (sideOrTransitive){
+                if (newMethod.equals("TL") || newMethod.equals("TR") || 
+                    newMethod.equals("WL") || newMethod.equals("WR")
+                   ) 
+                {
+                   if (!formulaTerm.containT())
+                      throw new ClassCastException();
+                   formulaTerm = ((App)formulaTerm).q.body();
+                }
                 // CAUTION: The controller sets the String null parameters as ""
                 if ("".equals(lado)){ // This does not occur in Starting from one side method, so we are in a transitive one
-                    if (!formulaTerm.containT())
-                        throw new ClassCastException();
-                    formulaTerm = ((App)formulaTerm).q.body();
                     opId = crudOp.binaryOperatorId(formulaTerm,null,caseAn);
 
                     switch (opId){
                         case 2: // Right arrow ==> 
-                            lado = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "i" : "d");
+                            lado = "TL".equals(newMethod) ? null : ("WL".equals(newMethod) ? "i" : "d");
                             break;
                         case 3: // Left arrow <==
-                            lado = "TR".equals(newMethod) ? null : ("WE".equals(newMethod) ? "d" : "i");
+                            lado = "TL".equals(newMethod) ? null : ("WL".equals(newMethod) ? "d" : "i");
                             break;
                         default:
-                            // **** For the "TR" method we should check first if the operator is transitive
+                            // **** For the "TL" method we should check first if the operator is transitive
                             // **** Also, the user should be able to start from whichever side they want
-                            lado = "TR".equals(newMethod) ? "i" : null;
+                            // lado = "TL".equals(newMethod) ? "i" : null;
                             break;
                     }
                 }
                 if (!"".equals(lado)){ // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
+                    boolean isWLOrWR = newMethod.equals("WL") || newMethod.equals("WR");
+                    if (isWLOrWR && lado.equals("d"))
+                        solucion.setMetodo("WR");
+                    else if (isWLOrWR && lado.equals("i"))
+                        solucion.setMetodo("WL");
+                    else if (newMethod.equals("TL") && lado.equals("d"))
+                        solucion.setMetodo("TR");
+                        
                     response.setLado(lado);
                     formulaTerm = lado.equals("i") ? ((App)formulaTerm).q.body() : ((App)((App)formulaTerm).p).q.body();  
                 } 
@@ -1098,7 +1135,7 @@ public class InferController {
             }
 
             // This occurs because the first line of the proof is printed inmediately after selecting the following methods
-            if ("WE".equals(newMethod) || "ST".equals(newMethod)){
+            if ("WL".equals(newMethod) || "WR".equals(newMethod)){
                 solucionManager.addSolucion(solucion);
             }
 
@@ -1147,7 +1184,7 @@ public class InferController {
         // Specific case, we use the 3.7 one. The others should be obtained from a template in the database
         TypedA A = new TypedA(nTheo, username);
         Term metaTheo = MetaTheorem.metaTheorem3(A, A.getCombDBType(), username).type();
-        String str = MicroServices.transformLaTexToHTML("$~~~"+metaTheo.toStringLaTeX(simboloManager,"MT-"+nTheo)+"$");
+        String str = MicroServices.transformLaTexToHTML("$~~~"+metaTheo.toStringLaTeX(simboloManager,"MT-"+nTheo,null)+"$");
         str = "("+nTheo+")" + " with Metatheorem (" + "3.7" +"):<span id=clickMT"+nTheo+">" + str + "</span>";
 
         JSONObject json = new JSONObject();

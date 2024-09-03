@@ -307,29 +307,36 @@ public class InferResponse extends GenericResponse{
             throws Exception
     {
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // en plena recursion
-            return newTerm.toStringLaTeX(simboloManager,"");
+            return newTerm.toStringLaTeX(simboloManager,"",null);
         }
         else if ("DM".equals(clickable))  // End of the impression
-            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringLaTeX(simboloManager,"") + "}}";
-        else if ("SS".equals(clickable)) { // End of the impression
+            return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringLaTeX(simboloManager,"",null) + "}}";
+        else if ("SS".equals(clickable) || "TL".equals(clickable)) { // End of the impression
             newTerm = newTerm.setToPrint(s);
-            String formulaDer = ((App)((App)newTerm).p).q.toStringLaTeX(simboloManager,"");
-            String formulaIzq = ((App)newTerm).q.toStringLaTeX(simboloManager,"");
+            String formulaDer = ((App)((App)newTerm).p).q.toStringLaTeX(simboloManager,"",null);
+            String formulaIzq = ((App)newTerm).q.toStringLaTeX(simboloManager,"",null);
             Term operatorTerm = ((App)((App)newTerm).p).p;
             
             // The Starting From One Side method only admits reflexive operators
-            if (resuelveManager.isReflexiveOperatorForUser(user, operatorTerm.toString()) == 0){
+            if( ("SS".equals(clickable) && 
+                 resuelveManager.isReflexiveOperatorForUser(user, operatorTerm.toString()) == 0
+                ) || 
+                ("TL".equals(clickable) &&
+                 simboloManager.isTransitiveOp(((Const)operatorTerm).getId()).charAt(0) == 'n'
+                )
+              )
+            {
                 throw new Exception();
             }
             
             formulaDer = "\\cssId{d}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaDer + "}}}";
             formulaIzq = "\\cssId{i}{\\class{teoremaClick}{\\style{cursor:pointer; color:#08c;}{"+ formulaIzq + "}}}";
 
-            String operatorLaTeX = operatorTerm.toStringLaTeX(simboloManager,"");
+            String operatorLaTeX = operatorTerm.toStringLaTeX(simboloManager,"",null);
             return formulaIzq+"$ $"+ operatorLaTeX +"$ $" + formulaDer;
         }
         else{ // clickable.equals("n")
-            return newTerm.toStringLaTeX(simboloManager,"");
+            return newTerm.toStringLaTeX(simboloManager,"",null);
         }
     }
     
@@ -447,7 +454,7 @@ public class InferResponse extends GenericResponse{
             String firstLine;
             if(naturalSide){
                 firstLine = ((App)((App)typedTerm).p).q.toStringLaTeXLabeled(simboloManager);  
-                this.setHistorial(this.getHistorial() + header + "<br>Assuming H1: $" + ((App)typedTerm).q.toStringLaTeX(simboloManager, "") + "$" + centeredBlock("$"+firstLine));
+                this.setHistorial(this.getHistorial() + header + "<br>Assuming H1: $" + ((App)typedTerm).q.toStringLaTeX(simboloManager, "", null) + "$" + centeredBlock("$"+firstLine));
             }else {
                 firstLine = typedTerm.toStringLaTeXLabeled(simboloManager);
                 this.setHistorial(this.getHistorial() + header + centeredBlock("$"+firstLine));

@@ -84,7 +84,9 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
 	                  t1=t2
      */
     public TypedM(int id, int opId, Term proof, String type, String user) throws TypeVerificationException {
-        super(proof.type(),type, user);
+        super(proof.type(), type, user);
+        if (!(proof instanceof TypedA) || proof instanceof TypedM) 
+            variables_ = ";"+proof.type().freeVarsFromAbstractedEq();
         id_ = id;
         if (id == 1 || id == 2) {
             // A_ = ((TypedA)proof);
@@ -133,6 +135,85 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             //if (proof.containT()) 
             proof_ = new TypedApp(proof_, CombUtilities.getTerm(template, user,sm_));
         }
+        else if (id == 6) {
+            //opId = ((Const)((App)((App)((App)proof.type()).q.body()).p).q).getId();
+            Term p = ((App)((App)((App)proof.type()).q.body()).q).q;
+            Term q = ((App)((App)((App)((App)proof.type()).q.body()).q).p).q;
+            Term r = ((App)((App)((App)proof.type()).q.body()).p).q;
+            proof_ = CombUtilities.getTerm("I^{[x_{114}, x_{113}, x_{112} := "+r+", "+q+", "+p+"]} A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{2}) c_{2}) (\\Phi_{cbbb} c_{5} \\Phi_{bb} \\Phi_{bb} c_{2})}",user,sm_);
+            proof_ = new TypedApp(proof_,proof);
+        }   
+        else if (id == 7) {
+            String opId2 = "";
+            String isSymetr = "";
+            if (opId == 2) {
+                opId2 = "c_{3}";
+                isSymetr = "sc_{3}";
+            } else if (opId == 3) {
+                opId2 = "c_{2}";
+                isSymetr = "yc_{3}";
+            } else {
+                isSymetr = sm_.isSymetric(opId);
+                if (isSymetr.charAt(0)=='y' || isSymetr.charAt(0)=='s')
+                   opId2 = isSymetr.substring(1);
+                else if (isSymetr.charAt(0)=='n')
+                   throw new TypeVerificationException();
+            }
+            Term p = ((App)((App)((App)proof.type()).q.body()).p).q;
+            Term q = ((App)((App)proof.type()).q.body()).q;
+            proof_ = CombUtilities.getTerm("A^{= (\\Phi_{bb} \\Phi_{b} "+(/*isSymetr.equals("")||*/isSymetr.charAt(0)=='s'?"c_{"+opId+"}":opId2)+") (\\Phi_{cb} "+(/*isSymetr.equals("")||*/isSymetr.charAt(0)=='s'?opId2:"c_{"+opId+"}")+" \\Phi_{cb})}",user,sm_);
+            String[] vars = ((TypedA)proof_).getVariables().split(";")[1].split(",");
+            String x112 = "x_{"+((int)vars[0].charAt(0))+"}";
+            String x113 = "x_{"+((int)vars[1].charAt(0))+"}";
+            proof_ = CombUtilities.getTerm("I^{["+x112+", "+x113+" := "+(isSymetr.equals("")||isSymetr.charAt(0)=='s'?p+", "+q:q+", "+p)+"]} A^{= (\\Phi_{bb} \\Phi_{b} "+(isSymetr.equals("")||isSymetr.charAt(0)=='s'?"c_{"+opId+"}":opId2)+") (\\Phi_{cb} "+(isSymetr.equals("")||isSymetr.charAt(0)=='s'?opId2:"c_{"+opId+"}")+" \\Phi_{cb})}",user,sm_);
+            if (opId == 2 || (!isSymetr.equals("") && isSymetr.charAt(0)=='s'))
+               proof_ = new TypedApp(new TypedApp(new TypedS(),proof_),proof);
+            else if (opId == 3 || (!isSymetr.equals("") && isSymetr.charAt(0)=='y'))
+               proof_ = new TypedApp(proof_,proof);
+        }
+        else if (id == 8) {
+            String axiomSt = "A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} c_{2} \\Phi_{b(bb,cb)} c_{5} (\\Phi_{c(ccbbb,)} c_{"+opId+"}) c_{"+opId+"} c_{"+opId+"})}";
+            Term transtAx = CombUtilities.getTerm(axiomSt,user,sm_);
+            Term tree;
+            Term S = null;
+            int opId2 = ((Const)((App)((App)((App)proof.type()).q.body()).p).p).getId(); 
+            if (proof instanceof TypedApp) {
+                S = ((TypedApp)proof).p;
+                proof = ((TypedApp)proof).q;
+            }
+            String[] vars = ((TypedA)proof).getVariables().split(";")[1].split(",");
+            String p = "x_{"+((int)vars[0].charAt(0))+"}";
+            String q = "x_{"+((int)vars[1].charAt(0))+"}";
+            vars = ((TypedA)transtAx).getVariables().split(";")[1].split(",");
+            String R = "x_{"+((int)vars[0].charAt(0))+"}";
+            String P = "x_{"+((int)vars[1].charAt(0))+"}";
+            String Q = "x_{"+((int)vars[2].charAt(0))+"}";
+            proof_ = CombUtilities.getTerm("L^{\\lambda x_{-122}.c_{2} (c_{"+opId2+"} "+R+" "+P+") (c_{5} (c_{"+opId2+"} "+R+" "+Q+") x_{-122})}",user,sm_);
+            if (S != null)
+               proof_ = new TypedApp(proof_,new TypedApp(CombUtilities.getTerm("I^{["+p+","+q+":="+Q+","+P+"]}",user,sm_),proof));
+            else
+               proof_ = new TypedApp(proof_,new TypedApp(CombUtilities.getTerm("I^{["+p+","+q+":="+P+","+Q+"]}",user,sm_),proof));
+            if (S != null)
+                proof_ = new TypedApp(S,proof_);
+            tree = new TypedApp(CombUtilities.getTerm("I^{["+p+","+q+" := "+(S==null?Q+","+R:R+","+Q)+"]}",user,sm_),proof);
+            tree = new TypedApp(CombUtilities.getTerm("L^{\\lambda x_{-122}.c_{2} (c_{"+opId2+"} "+R+" "+P+") (c_{5} x_{-122} (c_{"+opId+"} "+P+" "+Q+"))}",user,sm_),tree);
+            if (S != null)
+                tree = new TypedApp(S,tree);
+            proof_ = new TypedApp(proof_,tree);
+            tree = new TypedApp(CombUtilities.getTerm("I^{["+(S==null?p+","+q+" := "+P+","+R:p+","+q+" := "+R+","+P)+"]}",user,sm_),proof);
+            tree = new TypedApp(CombUtilities.getTerm("L^{\\lambda x_{-122}.c_{2} x_{-122} (c_{5} (c_{"+opId+"} "+Q+" "+R+") (c_{"+opId+"} "+P+" "+Q+"))}", user, sm_),tree);
+            if (S != null)
+                tree = new TypedApp(S,tree);
+            proof_ = new TypedApp(proof_,tree);
+            tree = CombUtilities.getTerm("A^{= (\\Phi_{bb} \\Phi_{b} c_{5}) (\\Phi_{cb} c_{5} \\Phi_{cb})}",user,sm_);
+            tree = new TypedApp(CombUtilities.getTerm("I^{[x_{112},x_{113} := (c_{"+opId+"} "+P+" "+Q+"),(c_{"+opId+"} "+Q+" "+R+")]}",user,sm_),tree);
+            tree = new TypedApp(CombUtilities.getTerm("L^{\\lambda x_{-122}.c_{2} (c_{"+opId+"} "+P+" "+R+") x_{-122}}",user,sm_),tree);
+            proof_ = new TypedApp(proof_,tree);
+            proof_ = new TypedApp(new TypedS(),proof_);
+            String sol = "I^{["+R+","+P+" := "+P+","+R+"]}";
+            //sol += "A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} c_{2} \\Phi_{b(bb,cb)} c_{5} (\\Phi_{c(ccbbb,)} c_{"+opId+"}) c_{"+opId+"} c_{"+opId+"})})";
+            proof_ = new TypedApp(proof_,new TypedApp(CombUtilities.getTerm(sol,user,sm_),transtAx));
+        }
         else
             proof_ = proof;
     }
@@ -172,6 +253,12 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             return ((App)((TypedM)((App)((App)((App)((App)((App)proof_).q).q).q).p).q).getProof()).p;
         else if (id_ == 5)
             return ((App)((App)((App)proof_).p).p).q;
+        else if (id_ == 6)
+            return ((App)proof_).q;
+        else if (id_ == 7)
+            return ((App)proof_).q;
+        else if (id_ == 8)
+            return ((App)((App)((App)((App)((App)((App)proof_).p).q).p).q).q).q;
         else
             return proof_;
     }
@@ -191,8 +278,20 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
         else if (id_ == 4)
           return "(M_{"+id_+"} ("+((App)((TypedM)((App)((App)((App)((App)((App)proof_).q).q).q).p).q).getProof()).p+"))";
         else if (id_ == 5)
-          return "(M_{"+id_+"}^{"+((Const)((App)((App)((App)((TypedA)((App)((App)((App)proof_).p).q).q).type()).q.body()).p).p).id+"} ("+((App)((App)((App)proof_).p).p).q+"))";          
-        else 
+          return "(M_{"+id_+"}^{"+((Const)((App)((App)((App)((TypedA)((App)((App)((App)proof_).p).q).q).type()).q.body()).p).p).id+"} ("+((App)((App)((App)proof_).p).p).q+"))";
+        else if (id_ == 6)
+          return "(M_{"+id_+"} ("+((App)proof_).q+"))";
+        else if (id_ == 7)
+          return "(M_{"+id_+"}^{"+((Const)((App)((App)((App)((App)proof_).q.type()).q.body()).p).p).getId()+"} ("+((App)proof_).q+"))";
+        else if (id_ == 8) {
+          Term proof = ((App)((App)((App)((App)((App)((App)proof_).p).q).p).q).q).q;
+          int opId;
+          if (proof instanceof TypedA)
+              opId = ((Const)((App)((App)((App)((App)proof.type()).p).q.body()).p).p).getId();
+          else 
+              opId = ((Const)((App)((App)((App)proof.type()).q.body()).p).p).getId();
+          return "(M_{"+id_+"}^{"+opId+"} ("+(proof instanceof TypedA?proof:"S "+((App)proof).q)+"))";
+        }else 
           return "(M_{"+id_+"} ("+proof_+"))";
     }
 }

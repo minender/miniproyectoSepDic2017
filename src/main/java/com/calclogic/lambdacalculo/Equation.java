@@ -49,7 +49,7 @@ public class Equation {
     /**
      * Most General Unifier
      */
-    public Sust mgu(SimboloManager s, boolean bothSides) {
+    public Sust mgu(/*SimboloManager s,*/ boolean bothSides) {
         HashSet<Equation> set = new HashSet<Equation>();
         if (!bothSides) {
             t2 = t2.inverseVars();
@@ -85,9 +85,18 @@ public class Equation {
                     transform = true;
                     break;
                 }
-                else if ((uf1 = eq.t1.unfold(s))!=null && (uf2 = eq.t2.unfold(s))!=null &&
-                                    uf1.pop().equals(uf2.pop())){
+                else if ((uf1 = eq.t1.unfold())!=null && (uf2 = eq.t2.unfold())!=null &&
+                          uf1.size()==uf2.size() && 
+                          (uf1.lastElement().equals(uf2.lastElement()) || 
+                           (uf1.lastElement() instanceof Var && uf2.lastElement()instanceof Var)
+                          )
+                        ){
                     set.remove(eq);
+                    if (uf1.lastElement() instanceof Var && uf2.lastElement() instanceof Var){
+                       (new Equation(uf1.pop(),uf2.pop())).union(set);
+                    }else {
+                       uf1.pop(); uf2.pop();
+                    }
                     while (!uf1.empty()) 
                          (new Equation(uf1.pop(),uf2.pop())).union(set);
                     transform = true;

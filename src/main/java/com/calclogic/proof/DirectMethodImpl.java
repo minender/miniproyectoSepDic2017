@@ -81,6 +81,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
         formulaBeingProved = ((App)formulaBeingProved).q.body();
         finalExpr = finalExpr.body();
         initialExpr = initialExpr.body();
+
         if(formulaBeingProved.traducBD().equals(initialExpr.traducBD())) {
             // List of theorems solved by the user. We examine them to check if the current proof already reached one 
             List<Resuelve> resuelves = resuelveManager.getAllResuelveByUserResuelto(username,true,s);
@@ -108,7 +109,7 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                     // Check if the last line of the proof (finalExpr) is an instance of an already demonstrated theorem
                     // >>> It would not work if we did it backwards: (finalExpr, theorem)
                     Equation eq = new Equation(noEqTheo, finalExpr);
-                    Sust sust = eq.mgu(s,false);
+                    Sust sust = eq.mgu(/*s,*/false);
 
                     // Case whe lanst line is an instantiation of the compared theorem
                     if (sust != null) {

@@ -335,7 +335,7 @@ public class Phi extends Term{
     }
     
     @Override
-    public String toStringLaTeX(SimboloManager s,String numTeo) {
+    public String toStringLaTeX(SimboloManager s,String numTeo,List transOp) {
         return "\\Phi_{"+ind.toString()+"}";
     }
     
@@ -364,9 +364,9 @@ public class Phi extends Term{
     
     @Override
     public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s,PredicadoManager pm,
-                                    String nTeo)
+                                    String nTeo, List transOp)
     {
-        toString.term=this.toStringLaTeX(s,"");
+        toString.term=this.toStringLaTeX(s,"",null);
         return toString;
     }
 
@@ -419,8 +419,18 @@ public class Phi extends Term{
     }
     
     @Override
+    public String stFreeVarsWithAnyIndex(String st) {
+        return st;
+    }
+    
+    @Override
     public void boundVars(String[] vars) {
         ;
+    }
+    
+    @Override
+    public Term replaceConstByVars() {
+        return this;
     }
     
     @Override

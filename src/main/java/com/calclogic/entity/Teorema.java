@@ -33,6 +33,8 @@ public class Teorema  implements java.io.Serializable {
     private Term metateoTerm;
     private boolean esquema;
     private String aliases;
+    private PureCombsTheorem pureCombsTheorem;
+    private String constlist;
     private Set resuelves = new HashSet(0);
 
     public Teorema() {
@@ -52,6 +54,10 @@ public class Teorema  implements java.io.Serializable {
 
     public Term getMetateoTerm() {
         return metateoTerm;
+    }
+    
+    public void setPureCombsTheorem(PureCombsTheorem pct) {
+        pureCombsTheorem = pct;
     }
 
     public void setTeoTerm(Term teoTerm) {
@@ -88,6 +94,10 @@ public class Teorema  implements java.io.Serializable {
         this.teoTerm = teoTerm;
     }
 
+    public PureCombsTheorem getPureCombsTheorem() {
+        return pureCombsTheorem;
+    }
+    
     public Term getTeoTerm() {
         return teoTerm;
     }
@@ -113,6 +123,14 @@ public class Teorema  implements java.io.Serializable {
 
     public Set getResuelves() {
         return resuelves;
+    }
+    
+    public void setConstlist(String constlist) {
+        this.constlist = constlist;
+    }
+    
+    public String getConstlist() {
+        return constlist;
     }
 
     public boolean isEsquema() {

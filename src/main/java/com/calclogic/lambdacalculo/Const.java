@@ -258,7 +258,7 @@ public class Const extends Term
     }
         
     @Override
-    public String toStringLaTeX(SimboloManager s,String numTeo) {
+    public String toStringLaTeX(SimboloManager s,String numTeo,List transOp) {
         Simbolo c1 = s.getSimbolo(this.id);
         if (c1 == null)
            return con;
@@ -320,9 +320,9 @@ public class Const extends Term
     
     @Override
     public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm,
-                                    String nTeo)
+                                    String nTeo, List transOp)
     {
-        toString.term=this.toStringLaTeX(s,"");
+        toString.term=this.toStringLaTeX(s,"",null);
         return toString;
     }
 
@@ -368,6 +368,19 @@ public class Const extends Term
     @Override
     public void freeVars(int[] set, int[] visitNum){
         ;
+    }
+    
+    @Override
+    public String stFreeVarsWithAnyIndex(String st) {
+        return st;
+    }
+    
+    @Override
+    public Term replaceConstByVars() {
+        if (con.equals("\\Phi_{K}") || id <= 15 || id == 62)
+            return this;
+        else
+            return new Var(id);
     }
     
     @Override

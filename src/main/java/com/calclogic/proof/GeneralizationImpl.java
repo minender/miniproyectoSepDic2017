@@ -62,7 +62,7 @@ public class GeneralizationImpl extends GenericProofMethodImpl implements Genera
     @Override
     public String header(String statement, Term beginFormula){
         Var x = ((Bracket)((App)((App)beginFormula).q.body()).q).x;
-        return "By generalization method, the following must be proved considering an arbitrary "+x.toStringLaTeX(null, null)+":<br>"+statement+"<br>Sub Proof:<br>";
+        return "By generalization method, the following must be proved considering an arbitrary "+x.toStringLaTeX(null, null,null)+":<br>"+statement+"<br>Sub Proof:<br>";
     }
 
     /**
@@ -163,10 +163,10 @@ public class GeneralizationImpl extends GenericProofMethodImpl implements Genera
      * @param proof: The current proof
      * @return String with the closing comment of the proof
      */
-        @Override
+    @Override
     public String closingComment(Term proof, Term beginFormula) {
         Var x = ((Bracket)((App)((App)beginFormula).q.body()).q).x;
-        return "since "+(char)x.indice+" was arbitrary, then the statement can be generalized $\\therefore~"+proof.type().toStringLaTeX(simboloManager, "")+"$";
+        return "since "+(char)x.indice+" was arbitrary, then the statement can be generalized $\\therefore~"+proof.type().toStringLaTeX(simboloManager, "", null)+"$";
     }
     
     /**

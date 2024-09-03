@@ -28,11 +28,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class GenericProofMethodImpl implements GenericProofMethod{
 
-    // It can be "DM", "SS", "WE", etc.
+    // It can be "DM", "SS", "WL", etc.
     protected String methodStr = null; 
 
     // It will be "D" when methodStr is "DM" or "SS".
-    // It will be "T" when methodStr is "TR", "WE" or "ST".
+    // It will be "T" when methodStr is "TL", "TR", "WL" or "WR".
     // It will be "B" when methodStr is "AI", "CA" or "MI".
     protected String groupMethod = null;
 
@@ -67,7 +67,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
         if (method.equals("DM") || method.equals("SS")){
             this.groupMethod = "D"; 
         }
-        else if (method.equals("TR") || method.equals("WE") || method.equals("ST")){
+        else if (method.equals("TL") || method.equals("TR") || method.equals("WL") || method.equals("WR")){
             this.groupMethod = "T"; // All transitive methods
         }
         else if (method.equals("AI") ){
@@ -170,7 +170,6 @@ public class GenericProofMethodImpl implements GenericProofMethod{
                 if (("T".equals(this.groupMethod)) && theoremHint instanceof App && ((App)theoremHint).p instanceof App &&
                      (C=((App)(((App)theoremHint).p)).p) != null && C instanceof Const &&
                      (((Const)C).getId() == 2 || ((Const)C).getId() == 3) ){
-
                     infer = parityLeibniz(leibniz, A);
                 }else {
                     L = new TypedL(leibniz);

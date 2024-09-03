@@ -60,11 +60,13 @@ public class CrudOperationsImpl implements CrudOperations {
     @Autowired
     private StartingOneSideMethod startingOneSide;
     @Autowired
-    private StrengtheningMethod strengthening;
+    private WeakeningStrengtheningRightMethod weakeningStrengtheningR;
     @Autowired
-    private TransitivityMethod transitivity;
+    private TransitivityFromLeftMethod transitivityFL;
     @Autowired
-    private WeakeningMethod weakening;
+    private TransitivityFromRightMethod transitivityFR;
+    @Autowired
+    private WeakeningStrengtheningLeftMethod weakeningStrengtheningL;
 
     /**
      * This function gives the corresponding class of the specified
@@ -85,12 +87,14 @@ public class CrudOperationsImpl implements CrudOperations {
                 return operatorToEq;
             case "SS":
                 return startingOneSide;
+            case "TL":
+                return transitivityFL;
             case "TR":
-                return transitivity;
-            case "WE":
-                return weakening;
-            case "ST":
-                return strengthening;
+                return transitivityFR;
+            case "WL":
+                return weakeningStrengtheningL;
+            case "WR":
+                return weakeningStrengtheningR;
             case "CR":
                 return counterReciprocal;
             case "CO":
@@ -477,10 +481,10 @@ public class CrudOperationsImpl implements CrudOperations {
             catch (ClassCastException e) {
                 throw new TypeVerificationException();
             }
-            if ( !op.equals("=") ) {
+            /*if ( !op.equals("=") ) {
                 proof = MetaTheorem.metaTheoTrueLeft(proof);
                 type = proof.type();
-            }
+            }*/
 
             int index = objectMethod.transFirstOpInferIndex(proof,true);
             boolean eqInf = opInf.equals("=");
@@ -488,38 +492,52 @@ public class CrudOperationsImpl implements CrudOperations {
                 return new TypedApp(proof, infer);
             }
             else if (index == 0 && !eqInf) {
-                String eq = "c_{1}";//op;
-                String st = "= T (c_{2} (c_{2} (c_{1} (x_{69} x_{101}) c_{8}) (x_{69} x_{102})) ("+eq+" x_{102} x_{101}))";
+                String st = "= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(ccb,)} c_{2} (\\Phi_{(bbb,cb)} c_{2}) (\\Phi_{c(cbbb,)} c_{1}))";
                 String deriv = "";
                 typeInf = ((App)typeInf).q.body();
                 try {
-                    String E = "\\Phi_{b} ("+ ((App)typeInf).p+")";
-                    deriv = "I^{[x_{101}, x_{102}, x_{69} := "+((App)type).q.body()+", "+((App)((App)type).p).q.body()+", "+E+"]} A^{"+st+"}";
+                    //String E = "\\Phi_{b} ("+ ((App)typeInf).p+")";
+                    deriv = "I^{[x_{69},x_{101},x_{102} := \\lambda x_{-126}."+opInf+" ("+((App)((App)typeInf).p).q+") x_{-126},"+((App)type).q.body()+","+((App)((App)type).p).q.body()+"]} A^{"+st+"}";
                 }
                 catch (ClassCastException e) {
                     throw new TypeVerificationException();
                 }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,null,null), new TypedM(1,type,user)), infer);
+                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user,TypedA.sm_), new TypedM(1,1/*este es opId*/,proof,type.toString(),user)), infer);
             }
             else if (index != 0 && !eqInf) {
-                String st = "= T (c_{2} (c_{2} (c_{1} ("+opInf+" x_{114} x_{112}) c_{8}) ("+opInf+" x_{114} x_{113}))  (c_{1} ("+opInf+" x_{113} x_{112}) c_{8}))";
+                int opId = Integer.parseInt(op.substring(3, op.length()-1));
+                String isTranst = "";
+                String st = ""; 
+                if (op.equals("c_{2}") || op.equals("c_{3}") || (isTranst = TypedA.sm_.isTransitiveOp(opId)).charAt(0) == 'e' )
+                   st = "A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} c_{2} \\Phi_{b(bb,cb)} c_{5} (\\Phi_{c(ccbbb,)} "+op+") "+op+" "+(isTranst.equals("")?op:isTranst.substring(1))+")}";
+                else if (isTranst.charAt(0) == 'i')
+                   st = "M_{8}^{"+isTranst.substring(4,isTranst.length()-1)+"} (A^{= (\\Phi_{bb} \\Phi_{b} "+isTranst.substring(1)+") (\\Phi_{cb} "+op+" \\Phi_{cb})})";
+                else if (isTranst.charAt(0) == 's')
+                   st = "M_{8}^{"+isTranst.substring(4,isTranst.length()-1)+"} (S A^{= (\\Phi_{bb} \\Phi_{b} "+op+") (\\Phi_{cb} "+isTranst.substring(1)+" \\Phi_{cb})})";
+
                 String deriv = "";
                 typeInf = ((App)typeInf).q.body();
+                Term transivty = CombUtilities.getTerm("M_{6} ("+st+")",user,TypedA.sm_);
+                String[] vars = ((TypedA)transivty).getVariables().split(";")[1].split(",");
+                String r = "x_{"+((int)vars[0].charAt(0))+"}";
+                String p = "x_{"+((int)vars[1].charAt(0))+"}";
+                String q = "x_{"+((int)vars[2].charAt(0))+"}";
                 try {
-                    Term aux = (App)((App)((App)((App)type).q.body()).p).q;
-                    deriv = "I^{[x_{112}, x_{113}, x_{114} := "+((App)aux).q+", "+((App)((App)aux).p).q+", "+((App)((App)typeInf).p).q+"]} A^{"+st+"}";
+                    Term aux = ((App)type).q.body();
+                    deriv = "I^{["+r+", "+p+", "+q+" := "+((App)((App)typeInf).p).q+", "+((App)aux).q+", "+((App)((App)aux).p).q+"]}";
                 }catch (ClassCastException e) {
                     throw new TypeVerificationException();
                 }
-                return new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user,null), proof), infer);
+                return new TypedApp(new TypedApp(new TypedApp(CombUtilities.getTerm(deriv,user,TypedA.sm_),transivty), proof), infer);
             }
             else {
-                Term aux = ((App)((App)type).p).q.body();
+                Term aux = ((App)type).q.body();
 
                 if ( infer instanceof TypedApp && ((TypedApp)infer).inferType=='l'){
                     Term oldLeib = ((Bracket)((TypedApp)infer).p.type()).t;
                     Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,oldLeib),((App)aux).q));
                     infer = new TypedApp(new TypedL(leibniz),((TypedApp)infer).q);
+                    return new TypedApp(infer, proof);
                 }
                 else {
                     if (aux instanceof Var){
@@ -529,8 +547,8 @@ public class CrudOperationsImpl implements CrudOperations {
                         Bracket leibniz = new Bracket(new Var('z'),new App(new App(((App)((App)aux).p).p,new Var('z')),((App)aux).q));
                         infer = new TypedApp(new TypedL(leibniz),infer); 
                     }                     
+                    return new TypedApp(infer, proof);
                 }
-                return new TypedApp(proof, infer);
             }
         } else {
             Term prueba = new TypedApp(proof, infer);

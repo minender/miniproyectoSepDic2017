@@ -32,9 +32,10 @@ method_base returns [Term value]:
        | EO {$value = new Const("EO");}
        | OE {$value = new Const("OE");}
        | SS {$value = new Const("SS");}
+       | TL {$value = new Const("TL");}
        | TR {$value = new Const("TR");}
-       | WE {$value = new Const("WE");}
-       | ST {$value = new Const("ST");}
+       | WL {$value = new Const("WL");}
+       | WR {$value = new Const("WR");}
        | ND {$value = new Const("ND");}
        | CO {$value = new Const("CO");}
        | CR {$value = new Const("CR");}
@@ -57,11 +58,13 @@ OE: 'OE';
 
 SS: 'SS';
 
+TL: 'TL';
+
 TR: 'TR';
 
-WE: 'WE';
+WL: 'WL';
 
-ST: 'ST';
+WR: 'WR';
 
 ND: 'ND';
 

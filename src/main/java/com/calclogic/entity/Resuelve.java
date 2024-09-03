@@ -57,6 +57,8 @@ public class Resuelve  implements java.io.Serializable {
     
     public String getVarAndTypes() {
         Term type = ((App)teorema.getTeoTerm()).q.type();
+        /*System.out.println((App)teorema.getTeoTerm());
+        System.out.println(type);*/
         if (!(type instanceof Const)) {
             String st = this.variables.split(";")[1];
             String[] vars = st.split(",");

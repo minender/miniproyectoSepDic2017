@@ -106,6 +106,11 @@ public class TeoremaDaoImpl implements TeoremaDAO {
         }
     }
     
+    public List<Teorema> getTeoremasByPureCombTheo(int id) {
+        String sql = "FROM Teorema t WHERE t.pureCombsTheorem.id = :id";
+        return this.sessionFactory.getCurrentSession().createQuery(sql).setParameter("id", id).list();
+    }
+    
     @Override
     public List<Teorema> getAllTeoremasWithSimbolo(int idSimbolo) {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Teorema WHERE enunciado LIKE '%c_{" + String.valueOf(idSimbolo) + "}%'").list();

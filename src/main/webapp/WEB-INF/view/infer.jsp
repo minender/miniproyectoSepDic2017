@@ -67,8 +67,10 @@
                 $('#formula').on('click','.teoremaClick',async function(event){
                     if (clickInTheoremAllowed){
                         clickInTheoremAllowed = false;
+                        var select = document.getElementById('metodosDemostracion');
+                        var methodToken = select.value; // this could be "SS" or "TL"
                         // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
-                        await proofMethodAjax("SS", null, this.id);
+                        await proofMethodAjax(methodToken, null, this.id);
                         clickInTheoremAllowed = true;
                     }
                 });
@@ -203,10 +205,10 @@
                         <option value="0">Select a method</option>
                         <option value="DM">Direct method</option>
                         <option value="SS">Starting from one side</option>
-                        <option value="TR">Transitivity</option>
-                        <option value="WE">Weakening</option>
-                        <option value="ST">Strengthening</option>
-                        <!--<option value="ND">Natural deduction</option>-->
+                        <option value="TL">Transitivity</option>
+                        <option value="WL">Weakening</option>
+                        <option value="WR">Strengthening</option>
+                        <!--<option value="DE">Deduction</option>-->
                         <option value="CO">Proof by contradiction</option>
                         <option value="CR">Counter-reciprocal</option>
                         <option value="AI">Proof by parts</option>

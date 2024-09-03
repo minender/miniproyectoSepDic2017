@@ -19,7 +19,7 @@ import java.util.List;
 public class TypedA extends Const implements TypedTerm{
     
     //protected final Term type_;
-    protected final String variables_;
+    protected String variables_;
     protected final String nSt_;
     protected final String combDBType_;
     private static ResuelveManager rm_;
@@ -127,5 +127,9 @@ public class TypedA extends Const implements TypedTerm{
     
     public String getNSt() {
         return nSt_;
+    }
+    
+    public String getVariables() {
+        return variables_;
     }
 }

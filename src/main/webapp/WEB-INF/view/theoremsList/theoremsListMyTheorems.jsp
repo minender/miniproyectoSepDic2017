@@ -30,7 +30,7 @@
                                                     </c:otherwise>
                                                 </c:choose>
                                                  ${resu.getVarAndTypes()} &nbsp;
-                                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
+                                                (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",null,resu.getNumeroteorema())}
                                                 <c:choose>
                                                     <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas') || usuario.getLogin().equals('AdminTeoremas')}">
                                                         <a onclick="return confirm('Are you sure you want to delete the theorem?')" href="javascript:delTeo(${resu.getTeorema().getId()})"><i class="fa fa-trash" aria-hidden="true" ></i></a>
@@ -58,15 +58,15 @@
                                                         </c:choose>
 
                                                         <a href="javascript:buscarSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: </a> 
-                                                        &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())} 
+                                                        &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",null,resu.getNumeroteorema())} 
                                                         <span class="d-none" id="${resu.getTeorema().getId()}">
                                                             <br><span class="metaitem"></span>
-                                                            <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) with Metatheorem (3.7): </a> &nbsp; ${resu.getTeorema().getMetateoTerm().toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
+                                                            <a href="javascript:buscarMetaSoluciones(${resu.getTeorema().getId()});" title="Haga click para ver las demostraciones del teorema">(${resu.getNumeroteorema()}) with Metatheorem (3.7): </a> &nbsp; ${resu.getTeorema().getMetateoTerm().toStringLaTeXJavascript(simboloManager,predicadoManager,"",null,resu.getNumeroteorema())}
                                                         </span>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <i class="fa fa-unlock" aria-hidden="true" ></i>
-                                                        (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",resu.getNumeroteorema())}
+                                                        (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",null,resu.getNumeroteorema())}
                                                     </c:otherwise>
                                                 </c:choose>
                                             </p>

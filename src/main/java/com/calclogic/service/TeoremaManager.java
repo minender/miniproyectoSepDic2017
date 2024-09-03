@@ -1,5 +1,6 @@
 package com.calclogic.service;
 
+import com.calclogic.entity.PureCombsTheorem;
 import com.calclogic.entity.Resuelve;
 import com.calclogic.entity.Teorema;
 import com.calclogic.lambdacalculo.Term;
@@ -26,6 +27,13 @@ public interface TeoremaManager {
      * @return Nothing.
      */    
     public Teorema updateTeorema(int id, String username, String statement, Term teoterm, String vars);
+    
+    /** 
+     * Updates theorem on the table.
+     * @param teorema The new theorem to be added.
+     * @return Nothing.
+     */    
+    public void updateTeorema(Teorema teorema);
     
     /**
      * Deletes one of the theorems of the table.

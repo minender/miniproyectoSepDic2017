@@ -32,7 +32,7 @@
                                                             </a>
                                                         </c:when>
                                                     </c:choose>                                    
-                                                    <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,resu.getNumeroteorema())}$</span>
+                                                    <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,resu.getNumeroteorema(),transOp)}$</span>
 
                                                     <script type="text/javascript">clickTeoremaInicial('ST-${resu.getNumeroteorema()}');
                                                             clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().stFreeVars(simboloManager)}');
@@ -72,11 +72,11 @@
         
                                             <c:choose>
                                                 <c:when test="${!resu.isEsAxioma()}">
-                                                    <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "You are going to prove the theorem":"You have left an incomplete proof of the theorem"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". To be continued the proof from the point where you left it;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,mensaje)}$
+                                                    <a onclick="return confirm('${resu.getDemopendiente() == -1 ? "You are going to prove the theorem":"You have left an incomplete proof of the theorem"} ${resu.getNumeroteorema()}${resu.getDemopendiente() == -1 ? "":". To be continued the proof from the point where you left it;"}')" href="../../infer/${usuario.getLogin()}/${resu.getNumeroteorema()}">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</a> &nbsp; $${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,mensaje,null)}$
                                                 </c:when>
 
                                                 <c:otherwise>
-                                                    (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,"")}$
+                                                    (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; $${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,"",null)}$
                                                 </c:otherwise>
                                             </c:choose>
                                             <%--<span style="display: none;" id="metaTeo${resu.getNumeroteorema()}">

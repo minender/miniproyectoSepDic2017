@@ -22,7 +22,7 @@ public class Comprobacion {
         while (!pila.isEmpty()) {
             Term actual = pila.pop();
             if (actual instanceof Var) {
-               st = st + actual.toStringLaTeX(null,"") + ",";
+               st = st + actual.toStringLaTeX(null,"",null) + ",";
             }
             else if (actual instanceof App) {
               pila.push(((App)actual).q);

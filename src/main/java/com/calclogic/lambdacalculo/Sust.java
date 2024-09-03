@@ -199,14 +199,14 @@ public class Sust extends Term{
     }
     
     @Override
-    public String toStringLaTeX(SimboloManager s,String numTeo) {
+    public String toStringLaTeX(SimboloManager s,String numTeo,List transOp) {
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringLaTeX(s,"")+",";
+            varss += v.toStringLaTeX(s,"",null)+",";
         
         for (Term t : terms)
-            termss += t.reducir().toStringLaTeX(s,"")+",";
+            termss += t.reducir().toStringLaTeX(s,"",null)+",";
         
          varss = varss.substring(0, varss.length()-1);
          termss = termss.substring(0, termss.length()-1);
@@ -220,10 +220,10 @@ public class Sust extends Term{
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringLaTeX(null,"")+",";
+            varss += v.toStringLaTeX(null,"",null)+",";
         
         for (Term t : terms)
-            termss += t.reducir().toStringLaTeX(null,"")+",";
+            termss += t.reducir().toStringLaTeX(null,"",null)+",";
         
         varss = varss.substring(0, varss.length()-1);
         termss = termss.substring(0, termss.length()-1);
@@ -244,7 +244,7 @@ public class Sust extends Term{
         String varss = "";
         String termss = "";
         for (Var v : vars)
-            varss += v.toStringLaTeX(s,"")+",";
+            varss += v.toStringLaTeX(s,"",null)+",";
         
         for (Term t : terms)
             termss += t.reducir().toStringLaTeXFinal(s)+",";
@@ -269,9 +269,9 @@ public class Sust extends Term{
     
     @Override
     public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
-                                    String nTeo)
+                                    String nTeo, List transOp)
     {
-        toString.term=this.toStringLaTeX(s,"");
+        toString.term=this.toStringLaTeX(s,"",null);
         return toString;
     }
 
@@ -338,8 +338,21 @@ public class Sust extends Term{
     }
     
     @Override
+    public String stFreeVarsWithAnyIndex(String st) {
+        for(Term li: terms) {
+           st = li.stFreeVarsWithAnyIndex(st);
+        }
+        return st;
+    }
+    
+    @Override
     public void boundVars(String[] vars) {
         ;
+    }
+    
+    @Override
+    public Term replaceConstByVars() {
+        return this;
     }
     
     @Override

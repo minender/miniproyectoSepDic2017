@@ -37,7 +37,7 @@ public class App extends Term{
         else {
             Term pType = p1.type();
             Term qType = q1.type();
-            Sust s = new Equation(((App)pType).q, qType).mgu(null, true);
+            Sust s = new Equation(((App)pType).q, qType).mgu(/*null,*/ true);
             if (s != null) 
                 type_ = ((App)((App)pType).p).q.sustParall(s);
             else if ( ((App)pType).q.equals(qType) ) 
@@ -45,7 +45,7 @@ public class App extends Term{
             else
                 type_ = null;
             if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).id==0) {
-                s = new Equation(qType,((App)p).q.type()).mgu(null, true);
+                s = new Equation(qType,((App)p).q.type()).mgu(/*null,*/ true);
                 q.setType(s!=null?qType.sustParall(s):qType);
             }
         }
@@ -61,7 +61,7 @@ public class App extends Term{
                 Term pType = p1.type();
                 Term qType = q1.type();
 
-                Sust s = new Equation(((App)pType).q, qType).mgu(null, true);
+                Sust s = new Equation(((App)pType).q, qType).mgu(/*null,*/ true);
                 if (s != null)
                     type_ = ((App)((App)pType).p).q.sustParall(s);
                 else if ( ((App)pType).q.equals(qType) ) 
@@ -175,9 +175,20 @@ public class App extends Term{
     }
     
     @Override
+    public String stFreeVarsWithAnyIndex(String st) {
+        st = p.stFreeVarsWithAnyIndex(st);
+        return q.stFreeVarsWithAnyIndex(st);
+    }
+    
+    @Override
     public void boundVars(String[] vars) {
         p.boundVars(vars);
         q.boundVars(vars);
+    }
+    
+    @Override
+    public Term replaceConstByVars() {
+        return new App(p.replaceConstByVars(),q.replaceConstByVars());
     }
     
     @Override
@@ -190,6 +201,14 @@ public class App extends Term{
               ((App)((App)p).p.type_).q = ((App)p).q.type_;
               ((App)((App)((App)((App)p).p.type_).p).q).q = q.type_;
            }
+        }
+        return this;
+    }
+    
+    public Term abstractEqAnyIndex(String vars) {
+        if (!vars.equals("")) {
+           q = q.abstractVarsAnyIndex(vars);
+           ((App)p).q = ((App)p).q.abstractVarsAnyIndex(vars);
         }
         return this;
     }
@@ -570,7 +589,7 @@ public class App extends Term{
       * @param pm
       * @return String representation in LaTeX Format.
       */
-    private IntXIntXString privateToStringLaTeX(Character kind, SimboloManager s, String numTeo, String position, String appPosition, String rootId, int z, Term t, 
+    private IntXIntXString privateToStringLaTeX(Character kind, SimboloManager s, String numTeo, List<Simbolo> transOp, String position, String appPosition, String rootId, int z, Term t, 
                                                 List<Term> l, List<String> l2, Id id, int nivel, ToString tStr, PredicadoManager pm)
     {
         Boolean simpleOrAbrv = ('S' == kind || 'A' == kind);
@@ -664,22 +683,25 @@ public class App extends Term{
                 newTerm = new App(new App(new Const(s.getTermFunApp(), "c_{"+s.getTermFunApp()+"}"),p),q);
             }
             if ('L' == kind){
-                IntXIntXString result = newTerm.privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
+                IntXIntXString result = newTerm.privateToStringLaTeX(kind,s,numTeo,transOp,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
                 l.add(t.leibniz(z, appPosition, "", s)); //revisar ten cuidado
                 return result;
             }
-            return newTerm.privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
+            return newTerm.privateToStringLaTeX(kind,s,numTeo,transOp,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
         }
 
         // This is to later replace the placeholders with StrSubstitutor
         Map<String,String> values = new HashMap<>();
-        if ('I' == kind || (simpleOrAbrv && numTeo.equals("")) )
+        if ('I' == kind || 
+              (simpleOrAbrv &&      
+                (numTeo.equals("") || c.getId()!=0 && (transOp==null || !transOp.contains(sym)))
+              ) 
+           )
             values.put("op", sym.getNotacion_latex());
         else if ('L' == kind)
             values.put("op", "\\class{terminoClick}{"+sym.getNotacion_latex()+"}");
         else
             values.put("op", "\\cssId{click@"+numTeo+"}{\\class{operator}{\\style{cursor:pointer; color:#08c;}{"+sym.getNotacion_latex()+"}}}");
-
         String notation = sym.getNotacion();
 
         // CHECK This is only for Discrete Math
@@ -691,7 +713,7 @@ public class App extends Term{
             Term arg = stk.pop();
             if ('L' == kind) { appId = stkS.pop();}
             if (('A' == kind) && (arg.alias != null)){
-                tStr.setNuevoAlias(arg.alias, arg, s, pm, numTeo);
+                tStr.setNuevoAlias(arg.alias, arg, s, pm, numTeo, transOp);
                 values.put("na"+i,tStr.term);
                 values.put("a"+i,tStr.term);
                 values.put("aa"+i,tStr.term);
@@ -705,9 +727,9 @@ public class App extends Term{
                     int index = 1;
                     while (aux_arg instanceof Bracket) {
                         if (kind != 'I')
-                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s, numTeo));
+                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(s, numTeo, transOp));
                         else
-                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(kind,s,"",position+"-"+(index+nArgs),appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                            values.put("v"+index,((Bracket) aux_arg).x.toStringLaTeX(kind,s,"",null,position+"-"+(index+nArgs),appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
                         index++;
                         aux_arg = ((Bracket) aux_arg).t;
                     }
@@ -718,18 +740,18 @@ public class App extends Term{
                         if (sym.getId() == 62 && i==2 && arg.body() instanceof Const && 
                               ((Const)arg.body()).getId()==8 
                            )
-                           (new Const(0,"~")).toStringLaTeXAbrv(tStr,s,pm,"");
+                           (new Const(0,"~")).toStringLaTeXAbrv(tStr,s,pm,"",null);
                         else
-                           arg.toStringLaTeXAbrv(tStr,s,pm,"");
+                           arg.toStringLaTeXAbrv(tStr,s,pm,"",null);
                         values.put("na"+i,tStr.term);
                     }
                     else{
                         if (kind != 'I' && sym.getId() == 62 && i==2 && arg.body() instanceof Const &&
                               ((Const)arg.body()).getId()==8 
                            )
-                           values.put("na"+i,(new Const(0,"~")).toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                           values.put("na"+i,(new Const(0,"~")).toStringLaTeX(kind,s,"",null,position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
                         else
-                           values.put("na"+i,arg.toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                           values.put("na"+i,arg.toStringLaTeX(kind,s,"",null,position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
                         if ('L' == kind){
                             setVar += l2.get(l2.size()-1);
                         }
@@ -738,7 +760,7 @@ public class App extends Term{
                 else if (notation.contains("%(ea"+i+")")){
                     String etaSt;
                     if (kind == 'I') {
-                       etaSt = arg.toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
+                       etaSt = arg.toStringLaTeX(kind,s,"",null,position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
                     }else {
                        Term etaR = arg.etaReduc();
                        if (etaR instanceof Const && ((Const)etaR).id == 4)
@@ -746,7 +768,7 @@ public class App extends Term{
                        else if (etaR instanceof Const && ((Const)etaR).id == 5)
                          etaSt = "\\forall";
                        else
-                         etaSt = etaR.toStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
+                         etaSt = etaR.toStringLaTeX(kind,s,"",null,position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
                     }
                        
                     values.put("ea"+i,etaSt);
@@ -759,7 +781,7 @@ public class App extends Term{
                         String prefix = alwaysParentheses ? "a" : "aa";
 
                         if (arg instanceof App){
-                            IntXIntXString tuple = ((App) arg).privateToStringLaTeX(kind,s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
+                            IntXIntXString tuple = ((App) arg).privateToStringLaTeX(kind,s,"",null,position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm);
                             String parenthesizedTuple = ('L' == kind) ? addParentheses(tuple.x3) : ("("+tuple.x3+")");
 
                             if ( (tuple.x1 == 25) && (opId == 21 || opId == 22 || opId == 23))
@@ -768,7 +790,7 @@ public class App extends Term{
                                 values.put(prefix + i, (tuple.x2 > sym.getPr() || (conditionalParentheses && tuple.x1==opId)) ? tuple.x3 : parenthesizedTuple);
                         }
                         else
-                            values.put(prefix + i,arg.toStringLaTeX(kind, s,"",position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
+                            values.put(prefix + i,arg.toStringLaTeX(kind, s,"",null,position+"-"+i,appId,rootId,z,t,l,l2,id,nivel+1,tStr,pm));
 
                         if ('L' == kind)
                             setVar += l2.get(l2.size()-1);
@@ -800,10 +822,10 @@ public class App extends Term{
     }
 
     @Override
-    public String toStringLaTeX(char kind, SimboloManager s, String numTeo, String position, String appPosition, String rootId, int z, Term t, 
+    public String toStringLaTeX(char kind, SimboloManager s, String numTeo, List<Simbolo> transOp, String position, String appPosition, String rootId, int z, Term t, 
                                                 List<Term> l, List<String> l2, Id id, int nivel, ToString tStr, PredicadoManager pm)
     {
-        return privateToStringLaTeX(kind,s,numTeo,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm).x3;
+        return privateToStringLaTeX(kind,s,numTeo,transOp,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm).x3;
     }
 
     /**
@@ -813,12 +835,15 @@ public class App extends Term{
      * @param numTeo
      * @return String representation in LaTeX Format.
      */
-    public String toStringLaTeX(SimboloManager s, String numTeo){
+    public String toStringLaTeX(SimboloManager s, String numTeo, List<Simbolo> transOp){
         if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
-            && ((App)p).q.containT() )
-            return q.toStringLaTeX(s,numTeo);
-        else
-            return privateToStringLaTeX('S',s,numTeo,"","",null,0,null,null,null,null,0,null,null).x3;
+            && ((App)p).q.containT() ) {
+            if (transOp == null)
+               return q.toStringLaTeX(s,numTeo,transOp);
+            else
+               return q.body().toStringLaTeX(s,numTeo,transOp);
+        } else
+            return privateToStringLaTeX('S',s,numTeo,transOp,"","",null,0,null,null,null,null,0,null,null).x3;
     }
 
     /**
@@ -834,7 +859,7 @@ public class App extends Term{
             && ((App)p).q.containT() )
             return q.toStringLaTeXWithInputs(s, position, rootId);
         else
-            return privateToStringLaTeX('I',s,null,position,"",rootId,0,null,null,null,null,0,null,null).x3;
+            return privateToStringLaTeX('I',s,null,null,position,"",rootId,0,null,null,null,null,0,null,null).x3;
     }
 
     /**
@@ -855,17 +880,17 @@ public class App extends Term{
             && ((App)p).q.containT() )
             return q.toStringLaTeXLabeled(s, z, t, appPosition, l1, l2, id, nivel);
         else{
-            return privateToStringLaTeX('L',s,null,"",appPosition,null,z,t,l1,l2,id,nivel,null,null).x3;
+            return privateToStringLaTeX('L',s,null,null,"",appPosition,null,z,t,l1,l2,id,nivel,null,null).x3;
         }
     }
 
     @Override
-    public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, String numTeo){
+    public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, String numTeo, List<Simbolo> transOp){
         if (p instanceof App && ((App)p).p instanceof Const && ((Const)((App)p).p).getId()==0 
             && ((App)p).q.containT() )
-            q.toStringLaTeXAbrv(toString, s, pm, numTeo);
+            q.toStringLaTeXAbrv(toString, s, pm, numTeo, transOp);
         else
-            privateToStringLaTeX('A',s,numTeo,"","",null,0,null,null,null,null,0,toString,pm);
+            privateToStringLaTeX('A',s,numTeo,transOp,"","",null,0,null,null,null,null,0,toString,pm);
         return toString;
     } 
     
@@ -889,7 +914,7 @@ public class App extends Term{
         stk.push(q);
         Term aux = p;
         int j = 1;
-        while ( aux instanceof App ){//System.out.println(aux);System.out.println(stk);
+        while ( aux instanceof App ){
            stk.push(((App)aux).q);
            aux = ((App)aux).p;
            j++;

@@ -9,7 +9,10 @@ import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedL;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedS;
+import com.calclogic.lambdacalculo.TypedTerm;
+import com.calclogic.parse.CombUtilities;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.service.DisponeManager;
@@ -25,10 +28,10 @@ import org.springframework.stereotype.Service;
  * @author ronald
  */
 @Service
-public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements TransitivityMethod {
+public class TransitivityFromLeftMethodImpl extends StartingOneSideMethodImpl implements TransitivityFromLeftMethod {
 
-    public TransitivityMethodImpl(){
-        setInitVariables("TR");
+    public TransitivityFromLeftMethodImpl(){
+        setInitVariables("TL");
     }
 
     /**
@@ -83,17 +86,17 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
         String lastline; // Plain string of the last line of the demonstration
         Term iter; // Iterator over the lines of a demonstration
 
-        boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
-                      isInverseImpl(((TypedApp)typedTerm).q.type().setToPrint(simboloManager),
-                                                                         typedTerm.type().setToPrint(simboloManager));
-        iter = (reversed?((TypedApp)typedTerm).q:typedTerm);
-        boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
-                      ((TypedApp)iter).q.type().setToPrint(simboloManager).toString().equals("c_{8}");
-
-        iter = (lastEquan?((TypedApp)iter).p:iter);
+        //boolean reversed = solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='e' &&
+        //              isInverseImpl(((TypedApp)typedTerm).q.type().setToPrint(simboloManager),
+        //                                                                 typedTerm.type().setToPrint(simboloManager));
+        iter = typedTerm;//(reversed?((TypedApp)typedTerm).q:typedTerm);
+        
+        //boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
+        //              ((TypedApp)iter).q.type().setToPrint(simboloManager).toString().equals("c_{8}");
+        iter = (solved?deleteFinishProof(iter):iter);
         int i = 0;
         int firstOpInf = transFirstOpInferIndex(iter, true);
-        
+
         Term ultInf = null;
         while (iter!=ultInf){
             // iter is of the form TT with transitivity
@@ -101,14 +104,22 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
                ultInf = ((TypedApp)iter).q;
                iter = ((TypedApp)iter).p;   
             }
+            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='e') {
+               ultInf = ((TypedApp)iter).p;
+               iter = ((TypedApp)iter).q;
+            }
             else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='m' &&
                      ((TypedApp)iter).p instanceof TypedApp && 
                      ((TypedApp)((TypedApp)iter).p).inferType=='m' && 
                      ((TypedApp)((TypedApp)iter).p).p instanceof TypedApp &&
                      ((TypedApp)((TypedApp)((TypedApp)iter).p).p).inferType=='i'
                     ) { // iter is of the form ((IA)T)T wit modus pones
-               ultInf = ((TypedApp)iter).q;
-               iter = ((TypedApp)((TypedApp)iter).p).q;
+               ultInf = ((TypedApp)iter).q;//el axioma es (e==f)=>E.f=>E.e
+               String axiom = "= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(ccb,)} c_{2} (\\Phi_{(bbb,cb)} c_{2}) (\\Phi_{c(cbbb,)} c_{1}))";
+               if (((TypedA)((TypedApp)((TypedApp)((TypedApp)iter).p).p).q).getCombDBType().equals(axiom))
+                   iter = ((TypedM)((TypedApp)((TypedApp)iter).p).q).getSubProof();
+               else
+                   iter = ((TypedApp)((TypedApp)iter).p).q;
             }
             else { // first inference
                 // ultInf is a no =inference folowing with a matatheorem of true
@@ -123,26 +134,29 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
             }
             i++;
             // if ultInf is a no =inference do this
-            Term ultInfType = ultInf.type().setToPrint(simboloManager);
+            Term ultInfType = ultInf.type();
+            if (ultInfType.containT())
+                ultInfType = ((App)ultInfType).q.body();
+            //Term ultInfType = ultInf.type().setToPrint(simboloManager);
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
-                   !(((App)((App)ultInfType).p).p.toString().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toString().equals("c_{20}")
+                   !(((App)((App)ultInfType).p).p.toString().equals("=") //||
+                     //((App)((App)ultInfType).p).p.toString().equals("c_{20}")
                     )
                )
             {
-                primExp = ((App)ultInfType).q.toStringLaTeX(s,""); 
+                primExp = ((App)ultInfType).q.toStringLaTeX(s,"",null); 
                 newStep = stepTransOpInfer(user, ultInf, resuelveManager, disponeManager, s);
             }
             else if (ultInf == iter){ // ultInf is a =inference or opinference and the first one
-                    primExp = ((App)ultInfType).q.toStringLaTeX(s,""); 
+                    primExp = ((App)ultInfType).q.toStringLaTeX(s,"",null); 
                     newStep = stepOneSideEq(user, ultInf, resuelveManager, disponeManager, s);
             } else if (i<firstOpInf){ // ultInf is a =inference and not the first one and  
                                     // after at least one no =inference
-                primExp = ((App)((App)((App)ultInfType).q).p).q.toStringLaTeX(s,""); 
+                primExp = ((App)((App)((App)ultInfType).q.body()).p).q.toStringLaTeX(s,"",null); 
                 newStep = stepTransEqInfer(user, ultInf, resuelveManager, disponeManager, s);
             } else { // ultInf is a =inference and not the first one
                    // and before the first no =inference
-                primExp = ((App)ultInfType).q.toStringLaTeX(s,""); 
+                primExp = ((App)ultInfType).q.toStringLaTeX(s,"",null); 
                 newStep = stepOneSideEq(user, ultInf, resuelveManager, disponeManager, s);
             }
             historial = "~~~~~~" + primExp + " \\\\" + newStep + "\\\\" + historial;
@@ -150,14 +164,18 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
         }
         if ( firstOpInf == 0 || i == 1)
         {
-            Term last = (reversed?((App)typedTerm.type().setToPrint(simboloManager)).q:
-                                     ((App)((App)typedTerm.type().setToPrint(simboloManager)).p).q);
-            lastline = (solved?last.toStringLaTeX(s,"")+"$":last.toStringLaTeXLabeled(s));
+            //Term last = (reversed?((App)typedTerm.type().setToPrint(simboloManager)).q:
+                                    // ((App)((App)typedTerm.type().setToPrint(simboloManager)).p).q);
+            Term last = (solved?((App)((App)deleteFinishProof(typedTerm).type().setToPrint(simboloManager)).p).q:
+                                   ((App)((App)typedTerm.type().setToPrint(simboloManager)).p).q);
+            lastline = (solved?last.toStringLaTeX(s,"",null)+"$":last.toStringLaTeXLabeled(s));
         }
         else {
-            Term last = (reversed?((TypedApp)typedTerm).q:typedTerm);
-            last = ((App)((App)((App)((App)(lastEquan?((TypedApp)last).p:last).type().setToPrint(simboloManager)).p).q).p).q;
-            lastline = (solved?last.toStringLaTeX(s,"")+"$":last.toStringLaTeXLabeled(s));
+            Term last = (solved?deleteFinishProof(typedTerm):typedTerm);//(reversed?((TypedApp)typedTerm).q:typedTerm);
+            //last = ((App)((App)((App)((App)(lastEquan?((TypedApp)last).p:last).type().setToPrint(simboloManager)).p).q).p).q;
+            //last = ((App)((App)(lastEquan?((TypedApp)last).p:last).type().setToPrint(simboloManager)).p).q;
+            last = ((App)((App)last.type().setToPrint(simboloManager)).p).q;
+            lastline = (solved?last.toStringLaTeX(s,"",null)+"$":last.toStringLaTeXLabeled(s));
         }
         return historial + "~~~~~~" + lastline;  
     }
@@ -210,11 +228,11 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
             }
         }
         step = stepOneSideEq(user, ultInf, resuelveManager, disponeManager, s);
-        step = ((App)((App)typedTerm.type().setToPrint(simboloManager)).p).p.toStringLaTeX(s,"")+step.substring(step.indexOf("~"));
+        step = ((App)((App)typedTerm.type().setToPrint(simboloManager)).p).p.toStringLaTeX(s,"",null)+step.substring(step.indexOf("~"));
         if (leibniz.toString().equals("x_{122}") )
             return step;
         else
-            return step.substring(0, step.length()-7)+"~and~E:"+leibniz.toStringLaTeX(s, "")+"\\rangle";
+            return step.substring(0, step.length()-7)+"~and~E:"+leibniz.toStringLaTeX(s, "",null)+"\\rangle";
     }
 
     /**
@@ -237,7 +255,7 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
             typedTerm = (t instanceof Var?aux:new TypedApp(new TypedL(new Bracket(new Var(z),t)),aux));
         }
         catch (TypeVerificationException e) {
-            Logger.getLogger(TransitivityMethod.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(TransitivityFromLeftMethod.class.getName()).log(Level.SEVERE, null, e);
             return "";
         }
         return stepOneSideEq(user, typedTerm, resuelveManager, disponeManager, s);
@@ -261,7 +279,11 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
         while (iter!=ultInf){
             if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='t') {// TT
                ultInf = ((TypedApp)iter).q;
-               iter = ((TypedApp)iter).p;   
+               iter = ((TypedApp)iter).p;
+            }
+            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='e') {// TT
+               ultInf = ((TypedApp)iter).p;
+               iter = ((TypedApp)iter).q;
             }
             else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='m' &&
                      ((TypedApp)iter).p instanceof TypedApp && 
@@ -282,9 +304,12 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
             }
             i++;
             Term ultInfType = ultInf.type();
+            if (ultInfType.containT())
+                ultInfType = ((App)ultInfType).q.body();
             if (ultInfType instanceof App && ((App)ultInfType).p instanceof App &&
-                   !(((App)((App)ultInfType).p).p.toString().equals("c_{1}") ||
-                     ((App)((App)ultInfType).p).p.toString().equals("c_{20}")
+                ((App)((App)ultInfType).p).p instanceof Const &&    
+                   !(((Const)((App)((App)ultInfType).p).p).getCon().equals("=") //||
+                     //((App)((App)ultInfType).p).p.toString().equals("c_{20}")
                     )
                )
                 firstOpInf = i;
@@ -315,11 +340,53 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
+            return proof;
+    }
+    
+    protected Term auxFinBaseMethodReversed(Term formulaBeingProved, Term proof, String username,
+                ResuelveManager resuelveManager, SimboloManager simboloManager, 
+                Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
+    {
         // If at least one opInference was made and reaches the goal
-        if(transFirstOpInferIndex(proof,true)!=0 && ((App)((App)expr).p).q.equals(formulaBeingProved) ){ 
-            return new TypedApp(proof,new TypedA(new Const("c_{8}"))); // true
+        if (proof instanceof TypedTerm) {
+           if(finalExpr.containT()) {
+              finalExpr = ((App)((App)initialExpr.body()).p).q;
+              Term op = ((App)((App)initialExpr.body()).p).p;
+              initialExpr = ((App)initialExpr.body()).q;
+              if (((App)((App)formulaBeingProved).q.body()).q.equals(finalExpr) &&
+                  ((App)((App)((App)formulaBeingProved).q.body()).p).q.equals(initialExpr) 
+                 ) 
+                 {
+                   int id = ((Const)((App)((App)((App)formulaBeingProved).q.body()).p).p).getId();
+                   String opSt;
+                   if (id == 2)
+                       opSt = "sc_{3}";
+                   else if (id == 3)
+                       opSt = "yc_{2}";
+                   else
+                       opSt = TypedA.sm_.isSymetric(id);
+                   if (opSt.charAt(0) != 'n' && opSt.substring(1).equals(((Const)op).getCon())) {
+                      String st = "A^{= (\\Phi_{bb} \\Phi_{b} "+(opSt.charAt(0)=='y'?opSt.substring(1):"c_{"+id+"}")+") (\\Phi_{cb} "+(opSt.charAt(0)=='y'?"c_{"+id+"}":opSt.substring(1))+" \\Phi_{cb})}";
+                      Term Ax = CombUtilities.getTerm(st,username,TypedA.sm_);
+                      String[] vars = ((TypedA)Ax).getVariables().split(";")[1].split(",");
+                      if (opSt.charAt(0)=='y') {
+                        st = "I^{[x_{"+(int)vars[0].charAt(0)+"},x_{"+(int)vars[1].charAt(0)+"}:="+finalExpr+","+initialExpr+"]}";
+                        return new TypedApp(new TypedApp(new TypedS(),new TypedApp(CombUtilities.getTerm(st,username,TypedA.sm_),Ax)),proof);
+                      } else {
+                        st = "I^{[x_{"+(int)vars[0].charAt(0)+"},x_{"+(int)vars[1].charAt(0)+"}:="+initialExpr+","+finalExpr+"]}";
+                        return new TypedApp(new TypedApp(CombUtilities.getTerm(st,username,TypedA.sm_),Ax),proof);
+                      }
+                   } else
+                     return proof;
+                 }
+                 else
+                   return proof;
+           }
+           else
+             return proof;
         }
-        return proof;
+        else
+            return proof;
     }
     
     /**
@@ -329,7 +396,7 @@ public class TransitivityMethodImpl extends StartingOneSideMethodImpl implements
      * @return proof without the last part of the proof that finish the proof
      */
     public Term deleteFinishProof(Term proof) {
-        return null;
+        return proof;
     }
     
     public void setSimboloManager(SimboloManager simboloManager) {

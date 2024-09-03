@@ -109,6 +109,9 @@
     <bean id="teoremaDAO" class="com.calclogic.dao.TeoremaDaoImpl"></bean>
     <bean id="teoremaManager" class="com.calclogic.service.TeoremaManagerImpl">
     </bean>
+    <bean id="pureCombsTheoremDAO" class="com.calclogic.dao.PureCombsTheoremDaoImpl"></bean>
+    <bean id="pureCombsTheoremManager" class="com.calclogic.service.PureCombsTheoremManagerImpl">
+    </bean>
     <bean id="resuelveDAO" class="com.calclogic.dao.ResuelveDaoImpl"></bean>
     <bean id="resuelveManager" class="com.calclogic.service.ResuelveManagerImpl">
     </bean>
@@ -152,9 +155,10 @@
     <bean id="generalization" class="com.calclogic.proof.GeneralizationImpl"></bean>
     <bean id="witness" class="com.calclogic.proof.WitnessMethodImpl"></bean>
     <bean id="startingOneSide" class="com.calclogic.proof.StartingOneSideMethodImpl"></bean>
-    <bean id="strengthening" class="com.calclogic.proof.StrengtheningMethodImpl"></bean>
-    <bean id="transitivity" class="com.calclogic.proof.TransitivityMethodImpl"></bean>
-    <bean id="weakening" class="com.calclogic.proof.WeakeningMethodImpl"></bean>
+    <bean id="weakeningStrengtheningR" class="com.calclogic.proof.WeakeningStrengtheningRightMethodImpl"></bean>
+    <bean id="transitivityFL" class="com.calclogic.proof.TransitivityFromLeftMethodImpl"></bean>
+    <bean id="transitivityFR" class="com.calclogic.proof.TransitivityFromRightMethodImpl"></bean>
+    <bean id="weakeningStrengtheningL" class="com.calclogic.proof.WeakeningStrengtheningLeftMethodImpl"></bean>
 
     <bean id="staticContextInitializer" class="com.calclogic.lambdacalculo.StaticContextInitializer"></bean>
  

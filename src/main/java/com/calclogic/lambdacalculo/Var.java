@@ -214,7 +214,7 @@ public class Var extends Term{
     }
     
     @Override
-    public String toStringLaTeX(SimboloManager s,String numTeo) {
+    public String toStringLaTeX(SimboloManager s,String numTeo,List transOp) {
         if(alias == null ) {
             boolean inRange = (65 <= indice && indice <= 90) || (97 <= indice && indice <= 122);
             return (inRange?(indice==115?"\\star":""+(char) indice):"x_{"+indice+"}");
@@ -283,10 +283,10 @@ public class Var extends Term{
     
     @Override
     public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
-                                    String nTeo)
+                                    String nTeo, List transOp)
     {
         if(alias == null)
-            toString.term=this.toStringLaTeX(s,"");
+            toString.term=this.toStringLaTeX(s,"",null);
         else
         {
             /*toString.currentnAlias++;
@@ -412,8 +412,18 @@ public class Var extends Term{
     }
     
     @Override
+    public String stFreeVarsWithAnyIndex(String st) {
+        return st+indice+",";
+    }
+    
+    @Override
     public void boundVars(String[] vars) {
         ;
+    }
+    
+    @Override
+    public Term replaceConstByVars() {
+        return this;
     }
     
     @Override

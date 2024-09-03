@@ -177,7 +177,7 @@ public class I extends Term {
     }
    
     @Override
-    public String toStringLaTeX(SimboloManager s,String numTeo) {
+    public String toStringLaTeX(SimboloManager s,String numTeo,List transOp) {
             return ""; //"|";
     }     
     
@@ -219,7 +219,7 @@ public class I extends Term {
     
     @Override
     public ToString toStringLaTeXAbrv(ToString toString, SimboloManager s, PredicadoManager pm, 
-                                    String nTeo)
+                                    String nTeo, List transOp)
     {
         toString.term=this.toStringAll();
         return toString;
@@ -255,8 +255,18 @@ public class I extends Term {
     }
     
     @Override
+    public String stFreeVarsWithAnyIndex(String st) {
+        return st;
+    }
+    
+    @Override
     public void boundVars(String[] vars) {
         ;
+    }
+    
+    @Override
+    public Term replaceConstByVars() {
+        return this;
     }
     
     @Override

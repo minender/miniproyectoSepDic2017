@@ -405,6 +405,13 @@ public class ResuelveManagerImpl implements ResuelveManager {
             if (resuelve2 != null && resuelve2.isResuelto()){
                 return 2;
             }
+            else {
+                comb = "= (\\Phi_{(b,)} "+symbolNotation + ") (\\Phi_{K} c_{8})"; // true == P op P
+                resuelve2 = getResuelveByUserAndTeorema(username, comb, true);
+                if (resuelve2 != null && resuelve2.isResuelto()){
+                   return 2;
+                }
+            }
         }
         return 0;
     } 

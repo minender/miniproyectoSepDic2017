@@ -9,8 +9,14 @@
         <param name="sequence">teorema_id_seq</param>
       </generator>
     </id>
+    <many-to-one class="com.calclogic.entity.PureCombsTheorem" fetch="select" lazy="false" name="pureCombsTheorem">
+      <column name="purecombstheoid" not-null="true"/>
+    </many-to-one>
     <property name="enunciado" type="string">
       <column name="enunciado" not-null="true"/>
+    </property>
+    <property name="constlist" type="string">
+      <column name="constlist"/>
     </property>
     <property name="esquema" type="boolean">
       <column name="esquema" not-null="true"/>
