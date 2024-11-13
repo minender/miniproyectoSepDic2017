@@ -23,10 +23,10 @@ import org.springframework.stereotype.Service;
  * @author ronald
  */
 @Service
-public class DirectMethodImpl extends StartingOneSideMethodImpl implements DirectMethod{
+public class DirectMethodFromStatementImpl extends StartingFromLeftMethodImpl implements DirectMethodFromStatement{
 
-    public DirectMethodImpl(){
-        setInitVariables("DM");
+    public DirectMethodFromStatementImpl(){
+        setInitVariables("DS");
     }
 
     /**
@@ -121,21 +121,6 @@ public class DirectMethodImpl extends StartingOneSideMethodImpl implements Direc
                     return new TypedApp(new TypedApp(new TypedS(proof.type()), proof), equanimityExpr);
                 }
             }
-        }
-        // Case when we started from another theorem
-        else if(finalExpr.equals(formulaBeingProved)) { 
-            Term aux = new App(new App(new Const(0,"="),new Const(-1,"T")),initialExpr).abstractEq(null);
-            TypedA A = new TypedA(aux.traducBD(),username);
-
-            if (A.getNSt().equals("")) { 
-                int idOp = ((Const)((App)((App)initialExpr).p).p).getId();
-                initialExpr= new App(new App(new Const(0,"="),((App)((App)initialExpr).p).q),((App)initialExpr).q);
-                initialExpr = initialExpr.abstractEq(null).traducBD(); 
-                Term M = new TypedM(idOp,initialExpr,username); 
-                return new TypedApp(proof, M);
-            }
-            else 
-                return new TypedApp(proof, A);
         }
         return proof; 
     }

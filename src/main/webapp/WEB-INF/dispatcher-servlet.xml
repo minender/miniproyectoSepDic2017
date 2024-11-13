@@ -131,6 +131,7 @@
     <bean id="simboloManager" class="com.calclogic.service.SimboloManagerImpl">
         <property name="propFunApp" value="10" />
         <property name="termFunApp" value="10" />
+        <property name="varBinaryOp" value="13" />
     </bean>
     <bean id="mostrarCategoriaDAO" class="com.calclogic.dao.MostrarCategoriaDaoImpl">
     </bean>
@@ -148,13 +149,15 @@
     <bean id="caseAnalysis" class="com.calclogic.proof.CaseAnalysisMethodImpl"></bean>
     <bean id="contradiction" class="com.calclogic.proof.ContradictionMethodImpl"></bean>
     <bean id="counterReciprocal" class="com.calclogic.proof.CounterReciprocalMethodImpl"></bean>
-    <bean id="directMethod" class="com.calclogic.proof.DirectMethodImpl"></bean>
+    <bean id="directMethodFS" class="com.calclogic.proof.DirectMethodFromStatementImpl"></bean>
+    <bean id="directMethodFT" class="com.calclogic.proof.DirectMethodFromTheoremImpl"></bean>
     <bean id="equalityToOp" class="com.calclogic.proof.EqualityToOperatorImpl"></bean>
     <bean id="operatorToEq" class="com.calclogic.proof.OperatorToEqualityImpl"></bean>
     <bean id="mutualImplication" class="com.calclogic.proof.MutualImplicationMethodImpl"></bean>
     <bean id="generalization" class="com.calclogic.proof.GeneralizationImpl"></bean>
     <bean id="witness" class="com.calclogic.proof.WitnessMethodImpl"></bean>
-    <bean id="startingOneSide" class="com.calclogic.proof.StartingOneSideMethodImpl"></bean>
+    <bean id="startingFromLeft" class="com.calclogic.proof.StartingFromLeftMethodImpl"></bean>
+    <bean id="startingFromRight" class="com.calclogic.proof.StartingFromRightMethodImpl"></bean>
     <bean id="weakeningStrengtheningR" class="com.calclogic.proof.WeakeningStrengtheningRightMethodImpl"></bean>
     <bean id="transitivityFL" class="com.calclogic.proof.TransitivityFromLeftMethodImpl"></bean>
     <bean id="transitivityFR" class="com.calclogic.proof.TransitivityFromRightMethodImpl"></bean>

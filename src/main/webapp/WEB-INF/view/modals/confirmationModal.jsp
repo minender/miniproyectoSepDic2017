@@ -58,8 +58,8 @@
 
     // Lets the current method be shown as a whole phrase to the user
     var methodPhrase = {
-        DM: "Direct",
-        SS: "Starting from one side",
+        DS: "Direct",
+        SL: "Starting from one side",
         WL: "Weakening",
         WR: "Strengthening",
         ND: "Natural Deduction",
@@ -128,7 +128,7 @@
             let method = this.selectedMethod;
 
             switch (method){
-                case "DM": // Direct method
+                case "DS": // Direct method
                     $("#selectTeoInicial").val("1");
 
                     // This is what makes the theorem be clickable
@@ -139,15 +139,15 @@
 
                     // If the AJAX is called from here, we must put the current expression as clickable.
                     // The other case will be called from the view "infer.jsp"
-                    method = "DM Clickable"; 
+                    method = "DS Clickable"; 
                     break;
 
-                case "SS": // One-sided method
+                case "SL": // One-sided method
                     message = 'Please, select the side from which the proof will begin.';
 
                     // If the AJAX is called from here, we must put the current expression as clickable.
                     // The other case will be called from the view "infer.jsp"
-                    method = "SS Clickable"; 
+                    method = "SL Clickable"; 
                     break;
 
                 case "CA": // Proof by cases method
@@ -156,22 +156,22 @@
                     break;
 
                 case "AI": // And introduction method
+                    break;
                 case "MI": // Mutual implication method
                     message = "Please, select a proof method for the case.";
                     break;
 
                 case "CO": // Contradiction method
+                    break;
                 case "CR": // Counter-reciprocal method
                     message = "Please, select another method to do the sub-proof.";
                     break;
-
                 case "WL": // Weakening method
                     break;
                 case "WR": // Strengthening method
                     break;
                 case "TL": // Transitivity method
                     message = 'Please, select the side from which the proof will begin.';
-
                     // If the AJAX is called from here, we must put the current expression as clickable.
                     // The other case will be called from the view "infer.jsp"
                     method = "TL Clickable"; 

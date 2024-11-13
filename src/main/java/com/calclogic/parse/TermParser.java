@@ -281,7 +281,10 @@ public class TermParser extends Parser {
 				                                                else {
 				                                                    if (((EqContext)_localctx).explist.value.size() != nArg)
 				                                                      throw new NoViableAltException(this);
-				                                                    aux = new Const(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)),"c_{"+(((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)+"}",
+				                                                    if (Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)) == sm.getVarBinaryOpId())
+				                                                       aux = new Var(115);
+				                                                    else
+				                                                       aux = new Const(Integer.parseInt((((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)),"c_{"+(((EqContext)_localctx).NUMBER!=null?((EqContext)_localctx).NUMBER.getText():null)+"}",
 				                                                                         !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
 				                                                    for(Iterator<Term> i = ((EqContext)_localctx).explist.value.iterator(); i.hasNext();)
 				                                                       aux=new App(aux,i.next());

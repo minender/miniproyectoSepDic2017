@@ -24,6 +24,7 @@ import com.calclogic.parse.TermParser;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedI;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.Var;
 import com.calclogic.parse.CombLexer;
 import com.calclogic.parse.CombParser;
@@ -97,11 +98,23 @@ public class EvaluarController {
 
     @RequestMapping(value = "/{username}/applicativeToLatex", method = RequestMethod.GET)
     public String pruebaPredicadoView(@PathVariable String username, ModelMap map) {
-        //Term t = CombUtilities.getTerm("(M_{6} (A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} c_{2} \\Phi_{b(bb,cb)} c_{5} (\\Phi_{c(ccbbb,)} c_{3}) c_{3} c_{3})}))", null, TypedA.sm_);
-        //System.out.println(t);
-        
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{44}) (c_{43})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{44}) (c_{54} c_{45} c_{46})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} c_{43} c_{45}) (c_{54} (c_{54} c_{45} c_{46}) c_{43})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} (c_{54} c_{44} c_{44}) c_{46}) (c_{54} (c_{54} c_{45} c_{46}) c_{43})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{46}) (c_{54} (c_{54} (c_{54} c_{45} c_{46}) c_{43}) c_{43})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} c_{43} c_{46}) (c_{54} (c_{54} (c_{54} c_{45} c_{46}) c_{43}) c_{43})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} (c_{54} c_{43} c_{46}) c_{44}) (c_{54} (c_{54} (c_{54} c_{45} c_{46}) c_{43}) c_{43})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} (c_{54} (c_{54} c_{43} c_{46}) c_{44}) c_{44}) (c_{54} (c_{54} (c_{54} c_{45} c_{46}) c_{43}) c_{43})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} c_{43} c_{45}) (c_{54} (c_{54} c_{45} c_{46}) c_{51})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} c_{43} c_{45}) (c_{54} (c_{54} c_{45} c_{51}) c_{51})})", "federico", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} c_{43} c_{45}) (c_{54} (c_{54} c_{51} c_{51}) c_{51})})", "federico", TypedA.sm_);
+        Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} c_{51} c_{45}) (c_{54} (c_{54} c_{51} c_{51}) c_{51})})", "federico", TypedA.sm_);
+        //S (L^{\\lambda x_{122}.c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda x_{120}.x_{122}) (\\lambda x_{120}.x_{80} x_{120})} (I^{[x_{112} := (c_{15} x_{101} x_{120})]} (M_{3} (A^{= (\\Phi_{K} T) (\\Phi_{(bb,)} c_{4} c_{7})})))) (I^{[x_{81},x_{82} := (\\lambda x_{120}.c_{7} (c_{15} x_{101} x_{120})),(\\lambda x_{120}.c_{15} x_{101} x_{120})]} A^{= (\\Phi_{ccbbb} \\Phi_{b} \\Phi_{b} (\\Phi_{cc(bbbb,b)} \\Phi_{b} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{bcbb} c_{5}) (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{b}) (\\Phi_{cccbb} \\Phi_{b} \\Phi_{cbb} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{ccbb} (\\Phi_{(bb,b)} c_{4}))}) (L^{\\lambda x_{122}.c_{5} (c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda x_{120}.c_{7} (c_{15} x_{101} x_{120})) (\\lambda x_{120}.x_{80} x_{120})) x_{122}} (I^{[x_{69},x_{115} := x_{101},(\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121})]} A^{= (\\Phi_{b} (\\Phi_{bb} \\Phi_{K})) (\\Phi_{ccbbb} c_{15} \\Phi_{b} (\\Phi_{cbbb} c_{62}) \\Phi_{ccb} \\Phi_{b})}))
+        System.out.println(t.type());
+
         map.addAttribute("insertFormula",new InsertFormula());
-  
+
         return "insertFormula";
     }
    

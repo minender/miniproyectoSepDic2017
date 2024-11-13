@@ -89,7 +89,10 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st] returns 
                                                 else {
                                                     if ($explist.value.size() != nArg)
                                                       throw new NoViableAltException(this);
-                                                    aux = new Const(Integer.parseInt($NUMBER.text),"c_{"+$NUMBER.text+"}",
+                                                    if (Integer.parseInt($NUMBER.text) == sm.getVarBinaryOpId())
+                                                       aux = new Var(115);
+                                                    else
+                                                       aux = new Const(Integer.parseInt($NUMBER.text),"c_{"+$NUMBER.text+"}",
                                                                          !s.isEsInfijo(),s.getPrecedencia(),s.getAsociatividad());
                                                     for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();)
                                                        aux=new App(aux,i.next());

@@ -309,16 +309,16 @@ public class InferResponse extends GenericResponse{
         if ( (method != null && !(method instanceof Const))||(isRootTeorem && method instanceof Const) ){ // en plena recursion
             return newTerm.toStringLaTeX(simboloManager,"",null);
         }
-        else if ("DM".equals(clickable))  // End of the impression
+        else if ("DS".equals(clickable))  // End of the impression
             return "\\cssId{teoremaMD}{\\style{cursor:pointer; color:#08c;}{"+ newTerm.toStringLaTeX(simboloManager,"",null) + "}}";
-        else if ("SS".equals(clickable) || "TL".equals(clickable)) { // End of the impression
+        else if ("SL".equals(clickable) || "TL".equals(clickable)) { // End of the impression
             newTerm = newTerm.setToPrint(s);
             String formulaDer = ((App)((App)newTerm).p).q.toStringLaTeX(simboloManager,"",null);
             String formulaIzq = ((App)newTerm).q.toStringLaTeX(simboloManager,"",null);
             Term operatorTerm = ((App)((App)newTerm).p).p;
             
             // The Starting From One Side method only admits reflexive operators
-            if( ("SS".equals(clickable) && 
+            if( ("SL".equals(clickable) && 
                  resuelveManager.isReflexiveOperatorForUser(user, operatorTerm.toString()) == 0
                 ) || 
                 ("TL".equals(clickable) &&
@@ -463,7 +463,7 @@ public class InferResponse extends GenericResponse{
         }
 
         boolean solved;
-        if (labeled && !recursive){
+        if (/*labeled &&*/ !recursive){
             solved = type.traducBD().equals(formula.traducBD());
         }
         else

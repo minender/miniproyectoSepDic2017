@@ -157,7 +157,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
                     setViewState(newData.cambiarMetodo);
 
                     switch(method){
-                        case "DM": // Direct method
+                        case "DS": // Direct method
 
                             // This makes the current theorem no longer be clickable
                             $(".teoIdName").css({"cursor":"","color":""});
@@ -186,7 +186,7 @@ async function proofMethodAjax(method, teoid=null, lado=null){
                     }
                 }
                 // In the direct method case we want to show again the theorems list so the user can select one of them
-                else if (methodSeparated[0] === "DM") {
+                else if (methodSeparated[0] === "DS") {
                     $("#teoremas").show();
                 }
             }
@@ -313,7 +313,7 @@ function clickTeoremaInicial(teoid){
     document.getElementById(id).onclick = function(event){
         var selectTeoInicial = $("#selectTeoInicial").val();
         if (selectTeoInicial==="1"){
-            proofMethodAjax("DM", teoid);
+            proofMethodAjax("DT", teoid);
         }
     };
 }

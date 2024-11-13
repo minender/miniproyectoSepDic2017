@@ -37,8 +37,9 @@ public class CombUtilities {
 		Term t = null;
                 if (s != null) {
                     Phi.stInd = 1;
-                }
+                }//Phi.stInd = 1;
                     t = parser.start_rule(usr,s).value;
+                    //if (t instanceof Phi) ((Phi)t).computeType();
 		return t;
 		
 		

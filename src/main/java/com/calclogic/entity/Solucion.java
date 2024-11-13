@@ -234,7 +234,7 @@ public class Solucion implements java.io.Serializable {
         Term auxTypedTerm = li.get(0);
         /*if( auxTypedTerm instanceof TypedM && ((TypedM)auxTypedTerm).getNumber() == 1)
                 auxTypedTerm = ((TypedM)auxTypedTerm).getSubProof();
-        if( objectMethod.getMethodStr().equals("SS") && auxTypedTerm instanceof TypedApp &&
+        if( objectMethod.getMethodStr().equals("SL") && auxTypedTerm instanceof TypedApp &&
             ((TypedApp)auxTypedTerm).inferType == 's' 
           )
             auxTypedTerm = ((App)auxTypedTerm).q;*/

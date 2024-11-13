@@ -153,7 +153,7 @@ public class Equation {
         for (Equation eq: set) {
             if (Equation.isVar(eq.t1, bothSides) && !vars.contains(eq.t1) && (!bothSides||!eq.t2.occur((Var)eq.t1))) {
                 vars.add((Var)eq.t1);
-                terms.add(bothSides?eq.t2:eq.t2.inverseVars());
+                terms.add(bothSides || eq.t2==t2?eq.t2:eq.t2.inverseVars());
             }
             else
                 return null;

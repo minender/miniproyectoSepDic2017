@@ -16,7 +16,7 @@
  *      }
  *
  * window['${rootId}' + 'jaxInputDictionary'] = {}  se inicializa en vacio, pero tiene los datos para 
- * reconstruir el arbolo de inputs del que consta una formula de entrada. Por ejemplo se primero se le 
+ * reconstruir el arbol de inputs del que consta una formula de entrada. Por ejemplo se primero se le 
  * dio al boton del And /\ (con id 5) y luego parado en el input del argumento 1 (que es el que esta a 
  * la derecha del /\) se le da al boton de Or \/ (con id 4), entonces el diccionario queda asi 
  * 

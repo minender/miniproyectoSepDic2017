@@ -32,10 +32,18 @@ public class App extends Term{
     public App(Term p1,Term q1){
         p=p1;
         q=q1;
-        if (p1.type() == null || q1.type() == null)
+        if (p1 instanceof Var || q1 instanceof Var || p1.type() == null || q1.type() == null)
             type_ = null;
         else {
+            if (p1 instanceof Const && ((Const)p1).id == 62) {
+                p1.type_ = p1.type_.sust(new Var(1), new Var(Phi.stInd));
+                Phi.stInd++;
+            }
             Term pType = p1.type();
+            if (q1 instanceof Const && ((Const)q1).id == 62) {
+                q1.type_ = q1.type_.sust(new Var(1), new Var(Phi.stInd));
+                Phi.stInd++;
+            }
             Term qType = q1.type();
             Sust s = new Equation(((App)pType).q, qType).mgu(/*null,*/ true);
             if (s != null) 
@@ -55,7 +63,7 @@ public class App extends Term{
         p=p1;
         q=q1;
         if (computeType) {
-            if (p1.type() == null || q1.type() == null)
+            if (p1 instanceof Var || q1 instanceof Var || p1.type() == null || q1.type() == null)
                 type_ = null;
             else {
                 Term pType = p1.type();
@@ -418,19 +426,19 @@ public class App extends Term{
             return q.buscarRedexIzqFinal(this,false);
     }
     
-    public Term invBraBD(int n)
+    public Term invBraBD(Var x)
     {
-        Var xc=new Var(n);
+        Var xc=x;//new Var(n);
         int[] max = new int[1];
         if(obtenerIzq(this,-1).p instanceof Phi){
-            Term exit = new Bracket(xc, (new App(this,xc)).kappaIndexado(n,xc,max));
+            Term exit = new Bracket(xc, (new App(this,xc)).kappaIndexado(xc.indice,xc,max));
             exit.type_ = this.type_;
             return exit;
         }
         else
         {
             //Var x=new Var(this.maxVar()+1);
-            Term exit = new Bracket(xc,(new App(this,xc)).kappaIndexado(n,xc,max));
+            Term exit = new Bracket(xc,(new App(this,xc)).kappaIndexado(xc.indice,xc,max));
             exit.type_ = this.type_;
             return exit;
         }
@@ -447,10 +455,10 @@ public class App extends Term{
             else
                 aux=obtenerIzq(this,izq.deep-1);
             if(aux.pqr == null)
-                return this.invBraBD(0).invBD();
+                return this.invBraBD(new Var(0)).invBD();
             else
             {
-                aux.pqr.p=aux.pqr.p.invBraBD(0);
+                aux.pqr.p=aux.pqr.p.invBraBD(new Var(0));
                 return this.invBD();
             }
         }
@@ -464,7 +472,7 @@ public class App extends Term{
     public Term invBDOneStep(){
         Term izq=obtenerIzq(this,-1).p;
         if(izq instanceof Phi || izq instanceof Const)
-            return this.invBraBD(0);
+            return this.invBraBD(new Var(0));
         else
             return new App(p.invBD(),q.invBD());
     }
@@ -656,16 +664,16 @@ public class App extends Term{
                 sym = s.getSimbolo(c.getId());
                 opId = c.getId();
                 nArgs = sym.getArgumentos();
-                if (nArgs == 2 && 
-                    stk.get(stk.size()-1) instanceof Bracket && stk.get(stk.size()-2) instanceof Bracket && 
-                    ((Bracket)stk.get(stk.size()-1)).x.indice != ((Bracket)stk.get(stk.size()-2)).x.indice 
+                if (opId==62 &&//nArgs == 2 && 
+                    stk.get(stk.size()-2) instanceof Bracket && stk.get(stk.size()-3) instanceof Bracket && 
+                    ((Bracket)stk.get(stk.size()-2)).x.indice != ((Bracket)stk.get(stk.size()-3)).x.indice 
                    ) 
                 {
-                 int boundVId = ((Bracket)stk.get(stk.size()-1)).x.indice;
-                 boundVId = new App(stk.get(stk.size()-1),stk.get(stk.size()-2)).fresh(boundVId,new int[1]);
+                 int boundVId = ((Bracket)stk.get(stk.size()-2)).x.indice;
+                 boundVId = new App(((Bracket)stk.get(stk.size()-2)).t,((Bracket)stk.get(stk.size()-3)).t).fresh(boundVId,new int[1]);
                  // this change the id of all occurrences of x, because x would be a pointer
-                 ((Bracket)stk.get(stk.size()-1)).x.indice = boundVId;
                  ((Bracket)stk.get(stk.size()-2)).x.indice = boundVId;
+                 ((Bracket)stk.get(stk.size()-3)).x.indice = boundVId;
                 }
             }
         }
@@ -675,12 +683,19 @@ public class App extends Term{
         if (j > nArgs) {
             App newTerm;
             if ( p instanceof Var ){//&& p.occur(new Var('E'))) {
-                sym = s.getSimbolo(s.getPropFunApp());
-                newTerm = new App(new App(new Const(s.getPropFunApp(),"c_{"+s.getPropFunApp()+"}"),p),q);
+
+                  sym = s.getSimbolo(s.getPropFunApp());
+                  newTerm = new App(new App(new Const(s.getPropFunApp(),"c_{"+s.getPropFunApp()+"}"),p),q);
             }
             else {
-                sym = s.getSimbolo(s.getTermFunApp());
-                newTerm = new App(new App(new Const(s.getTermFunApp(), "c_{"+s.getTermFunApp()+"}"),p),q);
+                if ( !(p instanceof App && ((App)p).p instanceof Var && ((Var)((App)p).p).indice == 115) ) {
+                   sym = s.getSimbolo(s.getTermFunApp());
+                   newTerm = new App(new App(new Const(s.getTermFunApp(), "c_{"+s.getTermFunApp()+"}"),p),q);
+                }
+                else {
+                   sym = s.getVarBinaryOp();
+                   newTerm = new App(new App(new Const(13,"c_{13}"),((App)p).q),q);
+                }
             }
             if ('L' == kind){
                 IntXIntXString result = newTerm.privateToStringLaTeX(kind,s,numTeo,transOp,position,appPosition,rootId,z,t,l,l2,id,nivel,tStr,pm);
@@ -1059,6 +1074,15 @@ public class App extends Term{
             aux = ((App)((App)aux).p).q;
         }
         return st+")";
+    }
+    
+    public String printType() {
+        String opst = ((App)p).p.printType();
+        String agr1st = q.printType();
+        if (q instanceof App)
+            agr1st = "("+agr1st+")";
+        String arg2st = ((App)p).q.printType();
+        return agr1st+" "+opst+" "+arg2st;
     }
 
     @Override

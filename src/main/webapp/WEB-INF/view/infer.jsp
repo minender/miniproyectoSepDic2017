@@ -55,7 +55,7 @@
                         clickInTheoremAllowed = false;
                         var selectTeoInicial = $("#selectTeoInicial").val();
                         if (selectTeoInicial==="1"){
-                            await proofMethodAjax("DM", "ST-${nTeo}");
+                            await proofMethodAjax("DS", "ST-${nTeo}");
                             clickInTheoremAllowed = true;
                         }
                         else{
@@ -68,7 +68,7 @@
                     if (clickInTheoremAllowed){
                         clickInTheoremAllowed = false;
                         var select = document.getElementById('metodosDemostracion');
-                        var methodToken = select.value; // this could be "SS" or "TL"
+                        var methodToken = select.value; // this could be "SL" or "TL"
                         // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
                         await proofMethodAjax(methodToken, null, this.id);
                         clickInTheoremAllowed = true;
@@ -203,8 +203,8 @@
                     <!-- Algunos métodos sólo deberían estar visibles después de que el usuario los desbloquee haciendo las demostraciones necesarias -->
                     <select class="form-control" id="metodosDemostracion">
                         <option value="0">Select a method</option>
-                        <option value="DM">Direct method</option>
-                        <option value="SS">Starting from one side</option>
+                        <option value="DS">Direct method</option>
+                        <option value="SL">Starting from one side</option>
                         <option value="TL">Transitivity</option>
                         <option value="WL">Weakening</option>
                         <option value="WR">Strengthening</option>

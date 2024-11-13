@@ -16,9 +16,13 @@ public interface SimboloManager {
     
     public int getTermFunApp();
     
+    public int getVarBinaryOpId();
+    
     public String propFunAppSym();
     
     public String termFunAppSym();
+    
+    public Simbolo getVarBinaryOp();
     
     /** 
      * Adds a new symbol (Simbolo object) to the table.
@@ -78,4 +82,8 @@ public interface SimboloManager {
      *         character 'n' otherwise
      */
     public String isSymetric(int id);
+    
+    public boolean isSymmetAssociaBinaOpWithIdentity(int id);
+    
+    public boolean isIdentityOfOp(int identId, int opId);
 }

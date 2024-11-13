@@ -195,7 +195,7 @@ public class Bracket extends Term{
         return t.buscarRedexIzqFinal(this,false);
     }
     
-    public Term invBraBD(int n)
+    public Term invBraBD(Var x)
     {
         return this;
     }
@@ -338,6 +338,10 @@ public class Bracket extends Term{
     
     public String toStringType(String v) {
         return "NULL";
+    }
+    
+    public String printType() {
+        return "";
     }
 
     @Override

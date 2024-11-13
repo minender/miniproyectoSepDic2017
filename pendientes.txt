@@ -59,6 +59,8 @@ En toStringFormatC hay un if que si el operador raiz es variable se debe chequea
 Cuando la prueba es Starting one Side y no ha terminado, el closingComment se imprime, deberia ser solo cuando resuelto
 En la impresion de los hint se esta actualmente cableando z como el nombre de la variable de reemplazo,debe parametrizarse
 Cuando se edita el numero de un teorema no se valida si el numero ya existe en otro resuelve de otro teorema del usuario
+Cuando 0=f(f(0)) se guarda como teorema y luego se trata de editar da un error que al parecer tiene que ver con los PureCombs
+Si como user agregas un nuevo teorema igual a otro de AdminTeoremas salvo el nombre de las var, acepta agregarlo
 
 En el libro 
 Marco teorico (for dummies)

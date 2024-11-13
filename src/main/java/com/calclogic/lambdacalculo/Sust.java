@@ -152,7 +152,7 @@ public class Sust extends Term{
         return list;
     }
     
-    public Term invBraBD(int n)
+    public Term invBraBD(Var x)
     {
         return null;
     }
@@ -277,6 +277,10 @@ public class Sust extends Term{
 
     public String toStringType(String v) {
         return "NULL";
+    }
+    
+    public String printType() {
+        return "";
     }
     
     @Override

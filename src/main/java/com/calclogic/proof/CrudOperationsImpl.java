@@ -46,7 +46,9 @@ public class CrudOperationsImpl implements CrudOperations {
     @Autowired
     private CounterReciprocalMethod counterReciprocal;
     @Autowired
-    private DirectMethod directMethod;
+    private DirectMethodFromStatement directMethodFS;
+    @Autowired
+    private DirectMethodFromTheorem directMethodFT;
     @Autowired
     private EqualityToOperator equalityToOp;
     @Autowired
@@ -58,7 +60,9 @@ public class CrudOperationsImpl implements CrudOperations {
     @Autowired
     private WitnessMethod witness;
     @Autowired
-    private StartingOneSideMethod startingOneSide;
+    private StartingFromLeftMethod startingFromLeft;
+    @Autowired
+    private StartingFromRightMethod startingFromRight;
     @Autowired
     private WeakeningStrengtheningRightMethod weakeningStrengtheningR;
     @Autowired
@@ -79,14 +83,18 @@ public class CrudOperationsImpl implements CrudOperations {
     @Transactional
     public GenericProofMethod returnProofMethodObject(String method) {
         switch (method){
-            case "DM":
-                return directMethod;
+            case "DS":
+                return directMethodFS;
+            case "DT":
+                return directMethodFT;
             case "EO":
                 return equalityToOp;
             case "OE":
                 return operatorToEq;
-            case "SS":
-                return startingOneSide;
+            case "SL":
+                return startingFromLeft;
+            case "SR":
+                return startingFromRight;
             case "TL":
                 return transitivityFL;
             case "TR":
@@ -232,13 +240,13 @@ public class CrudOperationsImpl implements CrudOperations {
 
     /**
      * This method return the last stack of linear recursive method in the current sub proof
-     * For example if the methodTerm is (AI SS) (AI DM (CO (OE SS))) then return CO (OE SS)
+     * For example if the methodTerm is (AI SL) (AI DM (CO (OE SL))) then return CO (OE SL)
      * 
      * @param typedTerm: proof of a theorem
      * @param method: The method that had the current stack of linear recursive method
      * @param statement: The statement to be proof
-     * @return For example if the methodTerm is (AI SS) (AI DM (CO (OE SS))) then return 
-     *         CO (OE SS) in T[1], the sub proof that corresponds to the method T[1] write in 
+     * @return For example if the methodTerm is (AI SL) (AI DM (CO (OE SL))) then return 
+     *         CO (OE SL) in T[1], the sub proof that corresponds to the method T[1] write in 
      *         T[0] and the initStatement in T[2]
      */
     @Override
@@ -440,7 +448,7 @@ public class CrudOperationsImpl implements CrudOperations {
                ((App)t).q = new App(aux, new Const(newMethod));
             else { 
                 /*if (father == methodTerm && isWaitingMethod(t))
-                  methodTerm = new App(methodTerm, new Const("DM"));
+                  methodTerm = new App(methodTerm, new Const("DS"));
                 else */
                 if (father == t)
                     methodTerm = new App(methodTerm, new Const(newMethod));

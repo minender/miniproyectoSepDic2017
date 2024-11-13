@@ -28,15 +28,17 @@ method_tail returns [LinkedList<Term> value]
 
 
 method_base returns [Term value]: 
-         DM {$value = new Const("DM");}
+         DS {$value = new Const("DS");}
+       | DT {$value = new Const("DT");}
        | EO {$value = new Const("EO");}
        | OE {$value = new Const("OE");}
-       | SS {$value = new Const("SS");}
+       | SL {$value = new Const("SL");}
+       | SR {$value = new Const("SR");}
        | TL {$value = new Const("TL");}
        | TR {$value = new Const("TR");}
        | WL {$value = new Const("WL");}
        | WR {$value = new Const("WR");}
-       | ND {$value = new Const("ND");}
+       | DE {$value = new Const("DE");}
        | CO {$value = new Const("CO");}
        | CR {$value = new Const("CR");}
        | AI {$value = new Const("AI");}
@@ -50,13 +52,17 @@ method_base returns [Term value]:
  * Lexer Rules
  */
 
-DM: 'DM';
+DS: 'DS';
+
+DT: 'DT';
 
 EO: 'EO';
 
 OE: 'OE';
 
-SS: 'SS';
+SL: 'SL';
+
+SR: 'SR';
 
 TL: 'TL';
 
@@ -66,7 +72,7 @@ WL: 'WL';
 
 WR: 'WR';
 
-ND: 'ND';
+DE: 'DE';
 
 CO: 'CO';
 

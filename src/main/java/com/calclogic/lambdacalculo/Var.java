@@ -140,6 +140,8 @@ public class Var extends Term{
     public int fresh(int n, int[] max)
     {
         max[0] = Math.max(indice, max[0]);
+        if (max[0] == 114)
+            max[0] = 115;
         return (n!=indice?n:max[0]+1);
     }
     
@@ -180,7 +182,7 @@ public class Var extends Term{
         return new Tipo(false,false,false);
     }
     
-    public Term invBraBD(int n)
+    public Term invBraBD(Var x)
     {
         return null;
     }
@@ -217,7 +219,7 @@ public class Var extends Term{
     public String toStringLaTeX(SimboloManager s,String numTeo,List transOp) {
         if(alias == null ) {
             boolean inRange = (65 <= indice && indice <= 90) || (97 <= indice && indice <= 122);
-            return (inRange?(indice==115?"\\star":""+(char) indice):"x_{"+indice+"}");
+            return (inRange?(indice==115?"\\star":""+(char) indice):"x_{"+indice+"}");//+(type_!=null?"^{"+type_.printType()+"}":"");
         }else {
             return alias;
         }
@@ -232,8 +234,10 @@ public class Var extends Term{
 //        leibniz.add(t.leibniz(z, this).toStringFormatC(s,"",0).replace("\\", "\\\\"));
 //        leibnizL.add(t.leibniz(z, this).toStringWithInputs(s,"").replace("\\", "\\\\"));
         if(alias == null ) {
-            char ascii = (char) (indice>64?indice:indice+65); 
-            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+ascii+"}}";
+            boolean inRange = (65 <= indice && indice <= 90) || (97 <= indice && indice <= 122);
+            String var = (inRange?(indice==115?"\\star":""+(char) indice):"x_{"+indice+"}");
+            //char ascii = (char) (indice>64?indice:indice+65); 
+            return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+var+"}}";
         }else {
             return "\\cssId{"+(id.id-1)+"}{\\class{"+nivel+" terminoClick}{"+alias+"}}";
         }
@@ -344,6 +348,10 @@ public class Var extends Term{
 
     public String toStringType(String v) {
         return v;
+    }
+    
+    public String printType() {
+        return "x_{"+indice+"}";
     }
     
     @Override

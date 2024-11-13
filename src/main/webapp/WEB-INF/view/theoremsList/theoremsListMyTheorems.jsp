@@ -29,7 +29,7 @@
                                                         <i class="fa fa-lock" aria-hidden="true" ></i>
                                                     </c:otherwise>
                                                 </c:choose>
-                                                 ${resu.getVarAndTypes()} &nbsp;
+                                                 <%--${resu.getVarAndTypes()} &nbsp;--%>
                                                 (${resu.getNumeroteorema()}) ${resu.getNombreteorema()}: &nbsp; ${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeXJavascript(simboloManager,predicadoManager,"",null,resu.getNumeroteorema())}
                                                 <c:choose>
                                                     <c:when test="${!resu.getUsuario().getLogin().equals('AdminTeoremas') || usuario.getLogin().equals('AdminTeoremas')}">

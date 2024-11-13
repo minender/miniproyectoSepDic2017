@@ -24,10 +24,10 @@ import org.springframework.stereotype.Service;
  * @author ronald
  */
 @Service
-public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements StartingOneSideMethod {
+public class StartingFromLeftMethodImpl extends GenericProofMethodImpl implements StartingFromLeftMethod {
 
-    public StartingOneSideMethodImpl(){
-        setInitVariables("SS");
+    public StartingFromLeftMethodImpl(){
+        setInitVariables("SL");
     }
 
     /**
@@ -69,11 +69,12 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
         String equanimityHint = ""; // Text that indicates in which already proven theorem the current demonstration finalized (if any)
         Term ultInfType = null;
         
-        /* If the demonstrarion method is starting from one side, or the typedTerm is not an inference
+        /* If the proof method is starting from one side, or the typedTerm is not an inference
            but just a functional application (an App) or is an equanimity inference */
-        if (this.methodStr.equals("SS") || !(typedTerm instanceof TypedApp) || ((TypedApp)typedTerm).inferType!='e') {
-            if (solved && typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='s'){
-                iter = ((TypedApp)typedTerm).q;
+        if (this.methodStr.equals("SL") || this.methodStr.equals("SR") ||
+            !(typedTerm instanceof TypedApp) || ((TypedApp)typedTerm).inferType!='e') {
+            if (solved) {//typedTerm instanceof TypedApp && ((TypedApp)typedTerm).inferType=='s'){
+                iter = deleteFinishProof(typedTerm);//((TypedApp)typedTerm).q;
             }
             else{
                 iter = typedTerm;
@@ -277,14 +278,6 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
                 ResuelveManager resuelveManager, SimboloManager simboloManager, 
                 Term expr, Term initialExpr, Term finalExpr) throws TypeVerificationException
     {
-        // If Formula that the user is trying to prove in this proof/sub-proof is of the form H => A == B, then H /\ A ==  H /\ B must be given instead)
-        if(initialExpr.body().equals(((App)((App)formulaBeingProved).p).q.body()) 
-                && finalExpr.body().equals(((App)formulaBeingProved).q.body())){
-            proof = new TypedApp(new TypedS(proof.type()), proof);
-        }// en el if anterior tienes que usar body() porque puede ser que el orden de la cadena de 
-        // abstracciones, aunque tienen las mismas variables, estan en otro orden con respecto al 
-        // enunciado inicial ya que esta volteado o simetrico y esto hace que la busqueda de variables
-        // en inorden encuentre las variables en otro orden
         Term operatorTerm = ((App)((App)formulaBeingProved).p).p;
         // The Starting From One Side method only admits reflexive operators
         int resuelveKind = resuelveManager.isReflexiveOperatorForUser(username, operatorTerm.toString());
@@ -309,6 +302,6 @@ public class StartingOneSideMethodImpl extends GenericProofMethodImpl implements
      * @return proof without the last part of the proof that finish the proof
      */
     public Term deleteFinishProof(Term proof) {
-        return ((App)proof).q;
+        return proof;
     }
 }

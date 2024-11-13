@@ -31,8 +31,10 @@ public class ProofBoolean {
         String methodStr;
         if (method instanceof Const && 
                 (
-                    (methodStr=((Const)method).getCon()).equals("DM") || 
-                    methodStr.equals("SS") || 
+                    (methodStr=((Const)method).getCon()).equals("DS") || 
+                    methodStr.equals("DT") || 
+                    methodStr.equals("SL") || 
+                    methodStr.equals("SR") || 
                     methodStr.equals("TL") ||
                     methodStr.equals("TR") ||
                     methodStr.equals("WL") || 
@@ -112,8 +114,10 @@ public class ProofBoolean {
         }
         else{
             String methodStr;
-            return (methodStr=((Const)method).getCon()).equals("DM") || 
-                    methodStr.equals("SS") ||
+            return (methodStr=((Const)method).getCon()).equals("DS") || 
+                    methodStr.equals("DT") ||
+                    methodStr.equals("SL") ||
+                    methodStr.equals("SR") ||
                     methodStr.equals("TL") ||
                     methodStr.equals("TR") ||
                     methodStr.equals("WL") ||
@@ -157,7 +161,7 @@ public class ProofBoolean {
      */
     public static boolean isProofStarted(Term method) {
         Term aux = method; //muy complicado. Es mas facil si solo se ve si ocurren en
-        while (aux instanceof App) {//method las constantes DM, SS, TR, WE o ST
+        while (aux instanceof App) {//method las constantes DS, SL, TR, WE o ST
             if (((App)aux).p instanceof App)
                 return true;
             else 
@@ -166,8 +170,10 @@ public class ProofBoolean {
         String methodStr;
         return aux instanceof Const && 
                 (
-                    (methodStr=((Const)aux).getCon()).equals("DM") || 
-                    methodStr.equals("SS") ||   
+                    (methodStr=((Const)aux).getCon()).equals("DS") || 
+                    methodStr.equals("DT") || 
+                    methodStr.equals("SL") ||   
+                    methodStr.equals("SR") ||   
                     methodStr.equals("TL") ||
                     methodStr.equals("TR") ||
                     methodStr.equals("WL") ||

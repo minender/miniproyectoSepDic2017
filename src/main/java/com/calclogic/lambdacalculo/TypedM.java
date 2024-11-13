@@ -214,6 +214,417 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             //sol += "A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} c_{2} \\Phi_{b(bb,cb)} c_{5} (\\Phi_{c(ccbbb,)} c_{"+opId+"}) c_{"+opId+"} c_{"+opId+"})})";
             proof_ = new TypedApp(proof_,new TypedApp(CombUtilities.getTerm(sol,user,sm_),transtAx));
         }
+        else if (id == 9) {
+            int a, b;
+            boolean carryOne1 = false;
+            boolean carryOne2 = false;
+            Term type2 = proof.type_;
+            Term a1 = ((App)type2).q;
+            Term a2 = ((App)((App)type2).p).q;
+            Term aux = a1;
+            Term ctxt = null;
+            int nDigits = 1;
+            while (aux instanceof App) {
+                aux = ((App)((App)aux).p).q;
+                nDigits++;
+            }
+            Term aux2 = a2;
+            int nDigits2 = 1;
+            while (aux2 instanceof App) {
+                aux2 = ((App)((App)aux2).p).q;
+                nDigits2++;
+            }
+            String A1;
+            String I;
+            String L = "";
+            Term FirstSymmetry = null;
+            if (nDigits < nDigits2) {
+                A1 = "A^{= (\\Phi_{bb} \\Phi_{b} c_{55}) (\\Phi_{cb} c_{55} \\Phi_{cb})}";
+                I = "I^{[x_{97},x_{98}:="+a1+","+a2+"]}";
+                FirstSymmetry = CombUtilities.getTerm(I+" "+A1,user,sm_);
+                aux = a1;
+                a1 = a2;
+                a2 = aux;
+                nDigits2 = nDigits;
+            }
+            int n = 0;
+            String ctx = "";
+            boolean oneDigit = a2 instanceof Const;
+            String ten = "";
+            String mult = "";
+            
+            /*A1 = "A^{= (\\Phi_{ccbb} c_{57} (c_{54} c_{43} c_{42}) \\Phi_{bcb} c_{55}) (\\Phi_{cb} c_{54} \\Phi_{cb})}";
+            // Si a1 es un App se tiene lo siguiente
+            Term a11 = ((App)((App)a1).p).q;
+            Term a12 = ((App)a1).q;
+            I = "I^{[x_{98},x_{97}:="+a12+","+a11+"]}";
+            String L = "L^{\\lambda x_{122}."+ctx+" (c_{55} ("+a2+") x_{122})}";
+            proof_ = CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_);
+            if (FirstSymmetry != null)
+               proof_ = new TypedApp(FirstSymmetry, proof_); 
+            if (!oneDigit) {
+               L = "L^{\\lambda x_{122}."+ctx+" (c_{55} x_{122} ("+((App)((App)((App)proof_.type()).p).q).q+"))}";
+               Term a21 = ((App)((App)a2).p).q;
+               Term a22 = ((App)a2).q;
+               I = "I^{[x_{98},x_{97}:="+a22+","+a21+"]}";
+               proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+            }
+            A1 = "A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{55}) c_{55}) (\\Phi_{cbbb} c_{55} \\Phi_{bb} \\Phi_{bb} c_{55})}";
+            Term type2 = proof_.type();
+            I = "I^{[x_{99},x_{98},x_{97}:="+((App)((App)((App)((App)type2).p).q).p).q+","+((App)((App)((App)((App)((App)type2).p).q).q).p).q+","+((App)((App)((App)((App)type2).p).q).q).q+"]}";
+            proof_ = new TypedApp(proof_,CombUtilities.getTerm(I+" "+A1,user,sm_));
+            A1 = "A^{= (\\Phi_{bb} \\Phi_{b} c_{55}) (\\Phi_{cb} c_{55} \\Phi_{cb})}";
+            L = "L^{\\lambda x_{122}."+ctx+" (c_{55} x_{122} ("+((App)((App)((App)proof_.type()).p).q).q+"))}";
+            type2 = ((App)((App)((App)((App)proof_.type()).p).q).p).q;
+            I = "I^{[x_{97},x_{98}:="+((App)type2).q+","+((App)((App)type2).p).q+"]}";
+            proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+            A1 = "A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{55}) c_{55}) (\\Phi_{cbbb} c_{55} \\Phi_{bb} \\Phi_{bb} c_{55})}";
+            type2 = ((App)((App)((App)((App)proof_.type()).p).q).p).q;
+            I = "I^{[x_{99},x_{98},x_{97}:="+((App)((App)type2).p).q+","+((App)((App)((App)type2).q).p).q+","+((App)((App)type2).q).q+"]}";
+            proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+            type2 = ((App)((App)proof_.type()).p).q;
+            I = "I^{[x_{99},x_{98},x_{97}:="+((App)((App)((App)((App)type2).p).q).p).q+","+((App)((App)((App)type2).p).q).q+","+((App)type2).q+"]}";
+            proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+I+" "+A1+")",user,sm_));
+            type2 = ((App)((App)proof_.type()).p).q;
+            L = "L^{\\lambda x_{122}."+ctx+"(c_{55} x_{122} ("+((App)type2).q+"))}";
+            type2 = ((App)((App)type2).p).q;
+            int a = ((Const)((App)type2).q).id-42;
+            int b = ((Const)((App)((App)type2).p).q).id-42;
+            A1 = "A^{= ("+type2+") c_{"+(a+b+42)+"}}";
+            proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" "+A1+")",user,sm_));
+            type2 = ((App)((App)proof_.type()).p).q;
+            L = "L^{\\lambda x_{122}."+ctx+"(c_{55} ("+((App)((App)type2).p).q+") x_{122})}";
+            I = "I^{[x_{99},x_{97},x_{98}:="+((App)((App)((App)((App)((App)type2).q).p).q).p).q+",c_{54} c_{43} c_{42},"+((App)((App)((App)((App)type2).q).q).p).q+"]}";
+            A1 = "A^{= (\\Phi_{bb} (\\Phi_{c(bbb,)} c_{57} \\Phi_{bcb} c_{55}) c_{57}) (\\Phi_{ccbb} \\Phi_{cbb} c_{57} \\Phi_{ccb} c_{55})}";
+            proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" ("+I+" "+A1+"))",user,sm_));*/
+            String[] ctxtStack = new String[nDigits];
+            mult = "c_{57}";
+            ten = "(c_{54} c_{43} c_{42})";
+            while (n < nDigits2) {
+            ctxt = type2;
+            for (int k = 0; k < n; k++) {
+                ctxt = ((App)type2).p;
+                type2 = ((App)((App)((App)type2).q).p).q;
+            }
+            ctxtStack[n] = (n == 0?"":ctxt.toString());
+            //ctx = ctxtStack[n];
+            if (n != nDigits-1){
+            if ( n !=0 ) {
+               a1 = ((App)type2).q;
+               a2 = ((App)((App)type2).p).q;
+            }
+            oneDigit = a2 instanceof Const;
+            Term a11 = ((App)((App)a1).p).q;
+            Term a12 = ((App)a1).q;
+            // esto es ab=10*a+b
+            A1 = "A^{= (\\Phi_{ccbb} c_{57} (c_{54} c_{43} c_{42}) \\Phi_{bcb} c_{55}) (\\Phi_{cb} c_{54} \\Phi_{cb})}";
+            I = "I^{[x_{98},x_{97}:="+a12+","+a11+"]}";
+            for (int k = 0; k <= n; k++)
+                L = (k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} ("+a2+") x_{122}":L)+") "+(k==0?"":ten+")");
+            L = "L^{\\lambda x_{122}."+L+"}";
+            if (n ==0)
+                proof_ = CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_);
+            else
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+            if (!oneDigit) {
+               aux = ((App)((App)proof_.type()).p).q;
+               for (int k =1; k<= n; k++)
+                   aux = ((App)((App)((App)aux).q).p).q;
+               aux = ((App)aux).q;
+               for (int k = 0; k <= n; k++)
+                   L =(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} x_{122} ("+aux+")":L)+") "+(k==0?"":ten+")");
+               L = "L^{\\lambda x_{122}."+L+"}";//"L^{\\lambda x_{122}."+ctx+" ("+mult+" (c_{55} x_{122} ("+((App)((App)((App)proof_.type()).p).q).q+"))"+ten+")}";
+               Term a21 = ((App)((App)a2).p).q;
+               Term a22 = ((App)a2).q;
+               I = "I^{[x_{98},x_{97}:="+a22+","+a21+"]}";
+               proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+            }
+            // esto es (a+b)+c=a+(b+c)
+            A1 = "A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{55}) c_{55}) (\\Phi_{cbbb} c_{55} \\Phi_{bb} \\Phi_{bb} c_{55})}";
+            type2 = ((App)((App)proof_.type()).p).q;
+            for (int k = 0; k <= n; k++)
+                L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"x_{122}":L)+") "+(k==0?"":ten+")");
+            L = "L^{\\lambda x_{122}."+L+"}";
+            for (int k = 0; k < n; k++) {
+                type2 = ((App)((App)((App)type2).q).p).q;
+            }
+            I = "I^{[x_{99},x_{98},x_{97}:="+((App)((App)type2).p).q+","+((App)((App)((App)type2).q).p).q+","+((App)((App)type2).q).q+"]}";
+            proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+            if (!oneDigit) {
+              // esto es a+b=b+a
+              A1 = "A^{= (\\Phi_{bb} \\Phi_{b} c_{55}) (\\Phi_{cb} c_{55} \\Phi_{cb})}";
+              aux = ((App)((App)proof_.type()).p).q;
+              for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+              for (int k = 0; k <= n; k++)
+                L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} x_{122} ("+((App)aux).q+")":L)+") "+(k==0?"":ten+")");
+              L = "L^{\\lambda x_{122}."+L+"}";
+              type2 = ((App)((App)aux).p).q;
+              I = "I^{[x_{97},x_{98}:="+((App)type2).q+","+((App)((App)type2).p).q+"]}";
+              proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+              // esto es (a+b)+c=a+(b+c)
+              A1 = "A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{55}) c_{55}) (\\Phi_{cbbb} c_{55} \\Phi_{bb} \\Phi_{bb} c_{55})}";
+              aux = ((App)((App)proof_.type()).p).q;
+              for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+              type2 = ((App)((App)aux).p).q;
+              I = "I^{[x_{99},x_{98},x_{97}:="+((App)((App)type2).p).q+","+((App)((App)((App)type2).q).p).q+","+((App)((App)type2).q).q+"]}";
+              proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+              aux = ((App)((App)proof_.type()).p).q;
+              for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+              type2 = aux;
+              I = "I^{[x_{99},x_{98},x_{97}:="+((App)((App)((App)((App)type2).p).q).p).q+","+((App)((App)((App)type2).p).q).q+","+((App)type2).q+"]}";
+              for (int k = 0; k <= n; k++)
+                L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"x_{122}":L)+") "+(k==0?"":ten+")");
+              L = "L^{\\lambda x_{122}."+L+"}";
+              proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" ("+I+" "+A1+"))",user,sm_));
+              aux = ((App)((App)proof_.type()).p).q;
+              for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+              type2 = aux;
+              for (int k = 0; k <= n; k++)
+                L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} x_{122} ("+((App)type2).q+")":L)+") "+(k==0?"":ten+")");
+              L = "L^{\\lambda x_{122}."+L+"}";
+              type2 = ((App)((App)type2).p).q;
+              a = ((Const)((App)type2).q).id-42;
+              b = ((Const)((App)((App)type2).p).q).id-42;
+              if (a == 0) {
+                    // esto es 0+a=a
+                    A1 = "A^{= \\Phi_{} (\\Phi_{cb} c_{42} c_{55})}";
+                    I = "I^{[x_{97} := c_{"+(b+42)+"}]}";
+                    proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+              }
+              else if (b == 0) {
+                    // esto es a+0=a
+                    A1 = "A^{= \\Phi_{} (\\Phi_{b} (c_{55} c_{42}))}";
+                    I = "I^{[x_{97} := c_{"+(a+42)+"}]}";
+                    proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+              }
+              else {
+                    carryOne1 = a+b > 9;
+                    // estas dos son ecuaciones de la tabla de la suma, solo que  
+                    // el resultado de la primera es de dos digitos
+                    if (carryOne1)
+                       A1 = "A^{= ("+type2+") (c_{54} c_{"+(((a+b)/10)+42)+"} c_{"+(((a+b)%10)+42)+"})}";
+                    else
+                       A1 = "A^{= ("+type2+") c_{"+(a+b+42)+"}}";
+                    proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" "+A1+")",user,sm_));
+              }
+              //type2 = ((App)((App)proof_.type()).p).q;
+              aux = ((App)((App)proof_.type()).p).q;
+              for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+              type2 = aux;
+              for (int k = 0; k <= n; k++)
+                L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} ("+((App)((App)type2).p).q+") x_{122}":L)+") "+(k==0?"":ten+")");
+              L = "L^{\\lambda x_{122}."+L+"}";
+              // esto es para sacar factor comun 10
+              I = "I^{[x_{99},x_{97},x_{98}:="+((App)((App)((App)((App)((App)type2).q).p).q).p).q+",c_{54} c_{43} c_{42},"+((App)((App)((App)((App)type2).q).q).p).q+"]}";
+              // esto es a*(b+c)=a*b+a*c
+              A1 = "A^{= (\\Phi_{bb} (\\Phi_{c(bbb,)} c_{57} \\Phi_{bcb} c_{55}) c_{57}) (\\Phi_{ccbb} \\Phi_{cbb} c_{57} \\Phi_{ccb} c_{55})}";
+              proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" ("+I+" "+A1+"))",user,sm_));
+            } else {
+                //type2 = ((App)((App)proof_.type()).p).q;
+                aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                /*for (int k = 0; k < n; k++) {
+                    type2 = ((App)((App)((App)type2).q).p).q;
+                }*/
+                for (int k = 0; k <= n; k++) 
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} x_{122} ("+((App)type2).q+")":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                type2 = ((App)((App)type2).p).q;
+                a = ((Const)((App)type2).q).id-42;
+                b = ((Const)((App)((App)type2).p).q).id-42;
+                if (a == 0) {
+                    // esto es 0+a=a
+                    A1 = "A^{= \\Phi_{} (\\Phi_{cb} c_{42} c_{55})}";
+                    I = "I^{[x_{97} := c_{"+(b+42)+"}]}";
+                    proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+                }
+                else if (b == 0) {
+                    // esto es a+0=a
+                    A1 = "A^{= \\Phi_{} (\\Phi_{b} (c_{55} c_{42}))}";
+                    I = "I^{[x_{97} := c_{"+(a+42)+"}]}";
+                    proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+                }
+                else {
+                    carryOne2 = a+b > 9;
+                    // estas dos son ecuaciones de la tabla de la suma, solo que  
+                    // el resultado de la primera es de dos digitos
+                    if (carryOne2)
+                       A1 = "A^{= ("+type2+") (c_{54} c_{"+(((a+b)/10)+42)+"} c_{"+(((a+b)%10)+42)+"})}";
+                    else
+                       A1 = "A^{= ("+type2+") c_{"+(a+b+42)+"}}";
+                    proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" "+A1+")",user,sm_));
+                }
+            }
+            type2 = ((App)((App)proof_.type()).p).q;
+            }
+            else { 
+                if (proof_ == null)
+                   aux = type2;
+                else
+                   aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                for (int k = 0; k <= n; k++)
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"x_{122}":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                a = ((Const)((App)type2).q).id-42;
+                b = ((Const)((App)((App)type2).p).q).id-42;
+                if (a == 0) {
+                    // esto es 0+a=a
+                    A1 = "A^{= \\Phi_{} (\\Phi_{cb} c_{42} c_{55})}";
+                    I = "I^{[x_{97} := c_{"+(b+42)+"}]}";
+                    if (proof_ == null)
+                       proof_ = CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_);
+                    else
+                       proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+                }
+                else if (b == 0) {
+                    // esto es a+0=a
+                    A1 = "A^{= \\Phi_{} (\\Phi_{b} (c_{55} c_{42}))}";
+                    I = "I^{[x_{97} := c_{"+(a+42)+"}]}";
+                    if (proof_ == null)
+                       proof_ = CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_);
+                    else
+                       proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+                }
+                else {
+                    carryOne2 = a+b > 9;
+                    // estas dos son ecuaciones de la tabla de la suma, solo que  
+                    // el resultado de la primera es de dos digitos
+                    if (carryOne2)
+                       A1 = "A^{= ("+type2+") (c_{54} c_{"+(((a+b)/10)+42)+"} c_{"+(((a+b)%10)+42)+"})}";
+                    else
+                       A1 = "A^{= ("+type2+") c_{"+(a+b+42)+"}}";
+                    if (proof_ == null)
+                       proof_ = CombUtilities.getTerm("S ("+L+" "+A1+")",user,sm_);
+                    else
+                       proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" "+A1+")",user,sm_));
+                }
+            }
+            if (carryOne1) {
+                aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                for (int k = 0; k <= n; k++) 
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} x_{122} ("+((App)type2).q+")":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                // esto es ab=10*a+b
+                A1 = "A^{= (\\Phi_{ccbb} c_{57} (c_{54} c_{43} c_{42}) \\Phi_{bcb} c_{55}) (\\Phi_{cb} c_{54} \\Phi_{cb})}";
+                I = "I^{[x_{98},x_{97}:= c_{"+(((a+b)%10)+42)+"},c_{"+(((a+b)/10)+42)+"}]}";
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+                aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                for (int k = 0; k <= n; k++) 
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"x_{122}":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                // esto es (a+b)+c=a+(b+c)
+                A1 = "A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{55}) c_{55}) (\\Phi_{cbbb} c_{55} \\Phi_{bb} \\Phi_{bb} c_{55})}";
+                I = "I^{[x_{99},x_{98},x_{97}:="+((App)((App)((App)((App)type2).p).q).p).q+","+((App)((App)((App)type2).p).q).q+","+((App)type2).q+"]}";
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" ("+I+" "+A1+"))",user,sm_));
+                aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                for (int k = 0; k <= n; k++) 
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} "+((App)((App)type2).p).q+" x_{122}":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                // esto es a*(b+c)=a*b+a*c
+                A1 = "A^{= (\\Phi_{bb} (\\Phi_{c(bbb,)} c_{57} \\Phi_{bcb} c_{55}) c_{57}) (\\Phi_{ccbb} \\Phi_{cbb} c_{57} \\Phi_{ccb} c_{55})}";
+                I = "I^{[x_{99},x_{97},x_{98}:="+((App)((App)((App)((App)((App)type2).q).p).q).p).q+",c_{54} c_{43} c_{42},"+((App)((App)((App)((App)type2).q).q).p).q+"]}";
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" ("+I+" "+A1+"))",user,sm_));
+                aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                ctxtStack[n+1] = "c_{55} "+((App)((App)type2).p).q;
+                n++;
+                for (int k = 0; k <= n; k++) 
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"x_{122}":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                // esto es (a+b)+c=a+(b+c)
+                A1 = "A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{55}) c_{55}) (\\Phi_{cbbb} c_{55} \\Phi_{bb} \\Phi_{bb} c_{55})}";
+                I = "I^{[x_{99},x_{98},x_{97}:="+((App)((App)((App)((App)((App)type2).q).p).q).p).q+","+((App)((App)((App)((App)((App)((App)type2).q).p).q).q).p).q+","+((App)((App)((App)((App)((App)type2).q).p).q).q).q+"]}";
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+                aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                for (int k = 0; k <= n; k++) 
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} x_{122} ("+((App)type2).q+")":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                a = ((Const)((App)((App)((App)type2).p).q).q).id;
+                // esto es una ecuacion de las tablas de la suma
+                if (a+1-42 == 10)
+                    A1 = "A^{= (c_{55} c_{43} c_{"+a+"}) (c_{54} c_{43} c_{42})}";
+                else
+                A1 = "A^{= (c_{55} c_{43} c_{"+a+"}) c_{"+(a+1)+"}}";
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" "+A1+")",user,sm_));
+                carryOne1 = false;
+                n--;
+                type2 = ((App)((App)proof_.type()).p).q;
+            }
+            else if (carryOne2) {    
+                // esto es ab=10*a+b
+                A1 = "A^{= (\\Phi_{ccbb} c_{57} (c_{54} c_{43} c_{42}) \\Phi_{bcb} c_{55}) (\\Phi_{cb} c_{54} \\Phi_{cb})}";
+                I = "I^{[x_{98},x_{97} := c_{"+(((a+b)%10)+42)+"}, c_{"+(((a+b)/10)+42)+"}]}";
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm(L+" ("+I+" "+A1+")",user,sm_));
+                aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                for (int k = 0; k <= n; k++)
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"x_{122}":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                // esto es (a+b)+c=a+(b+c)
+                A1 = "A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{55}) c_{55}) (\\Phi_{cbbb} c_{55} \\Phi_{bb} \\Phi_{bb} c_{55})}";
+                I = "I^{[x_{99},x_{98},x_{97} := "+((App)((App)((App)((App)type2).p).q).p).q+","+((App)((App)((App)type2).p).q).q+","+((App)type2).q+"]}";
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" ("+I+" "+A1+"))",user,sm_));
+                aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                for (int k = 0; k <= n; k++)
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"c_{55} "+((App)((App)type2).p).q+" x_{122}":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                ctxtStack[n+1] = "c_{55} "+((App)((App)type2).p).q;
+                // esto es a*(b+c)=a*b+a*c para sacar factor comun 10
+                A1 = "A^{= (\\Phi_{bb} (\\Phi_{c(bbb,)} c_{57} \\Phi_{bcb} c_{55}) c_{57}) (\\Phi_{ccbb} \\Phi_{cbb} c_{57} \\Phi_{ccb} c_{55})}";
+                I = "I^{[x_{99},x_{97},x_{98} := "+((App)((App)((App)((App)((App)type2).q).p).q).p).q+",c_{54} c_{43} c_{42},"+((App)((App)((App)((App)type2).q).q).p).q+"]}";
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" ("+I+" "+A1+"))",user,sm_));
+                a = ((Const)((App)((App)((App)((App)type2).q).q).p).q).id;
+                // esto es una ecuacion de las tablas de la suma
+                if (a+1-42 == 10)
+                    A1 = "A^{= (c_{55} c_{43} c_{"+a+"}) (c_{54} c_{43} c_{42})}";
+                else
+                    A1 = "A^{= (c_{55} c_{43} c_{"+a+"}) c_{"+(a+1)+"}}";
+                aux = ((App)((App)proof_.type()).p).q;
+                for (int k =1; k<= n; k++)
+                  aux = ((App)((App)((App)aux).q).p).q;
+                type2 = aux;
+                n++;
+                for (int k = 0; k <= n; k++)
+                  L=(k==0?"":ctxtStack[n-k+1])+(k==0?"":" ("+mult)+" ("+(k==0?"x_{122}":L)+") "+(k==0?"":ten+")");
+                L = "L^{\\lambda x_{122}."+L+"}";
+                proof_ = new TypedApp(proof_,CombUtilities.getTerm("S ("+L+" "+A1+")",user,sm_));
+                carryOne2 = false;
+                n--;
+            }
+                
+            n++;
+            }
+            type_ = proof_.type();
+        }
         else
             proof_ = proof;
     }

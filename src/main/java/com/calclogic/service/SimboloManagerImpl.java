@@ -48,6 +48,7 @@ public class SimboloManagerImpl implements SimboloManager {
     private IncluyeDAO incluyeDAO;
     private int propFunApp;
     private int termFunApp;
+    private int varBinaryOp;
     Simbolo[] symbolsCache; 
     
     @Autowired
@@ -69,6 +70,18 @@ public class SimboloManagerImpl implements SimboloManager {
         return termFunApp;
     }
     
+    public int getVarBinaryOpId() {
+        return varBinaryOp;
+    }
+    
+    public Simbolo getVarBinaryOp() {
+        Teoria teo = new Teoria("Predicate Logic");
+        teo.setId(1);
+        Simbolo s = new Simbolo("\\star", 2, true, 9, "%(na2) %(op) %(na1)", teo, "x1->x1->x1");
+        s.setId(13);
+        return s;
+    }
+    
     public String propFunAppSym() {
         return "c_{"+ propFunApp +"}";
     }
@@ -83,6 +96,10 @@ public class SimboloManagerImpl implements SimboloManager {
     
     public void setTermFunApp(int termFunApp) {
         this.termFunApp = termFunApp;
+    }
+    
+    public void setVarBinaryOp(int varBinaryOp) {
+        this.varBinaryOp = varBinaryOp;
     }
     
     /** 
@@ -324,5 +341,38 @@ public class SimboloManagerImpl implements SimboloManager {
             }
         }
         return isIn;
+    }
+    
+    @Override
+    @Transactional
+    public boolean isSymmetAssociaBinaOpWithIdentity(int id) {
+        // para obtener enunciados de asociatividad
+        if (id == 4 || id == 5)
+           return true;
+        else {
+           List<String> l = teoremaDAO.getAssosiativeSymmetricWithIdentOps();
+        
+           return l.contains(id+"");
+        }
+    }
+    
+    @Override
+    @Transactional
+    public boolean isIdentityOfOp(int identId, int opId) {
+        if ((opId == 4 && identId == 9) || (opId == 5 && identId == 8))
+            return true;
+        else if ((opId == 4 && identId != 9) || (opId == 5 && identId != 8))
+            return false;
+        else {
+           List<String> l = teoremaDAO.getIdentitiesOfOp(opId);
+           boolean isIn = false;
+           for (String st: l)
+             if (st.matches(identId+"") && st.matches(opId+"")) {
+                isIn = true;
+                break;
+             }
+        
+           return isIn;
+        }
     }
 }

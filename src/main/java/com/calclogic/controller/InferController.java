@@ -563,7 +563,7 @@ public class InferController {
 
         while (!(methodTermIter instanceof Const)) {
             methodStk.push(((App)methodTermIter).p);
-            initSt = crudOp.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DM")),caseAn);
+            initSt = crudOp.initStatement(initSt,new App(((App)methodTermIter).p,new Const("DS")),caseAn);
             formulasToProof.push(initSt);
 
             if (
@@ -615,13 +615,35 @@ public class InferController {
             try {
                 if (i == 1 /*&& j == 0*/){
                     Term aux = infer;
+                    Stack<Term> st = new Stack<Term>();
                     while (aux instanceof TypedApp) {
+                        st.push(((App)aux).p);
                         aux = ((TypedApp)aux).q;
                     }
                     if (aux.type().containT()){//This is to invert transitive op expression
                         int opId = ((Const)((App)((App)((App)aux.type()).q.body()).p).p).getId();
-                        infer = new TypedM(7,opId,aux,((TypedA)aux).getCombDBType(),username);
-                        infer = objectMethod.createOneStepInfer(username,infer, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+                        aux = new TypedM(7,opId,aux,((TypedA)aux).getCombDBType(),username);
+                        //infer = objectMethod.createOneStepInfer(username,infer, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
+                        if (st.size() > 0) { 
+                           Term instan = st.pop();
+                           List<Var> vars = ((Sust)instan.type()).getVars();
+                           List<Term> terms = ((Sust)instan.type()).getTerms();
+                           String[] newVars = aux.type().stFreeVars(simboloManager).split(",");
+                           List<Var> vars2 = new ArrayList<Var>();
+                           List<Term> terms2 = new ArrayList<Term>();
+                           for (int k=0; k<newVars.length; k++) {
+                               for (int k1=0; k1<vars.size(); k1++) {
+                                   if (vars.get(k1).indice == newVars[k].charAt(0)) {
+                                       vars2.add(vars.get(k1));
+                                       terms2.add(terms.get(k1));
+                                       break;
+                                   }
+                               }
+                           }
+                           instan = new TypedI(new Sust(vars2,terms2));
+                           infer = new TypedApp(instan,aux);
+                        }
+                        while (!st.isEmpty()) {infer = new TypedApp(st.pop(),infer);}
                     } else
                         infer = new TypedApp(new TypedS(), infer);
                 }
@@ -853,7 +875,7 @@ public class InferController {
         Term caseAn, methodTerm, typedTerm;
         methodTerm = typedTerm = caseAn = null;
 
-        if ("SS".equals(newMethod) || "TL".equals(newMethod)){
+        if ("SL".equals(newMethod) || "TL".equals(newMethod)){
             // if (((App)((App)term).p).q.containT()){
             //     response.setErrorParser1(true);
             //     return response;
@@ -905,7 +927,7 @@ public class InferController {
         GenericProofMethod objectMethod = crudOp.returnProofMethodObject(newMethod);
         Boolean isRecursive = objectMethod.getIsRecursiveMethod();
         String groupMethod = objectMethod.getGroupMethod();
-        boolean sideOrTransitive = ("SS".equals(newMethod) || "T".equals(groupMethod));
+        boolean sideOrTransitive = ("SL".equals(newMethod) || "T".equals(groupMethod));
 
         InferResponse response = new InferResponse(crudOp, resuelveManager, disponeManager, simboloManager);
 
@@ -924,7 +946,7 @@ public class InferController {
             //Term formulaTerm = "T".equals(groupMethod) ? formulaAnterior : null;
             Term formulaTerm = formulaAnterior;
 
-            if ("DM".equals(newMethod)){
+            if ("DS".equals(newMethod) || "DT".equals(newMethod)){
                 if (teoid.substring(0, 3).equals("ST-")){
                     Resuelve resuelve = resuelveManager.getResuelveByUserAndTeoNum(username,teoid.substring(3,teoid.length()),false
                                                                                    ,simboloManager);
@@ -949,7 +971,7 @@ public class InferController {
                     formulaTerm = dispone.getMetateorema().getTeoTerm();
                 }
             }
-            else if ("SS".equals(newMethod)){
+            else if ("SL".equals(newMethod)){
                 formulaTerm = resuelveAnterior.getTeorema().getTeoTerm().evaluar(resuelveAnterior.getVariables());//.setToPrinting(resuelveAnterior.getVariables(),simboloManager);
             }
             // ---- End of assigning "formulaTerm" 
@@ -964,7 +986,7 @@ public class InferController {
                 }
                 if (sideOrTransitive){
                     boolean containT = (formulaTerm == null?false:formulaTerm.containT());
-                    if (newMethod.equals("SS") && containT && 
+                    if (newMethod.equals("SL") && containT && 
                         crudOp.binaryOperatorId(formulaTerm, null, caseAn) == 15
                        )
                         solucion = new Solucion(resuelveAnterior, false, null, "OE "+newMethod, crudOp);
@@ -975,23 +997,23 @@ public class InferController {
                     // Arguments: 1) associated Resuelve object, 2) if it is solved, 3) binary tree of the proof, 4) demonstration method, 5) CrudOperations object
                     boolean containT = (formulaTerm == null?true:formulaTerm.containT());
                     formulaTerm = (formulaTerm == null?null:formulaTerm.setToPrint(simboloManager));
-                    if ((newMethod.equals("DM")||newMethod.equals("CO")||newMethod.equals("MI")||newMethod.equals("CA")) 
+                    if ((newMethod.equals("DS")||newMethod.equals("DT")||newMethod.equals("CO")||newMethod.equals("MI")||newMethod.equals("CA")) 
                          && !containT)
                         if (newMethod.equals("CA")) {
                            caseAn = CaseAnalysisMethodImpl.parseCases(username, instanciacion.split(":=")[1], 
                                                           formulaTerm, predicadoManager, simboloManager);
-                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DM")?formulaTerm:null), "EO "+newMethod+":"+caseAn, crudOp);
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DS")||newMethod.equals("DT")?formulaTerm:null), "EO "+newMethod+":"+caseAn, crudOp);
                         } else
-                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DM")?formulaTerm:null), "EO "+newMethod, crudOp);
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DS")||newMethod.equals("DT")?formulaTerm:null), "EO "+newMethod, crudOp);
                     else
                         if (newMethod.equals("CA")) {
                            caseAn = CaseAnalysisMethodImpl.parseCases(username, instanciacion.split(":=")[1], 
                                                           formulaTerm, predicadoManager, simboloManager);
-                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DM")?formulaTerm:null), newMethod+":"+caseAn, crudOp);
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DS")||newMethod.equals("DT")?formulaTerm:null), newMethod+":"+caseAn, crudOp);
                         }
                         else
-                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DM")?formulaTerm:null), newMethod, crudOp);
-                    if (newMethod.equals("DM"))
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DS")||newMethod.equals("DT")?formulaTerm:null), newMethod, crudOp);
+                    if (newMethod.equals("DS")||newMethod.equals("DT"))
                        typedTerm = formulaTerm;
                     //solucion.setMetodo(methodTerm.toString());
                     solucionManager.addSolucion(solucion); // This adds a new row to the "solucion" table
@@ -1016,7 +1038,7 @@ public class InferController {
                 }
 
                 boolean containT = previousSt.containT();
-                if ((newMethod.equals("DM")||newMethod.equals("CO")||newMethod.equals("MI")||newMethod.equals("CA")) 
+                if ((newMethod.equals("DS")||newMethod.equals("DT")||newMethod.equals("CO")||newMethod.equals("MI")||newMethod.equals("CA")) 
                          && !containT) {
                     methodTerm = crudOp.eraseMethod(methodTerm.toString());
                     methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "EO");
@@ -1032,7 +1054,7 @@ public class InferController {
                    solucion.setMetodo(methodTerm.toString());
 
                 if (sideOrTransitive){
-                    if ("SS".equals(newMethod)) {
+                    if ("SL".equals(newMethod)) {
                        Term aux = formulaAnterior;
                        if (!(methodTerm instanceof Const)) {
                            aux = crudOp.initStatement(formulaAnterior, methodTerm,caseAn);
@@ -1040,17 +1062,17 @@ public class InferController {
                        }
                        // Este setToPrint es muy necesario
                        int inerOp = crudOp.binaryOperatorId(aux.setToPrint(simboloManager), null,caseAn);
-                       if (newMethod.equals("SS") && containT && (inerOp == 1 || inerOp == 15)) {
+                       if (newMethod.equals("SL") && containT && (inerOp == 1 || inerOp == 15)) {
                            methodTerm = crudOp.eraseMethod(methodTerm.toString());
                            methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "OE");
-                           methodTerm = crudOp.updateMethod(methodTerm.toString(), "SS");
+                           methodTerm = crudOp.updateMethod(methodTerm.toString(), "SL");
                            solucion.setMetodo(methodTerm.toString());
                        }
                     }
                     formulaTerm = crudOp.initStatement(formulaTerm,methodTerm,caseAn);
                 }
                 else{
-                    if ("DM".equals(newMethod)){
+                    if ("DS".equals(newMethod)||newMethod.equals("DT")){
                         Term aux = formulaAnterior;
                         if (!(methodTerm instanceof Const)) {
                            aux = crudOp.initStatement(formulaAnterior, methodTerm,caseAn);
@@ -1058,7 +1080,7 @@ public class InferController {
                         if (!aux.containT()) {
                            methodTerm = crudOp.eraseMethod(methodTerm.toString());
                            methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "EO");
-                           methodTerm = crudOp.updateMethod(methodTerm.toString(), "DM");
+                           methodTerm = crudOp.updateMethod(methodTerm.toString(), newMethod);
                            solucion.setMetodo(methodTerm.toString());
                         }
                         if (teoid.substring(3,teoid.length()).equals(nTeo)) {
@@ -1111,7 +1133,8 @@ public class InferController {
                         solucion.setMetodo("WL");
                     else if (newMethod.equals("TL") && lado.equals("d"))
                         solucion.setMetodo("TR");
-                        
+                    else if (newMethod.equals("SL") && lado.equals("d"))
+                        solucion.setMetodo("SR");
                     response.setLado(lado);
                     formulaTerm = lado.equals("i") ? ((App)formulaTerm).q.body() : ((App)((App)formulaTerm).p).q.body();  
                 } 

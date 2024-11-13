@@ -116,6 +116,16 @@ public class TeoremaDaoImpl implements TeoremaDAO {
         return this.sessionFactory.getCurrentSession().createQuery("FROM Teorema WHERE enunciado LIKE '%c_{" + String.valueOf(idSimbolo) + "}%'").list();
     }
     
+    public List<String> getAssosiativeSymmetricWithIdentOps() {
+        String sql = "SELECT t1.constlist FROM Teorema as t1, Teorema as t2, Teorema as t3, PureCombsTheorem as p1, PureCombsTheorem as p2, PureCombsTheorem as p3 WHERE (p1.statement='= (\\Phi_{(bb,)} \\Phi_{bb} (\\Phi_{bbb} \\Phi_{b})) (\\Phi_{(ccb,)} \\Phi_{bb} \\Phi_{bb} \\Phi_{cbbb})' OR p1.statement='= (\\Phi_{(ccb,)} \\Phi_{bb} \\Phi_{bb} \\Phi_{cbbb}) (\\Phi_{(bb,)} \\Phi_{bb} (\\Phi_{bbb} \\Phi_{b}))') AND t1.pureCombsTheorem.id=p1.id AND p2.statement='= (\\Phi_{b} (\\Phi_{bb} \\Phi_{b})) (\\Phi_{cb} \\Phi_{cb} \\Phi_{cb})' AND t2.pureCombsTheorem.id=p2.id AND (p3.statement='= (\\Phi_{K} (\\Phi_{K} \\Phi_{})) (\\Phi_{bb} \\Phi_{b} \\Phi_{cb})' OR p3.statement='= (\\Phi_{bb} \\Phi_{b} \\Phi_{cb}) (\\Phi_{K} (\\Phi_{K} \\Phi_{}))' OR p3.statement='= (\\Phi_{K} (\\Phi_{K} \\Phi_{})) (\\Phi_{b} (\\Phi_{bb} \\Phi_{b}))' OR p3.statement='= (\\Phi_{b} (\\Phi_{bb} \\Phi_{b})) (\\Phi_{K} (\\Phi_{K} \\Phi_{}))') AND t3.pureCombsTheorem.id=p3.id AND t1.constlist=t2.constlist AND t3.constlist LIKE ('%' || t2.constlist || '%')";
+        return this.sessionFactory.getCurrentSession().createQuery(sql).list();
+    }
+    
+    public List<String> getIdentitiesOfOp(int id) {
+        String sql = "SELECT t1.constlist FROM Teorema as t1, PureCombsTheorem as p1 WHERE (p1.statement='= (\\Phi_{K} (\\Phi_{K} \\Phi_{})) (\\Phi_{bb} \\Phi_{b} \\Phi_{cb})' OR p1.statement='= (\\Phi_{bb} \\Phi_{b} \\Phi_{cb}) (\\Phi_{K} (\\Phi_{K} \\Phi_{}))' OR p1.statement='= (\\Phi_{K} (\\Phi_{K} \\Phi_{})) (\\Phi_{b} (\\Phi_{bb} \\Phi_{b}))' OR p1.statement='= (\\Phi_{b} (\\Phi_{bb} \\Phi_{b})) (\\Phi_{K} (\\Phi_{K} \\Phi_{}))') AND t1.pureCombsTheorem.id=p1.id AND t1.constlist LIKE '%"+id+"%'";
+        return this.sessionFactory.getCurrentSession().createQuery(sql).list();
+    }
+    
 //	@Override
 //	public List<Termino> getAllTeoremasByUser(String username)
 //        {

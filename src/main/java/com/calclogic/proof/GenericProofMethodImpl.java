@@ -28,10 +28,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class GenericProofMethodImpl implements GenericProofMethod{
 
-    // It can be "DM", "SS", "WL", etc.
+    // It can be "DS", "SL", "WL", etc.
     protected String methodStr = null; 
 
-    // It will be "D" when methodStr is "DM" or "SS".
+    // It will be "D" when methodStr is "DS" or "SL".
     // It will be "T" when methodStr is "TL", "TR", "WL" or "WR".
     // It will be "B" when methodStr is "AI", "CA" or "MI".
     protected String groupMethod = null;
@@ -64,7 +64,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     }
 
     private void setGroupMethod(String method){
-        if (method.equals("DM") || method.equals("SS")){
+        if (method.equals("DS") || method.equals("DT") || method.equals("SL") || method.equals("SR")){
             this.groupMethod = "D"; 
         }
         else if (method.equals("TL") || method.equals("TR") || method.equals("WL") || method.equals("WR")){

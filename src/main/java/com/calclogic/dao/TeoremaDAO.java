@@ -58,4 +58,8 @@ public interface TeoremaDAO {
     //
 //    public List<Teorema> getPublicTeoremas(Categoria categoria);
     public List<Teorema> getAllTeoremasWithSimbolo(int idSimbolo);
+    
+    public List<String> getAssosiativeSymmetricWithIdentOps();
+    
+    public List<String> getIdentitiesOfOp(int id);
 }

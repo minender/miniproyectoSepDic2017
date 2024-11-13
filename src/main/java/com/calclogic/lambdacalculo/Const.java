@@ -223,7 +223,7 @@ public class Const extends Term
         return list;
     }
     
-    public Term invBraBD(int n)
+    public Term invBraBD(Var x)
     {
         return null;
     }
@@ -328,6 +328,10 @@ public class Const extends Term
 
     public String toStringType(String v) {
         return v;
+    }
+    
+    public String printType() {
+        return (con.equals("->")?"\\rightarrow":con);
     }
     
     @Override

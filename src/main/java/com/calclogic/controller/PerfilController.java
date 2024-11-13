@@ -661,7 +661,7 @@ public class PerfilController {
             Logger.getLogger(PerfilController.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DM"),null);
+        response.generarHistorial(username, teorema, nTeo,typedTerm, true,false,new Const("DS"),null);
         return response;
     }
     
@@ -829,7 +829,6 @@ public class PerfilController {
             String bndVars = teoTerm.getBoundVarsComma();
             String variables = bndVars + ";" + freeVars;
             teoTerm = teoTerm.toEquality(freeVars);
-            
             Term teoTermBD = teoTerm.traducBD();
             String stTeoTermBD = teoTermBD.toString();
             teoTermBD = CombUtilities.getTerm(stTeoTermBD, username, simboloManager);

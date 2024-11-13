@@ -53,14 +53,17 @@ public class Phi extends Term{
         return type_;
     }
     
-    public void computeType()
+    public void computeType() 
     {
         if (ind.orden == 0 && !ind.topeEsPar() )
             type_= new App(new App(new Const(-3,"->"),new Var(1)),new Var(1));
+        else if (ind.orden == 0 && ind.topeEsPar())
+            throw new IndexOutOfBoundsException();
         else {
         Term[] A = new Term[ind.orden+1];
         A[0] = null;
         Term aux = null;
+        Term aux2 = null;
         Stack<ListaInd> stack = new Stack();
         App x = null;
         Indice index = null;
@@ -71,8 +74,11 @@ public class Phi extends Term{
         int pairOrder = 0;
         int n = ind.orden;
         boolean jump = false;
-        int[] lastResult = new int[n];
-        lastResult[0] = 0;
+        boolean startWithC = false;
+        boolean isEmptyFList = false;
+        Term[] lastResult = new Term[n];
+        Term noVarResult = null;
+        lastResult[0] = null;
         int lastResultIndex = -1;
         ListaInd list = ind;
         ListaInd currentList = ind;
@@ -116,8 +122,9 @@ public class Phi extends Term{
                     else {
                         if (j==0&& offset==0) {
                             if (A[0] instanceof Var) {
-                                A[0] = new App(x,new Var(i));
-                                ((App)A[1]).q = A[0];
+                                A[0] = new App(x,A[0]);// new Var(i));
+                                ((App)A[1]).q = A[0]; 
+                                startWithC = true;
                             }
                             else if (A[0] instanceof App) {
                                 aux = (App)A[0];
@@ -127,7 +134,16 @@ public class Phi extends Term{
                             y.q = (!(aux instanceof App)?new App(x,new Var(i)):((App)aux).q);
                     }
                     if (!(aux instanceof App))
-                       A[i-stInd+1] = new Var(i);
+                        if (startWithC || 
+                            (A[0] instanceof App && ((App)A[0]).q instanceof Var && 
+                             i==((Var)((App)A[0]).q).indice )
+                           ) 
+                        {
+                           A[i-stInd+1] = ((App)A[0]).q;//new Var(i); // este valor i hay que cambiarlo
+                           startWithC = false;
+                        }
+                        else
+                           A[i-stInd+1] = new Var(i);
                     else {
                        A[i-stInd+1] = ((App)aux).q;
                        aux = ((App)((App)aux).p).q;
@@ -149,30 +165,53 @@ public class Phi extends Term{
                         pairOrder = 0;
                         j = 0;
                         lastResultIndex++;
-                        lastResult[lastResultIndex] = i+1;
-                        if (((ParInd)stack.lastElement().tope()).i2.orden != 0) 
+                        lastResult[lastResultIndex] = (aux==null?new Var(i+1):aux);// revisar
+                        if (((ParInd)stack.lastElement().tope()).i2.orden == 0)
+                            lastResult[lastResultIndex] = null;
+                        else if (aux == null) 
                             x.q = new Var(i+1);
-                        else
-                            lastResult[lastResultIndex] = 0;
                     } else if (((ParInd)stack.lastElement().tope()).i1 == currentList){
                         // finish lista
+                        isEmptyFList = currentList.orden == 0;
                         pairOrder = ((ParInd)stack.lastElement().tope()).orden;
                         currentList = stack.pop();
                         offset = 1;
                         j = 0;
-                        int lastR = lastResult[lastResultIndex];
+                        Term lastR = lastResult[lastResultIndex];
                         //System.out.println("lastResult: "+lastR);
-                        if (i-stInd+2 > n && stack.isEmpty()) {
-                           x.q = new App(new App(new Const(-3,"->"),new Var(i+1)),(lastR==0?A[0]:new Var(lastR)));
-                           //x = new App(new Const(-3,"->"),null);
+                        if (aux != null || isEmptyFList) {
+                          aux2 = (isEmptyFList?A[0]:aux);
+                          //if (A[0] instanceof App && ((App)A[0]).q instanceof Var && lastR instanceof Var)
+                          //{      System.out.println("hola");((Var)((App)A[0]).q).indice = ((Var)lastR).indice;}
+                          if (aux2 instanceof App) {
+                              Equation eq = new Equation(((App)aux2).q,lastR);
+                              Sust s = eq.mgu(false);
+                              int l = (isEmptyFList?i-stInd+1:i);
+                              for (int k=0;k<=l;k++)
+                                  A[k] = A[k].sustParall(s);
+                              aux = ((App)((App)aux2).p).q;
+                          }
+                          else {
+                              Var var = new Var(((Var)aux2).indice);
+                              Term term = new App(new App(new Const("->"),aux2),lastR);
+                              int l = (isEmptyFList?i-stInd+1:i);
+                              for (int k=0;k<=l;k++)
+                                  A[k] = A[k].sust(var, term);
+                              aux = aux2;
+                          }
                         }
-                        else{
-                           App y = x;
-                           x = new App(new Const(-3,"->"),null);
-                           y.q = new App(x,(lastR==0?A[0]:new Var(lastR)) );
+                        else {
+                           if (i-stInd+2 > n && stack.isEmpty()) {
+                              x.q = new App(new App(new Const(-3,"->"),new Var(i+1)),(lastR==null?A[0]:lastR));
+                              //x = new App(new Const(-3,"->"),null);
+                           }
+                           else{
+                              App y = x;
+                              x = new App(new Const(-3,"->"),null);
+                              y.q = new App(x,(lastR==null?A[0]:lastR) );
+                           }
                         }
                         lastResultIndex--;
-                        //lastResult = i+1;
                     } else {
                         offset = 0;
                         j=0;
@@ -185,7 +224,7 @@ public class Phi extends Term{
                i++;
         }
         stInd = i+1;
-        Term it = new Var(i);
+        Term it = (aux == null?new Var(i):aux);
         i = 0;
         while (i <= n) {  
             it = new App(new App(new Const(-3,"->"),it),A[i]);
@@ -291,21 +330,21 @@ public class Phi extends Term{
            return null;
     }
     
-    public Term invBraBD(int n)
+    public Term invBraBD(Var x)
     {
-        Var xn=new Var(n);
+        Var xn=x;//new Var(n);
         int[] max = new int[1];
-        return new Bracket(xn,(new App(this,xn)).kappaIndexado(n,xn,max));
+        return new Bracket(xn,(new App(this,xn)).kappaIndexado(xn.indice,xn,max));
     }
     
     public Term invBD()
     {
-        return this.invBraBD(0).invBD();
+        return this.invBraBD(new Var(0)).invBD();
     }
     
     public Term invBDOneStep()
     {
-        return this.invBraBD(0);
+        return this.invBraBD(new Var(0));
     }
     
     public Term bracketAbsSH(Var x)
@@ -372,6 +411,10 @@ public class Phi extends Term{
 
     public String toStringType(String v) {
         return "NULL";
+    }
+    
+    public String printType() {
+        return "";
     }
     
     @Override

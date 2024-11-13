@@ -27,12 +27,13 @@
                                                     <%--<c:set var="vars" value="${resu.getTeorema().getTeoTerm().setToPrint(simboloManager).stFreeVars(simboloManager)}"/>--%>
                                                     <c:choose>
                                                         <c:when test="${!resu.getNumeroteorema().equals(nTeo)}">
-                                                            <a onclick="expandMeta('${resu.getNumeroteorema()}','${resu.getVariables().split(";")[1]}')" >
+                                                            <c:set var="latex" value="${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,resu.getNumeroteorema(),transOp)}" scope="request"/>
+                                                            <a onclick="expandMeta('${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().stFreeVars(simboloManager)}')" >
                                                                 <i class="fa fa-plus-circle" aria-hidden="true"  style="cursor:pointer; margin-left: 10px; margin-right: 10px;"></i>
                                                             </a>
                                                         </c:when>
                                                     </c:choose>                                    
-                                                    <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${resu.getTeorema().getTeoTerm().evaluar(resu.getVariables()).toStringLaTeX(simboloManager,resu.getNumeroteorema(),transOp)}$</span>
+                                                    <span id="teoIdName${resu.getNumeroteorema()}" class="teoIdName">(${resu.getNumeroteorema()}) ${resu.getNombreteorema()}:</span> &nbsp;<span id="click${resu.getNumeroteorema()}">$${latex}$</span>
 
                                                     <script type="text/javascript">clickTeoremaInicial('ST-${resu.getNumeroteorema()}');
                                                             clickOperator('click${resu.getNumeroteorema()}','nStatement_id','ST-${resu.getNumeroteorema()}','${resu.getTeorema().getTeoTerm().stFreeVars(simboloManager)}');
