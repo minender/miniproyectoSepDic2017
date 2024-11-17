@@ -1134,7 +1134,7 @@ public class PerfilController {
             map.addAttribute("teoremaInputs", teoInputs);
 //                teoTerm.setAlias(0);
             
-            // Verificando el tipo de la expresión
+            // Verificando el tipo de la expresiï¿½n
             //System.out.println(teoTerm.getType(simboloManager));
             String vars = teoTerm.stFreeVars();
             //teoTerm = teoTerm.toEquality(vars);
