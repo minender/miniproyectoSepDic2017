@@ -135,7 +135,6 @@ public class TeoremaManagerImpl implements TeoremaManager {
     @Transactional
     public Teorema updateTeorema(int id, String username, String statement, Term teoterm, String vars) {
         Teorema teorema = teoremaDAO.getTeorema(id);
-        
         if (teorema.getEnunciado().equals(statement)) {
             return teorema;
         }

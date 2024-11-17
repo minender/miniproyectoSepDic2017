@@ -37,29 +37,28 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st] returns 
                                                 int nArg = s.getArgumentos();
                                                 if (s.isQuantifier()) {
                                                     ArrayList<Term> boundVars = new ArrayList<Term>();
-                                                    ArrayList<Term> unboundVars = new ArrayList<Term>();
+                                                    ArrayList<Term> freeVars = new ArrayList<Term>();
                                                     int j = 1;
                                                     for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();) {
                                                         if (j > nArg) {
                                                             boundVars.add(i.next());
                                                         }
                                                         else {
-                                                            unboundVars.add(i.next());
+                                                            freeVars.add(i.next());
                                                         }
                                                         j++;
                                                     }
                                                     Collections.reverse(boundVars);
                                                     ArrayList<Term> abstractedTerms = new ArrayList<Term>();
-                                                    int len = unboundVars.size();
+                                                    int len = freeVars.size();
                                                     j = 1;
-                                                    for (Term base_term: unboundVars) {
+                                                    for (Term base_term: freeVars) {
                                                         Term t = base_term;
                                                         if (len<=2 || (j == 1 && !(t instanceof Var))
                                                             || j != 1
                                                            )
                                                         {
-                                                          if (Integer.parseInt($NUMBER.text) == 62 && 
-                                                              j == 1 &&
+                                                          if (s.getNotacion().contains("ea"+j) &&
                                                               t instanceof App &&
                                                               ((App)t).q instanceof Var &&
                                                               ((App)((App)t).p).q instanceof Var
@@ -67,7 +66,10 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st] returns 
                                                           {
                                                               t = new Bracket((Var)((App)((App)t).p).q,new Bracket((Var)((App)t).q,t));
                                                           }
-                                                          else {
+                                                          else if (!s.getNotacion().contains("ea"+j) ||
+                                                                   !(t instanceof Const)
+                                                                  )
+                                                          {
                                                           for (Term var: boundVars) {
                                                             if (st[0].equals(""))
                                                                 st[0] = "" + ((char) ((Var) var).indice);
@@ -87,7 +89,7 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st] returns 
                                                     }
                                                 }
                                                 else {
-                                                    if ($explist.value.size() != nArg)
+                                                    if ($explist.value.size() != nArg && $explist.value.size() != 0)
                                                       throw new NoViableAltException(this);
                                                     if (Integer.parseInt($NUMBER.text) == sm.getVarBinaryOpId())
                                                        aux = new Var(115);

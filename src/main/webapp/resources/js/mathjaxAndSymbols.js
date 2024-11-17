@@ -16,7 +16,7 @@
  *      }
  *
  * window['${rootId}' + 'jaxInputDictionary'] = {}  se inicializa en vacio, pero tiene los datos para 
- * reconstruir el arbol de inputs del que consta una formula de entrada. Por ejemplo se primero se le 
+ * reconstruir el arbol de inputs del que consta una formula de entrada. Por ejemplo si primero se le 
  * dio al boton del And /\ (con id 5) y luego parado en el input del argumento 1 (que es el que esta a 
  * la derecha del /\) se le da al boton de Or \/ (con id 4), entonces el diccionario queda asi 
  * 
@@ -105,7 +105,14 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         var index = parseInt(notacionLatexVariables[i].match(/\d+/)[0]) - 1;
         notacionLatexVariablesSorted[index] = notacionLatexVariables[i]; // no se usa
     }
-
+    var idSplit = idParentBox.split("-");
+    var argNumInput = idSplit[idSplit.length-1];
+    if(idParentBox.length > rootId.length &&
+    simboloDic[jaxInputDictionary[idParentBox]['simboloId']]['notacionVariables'].includes('ea'+argNumInput)
+      ){
+        notacionLatexVariablesSorted = [];
+        newNotation = newNotation.replace(/{[^{}]*}/g,"").replace(/\\FormInput/g,"");
+    }
     for (var i = 0; i < notacionLatexVariablesSorted.length; i++) {
         var varNotation = notacionLatexVariablesSorted[i]; // no se usa
         var index = i+1;
@@ -155,7 +162,10 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         parentSimboloId = jaxInputDictionary[idParentBox]['simboloId'];
         m = simboloDic[parentSimboloId]['precedence'];
         n = simboloDic[simboloId]['precedence'];
-        arguments = simboloDic[simboloId]['arguments'];
+        if(simboloDic[jaxInputDictionary[idParentBox]['simboloId']]['notacionVariables'].includes('ea'+argNumInput))
+            arguments = 0;
+        else
+            arguments = simboloDic[simboloId]['arguments'];
         var argumentsParent = simboloDic[parentSimboloId]['arguments'];
                 
         var parentIdSplit = idParentBox.split('-');
@@ -203,7 +213,6 @@ function insertAtMathjaxDiv(text,simboloId, isAlias){
         alert("Bound variable can't be a formula.");
         return;
     }
-    
     var newMathJax = originalMathJax.replace(parentBox, "\\ {" + leftPar + newNotation + rightPar + "}\\ " );// Finally we replace the old box with the whole new notation 
     
     // refresh the mathjax div

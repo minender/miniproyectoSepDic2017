@@ -1136,10 +1136,10 @@ public class PerfilController {
             
             // Verificando el tipo de la expresión
             //System.out.println(teoTerm.getType(simboloManager));
-            
             String vars = teoTerm.stFreeVars();
+            //teoTerm = teoTerm.toEquality(vars);
+            String variables = bndVars + ";" + vars;
             teoTerm = teoTerm.toEquality(vars);
-            vars = bndVars + ";" + vars;
             Term teoTermBD = teoTerm.traducBD();
             String stTeoTermBD = teoTermBD.toString();
             teoTermBD = CombUtilities.getTerm(stTeoTermBD, username, simboloManager);
@@ -1163,14 +1163,13 @@ public class PerfilController {
             else
                 teorema = teoremaAdd;
             */
-           
             Teorema teorema = teoremaManager.getTeorema(intIdTeo,simboloManager);
             if (!teorema.getEnunciado().equals(stTeoTermBD)) {
-                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, teoTerm.traducBD().toString(), false);
+                Resuelve test = resuelveManager.getResuelveByUserAndTeorema(username, stTeoTermBD, false);
                 if (null != test && test.getId() != resuelve.getId()) {
                     throw new CategoriaException("An equal one already exists in "+test.getNumeroteorema());
                 }
-                teorema = teoremaManager.updateTeorema(intIdTeo, username, teoTerm.traducBD().toString(), teoTerm, vars);
+                teorema = teoremaManager.updateTeorema(intIdTeo, username, stTeoTermBD, teoTermBD, variables);
                 if (teorema == null) {
                     throw new CategoriaException("Couldn't edit theorem");
                 }
@@ -1182,8 +1181,8 @@ public class PerfilController {
             resuelve.setNumeroteorema(agregarTeorema.getNumeroTeorema());
             resuelve.setResuelto(agregarTeorema.isAxioma());
             resuelve.setCategoria(categoria);
-            if (vars != null) {
-                resuelve.setVariables(vars);
+            if (variables != null) {
+                resuelve.setVariables(variables);
             }
             resuelveManager.updateResuelve(resuelve);
             
@@ -1401,7 +1400,7 @@ public class PerfilController {
             notacionVariables = simbolo.getNotacionVariables().toString();
             notacionString = simbolo.getNotacion();
 
-            simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + ", notacionString: '" + notacionString + "'}"; 
+            simboloString = "{ arguments: " + argumentsString + ", precedence: " + precedenceString + ", notacionVariables: " + notacionVariables + ", notacionString: '" + notacionString + "'" + ", type: '"+simbolo.getTipo()+ "'}";
             result.append(idString+":  " + simboloString + ",");
 	}
     	
