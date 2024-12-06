@@ -21,7 +21,8 @@ import org.springframework.stereotype.Service;
 public class WeakeningStrengtheningRightMethodImpl extends WeakeningStrengtheningLeftMethodImpl implements WeakeningStrengtheningRightMethod{
 
     public WeakeningStrengtheningRightMethodImpl(){
-        setInitVariables("ST");
+        Bool = false;
+        setInitVariables("WR");
     }
 
     /**

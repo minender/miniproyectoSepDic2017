@@ -342,7 +342,6 @@ public class InferController {
         if (!instanciacion.equals("")){
             arr=TermUtilities.instanciate(instanciacion, predicadoid, predicadoManager, simboloManager);
         }
-        
         if (arr == null)
             response.setInstantiation(statementTerm.type().toStringLaTeX(simboloManager, "", null));
         else {// (ArrayList<Var>)arr.get(0), (ArrayList<Term>)arr.get(1)
@@ -582,6 +581,7 @@ public class InferController {
         // CREATE THE NEW INFERENCE DEPENDING ON THE PROOF TYPE
         Term infer;
         String strMethodTermIter = methodTermIter.toString();
+        
         GenericProofMethod objectMethod = crudOp.returnProofMethodObject(strMethodTermIter);
         
         try {
@@ -610,17 +610,39 @@ public class InferController {
         int i;//, j;
         i = 0;
         //j = 0;
-        while (newProof == null && i < 2) {
+        Term newProofAux = null;
+        Term expectedOp = null;
+        char ys = 'n';
+        if (strMethodTermIter.equals("WL") || strMethodTermIter.equals("TL"))
+          expectedOp = ((App)((App)((App)formulaBeingProved).q.body()).p).p;
+        else if (strMethodTermIter.equals("TR")) {
+          String id=simboloManager.isSymetric(((Const)((App)((App)((App)formulaBeingProved).q.body()).p).p).getId());
+          expectedOp = new Const(Integer.parseInt(id.substring(4,id.length()-1)),id.substring(1));
+          ys = id.charAt(0);
+        }
+        else if (strMethodTermIter.equals("WR")) {
+            int id = ((Const)((App)((App)((App)formulaBeingProved).q.body()).p).p).getId();
+            expectedOp = (id==2?new Const(3,"c_{3}"):new Const(2,"c_{2}"));
+            ys = (id==2?'s':'y');
+        }
+            
+        boolean otherIter = false;
+        while ((otherIter || newProof == null) && i < 2) {
 
             try {
+                Term auxType = null;
                 if (i == 1 /*&& j == 0*/){
                     Term aux = infer;
                     Stack<Term> st = new Stack<Term>();
-                    while (aux instanceof TypedApp) {
+                    while (aux instanceof TypedApp && ((TypedApp)aux).inferType!='m' && 
+                            ((TypedApp)aux).inferType!='e' && ((TypedApp)aux).inferType!='t'
+                          ) 
+                    {
                         st.push(((App)aux).p);
                         aux = ((TypedApp)aux).q;
                     }
-                    if (aux.type().containT()){//This is to invert transitive op expression
+                    auxType = aux.type();
+                    if (auxType.containT() && !(aux instanceof TypedApp)){//This is to invert transitive op expression
                         int opId = ((Const)((App)((App)((App)aux.type()).q.body()).p).p).getId();
                         aux = new TypedM(7,opId,aux,((TypedA)aux).getCombDBType(),username);
                         //infer = objectMethod.createOneStepInfer(username,infer, arr, instanciacion, (Bracket)leibnizTerm, leibniz, resuel.getTeorema().getTeoTerm());
@@ -643,8 +665,14 @@ public class InferController {
                            instan = new TypedI(new Sust(vars2,terms2));
                            infer = new TypedApp(instan,aux);
                         }
+                        else
+                           infer = aux; 
                         while (!st.isEmpty()) {infer = new TypedApp(st.pop(),infer);}
-                    } else
+                    } else if (auxType.containT() && aux instanceof TypedApp) {
+                        Term left = CombUtilities.getTerm((ys=='s'?"S ":"")+"(I^{[x_{112},x_{113}:="+((App)((App)((App)auxType).q.body()).p).q+","+((App)((App)auxType).q.body()).q+"]} A^{= (\\Phi_{bb} \\Phi_{b} c_{2}) (\\Phi_{cb} c_{3} \\Phi_{cb})})",username,TypedA.sm_);
+                        infer = new TypedApp(left,aux);
+                    }
+                    else
                         infer = new TypedApp(new TypedS(), infer);
                 }
                 // If proofCrudOperations.addInferToProof does not throw exception when typedTerm.type()==null, then the inference is valid respect of the first expression.
@@ -659,14 +687,28 @@ public class InferController {
                         newProof = null;
                         throw new TypeVerificationException();
                     }
-                    newProof = infer;
+                    newProof = infer;  
+                }
+                auxType = newProof.type();
+                if (i==0 && expectedOp != null && 
+                    auxType.containT() && ((App)auxType).q.body() instanceof App && 
+                    ((App)((App)auxType).q.body()).p instanceof App && 
+                    ((App)((App)((App)auxType).q.body()).p).p instanceof Const &&
+                    !expectedOp.equals(((App)((App)((App)auxType).q.body()).p).p)
+                   )
+                {
+                   otherIter = true;
+                   newProofAux = newProof;
+                   newProof = null;
                 }
             }
             catch (TypeVerificationException e) {
-                if (i==1/*(i == 1 && !onlyOneLine) || (i == 1 && j == 1)*/){
+                if (i==1 && newProofAux == null/*(i == 1 && !onlyOneLine) || (i == 1 && j == 1)*/){
                     response.generarHistorial(username,formula, nTeo,typedTerm,false,true,methodTerm,caseAn);
                     return response;
                 }
+                else if (newProofAux != null)
+                    newProof= newProofAux;
                 /*if (onlyOneLine && j == 0) {
                     currentProof = new TypedA(new App(new App(new Const(1,"c_{20}",false,1,1),
                             typedTerm),typedTerm));
@@ -680,7 +722,7 @@ public class InferController {
             }
             //i = (j == 1?i:i+1);
             i++;
-        }       
+        }
         response.setResuelto("0");
         // CHECK IF THE PROOF FINISHED
 
@@ -803,7 +845,7 @@ public class InferController {
             }
             else {
                 Term teorema = resuelve.getTeorema().getTeoTerm().evaluar(resuelve.getVariables());
-                solucion.deleteFinishStack(method, teorema);
+                solucion.deleteFinishStack(method, teorema, caseAn);
                 GenericProofMethod objectMethod = crudOp.returnProofMethodObject(currentMethod.toString());
                 respRetroceder = solucion.retrocederPaso(username,method,objectMethod,simboloManager);
             }
@@ -976,7 +1018,7 @@ public class InferController {
             }
             // ---- End of assigning "formulaTerm" 
 
-            if (nSol.equals("new")){
+            if (nSol.equals("new")) {
                 if ( ("CR".equals(newMethod) && formulaAnterior.containT() && ((opId=crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null,caseAn)) != 2) && (opId !=3) ) || // Right arrow ==> or left arrow <==
                      ("AI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null,caseAn) != 5) ) || // Conjunction /\
                      ("MI".equals(newMethod) && formulaAnterior.containT() && (crudOp.binaryOperatorId(((App)formulaAnterior).q.body(),null,caseAn) != 1) )    // Equivalence ==
@@ -984,7 +1026,7 @@ public class InferController {
                 {
                     throw new ClassCastException("Error");
                 }
-                if (sideOrTransitive){
+                if (sideOrTransitive) {
                     boolean containT = (formulaTerm == null?false:formulaTerm.containT());
                     if (newMethod.equals("SL") && containT && 
                         crudOp.binaryOperatorId(formulaTerm, null, caseAn) == 15
@@ -1053,7 +1095,7 @@ public class InferController {
                    // We save in the database the concatenation of the previous list of methods with the new one
                    solucion.setMetodo(methodTerm.toString());
 
-                if (sideOrTransitive){
+                if (sideOrTransitive) {
                     if ("SL".equals(newMethod)) {
                        Term aux = formulaAnterior;
                        if (!(methodTerm instanceof Const)) {
@@ -1125,16 +1167,25 @@ public class InferController {
                             break;
                     }
                 }
-                if (!"".equals(lado)){ // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
+                if (!"".equals(lado)) { // THIS IS NOT AN ELSE, BECAUSE "lado" MAY HAVE CHANGED IN THE PREVIOUS BLOCK
                     boolean isWLOrWR = newMethod.equals("WL") || newMethod.equals("WR");
-                    if (isWLOrWR && lado.equals("d"))
-                        solucion.setMetodo("WR");
-                    else if (isWLOrWR && lado.equals("i"))
-                        solucion.setMetodo("WL");
-                    else if (newMethod.equals("TL") && lado.equals("d"))
-                        solucion.setMetodo("TR");
-                    else if (newMethod.equals("SL") && lado.equals("d"))
-                        solucion.setMetodo("SR");
+                    if (isWLOrWR && lado.equals("d")) {
+                        methodTerm = crudOp.eraseMethod(methodTerm.toString());
+                        methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"","WR");
+                        solucion.setMetodo(methodTerm.toString());
+                    } else if (isWLOrWR && lado.equals("i")) {
+                        methodTerm = crudOp.eraseMethod(methodTerm.toString());
+                        methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"","WL");
+                        solucion.setMetodo(methodTerm.toString());
+                    } else if (newMethod.equals("TL") && lado.equals("d")) {
+                        methodTerm = crudOp.eraseMethod(methodTerm.toString());
+                        methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"","TR");
+                        solucion.setMetodo(methodTerm.toString());
+                    }else if (newMethod.equals("SL") && lado.equals("d")) {
+                        methodTerm = crudOp.eraseMethod(methodTerm.toString());
+                        methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"","SR");
+                        solucion.setMetodo(methodTerm.toString());
+                    }
                     response.setLado(lado);
                     formulaTerm = lado.equals("i") ? ((App)formulaTerm).q.body() : ((App)((App)formulaTerm).p).q.body();  
                 } 
@@ -1158,7 +1209,7 @@ public class InferController {
             }
 
             // This occurs because the first line of the proof is printed inmediately after selecting the following methods
-            if ("WL".equals(newMethod) || "WR".equals(newMethod)){
+            if ("WL".equals(newMethod) || "WR".equals(newMethod)) {
                 solucionManager.addSolucion(solucion);
             }
 

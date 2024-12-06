@@ -227,7 +227,7 @@ public class InferResponse extends GenericResponse{
 
     /**
      * This function adds a proof of just one step into a bigger proof, 
-     * when the demonstration method is "And Introduction" (Conjunction by parts) or "Case Analysis"
+     * when the demonstration method is "And Introduction" (Conjunction by parts)
      * @param user 
      * @param typedTerm
      * @param header
@@ -445,7 +445,7 @@ public class InferResponse extends GenericResponse{
             this.setHistorial(this.getHistorial() + header);
             return;
         }
-        // This occurs when there is only one line in the demonstration and the first inference is invalid
+        // This occurs when there is only one line in the proof and the first inference is invalid
         if (typedTerm!=null && type == null && !valida && !recursive){
             this.setHistorial(this.getHistorial() + header + centeredBlock("$"+typedTerm.toStringLaTeXLabeled(simboloManager)) + noValidInference());
             return;
@@ -469,14 +469,12 @@ public class InferResponse extends GenericResponse{
         else
             solved = true; // importante: Se debe implementar setDirectProof y setWSProof sensible a
                            // si se pide labeled o no la ultima linea- Aqui se cablea con solved = true
-                           // OJO: Recordar que ahora esas funciones se llaman "setProofMethod" y están
-                           // en la respectiva clase del método 
+                           // OJO: Recordar que ahora esas funciones se llaman "setProofMethod" y estan
+                           // en la respectiva clase del metodo 
         // -- Here is where we really generate the proof record accoding to the demonstration method ---
 
         if (recursive){
             if ("B".equals(objectMethod.getGroupMethod())){
-
-
                 // ******* I AM NOT SURE IF THIS LINE WILL ALWAYS REMAIN HERE
                 Term editedFormula = objectMethod.initFormula(formula,(objectMethod instanceof CaseAnalysisMethodImpl?caseA:typedTerm));
 

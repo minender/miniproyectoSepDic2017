@@ -37,22 +37,22 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st] returns 
                                                 int nArg = s.getArgumentos();
                                                 if (s.isQuantifier()) {
                                                     ArrayList<Term> boundVars = new ArrayList<Term>();
-                                                    ArrayList<Term> freeVars = new ArrayList<Term>();
+                                                    ArrayList<Term> terms = new ArrayList<Term>();
                                                     int j = 1;
                                                     for(Iterator<Term> i = $explist.value.iterator(); i.hasNext();) {
                                                         if (j > nArg) {
                                                             boundVars.add(i.next());
                                                         }
                                                         else {
-                                                            freeVars.add(i.next());
+                                                            terms.add(i.next());
                                                         }
                                                         j++;
                                                     }
                                                     Collections.reverse(boundVars);
                                                     ArrayList<Term> abstractedTerms = new ArrayList<Term>();
-                                                    int len = freeVars.size();
+                                                    int len = terms.size();
                                                     j = 1;
-                                                    for (Term base_term: freeVars) {
+                                                    for (Term base_term: terms) {
                                                         Term t = base_term;
                                                         if (len<=2 || (j == 1 && !(t instanceof Var))
                                                             || j != 1
@@ -66,8 +66,9 @@ eq[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st] returns 
                                                           {
                                                               t = new Bracket((Var)((App)((App)t).p).q,new Bracket((Var)((App)t).q,t));
                                                           }
-                                                          else if (!s.getNotacion().contains("ea"+j) ||
-                                                                   !(t instanceof Const)
+                                                          else if ((s.getId()!=19 || j!=2) &&
+                                                                   (!s.getNotacion().contains("ea"+j) ||
+                                                                   !(t instanceof Const))
                                                                   )
                                                           {
                                                           for (Term var: boundVars) {
@@ -175,7 +176,7 @@ instantiate[PredicadoId id, PredicadoManager pm, SimboloManager sm, String[] st]
                                                        aux = ((App)aux).p;
                                                     }
                                                     args.add((Var)aux);
-                                                    explist.set(i,t);
+                                                    explist.set(i,(((Var)aux).indice==115?t.etaReduc():t));
                                                  }
                                                }
                                                arr.add(args);

@@ -171,7 +171,7 @@ public class Solucion implements java.io.Serializable {
         String metaTheo = sub1.replace(metaTheoT);
 
         try {
-          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo,user,null));
+          Term newProof = new TypedApp(((App)((App)((App)father).p).q).p, CombUtilities.getTerm(metaTheo,user,TypedA.sm_));
           newProof = new TypedApp(new TypedApp(((App)((App)father).p).p, newProof),((App)father).q);
           return newProof;
         }
@@ -187,7 +187,7 @@ public class Solucion implements java.io.Serializable {
         else {
             Term auxProof;
             int i;
-            if (subProof==null || !(subProof.type() instanceof TypedTerm) ) {//subProof.type()==null) {
+            if (subProof==null || !(subProof instanceof TypedTerm) ) {//subProof.type()==null) {
                 i=2;
                 auxProof =(subProof==null?((TypedApp)fathers.get(1)).q:branchedOneLineSubProof(subProof,fathers.get(1),user));
             }
@@ -211,9 +211,12 @@ public class Solucion implements java.io.Serializable {
         return false;
     }
     
-    public void deleteFinishStack(Term methodTerm, Term statement) {
-        Term[] T = proofCrudOperations.getCurrentMethodStack(typedTerm, methodTerm, statement);
-        if ( T != null && T[0].type() instanceof TypedTerm/*T[0].type()!=null*/ && T[0].type().equals(T[2]) ) {
+    public void deleteFinishStack(Term methodTerm, Term statement, Term caseAn) {
+        Term[] T = proofCrudOperations.getCurrentMethodStack(typedTerm, methodTerm, statement, caseAn);
+        if ( T != null && T[0] instanceof TypedTerm/*T[0].type()!=null*/ 
+                && T[0].type().traducBD().equals(T[2].traducBD()) 
+           ) 
+        {
            Term aux = T[1];
            GenericProofMethod objectMethod;
            while (aux instanceof App) {
@@ -223,6 +226,7 @@ public class Solucion implements java.io.Serializable {
            }
            objectMethod = proofCrudOperations.returnProofMethodObject(aux.toString());
            typedTerm = objectMethod.deleteFinishProof(typedTerm);
+           demostracion =(typedTerm==null?"":typedTerm.toString());
         }
     }
 
@@ -254,7 +258,9 @@ public class Solucion implements java.io.Serializable {
                 &&
                 (
                     (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='t') ||
-                    (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e') ||
+                    (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
+                     ((TypedApp)auxTypedTerm).p instanceof TypedApp &&
+                     ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='l') ||
                     (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='m' &&
                         ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
                         ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='m' && 
@@ -276,6 +282,7 @@ public class Solucion implements java.io.Serializable {
                    typedTerm = mergeSubProofs(((TypedM)((TypedApp)((TypedApp)auxTypedTerm).p).q).getSubProof(), li, user);
                 else
                    typedTerm = mergeSubProofs(((App)((App)auxTypedTerm).p).q, li, user);
+                // me parece que este if no va, ya que es imposible aqui que inferType=='e'
                 if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e' &&
                         ((TypedApp)auxTypedTerm).p instanceof TypedApp && 
                         ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='s'     
@@ -285,7 +292,10 @@ public class Solucion implements java.io.Serializable {
                 }
             }
             else {
-                if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e')
+                if (auxTypedTerm instanceof TypedApp && ((TypedApp)auxTypedTerm).inferType=='e'
+                    && ((TypedApp)auxTypedTerm).p instanceof TypedApp &&
+                        ((TypedApp)((TypedApp)auxTypedTerm).p).inferType=='l'
+                   )
                    typedTerm = mergeSubProofs(((App)auxTypedTerm).q, li, user);
                 else
                    typedTerm = mergeSubProofs(((App)auxTypedTerm).p, li, user);

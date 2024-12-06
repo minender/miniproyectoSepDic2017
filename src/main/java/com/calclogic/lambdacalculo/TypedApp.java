@@ -39,9 +39,30 @@ public class TypedApp extends App implements TypedTerm{
         }
         if ( op.getId()!=0 )
             throw new TypeVerificationException();
-        else if (t1Type instanceof Sust)
+        else if (t1Type instanceof Sust) {
+            int i = 0;
+            Term t = null;
+            int u = -1;
+            while ( i<((Sust)t1Type).vars.size() ) {
+                Var v = ((Sust)t1Type).vars.get(i);
+                if (v.indice == 115) { 
+                   t = ((Sust)t1Type).terms.get(i);
+                   if(!(t instanceof Const && TypedA.sm_.isSymmetAssociaBinaOpWithIdentity(((Const)t).id))
+                     )
+                         throw new TypeVerificationException();
+                }
+                else if (v.indice == 117)
+                    u = i;
+                i++;
+            }
+            if (u != -1 && t != null && 
+                !( ((Sust)t1Type).terms.get(u) instanceof Const &&
+                   TypedA.sm_.isIdentityOfOp(((Const)((Sust)t1Type).terms.get(u)).id, ((Const)t).id)
+                 )
+               )
+                throw new TypeVerificationException();
             inferType = 'i';
-        else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
+        } else if (t1Type instanceof Bracket) //t2Type tiene que ser equiv
         {
             inferType = 'l'; // Cuando se tipe hay que verificar si (t1Type t2Type) no dan error de tipo
         }
@@ -81,7 +102,6 @@ public class TypedApp extends App implements TypedTerm{
                 {//(q==r)=q q=r pilas con este caso no se sabe si es equanimity o transitividad
                     if (op1 != 0) 
                         throw new TypeVerificationException();
-                    
                     Term t1Der = ((App)((App)t1Type).p).q;
                     Term t2Izq = ((App)t2Type).q;
                     //int op2 = ((Const)((App)((App)t2Type).p).p).getId();

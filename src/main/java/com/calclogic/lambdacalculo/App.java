@@ -35,6 +35,8 @@ public class App extends Term{
         if (p1 instanceof Var || q1 instanceof Var || p1.type() == null || q1.type() == null)
             type_ = null;
         else {
+            //System.out.println(p1);
+            //System.out.println(q1);
             if (p1 instanceof Const && ((Const)p1).id == 62) {
                 p1.type_ = p1.type_.sust(new Var(1), new Var(Phi.stInd));
                 Phi.stInd++;
@@ -670,7 +672,12 @@ public class App extends Term{
                    ) 
                 {
                  int boundVId = ((Bracket)stk.get(stk.size()-2)).x.indice;
-                 boundVId = new App(((Bracket)stk.get(stk.size()-2)).t,((Bracket)stk.get(stk.size()-3)).t).fresh(boundVId,new int[1]);
+                 int[] max = new int[1];
+                 if (((Bracket)stk.get(stk.size()-2)).t.fresh(boundVId,max) != boundVId || 
+                     ((Bracket)stk.get(stk.size()-3)).t.fresh(boundVId,max) != boundVId
+                    )
+                    boundVId = max[0]+1;
+                 //boundVId = new App(((Bracket)stk.get(stk.size()-2)).t,((Bracket)stk.get(stk.size()-3)).t).fresh(boundVId,new int[1]);
                  // this change the id of all occurrences of x, because x would be a pointer
                  ((Bracket)stk.get(stk.size()-2)).x.indice = boundVId;
                  ((Bracket)stk.get(stk.size()-3)).x.indice = boundVId;

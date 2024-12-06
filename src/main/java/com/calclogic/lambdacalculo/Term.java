@@ -465,8 +465,9 @@ public abstract class Term implements Cloneable, Serializable{
     
     public static Term termResultType(Term type) {
         Term aux = type;
-        while ( !(aux instanceof Const || aux instanceof Var) ) 
+        while ( !(aux instanceof Const || aux instanceof Var) ) {
             aux = ((App)((App)aux).p).q;
+        }
         return aux;
     }
     
