@@ -41,39 +41,82 @@
 	}
 	
 	//SET DIV LISTENER FOR ALL MATHJAX DIVS
-	var varsDivId = '${rootId}VariablesDiv';
-	var varsDiv = document.getElementById(varsDivId);
-	varsDiv.addEventListener('DOMNodeInserted', function( event ) {
-	
-	    if(event.target.className == "MathJax_Input"){
-	    	
-	    	// First find the fist dot
-	    	var formId = event.target.id;
-	    	var n = formId.length;
-	    	var end;
-	    	for(var k = 0; k<n; k++){
-	    		if(formId[k] == '.'){
-	    			end = k + 1;
-	    		}
-	    	}
-	    	
-	    	// Next find the first one, the id is all till the one
-	    	for(var k = end; k<n; k++){
-	    		if(!(formId[k-1] === '.') && formId[k].match(/\d/)){ // == '1' || formId[k] == '2'){
-	    			end = k;
-	    			break;
-	    		}
-	    		if(k == n - 1){
-	    			end = k + 1;
-	    		}
-	    	}
-	    	    	
-	    	var rootId = formId.substring(0, end);
-	    	
-  	  		setMathJaxFormAttributes(event.target, 1, rootId);
-	    	
+	var targetNode = document.getElementById('${rootId}VariablesDiv');
+	var config = { childList: true, subtree: true };
+
+	var callback = function(mutationsList, observer) {
+	    for(const mutation of mutationsList) {
+	        if (mutation.type === 'childList') {
+	            mutation.addedNodes.forEach(node => {
+	                if (node.className == "MathJax_Input") {
+
+						// First find the fist dot
+						var formId = node.id;
+						var n = formId.length;
+						var end;
+						for(var k = 0; k<n; k++){
+							if(formId[k] == '.'){
+								end = k + 1;
+							}
+						}
+						
+						// Next find the first one, the id is all till the one
+						for(var k = end; k<n; k++){
+							if(!(formId[k-1] === '.') && formId[k].match(/\d/)){ // == '1' || formId[k] == '2'){
+								end = k;
+								break;
+							}
+							if(k == n - 1){
+								end = k + 1;
+							}
+						}
+								
+						var rootId = formId.substring(0, end);
+						
+						setMathJaxFormAttributes(node, 1, rootId);
+	                }
+	            });
+	        }
 	    }
-	});
+	};
+
+	var observer = new MutationObserver(callback);
+	observer.observe(targetNode, config);
+
+
+	// var varsDivId = '${rootId}VariablesDiv';
+	// var varsDiv = document.getElementById(varsDivId);
+	// varsDiv.addEventListener('DOMNodeInserted', function( event ) {
+	
+	//     if(event.target.className == "MathJax_Input"){
+	    	
+	//     	// First find the fist dot
+	//     	var formId = event.target.id;
+	//     	var n = formId.length;
+	//     	var end;
+	//     	for(var k = 0; k<n; k++){
+	//     		if(formId[k] == '.'){
+	//     			end = k + 1;
+	//     		}
+	//     	}
+	    	
+	//     	// Next find the first one, the id is all till the one
+	//     	for(var k = end; k<n; k++){
+	//     		if(!(formId[k-1] === '.') && formId[k].match(/\d/)){ // == '1' || formId[k] == '2'){
+	//     			end = k;
+	//     			break;
+	//     		}
+	//     		if(k == n - 1){
+	//     			end = k + 1;
+	//     		}
+	//     	}
+	    	    	
+	//     	var rootId = formId.substring(0, end);
+	    	
+  	//   		setMathJaxFormAttributes(event.target, 1, rootId);
+	    	
+	//     }
+	// });
 	
 	
 	
