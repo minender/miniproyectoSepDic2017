@@ -14,7 +14,7 @@
             </style>
         </c:when>
     </c:choose>
-    
+
     <body>
         <!-- To show the word Loading in the center of the screen -->
         <jsp:include page="modals/loadingModal.jsp"/>
@@ -35,9 +35,13 @@
                 <tiles:insertDefinition name="nav" />
                 <div id="myTheorems-text-container" class="row flex align-items-center">
                     <h1>My Theorems</h1>
-                    <a data-target="#exampleModal" data-toggle="modal">            
+                    <a data-target="#categoriesModal" data-toggle="modal">            
                         <i id="cate-cog" class="fa fa-cog ml-2" aria-hidden="true"></i>                
                     </a>
+
+                    <!-- Botón para redirigir al formulario de suma guiada por demostracion -->
+                    <!-- <a href="${pageContext.request.contextPath}/eval/${usuario.login}/addSum" class="ml-3" style="color: gray;"><i class="fa fa-plus" aria-hidden="true"></i></a> -->
+
                 </div>
             </c:otherwise>
         </c:choose>
@@ -58,7 +62,7 @@
         </div>
 
         <script>
-            document.getElementById("saveConfig").onclick = function(){
+            document.getElementById("saveConfig").onclick = function () {
                 saveDisplayedCategories("myTheorems");
             }
             // This is to make the container-fluid fill all the view
