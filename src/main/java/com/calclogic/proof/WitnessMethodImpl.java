@@ -38,7 +38,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
         // Esto hace un trading en caso que la beginFormula sea de la forma (exists x|R.x:Q.x)=>P 
         // con R distito de true
         if (!(R.body() instanceof Const) || !(((Const)R.body()).getId() == 8)) {
-            tree = "I^{[x_{80},x_{82}:="+Q+","+R+"]} A^{= (\\Phi_{bb} (\\Phi_{bb} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{4}) (\\Phi_{K} c_{8}))) (\\Phi_{(bb,b)} c_{5})) (\\Phi_{ccbb} \\Phi_{b} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{4})) \\Phi_{cbb} \\Phi_{b})}"; 
+            tree = "I^{[x_{80},x_{82}:="+Q+","+R+"]} A^{= (\\Phi_{bb} (\\Phi_{bb} (c_{62} c_{4} (\\Phi_{K} c_{8}))) (\\Phi_{(bb,b)} c_{5})) (\\Phi_{ccbb} \\Phi_{b} (c_{62} c_{4}) \\Phi_{cbb} \\Phi_{b})}"; 
             beginFormula = CombUtilities.getTerm(tree,"AdminTeoremas", simboloManager).type();
             Q = ((App)((App)((App)beginFormula).p).q.body()).q;
             R = ((App)((App)((App)((App)beginFormula).p).q.body()).p).q;
@@ -47,7 +47,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
         // aplicas una distributivad P\/(forall x|R.x:Q.x)=(forall x|R.x:P\/Q.x) y luego
         // (forall x|R.x:P\/Q.x)=(forall x|R.x:Q.x\/P) para que cambie el nombre de x 
         // asi x no ocurre en P     => P (exists x|R.x:Q.x)
-        tree = "A^{= (\\Phi_{bbbb} (\\Phi_{ccb} \\Phi_{cbb} c_{4}) \\Phi_{bccb} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{b}) (\\Phi_{cbbb} \\Phi_{b} (\\Phi_{bbbb} \\Phi_{b} c_{4}) (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{b})}";
+        tree = "A^{= (\\Phi_{bbbb} (\\Phi_{ccb} \\Phi_{cbb} c_{4}) \\Phi_{bccb} (c_{62} c_{5}) \\Phi_{b}) (\\Phi_{cbbb} \\Phi_{b} (\\Phi_{bbbb} \\Phi_{b} c_{4}) (c_{62} c_{5}) \\Phi_{b})}";
         tree = "I^{[x_{82},x_{81},x_{80}:="+R+","+Q+","+P+"]} "+tree; // variables R,Q,P corresponden a x82,x81,x80
         Term t = CombUtilities.getTerm(tree,"AdminTeoremas", simboloManager).type();
         
@@ -102,7 +102,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
     protected Term auxFinLinearRecursiveMethodProof(String user, Term formulaBeingProved, List<Var> vars, List<Term> terms) 
             throws TypeVerificationException
     {
-        String str1 = "I^{[x_{82} := (\\lambda x_{120}.c_{8})]} A^{= (\\Phi_{K} c_{8}) (\\Phi_{cbb} (\\Phi_{K} c_{8}) (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{b})}";
+        String str1 = "I^{[x_{82} := (\\lambda x_{120}.c_{8})]} A^{= (\\Phi_{K} c_{8}) (\\Phi_{cbb} (\\Phi_{K} c_{8}) (c_{62} c_{5}) \\Phi_{b})}";
         Term st1 = CombUtilities.getTerm(str1,user,TypedA.sm_);
 
         return st1;
@@ -133,7 +133,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
             Term P = ((App)((App)type).q.body()).q;
             Term Q = ((App)((App)((App)type).q.body()).p).q;
             Term tree = auxFinLinearRecursiveMethodProof(user, formulaBeingProved, null, null);
-            String str1 = "L^{\\lambda x_{-126}.c_{62} (\\Phi_{bb} \\Phi_{b} c_{5}) (\\Phi_{K} c_{8}) (\\lambda "+x+".x_{-126})} (M_{3} ("+proof+"))";
+            String str1 = "L^{\\lambda x_{-126}.c_{62} c_{5} (\\Phi_{K} c_{8}) (\\lambda "+x+".x_{-126})} (M_{3} ("+proof+"))";
             Term finalProof = CombUtilities.getTerm(str1,user,TypedA.sm_);
             String str2 = "A^{= T c_{8}}";
             Term axiomTree = CombUtilities.getTerm(str2,user,TypedA.sm_);
@@ -151,7 +151,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
             tree = new TypedApp(tree,axiomTree);
             // esto es (forall x|:Q\/!P.x)=Q\/(forall x|:!P.x)
             str1 = "(S (I^{[x_{82},x_{81},x_{80} := (\\lambda "+x+".c_{8}),(\\lambda "+x+".c_{7} ("+P+")),"+Q+"]} ";
-            str1 += "A^{= (\\Phi_{bbbb} (\\Phi_{ccb} \\Phi_{cbb} c_{4}) \\Phi_{bccb} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{b}) (\\Phi_{cbbb} \\Phi_{b} (\\Phi_{bbbb} \\Phi_{b} c_{4}) (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{b})}))";
+            str1 += "A^{= (\\Phi_{bbbb} (\\Phi_{ccb} \\Phi_{cbb} c_{4}) \\Phi_{bccb} (c_{62} c_{5}) \\Phi_{b}) (\\Phi_{cbbb} \\Phi_{b} (\\Phi_{bbbb} \\Phi_{b} c_{4}) (c_{62} c_{5}) \\Phi_{b})}))";
             axiomTree = CombUtilities.getTerm(str1,user,TypedA.sm_);
             tree = new TypedApp(tree,axiomTree);
             // esto es Q\/(forall x|:!P.x)=(forall x|:!P.x)\/Q
@@ -161,16 +161,16 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
             tree = new TypedApp(tree,axiomTree);
             // esto es (forall x|:!P.x)\/Q=!!(forall x|:!P.x)\/Q
             str1 = "(S (L^{\\lambda x_{-126}.c_{4} ("+Q+") x_{-126}} ";
-            str1 += "(I^{[x_{112} := (c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda "+x+".c_{8}) (\\lambda "+x+".c_{7} ("+P+")))]} A^{= \\Phi_{} (\\Phi_{bb} c_{7} c_{7})})))";
+            str1 += "(I^{[x_{112} := (c_{62} c_{5} (\\lambda "+x+".c_{8}) (\\lambda "+x+".c_{7} ("+P+")))]} A^{= \\Phi_{} (\\Phi_{bb} c_{7} c_{7})})))";
             axiomTree = CombUtilities.getTerm(str1,user,TypedA.sm_);
             tree = new TypedApp(tree,axiomTree);
             // esto es !!(forall x|:!P.x)\/Q=!(exists x|:P.x)\/Q
             str1 = "(S (L^{\\lambda x_{-126}.c_{4} ("+Q+") (c_{7} x_{-126})} (I^{[x_{82},x_{80} := (\\lambda "+x+".c_{8}),(\\lambda "+x+". "+P+")]} ";
-            str1 += "A^{= (\\Phi_{cbbb} (\\Phi_{bb} c_{7}) (\\Phi_{bbb} c_{7}) (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{b}) (\\Phi_{cbbb} \\Phi_{b} \\Phi_{bb} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{4})) \\Phi_{b})})))";
+            str1 += "A^{= (\\Phi_{cbbb} (\\Phi_{bb} c_{7}) (\\Phi_{bbb} c_{7}) (c_{62} c_{5}) \\Phi_{b}) (\\Phi_{cbbb} \\Phi_{b} \\Phi_{bb} (c_{62} c_{4}) \\Phi_{b})})))";
             axiomTree = CombUtilities.getTerm(str1,user,TypedA.sm_);
             tree = new TypedApp(tree,axiomTree);
             // esto es !(exists x|:P.x)\/Q=(exists x|:P.x)=>Q
-            str1 = "(S (I^{[x_{113},x_{112}:="+Q+",c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{4} x_{120} x_{121}) (\\lambda "+x+".c_{8}) (\\lambda "+x+". "+P+")]} ";
+            str1 = "(S (I^{[x_{113},x_{112}:="+Q+",c_{62} c_{4} (\\lambda "+x+".c_{8}) (\\lambda "+x+". "+P+")]} ";
             str1 += "A^{= (\\Phi_{cbb} c_{7} \\Phi_{bb} c_{4}) (\\Phi_{bb} \\Phi_{b} c_{2})}))";
             axiomTree = CombUtilities.getTerm(str1,user,TypedA.sm_);
             tree = new TypedApp(tree,axiomTree);
@@ -178,7 +178,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
                 Term R = ((App)P).q;
                 P = ((App)((App)P).p).q;
                 // esto es (exists x|:R.x/\P.x)=>Q=(exists x|R.x:P.x)=>Q
-                str1 = "S (L^{\\lambda x_{-126}.c_{2} ("+Q+") x_{-126}} (I^{[x_{80},x_{82}:=\\lambda "+x+"."+P+",\\lambda "+x+"."+R+"]} A^{= (\\Phi_{bb} (\\Phi_{bb} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{4}) (\\Phi_{K} c_{8}))) (\\Phi_{(bb,b)} c_{5})) (\\Phi_{ccbb} \\Phi_{b} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{4})) \\Phi_{cbb} \\Phi_{b})}))";
+                str1 = "S (L^{\\lambda x_{-126}.c_{2} ("+Q+") x_{-126}} (I^{[x_{80},x_{82}:=\\lambda "+x+"."+P+",\\lambda "+x+"."+R+"]} A^{= (\\Phi_{bb} (\\Phi_{bb} (c_{62} c_{4} (\\Phi_{K} c_{8}))) (\\Phi_{(bb,b)} c_{5})) (\\Phi_{ccbb} \\Phi_{b} (c_{62} c_{4}) \\Phi_{cbb} \\Phi_{b})}))";
                 axiomTree = CombUtilities.getTerm(str1,user,TypedA.sm_);
                 tree = new TypedApp(tree,axiomTree);
             }

@@ -252,6 +252,16 @@ public class ProofBoolean {
              ((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p instanceof TypedL &&
     !(((Bracket)((TypedL)((App)((App)((App)((App)((App)((App)typedTerm).p).q).q).q).q).p).type()).t.occur(new Var(122)));
     }
+    
+    public static boolean isCurrentSubproofSolved(Term theorem, Term method, Term typedTerm, String user, 
+                                                  CrudOperations crudOp, Term caseAn) 
+    {
+        theorem = new TypedA(theorem,user).type();
+        Term t1 = crudOp.initStatement(theorem, method, caseAn);
+        Term t2 = crudOp.getSubProof(typedTerm, method, true).type();
+        
+        return t1.traducBD().equals(t2.traducBD());
+    }
 
     public static boolean isIAA(Term root, SimboloManager s) {
         

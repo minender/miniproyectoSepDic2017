@@ -215,6 +215,35 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             proof_ = new TypedApp(proof_,new TypedApp(CombUtilities.getTerm(sol,user,sm_),transtAx));
         }
         else if (id == 9) {
+            /**
+             * 1) Sum1+Sum2 se itera el num de veces igual al num de digitos de Sum2 y #Sum1>#Sum2
+               Si no estoy sumando el ultimo digito de Sum2 con el ultimo de Sum1 se hace esto
+                2) Se descompone Sum1 con ab=10*a+b
+                3) Si Sum2 no es un digito se descompone Tambien con ab=10*a+b
+                4) Se hace (a+b)+c=a+(b+c)
+                Si Sum2 no es un digito se hace
+                 5) Si Sum2 no es un digito se conmutan dos expresiones para que los digitos queden al lado
+                 6) Se hace (a+b)+c=a+(b+c)
+                 7) Se hace (a+b)+c=a+(b+c)
+                 8) Se suman los digitos usando las tablas de la suma y se anota si se lleva una
+                 9) Sacas factor comun 10
+                 10) Haces asociatividad
+                En cambio, Sum2 es un digito se hace
+                 5A) Se suman los digitos usando las tablas de la suma y se anota si se lleva una
+               Si estoy sumando el ultimo digito de Sum2 con el ultimo de Sum1 se hace esto
+                2A) Se suman los digitos usando las tablas de la suma y se anota si se lleva una
+               Si llevo una proveniente del paso 8) hago:
+                11) Se descompone el operando de dos digitos resultante con ab=10*a+b
+                12) Se hace (a+b)+c=a+(b+c)
+                13) Sacas factor comun 10
+                14) Se hace (a+b)+c=a+(b+c)
+                15) Aqui queda un 1 sumado con otro digito que lo sumas con la tabla de la suma
+               En cambio, si llevo una proveniente del paso 5A) o 2A) hago:
+                11A) Se descompone el operando de dos digitos resultante con ab=10*a+b
+                12A) Se hace (a+b)+c=a+(b+c)
+                13A) Sacas factor comun 10
+                14A) Aqui queda un 1 sumado con otro digito que lo sumas con la tabla de la suma
+            **/
             int a, b;
             boolean carryOne1 = false;
             boolean carryOne2 = false;

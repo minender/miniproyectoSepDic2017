@@ -82,7 +82,7 @@ public interface CrudOperations {
      *         CO (OE SL) in T[1], the sub proof that corresponds to the method T[1] write in 
      *         T[0] and the initStatement in T[2]
      */
-    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement);
+    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement, Term caseAn);
     
     /**
      * This method returns the sub Term of typedTerm that represent the derivation tree 

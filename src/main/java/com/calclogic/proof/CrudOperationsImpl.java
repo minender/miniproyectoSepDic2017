@@ -251,16 +251,18 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement) {
+    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement, Term caseAn) {
         Term auxMethod = method;
         Term[] T = new Term[3];
+        Term statementCopy = statement;
         while (auxMethod instanceof App) {
             if (auxMethod instanceof App && ((App)auxMethod).p instanceof Const && 
                 ((Const)((App)auxMethod).p).getCon().equals("AI") 
-               ) {
+               ) {//System.out.println(statement);
                 auxMethod = ((App)auxMethod).q;
                 statement = new App(new App(new Const(0,"="),((App)((App)statement).p).q.body()),
                                                ((App)((App)statement).q.body()).q).abstractEq(null);
+                statementCopy = statement;
                 method = auxMethod;
             }
             else if (auxMethod instanceof App && ((App)auxMethod).p instanceof App && 
@@ -277,14 +279,16 @@ public class CrudOperationsImpl implements CrudOperations {
                 statement = new App(new App(new Const(0,"="),((App)((App)statement).p).q.body()),
                                      ((App)((App)((App)statement).q.body()).p).q).abstractEq(null);
                 typedTerm = ((TypedM)((App)((App)((App)((App)typedTerm).p).q).q).q).getSubProof();
-                return getCurrentMethodStack(typedTerm, ((App)auxMethod).q, statement);
+                return getCurrentMethodStack(typedTerm, ((App)auxMethod).q, statement, caseAn);
             } else {
+                GenericProofMethod objectMethod = returnProofMethodObject(((App)auxMethod).p.toString());
+                statement = objectMethod.initFormula(statement,caseAn);
                 auxMethod = ((App)auxMethod).q;
             }
         }
         T[0] = typedTerm;
         T[1] = method;
-        T[2] = statement;
+        T[2] = statementCopy;
         return T;
     }
     
@@ -614,7 +618,7 @@ public class CrudOperationsImpl implements CrudOperations {
                 String proof = sub2.replace(template);
                 Term proofTerm = null;
                 try {
-                    proofTerm = new TypedApp(CombUtilities.getTerm(proof,usr,null),typedTerm);
+                    proofTerm = new TypedApp(CombUtilities.getTerm(proof,usr,TypedA.sm_),typedTerm);
                 }
                 catch (TypeVerificationException e) {
                     Logger.getLogger(InferController.class.getName()).log(Level.SEVERE, null, e);

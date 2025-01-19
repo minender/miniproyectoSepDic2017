@@ -25,6 +25,7 @@ public class WeakeningStrengtheningLeftMethodImpl extends TransitivityFromLeftMe
     
 
     public WeakeningStrengtheningLeftMethodImpl(){
+        Bool = true;
         setInitVariables("WL");
     }
 

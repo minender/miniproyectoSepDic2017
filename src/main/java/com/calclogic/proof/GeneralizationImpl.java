@@ -81,7 +81,7 @@ public class GeneralizationImpl extends GenericProofMethodImpl implements Genera
     protected Term auxFinLinearRecursiveMethodProof(String user, Term formulaBeingProved, List<Var> vars, List<Term> terms) 
             throws TypeVerificationException
     {
-        String str1 = "I^{[x_{82} := (\\lambda x_{120}.c_{8})]} A^{= (\\Phi_{K} c_{8}) (\\Phi_{cbb} (\\Phi_{K} c_{8}) (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{b})}";
+        String str1 = "I^{[x_{82} := (\\lambda x_{120}.c_{8})]} A^{= (\\Phi_{K} c_{8}) (\\Phi_{cbb} (\\Phi_{K} c_{8}) (c_{62} c_{5}) \\Phi_{b})}";
         Term st1 = CombUtilities.getTerm(str1,user,TypedA.sm_);
 
         return st1;
@@ -136,7 +136,7 @@ public class GeneralizationImpl extends GenericProofMethodImpl implements Genera
             boolean withoutRange = aux instanceof Const && ((Const)aux).getId() == 8;
             Var x = ((Bracket)((App)((App)formulaBeingProved).q.body()).q).x;
             Term tree = auxFinLinearRecursiveMethodProof(user, formulaBeingProved, null, null);
-            String str1 = "L^{\\lambda x_{-126}.c_{62} (\\Phi_{bb} \\Phi_{b} c_{5}) (\\Phi_{K} c_{8}) (\\lambda "+x+".x_{-126})} (M_{3} ("+proof+"))";
+            String str1 = "L^{\\lambda x_{-126}.c_{62} c_{5} (\\Phi_{K} c_{8}) (\\lambda "+x+".x_{-126})} (M_{3} ("+proof+"))";
             Term finalProof = CombUtilities.getTerm(str1,user,TypedA.sm_);
             String str2 = "A^{= T c_{8}}";
             Term axiomTree = CombUtilities.getTerm(str2,user,TypedA.sm_);
@@ -145,7 +145,7 @@ public class GeneralizationImpl extends GenericProofMethodImpl implements Genera
             if (!withoutRange) {
                 Term P = ((App)((App)formulaBeingProved).q.body()).q;
                 Term R = ((App)((App)((App)formulaBeingProved).q.body()).p).q;
-                str2 = "S (I^{[x_{80},x_{82}:="+P+","+R+"]} A^{= (\\Phi_{bb} (\\Phi_{bb} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5}) (\\Phi_{K} c_{8}))) (\\Phi_{(bb,b)} c_{2})) (\\Phi_{ccbb} \\Phi_{b} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{cbb} \\Phi_{b})})";
+                str2 = "S (I^{[x_{80},x_{82}:="+P+","+R+"]} A^{= (\\Phi_{bb} (\\Phi_{bb} (c_{62} c_{5} (\\Phi_{K} c_{8}))) (\\Phi_{(bb,b)} c_{2})) (\\Phi_{ccbb} \\Phi_{b} (c_{62} c_{5}) \\Phi_{cbb} \\Phi_{b})})";
                 finalProof = new TypedApp(finalProof,CombUtilities.getTerm(str2,user,TypedA.sm_));
             }
             finalProof = new TypedApp(finalProof,axiomTree);

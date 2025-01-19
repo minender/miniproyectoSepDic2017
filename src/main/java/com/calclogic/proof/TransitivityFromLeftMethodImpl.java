@@ -30,7 +30,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransitivityFromLeftMethodImpl extends StartingFromLeftMethodImpl implements TransitivityFromLeftMethod {
 
+    protected boolean Bool;
+    
     public TransitivityFromLeftMethodImpl(){
+        Bool = true;
         setInitVariables("TL");
     }
 
@@ -90,7 +93,6 @@ public class TransitivityFromLeftMethodImpl extends StartingFromLeftMethodImpl i
         //              isInverseImpl(((TypedApp)typedTerm).q.type().setToPrint(simboloManager),
         //                                                                 typedTerm.type().setToPrint(simboloManager));
         iter = typedTerm;//(reversed?((TypedApp)typedTerm).q:typedTerm);
-        
         //boolean lastEquan = solved && iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
         //              ((TypedApp)iter).q.type().setToPrint(simboloManager).toString().equals("c_{8}");
         iter = (solved?deleteFinishProof(iter):iter);
@@ -104,7 +106,10 @@ public class TransitivityFromLeftMethodImpl extends StartingFromLeftMethodImpl i
                ultInf = ((TypedApp)iter).q;
                iter = ((TypedApp)iter).p;   
             }
-            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='e') {
+            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
+                     ((TypedApp)iter).p instanceof TypedApp &&
+                     ((TypedApp)((TypedApp)iter).p).inferType=='l'
+                    ) {
                ultInf = ((TypedApp)iter).p;
                iter = ((TypedApp)iter).q;
             }
@@ -125,7 +130,7 @@ public class TransitivityFromLeftMethodImpl extends StartingFromLeftMethodImpl i
                 // ultInf is a no =inference folowing with a matatheorem of true
                 if ( iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
                      ((TypedApp)iter).p instanceof TypedApp && 
-                     ((TypedApp)((TypedApp)iter).p).p instanceof TypedS
+                     ((TypedApp)((TypedApp)iter).p).p instanceof TypedS && Bool
                    )// query that verifies if metatheorem was used i.e ultInf of the form 
                     // (S(T)).T with . equanimity
                     iter = ((TypedApp)iter).q;
@@ -281,7 +286,10 @@ public class TransitivityFromLeftMethodImpl extends StartingFromLeftMethodImpl i
                ultInf = ((TypedApp)iter).q;
                iter = ((TypedApp)iter).p;
             }
-            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='e') {// TT
+            else if (iter instanceof TypedApp && ((TypedApp)iter).inferType=='e' &&
+                     ((TypedApp)iter).p instanceof TypedApp &&
+                     ((TypedApp)((TypedApp)iter).p).inferType=='l'
+                    ) {// TT
                ultInf = ((TypedApp)iter).p;
                iter = ((TypedApp)iter).q;
             }
@@ -353,8 +361,8 @@ public class TransitivityFromLeftMethodImpl extends StartingFromLeftMethodImpl i
               finalExpr = ((App)((App)initialExpr.body()).p).q;
               Term op = ((App)((App)initialExpr.body()).p).p;
               initialExpr = ((App)initialExpr.body()).q;
-              if (((App)((App)formulaBeingProved).q.body()).q.equals(finalExpr) &&
-                  ((App)((App)((App)formulaBeingProved).q.body()).p).q.equals(initialExpr) 
+              if (((App)((App)formulaBeingProved).q.body()).q.traducBD().equals(finalExpr.traducBD()) &&
+                  ((App)((App)((App)formulaBeingProved).q.body()).p).q.traducBD().equals(initialExpr.traducBD()) 
                  ) 
                  {
                    int id = ((Const)((App)((App)((App)formulaBeingProved).q.body()).p).p).getId();

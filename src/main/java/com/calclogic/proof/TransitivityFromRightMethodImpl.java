@@ -18,6 +18,7 @@ import com.calclogic.service.SimboloManager;
 public class TransitivityFromRightMethodImpl extends TransitivityFromLeftMethodImpl implements TransitivityFromRightMethod{
 
     public TransitivityFromRightMethodImpl() {
+        Bool = true;
         setInitVariables("TR");
     }
     

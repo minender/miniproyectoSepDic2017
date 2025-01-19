@@ -366,12 +366,12 @@ public class SimboloManagerImpl implements SimboloManager {
         else {
            List<String> l = teoremaDAO.getIdentitiesOfOp(opId);
            boolean isIn = false;
-           for (String st: l)
-             if (st.matches(identId+"") && st.matches(opId+"")) {
+           for (String st: l) {
+             if (st.matches(".*"+identId+".*") && st.matches(".*"+opId+".*")) {
                 isIn = true;
                 break;
              }
-        
+           }
            return isIn;
         }
     }
