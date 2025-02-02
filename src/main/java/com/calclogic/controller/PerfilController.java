@@ -483,7 +483,7 @@ public class PerfilController {
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
         
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
-            showCategorias.add(mostrarCategoria.get(i).getCategoria());
+            showCategorias.add(mostrarCategoria.get(i).getId().getCategoria());
         }
         map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));
         map.addAttribute("usuario", usr);
@@ -533,7 +533,7 @@ public class PerfilController {
         List<Integer> categoriasIdListUser =  new LinkedList<>();
 
         for (MostrarCategoria mc: mostrarCategorias){
-           categoriasIdListUser.add(mc.getCategoria().getId());
+           categoriasIdListUser.add(mc.getId().getCategoria().getId());
         }
         // We add the new categories that were checked
         for (int categoriaId :answer.getListaIdCategorias()){
@@ -554,7 +554,7 @@ public class PerfilController {
         
         mostrarCategorias = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(currentUser);
         for (int i = 0; i < mostrarCategorias.size(); i++ ){
-            showCategorias.add(mostrarCategorias.get(i).getCategoria());
+            showCategorias.add(mostrarCategorias.get(i).getId().getCategoria());
         }
 
         map.addAttribute("isDifferentUser", !((Usuario)session.getAttribute("user")).getLogin().equals(username)?new Integer(1):new Integer(0));

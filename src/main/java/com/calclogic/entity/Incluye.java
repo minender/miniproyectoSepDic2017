@@ -1,32 +1,67 @@
 package com.calclogic.entity;
 
-public class Incluye implements java.io.Serializable {
+import javax.persistence.*;
+import java.io.Serializable;
 
-    private Teoria padre;
-    private Teoria hijo;
+/**
+ * @author alejandro
+ */
+@Entity
+public class Incluye implements Serializable {
 
-    
-    public Incluye(){;}
-     
-    public Incluye(Teoria padre, Teoria hijo) {
-        this.padre = padre;
-        this.hijo = hijo;
-    }
+  @EmbeddedId private IncluyeId id;
 
-    public Teoria getPadre() {
-        return padre;
-    }
+  // Getters y setters
+  public IncluyeId getId() {
+    return id;
+  }
 
-    public Teoria getHijo() {
-        return hijo;
-    }
+  public void setId(IncluyeId id) {
+    this.id = id;
+  }
 
-    public void setPadre(Teoria teoria) {
-        this.padre = teoria;
-    }
+  //  @Id
+  //  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "incluye_id_seq")
+  //  @SequenceGenerator(name = "incluye_id_seq", sequenceName = "incluye_id_seq", allocationSize =
+  // 1)
+  //  private int id;
 
-    public void setHijo(Teoria teoria) {
-        this.hijo = teoria;
-    }
-     
+  //  @ManyToOne
+  //  @JoinColumn(name = "padreid", nullable = false)
+  //   Teoria padre;
+  //
+  //  @ManyToOne
+  //  @JoinColumn(name = "hijoid", nullable = false)
+  //   Teoria hijo;
+  //
+  //  public Incluye() {}
+  //
+  //  public Incluye(Teoria padre, Teoria hijo) {
+  //    this.padre = padre;
+  //    this.hijo = hijo;
+  //  }
+  //
+  //  public int getId() {
+  //    return id;
+  //  }
+  //
+  //  public void setId(int id) {
+  //    this.id = id;
+  //  }
+  //
+  //  public Teoria getPadre() {
+  //    return padre;
+  //  }
+  //
+  //  public Teoria getHijo() {
+  //    return hijo;
+  //  }
+  //
+  //  public void setPadre(Teoria teoria) {
+  //    this.padre = teoria;
+  //  }
+  //
+  //  public void setHijo(Teoria teoria) {
+  //    this.hijo = teoria;
+  //  }
 }

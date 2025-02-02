@@ -126,7 +126,7 @@ public class InferController {
         for (int i = 0; i < mostrarCategoria.size(); i++ ){// se puede evitar este for si se mandan
                                                            // los MostrarCategorias al jsp en lugar 
                                                            // de las categorias
-            showCategorias.add(mostrarCategoria.get(i).getCategoria());
+            showCategorias.add(mostrarCategoria.get(i).getId().getCategoria());
         }
         
         List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
@@ -272,7 +272,7 @@ public class InferController {
         List<MostrarCategoria> mostrarCategoria = mostrarCategoriaManager.getAllMostrarCategoriasByUsuario(usr);
 
         for (int i = 0; i < mostrarCategoria.size(); i++ ){
-            showCategorias.add(mostrarCategoria.get(i).getCategoria());
+            showCategorias.add(mostrarCategoria.get(i).getId().getCategoria());
         }
         
         List<Simbolo> simboloList = simboloManager.getAllSimboloByTeoria(resuel.getTeoria().getId());

@@ -70,7 +70,7 @@ public class MostrarCategoriaManagerImpl implements MostrarCategoriaManager {
         List<MostrarCategoria> mostrarCategoriasClean = new ArrayList<>();
         Set<Integer> seen = new HashSet<>();
         for (MostrarCategoria mc: mostrarCategorias) {
-            Integer id = mc.getCategoria().getId();
+            Integer id = mc.getId().getCategoria().getId();
             if (!seen.contains(id)) {
                 seen.add(id);
                 mostrarCategoriasClean.add(mc);

@@ -131,6 +131,7 @@ public class CrudOperationsImpl implements CrudOperations {
      *                      all the sub statements in the sub proofs
      * @param method: Term that represents the current state of the proof method. This
      *                term had the information about what the current sub proof is.
+   * @param caseAnalysis
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override

@@ -29,7 +29,7 @@ public class IncluyeDaoImpl implements IncluyeDAO {
     }
 
     public Incluye getIncluye(Teoria padre, Teoria hijo) {
-        return (Incluye) this.sessionFactory.getCurrentSession().createQuery("FROM Incluye WHERE padreid = :padreid AND hijoid = :hijoid").setParameter("padreid", padre.getId()).setParameter("hijoid", hijo.getId()).list().get(0);
+        return (Incluye) this.sessionFactory.getCurrentSession().createQuery("FROM Incluye i WHERE i.id.padre.id = :padreid AND i.id.hijo.id = :hijoid").setParameter("padreid", padre.getId()).setParameter("hijoid", hijo.getId()).list().get(0);
     }
     
     public List<Incluye> getAllIncluye() {
@@ -37,10 +37,10 @@ public class IncluyeDaoImpl implements IncluyeDAO {
     }
   
     public List<Incluye> getAllIncluyeByPadre(Teoria padre) {
-        return this.sessionFactory.getCurrentSession().createQuery("FROM Incluye WHERE padreid = :padreid").setParameter("padreid", padre.getId()).list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Incluye i WHERE i.id.padre.id = :padreid").setParameter("padreid", padre.getId()).list();
     }
     
     public List<Incluye> geAlltIncluyeByHijo(Teoria hijo) {
-        return this.sessionFactory.getCurrentSession().createQuery("FROM Incluye WHERE hijoid = :hijoid").setParameter("hijoid", hijo.getId()).list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Incluye i WHERE i.id.hijo.id = :hijoid").setParameter("hijoid", hijo.getId()).list();
     }
 }

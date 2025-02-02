@@ -69,7 +69,7 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
     @Override
     @Transactional
     public List<MostrarCategoria> getAllMostrarCategoriasByUsuario(Usuario usuario){
-        return this.sessionFactory.getCurrentSession().createQuery("FROM MostrarCategoria WHERE usuariologin = :usuariologin AND (categoria.teoria IN (SELECT teoria FROM Usuario WHERE login = :usuariologin) OR categoria.teoria IN (SELECT i.padre FROM Incluye i, Usuario u WHERE i.hijo = u.teoria)) ORDER BY categoriaid").setParameter("usuariologin",usuario.getLogin()).list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM MostrarCategoria mc WHERE usuariologin = :usuariologin AND (mc.id.categoria.teoria IN (SELECT teoria FROM Usuario WHERE login = :usuariologin) OR mc.id.categoria.teoria IN (SELECT i.id.padre FROM Incluye i, Usuario u WHERE i.id.hijo = u.teoria)) ORDER BY categoriaid").setParameter("usuariologin",usuario.getLogin()).list();
     }
     
     /**
@@ -81,6 +81,6 @@ public class MostrarCategoriaDaoImpl implements MostrarCategoriaDAO {
     @Override
     @Transactional
     public MostrarCategoria getMostrarCategoriaByCategoriaAndUsuario(Categoria categoria,Usuario usuario){
-        return (MostrarCategoria)this.sessionFactory.getCurrentSession().createQuery("FROM MostrarCategoria WHERE usuariologin = :usuariologin AND categoriaid = :categoriaid ORDER BY categoriaid").setParameter("usuariologin", usuario.getLogin()).setParameter("categoriaid",categoria.getId()).list().get(0);
+        return (MostrarCategoria)this.sessionFactory.getCurrentSession().createQuery("FROM MostrarCategoria mc WHERE usuariologin = :usuariologin AND mc.id.categoria.id = :categoriaid ORDER BY categoriaid").setParameter("usuariologin", usuario.getLogin()).setParameter("categoriaid",categoria.getId()).list().get(0);
     }
 }
