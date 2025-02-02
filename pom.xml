@@ -22,7 +22,7 @@
       </repository>
   </repositories>
   <properties>
-    <org.springframework.version>4.3.18.RELEASE</org.springframework.version>
+    <org.springframework.version>5.2.25.RELEASE</org.springframework.version>
     <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     <!--<jackson.version>2.6.3</jackson.version>-->
     <jackson.version>2.13.4</jackson.version>
@@ -206,7 +206,7 @@
   <dependency>
     <groupId>org.springframework</groupId>
     <artifactId>spring-webmvc-portlet</artifactId>
-    <version>${org.springframework.version}</version>
+    <version>4.3.30.RELEASE</version>
           <!--<scope>system</scope>
           <systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/spring-webmvc-portlet-4.3.18.RELEASE.jar</systemPath>-->
   </dependency>
@@ -310,9 +310,9 @@
   </dependency>-->
 <!-- Postgresql database driver informatin -->
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901.jdbc4</version>
+            <version>42.7.5</version>
             <!--<scope>system</scope>
             <systemPath>/home/federico/NetBeansProjects/Aledania/target/Aledania/WEB-INF/lib/postgresql-9.1-901.jdbc4.jar</systemPath>-->
         </dependency>
@@ -467,6 +467,19 @@
         <artifactId>commons-dbcp2</artifactId>
         <version>2.13.0</version>
     </dependency>
+    
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.26</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <version>1.1</version>
+    </dependency>
+
         
 </dependencies>
   
