@@ -7,6 +7,8 @@ import java.util.List;
 public interface IncluyeManager {
     
     public void addIncluye(Incluye incluye);
+
+    public void addIncluyeByChildTheory(Teoria childTheory, List<Integer> parentTheoryIds);
     
     public void deleteIncluye(Incluye incluye);
 

@@ -15,7 +15,16 @@
                 <c:choose>
                     <c:when test="${isAdmin.intValue()==1}">
                         <li class="nav-item ${students}" ><a href="${urlPrefix}students" class="nav-link">Students</a></li>
-                        <li class="nav-item ${theoMenu}" ><a href="${urlPrefix}theo" class="nav-link">Theories</a></li>
+                        <!--<li class="nav-item ${theoMenu}" ><a href="${urlPrefix}theo" class="nav-link">Theories</a></li>-->
+                        <li class="nav-item dropdown ${theoriesMenu}">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Theories
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <li><a class="dropdown-item" href="${urlPrefix}theo">Symbols Manage</a></li>
+                              <li><a class="dropdown-item" href="${urlPrefix}addTheory">Add Theory</a></li>
+                            </ul>
+                        </li>
                         <li class="nav-item ${catMenu}" ><a href="${urlPrefix}guardarcat" class="nav-link">Add Category</a></li>
                     </c:when>    
                 </c:choose>
@@ -24,6 +33,25 @@
             </ul>
         </div>
     </nav>
+</div>
+            
+<script>
+    $(document).ready(function () {
+        $(document).click(function (event) {
+            var clickover = $(event.target);
+            var $navbar = $(".dropdown-menu");
+            var $toggle = $(".dropdown-toggle");
+
+            if (!$toggle.is(clickover) && !$navbar.is(clickover) && $navbar.has(event.target).length === 0) {
+                $navbar.removeClass("show");
+            }
+        });
+
+        $(".dropdown-toggle").click(function () {
+            $(this).next(".dropdown-menu").toggleClass("show");
+        });
+    });
+</script>
 
 <%--
 <div class="page-header">

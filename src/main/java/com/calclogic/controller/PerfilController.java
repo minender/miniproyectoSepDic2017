@@ -22,9 +22,12 @@ import com.calclogic.entity.TerminoId;
 import com.calclogic.entity.MostrarCategoria;
 import com.calclogic.entity.Predicado;
 import com.calclogic.entity.PredicadoId;
+import com.calclogic.entity.Incluye;
+import com.calclogic.entity.IncluyeId;
 import com.calclogic.entity.PureCombsTheorem;
 import com.calclogic.forms.AgregarCategoria;
 import com.calclogic.forms.AgregarSimbolo;
+import com.calclogic.forms.AddTheoryForm;
 import com.calclogic.forms.AgregarTeorema;
 import com.calclogic.forms.InferResponse;
 import com.calclogic.forms.InfersForm;
@@ -68,7 +71,9 @@ import com.calclogic.service.SimboloManager;
 import com.calclogic.service.SolucionManager;
 import com.calclogic.service.TeoremaManager;
 import com.calclogic.service.TeoriaManager;
+import com.calclogic.service.IncluyeManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -119,8 +124,8 @@ public class PerfilController {
     private MostrarCategoriaManager mostrarCategoriaManager;
     @Autowired
     private CrudOperations crudOp;
-    //@Autowired
-    //private CombUtilities combUtilities;
+    @Autowired
+    private IncluyeManager incluyeManager;
     
     
     @RequestMapping(value="/{username}/close", method=RequestMethod.GET)
@@ -2271,93 +2276,214 @@ public class PerfilController {
         
         return "insertarEvaluar";
     }
-    
-    @RequestMapping(value="/{username}/theo", method=RequestMethod.GET)
+
+    @RequestMapping(value = "/{username}/theo", method = RequestMethod.GET)
     public String TheoriesView(@PathVariable String username, ModelMap map) {
-        if (  
-            (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username)
-                || !((Usuario)session.getAttribute("user")).isAdmin()
-            )
-        {
-            return "redirect:/index";
+
+        // Get the user
+        Usuario user = (Usuario) session.getAttribute("user");
+
+        if (user == null || !user.getLogin().equals(username) || !user.isAdmin()) {
+          return "redirect:/index";
         }
+
         Usuario usr = usuarioManager.getUsuario(username);
         List<Simbolo> listaSimbolos = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Teoria> listaTeorias = teoriaManager.getAllTeoria();
-        
+
         map.addAttribute("usuario", usr);
-        map.addAttribute("mensaje","");
-        map.addAttribute("guardarMenu","");
-        map.addAttribute("listarTerminosMenu","");
-        map.addAttribute("misTeoremasMenu","");        
-        map.addAttribute("agregarTeoremaMenu","");        
-        map.addAttribute("perfilMenu","");
-        map.addAttribute("theoMenu","active");
-        map.addAttribute("students","");
-        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-        map.addAttribute("helpMenu","");
-        map.addAttribute("overflow","hidden");
-        map.addAttribute("anchuraDiv","1100px");
-        map.addAttribute("listaSimbolos",listaSimbolos);
-        map.addAttribute("listaTeorias",listaTeorias);
-        map.addAttribute("agregarSimbolo",new AgregarSimbolo());
-        map.addAttribute("modificarSimbolo",new AgregarSimbolo());
-        
-        
+        map.addAttribute("mensaje", "");
+        map.addAttribute("guardarMenu", "");
+        map.addAttribute("listarTerminosMenu", "");
+        map.addAttribute("misTeoremasMenu", "");
+        map.addAttribute("agregarTeoremaMenu", "");
+        map.addAttribute("perfilMenu", "");
+        map.addAttribute("theoriesMenu", "active");
+        map.addAttribute("students", "");
+        map.addAttribute("isAdmin", usr.isAdmin() ? Integer.valueOf(1) : Integer.valueOf(0));
+        map.addAttribute("helpMenu", "");
+        map.addAttribute("overflow", "hidden");
+        map.addAttribute("anchuraDiv", "1100px");
+        map.addAttribute("listaSimbolos", listaSimbolos);
+        map.addAttribute("listaTeorias", listaTeorias);
+        map.addAttribute("agregarSimbolo", new AgregarSimbolo());
+        map.addAttribute("modificarSimbolo", new AgregarSimbolo());
+
         return "theories";
     }
-    
-    @RequestMapping(value="/{username}/theo", method=RequestMethod.POST)
-    public String guardarTeoria(@Valid AgregarSimbolo agregarSimbolo, BindingResult bindingResult, @PathVariable String username, ModelMap map)
-    {
-            if ( (Usuario)session.getAttribute("user") == null || !((Usuario)session.getAttribute("user")).getLogin().equals(username))
-            {
-                return "redirect:/index";
-            }
+
+    @RequestMapping(value = "/{username}/theo", method = RequestMethod.POST)
+    public String guardarTeoria(
+        @Valid AgregarSimbolo agregarSimbolo,
+        BindingResult bindingResult,
+        @PathVariable String username,
+        ModelMap map) {
+      
+        // Get the user
+        Usuario user = (Usuario) session.getAttribute("user");
+
+        if (user == null || !user.getLogin().equals(username)) {
+          return "redirect:/index";
+        }
+
         Teoria teoria = teoriaManager.getTeoria(agregarSimbolo.getTeoriaid());
         Usuario usr = usuarioManager.getUsuario(username);
-        //Teoria teoria = usr.getTeoria();
-        
-        if (!agregarSimbolo.isModificar()){
-            Simbolo simbolo = new Simbolo(agregarSimbolo.getNotacion_latex(),agregarSimbolo.getArgumentos(),agregarSimbolo.isEsInfijo(),
-            agregarSimbolo.getAsociatividad(),agregarSimbolo.getPrecedencia(),agregarSimbolo.getNotacion(), teoria, agregarSimbolo.getTipo());
-            simboloManager.addSimbolo(simbolo);
-        }else{
-            Simbolo simbolo = simboloManager.getSimbolo(agregarSimbolo.getId());
-            simbolo.setNotacion_latex(agregarSimbolo.getNotacion_latex());
-            simbolo.setArgumentos(agregarSimbolo.getArgumentos());
-            simbolo.setAsociatividad(agregarSimbolo.getAsociatividad());
-            simbolo.setEsInfijo(agregarSimbolo.isEsInfijo());
-            simbolo.setPrecedencia(agregarSimbolo.getPrecedencia());
-            simbolo.setTeoria(teoria);
-            simbolo.setNotacion(agregarSimbolo.getNotacion());
-            //simbolo.setTipo(agregarSimbolo.getTipo());
-            simboloManager.updateSimbolo(simbolo);
+        // Teoria teoria = usr.getTeoria();
+
+        if (!agregarSimbolo.isModificar()) {
+          Simbolo simbolo =
+              new Simbolo(
+                  agregarSimbolo.getNotacion_latex(),
+                  agregarSimbolo.getArgumentos(),
+                  agregarSimbolo.isEsInfijo(),
+                  agregarSimbolo.getAsociatividad(),
+                  agregarSimbolo.getPrecedencia(),
+                  agregarSimbolo.getNotacion(),
+                  teoria,
+                  agregarSimbolo.getTipo());
+          simboloManager.addSimbolo(simbolo);
+        } else {
+          Simbolo simbolo = simboloManager.getSimbolo(agregarSimbolo.getId());
+          simbolo.setNotacion_latex(agregarSimbolo.getNotacion_latex());
+          simbolo.setArgumentos(agregarSimbolo.getArgumentos());
+          simbolo.setAsociatividad(agregarSimbolo.getAsociatividad());
+          simbolo.setEsInfijo(agregarSimbolo.isEsInfijo());
+          simbolo.setPrecedencia(agregarSimbolo.getPrecedencia());
+          simbolo.setTeoria(teoria);
+          simbolo.setNotacion(agregarSimbolo.getNotacion());
+          // simbolo.setTipo(agregarSimbolo.getTipo());
+          simboloManager.updateSimbolo(simbolo);
         }
-        
 
         List<Simbolo> listaSimbolos = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
         List<Teoria> listaTeorias = teoriaManager.getAllTeoria();
         map.addAttribute("usuario", usr);
-        map.addAttribute("mensaje","");
-        map.addAttribute("guardarMenu","");
-        map.addAttribute("listarTerminosMenu","");
-        map.addAttribute("misTeoremasMenu","");        
-        map.addAttribute("agregarTeoremaMenu","");        
-        map.addAttribute("perfilMenu","");
-        map.addAttribute("theoMenu","active");
-        map.addAttribute("students","");
-        map.addAttribute("isAdmin",usr.isAdmin()?new Integer(1):new Integer(0));
-        map.addAttribute("helpMenu","");
-        map.addAttribute("overflow","hidden");
-        map.addAttribute("anchuraDiv","1100px");
-        map.addAttribute("listaSimbolos",listaSimbolos);
-        map.addAttribute("listaTeorias",listaTeorias);
-        map.addAttribute("agregarSimbolo",new AgregarSimbolo());
-        map.addAttribute("modificarSimbolo",new AgregarSimbolo());
+        map.addAttribute("mensaje", "");
+        map.addAttribute("guardarMenu", "");
+        map.addAttribute("listarTerminosMenu", "");
+        map.addAttribute("misTeoremasMenu", "");
+        map.addAttribute("agregarTeoremaMenu", "");
+        map.addAttribute("perfilMenu", "");
+        map.addAttribute("theoriesMenu", "active");
+        map.addAttribute("students", "");
+        map.addAttribute("isAdmin", usr.isAdmin() ? Integer.valueOf(1) : Integer.valueOf(0));
+        map.addAttribute("helpMenu", "");
+        map.addAttribute("overflow", "hidden");
+        map.addAttribute("anchuraDiv", "1100px");
+        map.addAttribute("listaSimbolos", listaSimbolos);
+        map.addAttribute("listaTeorias", listaTeorias);
+        map.addAttribute("agregarSimbolo", new AgregarSimbolo());
+        map.addAttribute("modificarSimbolo", new AgregarSimbolo());
+        
         return "theories";
     }
     
+    
+    @RequestMapping(value = "/{username}/addTheory", method = RequestMethod.GET)
+    public String AddTheoriesView(@PathVariable String username, ModelMap map) {
+
+        // Get the user
+        Usuario user = (Usuario) session.getAttribute("user");
+
+        if (user == null || !user.getLogin().equals(username) || !user.isAdmin()) {
+          return "redirect:/index";
+        }
+
+        user = usuarioManager.getUsuario(username);
+//        List<Simbolo> listaSimbolos = simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
+        List<Teoria> theoryList = teoriaManager.getAllTeoria();
+//
+        map.addAttribute("usuario", user);
+        map.addAttribute("addTheoryForm", new AddTheoryForm());
+//        map.addAttribute("mensaje", "");
+//        map.addAttribute("guardarMenu", "");
+//        map.addAttribute("listarTerminosMenu", "");
+//        map.addAttribute("misTeoremasMenu", "");
+//        map.addAttribute("agregarTeoremaMenu", "");
+//        map.addAttribute("perfilMenu", "");
+//        map.addAttribute("theoriesMenu", "active");
+//        map.addAttribute("students", "");
+        map.addAttribute("isAdmin", user.isAdmin() ? Integer.valueOf(1) : Integer.valueOf(0));
+//        map.addAttribute("helpMenu", "");
+//        map.addAttribute("overflow", "hidden");
+//        map.addAttribute("anchuraDiv", "1100px");
+//        map.addAttribute("listaSimbolos", listaSimbolos);
+        map.addAttribute("theoryList", theoryList);
+//        map.addAttribute("agregarSimbolo", new AgregarSimbolo());
+//        map.addAttribute("modificarSimbolo", new AgregarSimbolo());
+
+        return "addTheory";
+    }
+
+  @RequestMapping(value = "/{username}/addTheory", method = RequestMethod.POST)
+  public String AddTheoriesViewPost(
+      @Valid AddTheoryForm addTheoryForm,
+      BindingResult bindingResult,
+      @PathVariable String username,
+      ModelMap map) {
+
+    // Get the user
+    Usuario user = (Usuario) session.getAttribute("user");
+
+    if (user == null || !user.getLogin().equals(username) || !user.isAdmin()) {
+      return "redirect:/index";
+    }
+    
+    Integer isAdmin = user.isAdmin() ? 1 : 0;
+    
+    // Check for validation errors
+    if (bindingResult.hasErrors()) {
+        map.addAttribute("isAdmin", isAdmin);
+        map.addAttribute("overflow", "hidden");
+        map.addAttribute("anchuraDiv", "1100px");
+        map.addAttribute("addTheoryForm", addTheoryForm);
+        return "addTheory"; // Return the form with errors
+    }
+    
+    try {
+    
+        // Extract data from the form
+        String theoryName = addTheoryForm.getName();
+        List<Integer> parentTheoryIds = addTheoryForm.getParentTheories();
+
+        // Create the theory
+        Teoria theory = new Teoria(theoryName);
+        teoriaManager.addTeoria(theory);
+        
+        // Create the incluye relationships
+        incluyeManager.addIncluyeByChildTheory(theory, parentTheoryIds);
+
+        //        user = usuarioManager.getUsuario(username);
+        //        List<Simbolo> listaSimbolos =
+        // simboloManager.getAllSimboloByTeoria(usr.getTeoria().getId());
+        //        List<Teoria> theoryList = teoriaManager.getAllTeoria();
+        //
+        //        map.addAttribute("usuario", user);
+        //        map.addAttribute("mensaje", "");
+        //        map.addAttribute("guardarMenu", "");
+        //        map.addAttribute("listarTerminosMenu", "");
+        //        map.addAttribute("misTeoremasMenu", "");
+        //        map.addAttribute("agregarTeoremaMenu", "");
+        //        map.addAttribute("perfilMenu", "");
+        //        map.addAttribute("theoriesMenu", "active");
+        //        map.addAttribute("students", "");
+        map.addAttribute("successMessage", "Theory added successfully");
+        map.addAttribute("isAdmin", user.isAdmin() ? Integer.valueOf(1) : Integer.valueOf(0));
+        //        map.addAttribute("helpMenu", "");
+        map.addAttribute("overflow", "hidden");
+        map.addAttribute("anchuraDiv", "1100px");
+
+        return "addTheory";
+        
+    } catch (Exception e) {
+        map.addAttribute("errorMessage", "An error occurred" + e.getMessage());
+        map.addAttribute("isAdmin", user.isAdmin() ? 1 : 0);
+        map.addAttribute("addTheoryForm", addTheoryForm);
+        
+        return "addTheory";
+    }
+  }
+
     @RequestMapping(value="/{username}/theo/deleteSymbol/{symbolId}", method=RequestMethod.GET)
     @ResponseBody
     public String DeleteSymbol(@PathVariable String username, @PathVariable String symbolId, ModelMap map) {
