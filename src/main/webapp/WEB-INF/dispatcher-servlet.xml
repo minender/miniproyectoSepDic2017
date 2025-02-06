@@ -28,8 +28,8 @@
     <!--<bean id="aspecto" class="com.calclogic.service.Aspectos" />
     <aop:aspectj-autoproxy />-->
     
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+    <mvc:annotation-driven />
     
     <bean id="jspViewResolver"
         class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -38,15 +38,6 @@
         <property name="prefix" value="/WEB-INF/view/" />
         <property name="suffix" value=".jsp" />
     </bean>
- 
-    <bean id="ViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-        <property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
-        <!--<property name="definitions">
-          <list>
-            <value>/WEB-INF/views/**/views.xml</value>
-          </list>
-        </property>-->
-     </bean>
     
     <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
         <property name="definitions">
@@ -56,11 +47,29 @@
         </property>
     </bean>
  
+<!--    <bean id="ViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
+        <property name="definitions">
+          <list>
+            <value>/WEB-INF/views/**/views.xml</value>
+          </list>
+        </property>
+     </bean>-->
+    
+<!--    <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+        <property name="definitions">
+            <list>
+                <value>/WEB-INF/tilesConfigurer/views.xml</value>
+            </list>
+        </property>
+    </bean>-->
+ 
     <bean id="messageSource"
         class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basename" value="classpath:messages" />
         <property name="defaultEncoding" value="UTF-8" />
     </bean>
+    
     <!--<bean id="propertyConfigurer"
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
         p:location="/WEB-INF/jdbc.properties" />-->
@@ -72,7 +81,7 @@
         p:password="${jdbc.password}" />-->
  
  
-    <bean id="sessionFactory"
+<!--    <bean id="sessionFactory"
         class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="configLocation">
@@ -88,10 +97,51 @@
                 <prop key="hibernate.enable_lazy_load_no_trans"> true </prop> 
                 <prop key="hibernate.dialect">${jdbc.dialect}</prop>
                 <prop key="hibernate.show_sql">$(jdbc.hibernateSqlLog)</prop>
-                <!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property> 
+    </bean>-->
+    
+<!--    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver" />
+        <property name="url" value="jdbc:postgresql://localhost:5432/calclogicdb" />
+        <property name="username" value="testuser" />
+        <property name="password" value="password" />
+    </bean>
+    
+       Create default configuration for Hibernate 
+  <bean id="hibernateJpaVendorAdapter" 
+    class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+    
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+        <property name="packagesToScan">
+            <value>com.calclogic.entity</value>
+            <list>
+                <value>com.calclogic.entity.Usuario</value>
+            </list>
+        </property>
+        
+         Set JPA properties 
+        <property name="jpaProperties">
+            <props> 
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
             </props>
         </property> 
     </bean>
+    
+     Configure the transaction manager bean 
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+    
+       Enable annotation driven transaction management 
+    <tx:annotation-driven/>-->
+
     
     <bean id="usuarioDAO" class="com.calclogic.dao.UsuarioDaoImpl"></bean>
     <bean id="usuarioManager" class="com.calclogic.service.UsuarioManagerImpl"></bean>
@@ -164,11 +214,5 @@
     <bean id="weakeningStrengtheningL" class="com.calclogic.proof.WeakeningStrengtheningLeftMethodImpl"></bean>
 
     <bean id="staticContextInitializer" class="com.calclogic.lambdacalculo.StaticContextInitializer"></bean>
- 
-    <tx:annotation-driven />
-    <bean id="transactionManager"
-        class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
    
 </beans>

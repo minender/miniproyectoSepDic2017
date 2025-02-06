@@ -65,6 +65,6 @@ public class CategoriaDaoImpl implements CategoriaDAO {
     @Override
     public List<Categoria> getAllCategoriasByTeoria(Teoria teoria){
         //return this.sessionFactory.getCurrentSession().createQuery("FROM Categoria order by id").list();
-        return this.sessionFactory.getCurrentSession().createQuery("FROM Categoria WHERE teoriaid = :teoriaId OR EXISTS (SELECT padre FROM Incluye WHERE padre = teoriaid AND hijo = :teoriaId) order by id").setParameter("teoriaId", teoria.getId()).list();
+        return this.sessionFactory.getCurrentSession().createQuery("FROM Categoria WHERE teoriaid = :teoriaId OR EXISTS (SELECT i.id.padre FROM Incluye i WHERE i.id.padre.id = teoriaid AND i.id.hijo.id = :teoriaId) order by id").setParameter("teoriaId", teoria.getId()).list();
     }
 }

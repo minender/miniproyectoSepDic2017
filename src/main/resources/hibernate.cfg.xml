@@ -12,6 +12,7 @@
     <property name="hibernate.validator.autoregister_listeners">false</property> -->
     
     <mapping resource="com/calclogic/entity/Usuario.hbm.xml"/>
+    <!--<mapping class="com.calclogic.entity.Usuario"/>-->
     <mapping resource="com/calclogic/entity/Termino.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Publicacion.hbm.xml"/>
     <mapping resource="com/calclogic/entity/Predicado.hbm.xml"/>

@@ -229,7 +229,7 @@ public class SimboloManagerImpl implements SimboloManager {
         List<Incluye> incluyes = incluyeDAO.geAlltIncluyeByHijo(teoria);
         HashSet teoriaids = new HashSet();
         for (Incluye inc: incluyes) {
-            teoriaids.add(inc.getPadre().getId());
+            teoriaids.add(inc.getId().getPadre().getId());
         }
         teoriaids.add(teoriaid);
         List<Simbolo> list = new ArrayList<Simbolo>();
