@@ -216,6 +216,7 @@ argtail returns [ArrayList<Term> value]:
                                                   list2.add(0,aux);  
                                                  $value = list2;
                                                 }
+    | '(' ')' ',' arg=arguments  {$value=$arguments.value;}
 
     | '(' arguments ')'                         {ArrayList<Term> list=$arguments.value;
                                                  Term aux = new Const("0");
@@ -225,6 +226,8 @@ argtail returns [ArrayList<Term> value]:
                                                  list2.add(0,aux);
                                                  $value = list2;
                                                 }
+
+    | '(' ')'                                   {$value = new ArrayList<Term>();}
 
     |                                           {$value = new ArrayList<Term>();};                               
 

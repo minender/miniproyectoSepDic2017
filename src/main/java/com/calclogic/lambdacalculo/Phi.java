@@ -195,7 +195,7 @@ public class Phi extends Term{
                               Var var = new Var(((Var)aux2).indice);
                               Term term = new App(new App(new Const("->"),aux2),lastR);
                               int l = (isEmptyFList?i-stInd+1:i);
-                              for (int k=0;k<=l;k++)
+                              for (int k=0;k<=l;k++) 
                                   A[k] = A[k].sust(var, term);
                               aux = aux2;
                           }

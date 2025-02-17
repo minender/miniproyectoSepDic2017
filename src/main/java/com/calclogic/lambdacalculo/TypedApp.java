@@ -28,6 +28,7 @@ public class TypedApp extends App implements TypedTerm{
         super(t1, t2, false);
         Term t1Type = t1.type();
         Term t2Type = t2.type();
+
         Const op;
         try {
             App rootRight = (App)t2Type;

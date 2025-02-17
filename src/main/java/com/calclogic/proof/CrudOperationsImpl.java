@@ -482,6 +482,7 @@ public class CrudOperationsImpl implements CrudOperations {
         if (objectMethod.getGroupMethod().equals("T")){
             Term type = proof.type();
             Term typeInf = infer.type();
+
             String op;
             String opInf;
             try {

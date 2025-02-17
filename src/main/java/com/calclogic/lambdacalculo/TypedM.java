@@ -302,7 +302,7 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             Term type2 = proof_.type();
             I = "I^{[x_{99},x_{98},x_{97}:="+((App)((App)((App)((App)type2).p).q).p).q+","+((App)((App)((App)((App)((App)type2).p).q).q).p).q+","+((App)((App)((App)((App)type2).p).q).q).q+"]}";
             proof_ = new TypedApp(proof_,CombUtilities.getTerm(I+" "+A1,user,sm_));
-            A1 = "A^{= (\\Phi_{bb} \\Phi_{b} c_{55}) (\\Phi_{cb} c_{55} \\Phi_{cb})}";
+            A1 = "A^{= (\\Phi_{bb} \\Phi_{b} c_{55}) (\\Phi_{cb} c_{55} \\P 1hi_{cb})}";
             L = "L^{\\lambda x_{122}."+ctx+" (c_{55} x_{122} ("+((App)((App)((App)proof_.type()).p).q).q+"))}";
             type2 = ((App)((App)((App)((App)proof_.type()).p).q).p).q;
             I = "I^{[x_{97},x_{98}:="+((App)type2).q+","+((App)((App)type2).p).q+"]}";

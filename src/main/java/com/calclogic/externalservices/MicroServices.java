@@ -21,7 +21,7 @@ public class MicroServices {
     
     // URL in which there is the server that transforms a string into HTML format
     private static final String URL_LATEX_TO_HTML = "http://localhost:83/example";
-    //private static final String URL_LATEX_TO_HTML = "http://173.230.133.51:83/example";
+    //private static final String URL_LATEX_TO_HTML = "http://nodejs:83/example";
 
     /**
      * Transforms a string into another string

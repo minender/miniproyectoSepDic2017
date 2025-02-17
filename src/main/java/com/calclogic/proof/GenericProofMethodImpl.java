@@ -106,6 +106,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
      */
     @Override
     public Term initFormula(Term beginFormula, Term proof){
+
         return beginFormula;
     }
 

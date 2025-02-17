@@ -33,12 +33,32 @@
 	//SET INPUT BOX ASSOCIATED TO THIS VIEW, HERE WE'LL SEND THE DATA	
 	window['${rootId}_InputForm'] = '${inputForm}';
 	
+        var targetNode = document.getElementById('${rootId}' + "MathJaxDiv");
+        var config = { childList: true, subtree: true };
+
+        var callback = function(mutationsList, observer) {
+            for(const mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.className == "MathJax_Input") {
+                                setMathJaxFormAttributes(node, 1, '${rootId}');
+                        }
+                    });
+                }
+            }
+        };
+
+        var observer = new MutationObserver(callback);
+        observer.observe(targetNode, config);
+
+        // Deprecated:
+        
 	// If a new MathJax input gets added this sets its attributes
-	document.getElementById('${rootId}' + "MathJaxDiv").addEventListener('DOMNodeInserted', function( event ) {
-	    if(event.target.className == "MathJax_Input"){
-  	  		setMathJaxFormAttributes(event.target, 1, '${rootId}');
-	    }
-	}, false); 
+	// document.getElementById('${rootId}' + "MathJaxDiv").addEventListener('DOMNodeInserted', function( event ) {
+	//    if(event.target.className == "MathJax_Input"){
+  	//  		setMathJaxFormAttributes(event.target, 1, '${rootId}');
+	//    }
+	//}, false); 
 		
 	// Set a numeric (but still a string) Id for all aliases, that way we can use them as symbols
 	for (var key in window['${rootId}' + 'simboloDic']) {

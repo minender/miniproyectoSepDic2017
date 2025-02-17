@@ -22,7 +22,7 @@
       </style>
     <tiles:insertDefinition name="nav" />
     <div style="height : 100% !important" id="iframeSpace">
-        <iframe id="studentIframe" width="100%" height="100%" src="../${login}/misTeoremas" frameborder="0"></iframe>
+        <iframe id="studentIframe" width="100%" height="100%" src="../${login}/myTheorems" frameborder="0"></iframe>
     </div>
     <%--<tiles:insertDefinition name="footer" />--%>
     <script>
