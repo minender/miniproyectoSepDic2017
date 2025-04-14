@@ -221,7 +221,7 @@ public class TransitivityFromLeftMethodImpl extends StartingFromLeftMethodImpl i
                            iter = ((TypedM)iter).getSubProof();
                     }
                     else if ( aux1.q instanceof Bracket && ((Var)((App)((Bracket)aux1.q).t).p).indice == 82 ) {
-                        t = new App(new App(new App(new Const(62,"c_{62}"),new Const(5,"c_{5}")),new Var('z')),((App)aux2).q);
+                        t = new App(new App(new App(new Const(62,"c_{62}"),((App)((App)((App)aux2).p).p).q),new Var('z')),((App)aux2).q);
                         if (iter instanceof TypedM && ((TypedM)iter).getNumber()==11 )
                            iter = ((TypedM)iter).getSubProof();
                     }

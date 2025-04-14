@@ -94,7 +94,11 @@ public class WeakeningStrengtheningLeftMethodImpl extends TransitivityFromLeftMe
                     Term root = ((App)nabla.type()).q.body();
                     Var x = ((Bracket)((App)((App)t).p).q).x;
                     nabla = new TypedM(11,x.indice,nabla,nabla.type().traducBD().toString(),"AdminTeoremas");
-                    nabla2 = wsub2(((App)((App)t).p).q, ((App)root).q,    
+                    if (ind == 5)
+                       nabla2 = wsub2(((App)((App)t).p).q, ((App)root).q,    
+                                             (Const)((App)((App)root).p).p, ((App)((App)root).p).q);
+                    else if (ind == 4)
+                       nabla2 = wseb2(((App)((App)t).p).q, ((App)root).q,    
                                              (Const)((App)((App)root).p).p, ((App)((App)root).p).q);
                 }
                 t = ((App)((App)t).p).p;
@@ -218,7 +222,7 @@ public class WeakeningStrengtheningLeftMethodImpl extends TransitivityFromLeftMe
     
     private Term wsuc2(Term p, Term q, Const op, Term r) {
 
-        String op2 = (op.getId() == 2?"c_{2}":"c_{3}");
+        //String op2 = (op.getId() == 2?"c_{2}":"c_{3}");
         String x = ((Bracket)r).x.toString();
         String P = p.toString();
         String Q = q.toString();
@@ -248,6 +252,18 @@ public class WeakeningStrengtheningLeftMethodImpl extends TransitivityFromLeftMe
         String Q = q.toString();
         String R = r.toString();                                              //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccbb,b)} c_{3} c_{2} (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)} c_{2} c_{2})
         String wsl2 = "I^{[x_{82}, "+(op.getId()==2?"x_{80}":"x_{81}")+", "+(op.getId()==2?"x_{81}":"x_{80}")+" := "+R+", \\lambda "+x+". "+P+", \\lambda "+x+". "+Q+"]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(ccbbb,bb)} (\\Phi_{(bb,b)} "+op+") \\Phi_{b} "+op+" (\\Phi_{(bbbb,bb)} c_{2}) (\\Phi_{(cccbbbb,b)} (c_{62} c_{5} (\\Phi_{K} c_{8})) \\Phi_{b}) (c_{62} c_{4}) \\Phi_{b} (c_{62} c_{4}) \\Phi_{b})}";
+
+        return CombUtilities.getTerm(wsl2,"AdminTeoremas",TypedA.sm_);
+    }
+    
+    private Term wseb2(Term r, Term q, Const op, Term p) {
+
+        //String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
+        String x = ((Bracket)r).x.toString();
+        String P = p.toString();
+        String Q = q.toString();//
+        String R = r.toString();                                            //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccccbb,bb)} \\Phi_{b} \\Phi_{b} "+op2+" (\\Phi_{(bbcbb,bb)} c_{2}) (c_{62} c_{5}) \\Phi_{b} (c_{62} c_{5} (\\Phi_{K} c_{8})) \\Phi_{cccc(bbbb,b)} (\\Phi_{(bb,b)} "+op+") (c_{62} c_{5}) \\Phi_{b})
+        String wsl2 = "I^{["+(op.getId()==2?"x_{80}":"x_{81}")+", x_{82}, "+(op.getId()==2?"x_{81}":"x_{80}")+" := \\lambda "+x+". "+P+", "+R+", \\lambda "+x+". "+Q+"]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccccbb,bb)} \\Phi_{b} \\Phi_{b} "+op+" (\\Phi_{(bbcbb,bb)} c_{2}) (c_{62} c_{4}) \\Phi_{b} (c_{62} c_{5} (\\Phi_{K} c_{8})) \\Phi_{cccc(bbbb,b)} (\\Phi_{(bb,b)} "+op+") (c_{62} c_{4}) \\Phi_{b})}";
 
         return CombUtilities.getTerm(wsl2,"AdminTeoremas",TypedA.sm_);
     }
