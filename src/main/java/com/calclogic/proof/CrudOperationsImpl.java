@@ -54,6 +54,8 @@ public class CrudOperationsImpl implements CrudOperations {
     @Autowired
     private OperatorToEquality operatorToEq;
     @Autowired
+    private EqualityToEqualityOperator equalityToEq;
+    @Autowired
     private MutualImplicationMethod mutualImplication;
     @Autowired
     private Generalization generalization;
@@ -91,6 +93,8 @@ public class CrudOperationsImpl implements CrudOperations {
                 return equalityToOp;
             case "OE":
                 return operatorToEq;
+            case "EE":
+                return equalityToEq;
             case "SL":
                 return startingFromLeft;
             case "SR":
@@ -131,6 +135,7 @@ public class CrudOperationsImpl implements CrudOperations {
      *                      all the sub statements in the sub proofs
      * @param method: Term that represents the current state of the proof method. This
      *                term had the information about what the current sub proof is.
+     * @param caseAnalysis
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override

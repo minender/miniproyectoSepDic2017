@@ -145,7 +145,6 @@ public class BrodaDamasType {
         t = CombUtilities.getTerm("\\Phi_{(c(c((cb,),),),)}", null, null);
         System.out.println("\\Phi_{(b(bbb,c),bb)}: "+t.type().toString().equals("-> (-> (-> (-> (-> x_{5} x_{1}) (-> (-> (-> (-> (-> (-> (-> (-> x_{5} x_{1}) x_{4}) x_{1}) x_{3}) x_{1}) x_{1}) x_{2}) x_{1})) x_{2}) x_{3}) x_{4}"));
         t = CombUtilities.getTerm("\\Phi_{(,c)}", null, null);
-        System.out.println("\\Phi_{(,c)}: "+t.type().toString());
         System.out.println("\\Phi_{(,c)}: "+t.type().toString().equals("-> (-> x_{2} (-> x_{2} x_{2})) x_{2}"));
         t = CombUtilities.getTerm("\\Phi_{(,b)}", null, null);
         System.out.println("\\Phi_{(,b)}: "+t.type().toString().equals("-> (-> x_{1} (-> x_{1} x_{2})) (-> x_{2} (-> x_{1} x_{2}))"));
@@ -171,6 +170,14 @@ public class BrodaDamasType {
         System.out.println("\\Phi_{(,(,bcc))}: "+t.type().toString().equals("-> (-> (-> (-> (-> x_{3} x_{2}) (-> (-> x_{3} x_{2}) (-> x_{3} x_{2}))) (-> x_{3} x_{2})) x_{2}) (-> (-> x_{3} x_{2}) x_{3})"));
         t = CombUtilities.getTerm("\\Phi_{(c,(b,c))}", null, null);
         System.out.println("\\Phi_{(c,(b,c))}: "+t.type().toString().equals("-> (-> (-> (-> x_{2} (-> (-> x_{2} x_{3}) x_{1})) x_{1}) (-> (-> x_{3} (-> x_{2} x_{3})) (-> (-> x_{2} x_{3}) x_{1}))) x_{1}"));
+        t = CombUtilities.getTerm("\\Phi_{((b,),)}", null, null);
+        System.out.println("\\Phi_{((b,),)}: "+t.type().toString().equals("-> (-> x_{2} x_{1}) (-> (-> (-> x_{2} x_{1}) x_{1}) x_{1})"));
+        t = CombUtilities.getTerm("\\Phi_{(cc(((c((c(c((cb,),),),),),),),),)}", null, null);
+        System.out.println("\\Phi_{(cc(((c((c(c((cb,),),),),),),),),)}: "+t.type().toString().equals("-> (-> (-> (-> (-> (-> (-> (-> x_{8} x_{1}) (-> (-> (-> (-> (-> (-> (-> (-> (-> (-> (-> (-> (-> (-> (-> (-> x_{8} x_{1}) x_{7}) x_{6}) x_{1}) x_{1}) x_{1}) x_{5}) x_{1}) x_{1}) x_{4}) x_{1}) x_{3}) x_{1}) x_{1}) x_{2}) x_{1})) x_{2}) x_{3}) x_{4}) x_{5}) x_{6}) x_{7}"));
+        t = CombUtilities.getTerm("\\Phi_{(c(c((cb,),),),)}", null, null);
+        System.out.println("\\Phi_{(c(c((cb,),),),)}: "+t.type().toString().equals("-> (-> (-> (-> (-> x_{5} x_{1}) (-> (-> (-> (-> (-> (-> (-> (-> x_{5} x_{1}) x_{4}) x_{1}) x_{3}) x_{1}) x_{1}) x_{2}) x_{1})) x_{2}) x_{3}) x_{4}"));
+        t = CombUtilities.getTerm("\\Phi_{((c(c((cb,),),),),)}", null, null);
+        System.out.println("\\Phi_{((c(c((cb,),),),),)}: "+t.type().toString().equals("-> (-> (-> (-> (-> x_{5} x_{1}) (-> (-> (-> (-> (-> (-> (-> (-> (-> x_{5} x_{1}) x_{1}) x_{4}) x_{1}) x_{3}) x_{1}) x_{1}) x_{2}) x_{1})) x_{2}) x_{3}) x_{4}"));
     }
 }
                                                            

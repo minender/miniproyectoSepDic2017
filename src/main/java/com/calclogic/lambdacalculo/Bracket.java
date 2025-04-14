@@ -164,6 +164,13 @@ public class Bracket extends Term{
         return list;
     }
     
+    public Term deleteLambdAtZScope(Var z) {
+        if (t.occur(z))
+            return t.deleteLambdAtZScope(z);
+        else
+            return this;
+    }
+    
     public int maxVar()
     {
         int max = t.maxVar();

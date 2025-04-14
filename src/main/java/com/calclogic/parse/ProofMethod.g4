@@ -32,6 +32,7 @@ method_base returns [Term value]:
        | DT {$value = new Const("DT");}
        | EO {$value = new Const("EO");}
        | OE {$value = new Const("OE");}
+       | EE {$value = new Const("EE");}
        | SL {$value = new Const("SL");}
        | SR {$value = new Const("SR");}
        | TL {$value = new Const("TL");}
@@ -59,6 +60,8 @@ DT: 'DT';
 EO: 'EO';
 
 OE: 'OE';
+
+EE: 'EE';
 
 SL: 'SL';
 

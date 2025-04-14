@@ -373,6 +373,18 @@ public class App extends Term{
         return list1;
     }
     
+    public Term deleteLambdAtZScope(Var z) {
+        Term p1, q1;
+        p1 = p;
+        q1 = q;
+        if (p.occur(z))
+            p1 = p.deleteLambdAtZScope(z);
+        else if (q.occur(z))
+            q1 = q.deleteLambdAtZScope(z);
+        
+        return new App(p1,q1);
+    }
+    
     public Tipo esRedex(){
         Const k=new Const("\\Phi_{K}");
         AppIzq izq=obtenerIzq(this,-1);

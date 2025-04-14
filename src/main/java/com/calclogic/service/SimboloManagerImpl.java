@@ -227,6 +227,16 @@ public class SimboloManagerImpl implements SimboloManager {
     public List<Simbolo> getAllSimboloByTeoria(int teoriaid){
         Teoria teoria = teoriaDAO.getTeoria(teoriaid);
         List<Incluye> incluyes = incluyeDAO.geAlltIncluyeByHijo(teoria);
+        List<Incluye> incluyes2 = null;
+        for (Incluye inc: incluyes) {
+            teoria = teoriaDAO.getTeoria(inc.getPadre().getId());
+            if (incluyes2 == null)
+               incluyes2 = incluyeDAO.geAlltIncluyeByHijo(teoria);
+            else
+               incluyes2.addAll(incluyeDAO.geAlltIncluyeByHijo(teoria));
+        }
+        if (incluyes2 != null)
+           incluyes.addAll(incluyes2);
         HashSet teoriaids = new HashSet();
         for (Incluye inc: incluyes) {
             teoriaids.add(inc.getPadre().getId());

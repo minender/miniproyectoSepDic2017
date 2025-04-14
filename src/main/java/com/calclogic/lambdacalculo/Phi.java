@@ -76,9 +76,12 @@ public class Phi extends Term{
         boolean jump = false;
         boolean startWithC = false;
         boolean isEmptyFList = false;
-        Term[] lastResult = new Term[n];
+        Term[] lastResult = null;
+        if (this.ind.maxNesting !=0 ) {
+            lastResult = new Term[this.ind.maxNesting];
+            lastResult[0] = null;
+        }
         Term noVarResult = null;
-        lastResult[0] = null;
         int lastResultIndex = -1;
         ListaInd list = ind;
         ListaInd currentList = ind;
@@ -186,15 +189,16 @@ public class Phi extends Term{
                           if (aux2 instanceof App) {
                               Equation eq = new Equation(((App)aux2).q,lastR);
                               Sust s = eq.mgu(false);
-                              int l = (isEmptyFList?i-stInd+1:i);
-                              for (int k=0;k<=l;k++)
+                              int l = (isEmptyFList?i-stInd+2:i);
+                              for (int k=0;k<=l;k++) 
                                   A[k] = A[k].sustParall(s);
+                              //A[i+1] = A[i+1].sustParall(s);
                               aux = ((App)((App)aux2).p).q;
                           }
                           else {
                               Var var = new Var(((Var)aux2).indice);
                               Term term = new App(new App(new Const("->"),aux2),lastR);
-                              int l = (isEmptyFList?i-stInd+1:i);
+                              int l = (isEmptyFList?i-stInd+2:i);
                               for (int k=0;k<=l;k++) 
                                   A[k] = A[k].sust(var, term);
                               aux = aux2;
@@ -303,6 +307,10 @@ public class Phi extends Term{
         List<Term> list=new ArrayList<Term>();
         
         return list;
+    }
+    
+    public Term deleteLambdAtZScope(Var z) {
+        return this;
     }
     
     public Tipo esRedex()

@@ -153,6 +153,7 @@
     <bean id="directMethodFT" class="com.calclogic.proof.DirectMethodFromTheoremImpl"></bean>
     <bean id="equalityToOp" class="com.calclogic.proof.EqualityToOperatorImpl"></bean>
     <bean id="operatorToEq" class="com.calclogic.proof.OperatorToEqualityImpl"></bean>
+    <bean id="equalityToEq" class="com.calclogic.proof.EqualityToEqualityOperatorImpl"></bean>
     <bean id="mutualImplication" class="com.calclogic.proof.MutualImplicationMethodImpl"></bean>
     <bean id="generalization" class="com.calclogic.proof.GeneralizationImpl"></bean>
     <bean id="witness" class="com.calclogic.proof.WitnessMethodImpl"></bean>

@@ -855,7 +855,8 @@ public class InferController {
                method = crudOp.eraseMethod(solucion.getMethod());
                currentMethod = crudOp.currentMethod(method);
                if (currentMethod!=null && 
-                      (currentMethod.toString().equals("EO") || currentMethod.toString().equals("OE")))
+                      (currentMethod.toString().equals("EO") || currentMethod.toString().equals("OE") ||
+                       currentMethod.toString().equals("EE")))
                    method = crudOp.eraseMethod(method.toString());
                solucion.setMetodo((method == null?"":method.toString()));
             }
@@ -1044,9 +1045,9 @@ public class InferController {
                         if (newMethod.equals("CA")) {
                            caseAn = CaseAnalysisMethodImpl.parseCases(username, instanciacion.split(":=")[1], 
                                                           formulaTerm, predicadoManager, simboloManager);
-                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DS")||newMethod.equals("DT")?formulaTerm:null), "EO "+newMethod+":"+caseAn, crudOp);
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DS")||newMethod.equals("DT")?formulaTerm:null), (((Const)((App)((App)formulaTerm).p).p).getId() == 1?"EO ":"EE ")+newMethod+":"+caseAn, crudOp);
                         } else
-                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DS")||newMethod.equals("DT")?formulaTerm:null), "EO "+newMethod, crudOp);
+                           solucion = new Solucion(resuelveAnterior, false, (newMethod.equals("DS")||newMethod.equals("DT")?formulaTerm:null), (((Const)((App)((App)formulaTerm).p).p).getId() == 1?"EO ":"EE ")+newMethod, crudOp);
                     else
                         if (newMethod.equals("CA")) {
                            caseAn = CaseAnalysisMethodImpl.parseCases(username, instanciacion.split(":=")[1], 
@@ -1083,7 +1084,8 @@ public class InferController {
                 if ((newMethod.equals("DS")||newMethod.equals("DT")||newMethod.equals("CO")||newMethod.equals("MI")||newMethod.equals("CA")) 
                          && !containT) {
                     methodTerm = crudOp.eraseMethod(methodTerm.toString());
-                    methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "EO");
+                    methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", 
+                    (((Const)((App)((App)previousSt.setToPrint(simboloManager)).p).p).getId() == 1?"EO ":"EE "));
                     if (newMethod.equals("CA")) {
                         caseAn = CaseAnalysisMethodImpl.parseCases(username, instanciacion.split(":=")[1], 
                                                           formulaTerm.setToPrint(simboloManager), predicadoManager, simboloManager);
@@ -1121,7 +1123,8 @@ public class InferController {
                         }
                         if (!aux.containT()) {
                            methodTerm = crudOp.eraseMethod(methodTerm.toString());
-                           methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", "EO");
+                           methodTerm = crudOp.updateMethod(methodTerm!=null?methodTerm.toString():"", 
+                                (((Const)((App)((App)aux.setToPrint(simboloManager)).p).p).getId() == 1?"EO ":"EE "));
                            methodTerm = crudOp.updateMethod(methodTerm.toString(), newMethod);
                            solucion.setMetodo(methodTerm.toString());
                         }

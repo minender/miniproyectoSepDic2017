@@ -152,6 +152,10 @@ public class Sust extends Term{
         return list;
     }
     
+    public Term deleteLambdAtZScope(Var z) {
+        return this;
+    }
+    
     public Term invBraBD(Var x)
     {
         return null;

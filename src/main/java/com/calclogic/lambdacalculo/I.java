@@ -288,6 +288,10 @@ public class I extends Term {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public Term deleteLambdAtZScope(Var z) {
+        return this;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 7;

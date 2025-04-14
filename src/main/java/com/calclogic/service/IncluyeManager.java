@@ -8,6 +8,8 @@ public interface IncluyeManager {
     
     public void addIncluye(Incluye incluye);
     
+    public void addIncluyeByChildTheory(Teoria childTheory, List<Integer> parentTheoryIds);
+    
     public void deleteIncluye(Incluye incluye);
 
     public Incluye getIncluye(Teoria padre, Teoria hijo);

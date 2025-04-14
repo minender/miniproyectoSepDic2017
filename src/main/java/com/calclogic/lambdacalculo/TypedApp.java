@@ -222,7 +222,11 @@ public class TypedApp extends App implements TypedTerm{
                     }
                     aux = ((Bracket)aux).t;
                 }
-                String vars = ";"+((TypedA)q).variables_.split(";")[0];
+                String vars;
+                if (q instanceof TypedA)
+                   vars = ";"+((TypedA)q).variables_.split(";")[0];
+                else 
+                   vars = ";"+q.type().freeVarsFromAbstractedEq();
                 Term result=new App(new App(new Const(0,"="),right),left).evaluar(vars).abstractEq(null);
                 String freeVars = result.stFreeVars();
                 String bndVars = result.getBoundVarsComma();
@@ -273,7 +277,7 @@ public class TypedApp extends App implements TypedTerm{
             type_ = new App(new App(eq, ((App)qType).q.body()), ((App)((App)qType).p).q.body());
             type_ = type_.abstractEq(varTypes);
             return type_;
-        }
+        } 
         else if (inferType == 'm'){
             Const eq = (Const)((App)((App)pType).p).p;
             Term[] varTypes = ((App)pType).q.varTypes(((App)eq.type_).q);

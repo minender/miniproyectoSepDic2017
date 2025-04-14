@@ -145,6 +145,10 @@ public class Var extends Term{
         return (n!=indice?n:max[0]+1);
     }
     
+    public Term findLambdaXDotZ(Var z) {
+        return null;
+    }
+    
     public Term traducBD()
     {
         return this;
@@ -160,6 +164,10 @@ public class Var extends Term{
         List<Term> list=new ArrayList<Term>();
         
         return list;
+    }
+    
+    public Term deleteLambdAtZScope(Var z) {
+        return this;
     }
     
     public Redex buscarRedexIzq(Term contexto,boolean p)

@@ -16,6 +16,7 @@ public class ConstInd extends Indice{
     {
         this.ind=ind;
         orden=1;
+        maxNesting = 0;
     }
     
     public String toString()

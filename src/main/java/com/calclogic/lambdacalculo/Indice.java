@@ -13,9 +13,11 @@ import java.io.Serializable;
 public abstract class Indice implements Cloneable, Serializable{
      
     public int orden;
+    public int maxNesting;
     
     public abstract String toString();
     
     @Override
     protected abstract Object clone() throws CloneNotSupportedException;
+    
 }

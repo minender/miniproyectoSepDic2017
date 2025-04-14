@@ -33,17 +33,20 @@ public class ListaInd extends Indice {
     {
         list.add(0, i);
         orden+=i.orden;
+        maxNesting = (i instanceof ParInd?i.maxNesting:0);
     }
     
     public void empilarIndIzq(Indice i)
     {
         ((ParInd)list.get(0)).empilarIndIzq(i);
+        maxNesting = ((ParInd)list.get(0)).maxNesting;
         orden+=i.orden;
     }
     
     public void empilarIndDer(Indice i)
     {
         ((ParInd)list.get(0)).empilarIndDer(i);
+        maxNesting = ((ParInd)list.get(0)).maxNesting;
         orden+=i.orden;
     }
     
@@ -51,6 +54,7 @@ public class ListaInd extends Indice {
     {
         list.add(0,i);
         orden+=((ParInd)i).i1.orden+((ParInd)i).i2.orden;
+        maxNesting = i.maxNesting;
     }
     
     //mosca solo funciona si el ultimo no es un par 
@@ -60,6 +64,7 @@ public class ListaInd extends Indice {
     {
         Indice I=list.remove(list.size()-1);
         orden=orden-I.orden;//no hace falta es ineficiente el orden no se va a usar despues
+        maxNesting = 0;
         return I;
     }
     

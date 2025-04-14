@@ -6,6 +6,7 @@
 package com.calclogic.lambdacalculo;
 
 import com.calclogic.parse.CombUtilities;
+import com.calclogic.proof.GeneralizationImpl;
 
 /**
  *
@@ -142,7 +143,7 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             Term r = ((App)((App)((App)proof.type()).q.body()).p).q;
             proof_ = CombUtilities.getTerm("I^{[x_{114}, x_{113}, x_{112} := "+r+", "+q+", "+p+"]} A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{2}) c_{2}) (\\Phi_{cbbb} c_{5} \\Phi_{bb} \\Phi_{bb} c_{2})}",user,sm_);
             proof_ = new TypedApp(proof_,proof);
-        }   
+        }
         else if (id == 7) {
             String opId2 = "";
             String isSymetr = "";
@@ -654,6 +655,75 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             }
             type_ = proof_.type();
         }
+        /**
+         *  e =_t f => (E.e==E.f)
+         * ------------------------I     
+         *  t1 =_t t2 => E.t1==E.t2  t1 =_t t2
+         * -----------------------------------MP
+         *            E.t1==E.t2
+         *         --------------M(4)
+         *            E.t1=E.t2
+         *         --------------L
+         *       (lz.z(lx.x))(lE. E.t1)=(lz.z(lx.x))(lE. E.t2)
+         */
+        else if (id == 10) {
+            Term proofType = ((App)proof.type()).q.body();
+            String a1 = "= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccb,)} c_{15} c_{1} (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)})";
+            String template0=
+            "(I^{[x_{102},x_{101}:="+((App)((App)proofType).p).q+","+((App)proofType).q+"]} A^{"+a1+"}) ("+proof+")";
+            proof = CombUtilities.getTerm(template0,user,sm_);
+            proofType = proof.type();
+            //E.(U0)=E.0
+            String t1 = ((App)((App)proofType).q.body()).q.toString();
+            String t2 = ((App)((App)((App)proofType).q.body()).p).q.toString();
+            String template1="L^{\\lambda x_{122}. c_{1} ("+t2+") x_{122}} (M_{3} ("+proof+")) (I^{[x_{113}:="+t2+"]} A^{= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})})";
+            //(E.(U0)==E.0)==E.0=E.0
+            String template2="S (I^{[x_{114},x_{113},x_{112}:="+t2+","+t2+","+t1+"]} A^{= (\\Phi_{bb} (\\Phi_{bbb} \\Phi_{b} c_{1}) c_{1}) (\\Phi_{cbbb} c_{1} \\Phi_{bb} \\Phi_{bb} c_{1})})";
+            //E.(U0)==(E.0==E.0)=(E.(U0)==E.0)==E.0
+            String template3="L^{\\lambda x_{122}. c_{1} x_{122} ("+t1+")} (I^{[x_{113}:="+t2+"]} A^{= (\\Phi_{(b,)} c_{1}) (\\Phi_{K} c_{8})})";
+            //E.(U0)==true=E.(U0)==(E.0==E.0)
+            String template4="S ((I^{[x_{112},x_{113}:="+t1+",c_{8}]} A^{= (\\Phi_{bb} \\Phi_{b} c_{1}) (\\Phi_{cb} c_{1} \\Phi_{cb})}) (I^{[x_{113}:="+t1+"]} A^{= \\Phi_{} (\\Phi_{cb} c_{8} c_{1})}))";
+            //E.(U0)=E.(U0)==true
+            Term T1 = CombUtilities.getTerm(template1, user,sm_);
+            Term T2 = CombUtilities.getTerm(template2, user,sm_);
+            Term T3 = CombUtilities.getTerm(template3, user,sm_);
+            Term T4 = CombUtilities.getTerm(template4, user,sm_);
+            Term T5 = CombUtilities.getTerm("I^{[x_{69}:=\\lambda x_{1}.x_{1}]}", user,sm_);
+            proof_ = new TypedApp(T5,new TypedApp(T4,new TypedApp(T3,new TypedApp(T2,T1))));
+        }
+        else if (id == 11) {
+            Term root = ((App)proof.type()).q.body();
+            root = CombUtilities.getTerm("= T (c_{62} c_{5} (\\lambda x_{"+opId+"} . c_{8}) (\\lambda x_{"+opId+"} . "+root+"))","AdminTeoremas",TypedA.sm_).abstractEq(null);
+            proof_ = GeneralizationImpl.finishedLinearRecursiveMethod(user, root, proof);
+        }
+        else if (id == 12) {// caso K
+            Term proofType = proof.type();
+            String st = "I^{[x_{112},x_{113}:="+proofType+","+type+"]} A^{= (\\Phi_{K} (\\Phi_{K} T)) (\\Phi_{(cb,b)} c_{2} \\Phi_{cbb} c_{2})} ("+proof+")";
+            proof_ = CombUtilities.getTerm(st, user,sm_);
+        }
+        else if (id == 13) {// Caso I
+            Term proofType = proof.type();
+            String st = "I^{[x_{112}:="+proofType+"]} A^{= (\\Phi_{K} T) (\\Phi_{(b,)} c_{2})} ("+proof+")";
+            proof_ = CombUtilities.getTerm(st, user,sm_);
+        }
+        else if (id == 14) {// Caso B
+            Term proofType = ((App)proof.type()).q.body();
+            Term proofType2 = ((App)((App)proof).q.type()).q.body();
+            String st = "I^{[x_{113},x_{114},x_{112}:="+proofType+","+type+","+proofType2+"]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} c_{2} (\\Phi_{(bbcb,b)} c_{2}) c_{2} \\Phi_{cc(bbb,)} c_{2} c_{2})} ("+((App)proof).p+") ("+((App)proof).q+")";
+            proof_ = CombUtilities.getTerm(st, user,sm_);
+        }
+        else if (id == 15) {// Caso C
+            Term proofType = ((App)proof.type()).q.body();
+            Term proofType2 = ((App)((App)proof).q.type()).q.body();
+            String st = "I^{[x_{114},x_{112},x_{113}:="+proofType+","+type+","+proofType2+"]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} c_{2} (\\Phi_{(bb,cbb)} c_{2}) c_{2} \\Phi_{cc(bbb,)} c_{2} c_{2})} ("+((App)proof).p+") ("+((App)proof).q+")";
+            proof_ = CombUtilities.getTerm(st, user,sm_);
+        }
+        else if (id == 16) {// Caso S
+            Term proofType = ((App)proof.type()).q.body();
+            Term proofType2 = ((App)((App)proof).q.type()).q.body();
+            String st = "I^{[x_{114},x_{112},x_{113}:="+proofType+","+type+","+proofType2+"]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(cccbb,b)} c_{2} (\\Phi_{(bb,cbb)} c_{2}) c_{2} \\Phi_{cc(bbb,)} c_{2} c_{2})} ("+((App)proof).p+") ("+((App)proof).q+")";
+            proof_ = CombUtilities.getTerm(st, user,sm_);
+        }
         else
             proof_ = proof;
     }
@@ -699,6 +769,18 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
             return ((App)proof_).q;
         else if (id_ == 8)
             return ((App)((App)((App)((App)((App)((App)proof_).p).q).p).q).q).q;
+        else if (id_ == 10)  
+            return 
+            ((App)((TypedM)((App)((App)((App)((App)((App)((App)proof_).q).q).q).q).p).q).getSubProof()).q;
+        else if (id_ == 11)
+            if (((App)((App)proof_).p).p instanceof TypedS)
+               return ((TypedM)((App)((App)((App)((App)proof_).p).q).p).q).getSubProof();
+            else
+               return  ((TypedM)((App)((App)((App)((App)((App)proof_).p).p).q).p).q).getSubProof();
+        else if (id_ == 12)
+            return ((App)proof_).q;
+        else if (id_ == 13)
+            return ((App)proof_).q;
         else
             return proof_;
     }
@@ -731,7 +813,29 @@ t1==t=t==t1 true==t1=t1 true = t2==t2     t1==(t2==t2) = (t1==t2)==t2           
           else 
               opId = ((Const)((App)((App)((App)proof.type()).q.body()).p).p).getId();
           return "(M_{"+id_+"}^{"+opId+"} ("+(proof instanceof TypedA?proof:"S "+((App)proof).q)+"))";
-        }else 
+        }else if (id_ == 10) {
+            Term proof = 
+            ((App)((TypedM)((App)((App)((App)((App)((App)((App)proof_).q).q).q).q).p).q).getSubProof()).q;
+            return "(M_{"+id_+"} ("+proof+"))";
+        }
+        else if (id_ == 11) {
+            Term proof;
+            if (((App)((App)proof_).p).p instanceof TypedS)
+               proof = ((TypedM)((App)((App)((App)((App)proof_).p).q).p).q).getSubProof();
+            else
+               proof = ((TypedM)((App)((App)((App)((App)((App)proof_).p).p).q).p).q).getSubProof();
+            
+            return "(M_{"+id_+"}^{"+((Bracket)((App)((Bracket)((TypedL)((App)((App)((App)((App)proof_).p).q).p).p).type()).t).q).x.indice+"} ("+proof+"))";//"+((Bracket)((App)proof_.type()).q).x.indice+"} ("+proof+"))";
+        }
+        else if (id_ == 12) {
+            Term proof = ((App)proof_).q;
+            return "(M_{"+id_+"} ("+proof+"))";
+        }
+        else if (id_ == 13) {
+            Term proof = ((App)proof_).q;
+            return "(M_{"+id_+"} ("+proof+"))";
+        }
+        else 
           return "(M_{"+id_+"} ("+proof_+"))";
     }
 }

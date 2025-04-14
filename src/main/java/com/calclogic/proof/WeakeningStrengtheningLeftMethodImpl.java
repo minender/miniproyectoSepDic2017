@@ -1,14 +1,18 @@
 package com.calclogic.proof;
 
 import com.calclogic.lambdacalculo.App;
+import com.calclogic.lambdacalculo.Bracket;
 import com.calclogic.lambdacalculo.Const;
+import com.calclogic.lambdacalculo.Phi;
 import com.calclogic.lambdacalculo.Sust;
 import com.calclogic.lambdacalculo.Term;
 import com.calclogic.lambdacalculo.TypeVerificationException;
 import com.calclogic.lambdacalculo.TypedA;
 import com.calclogic.lambdacalculo.TypedApp;
 import com.calclogic.lambdacalculo.TypedI;
+import com.calclogic.lambdacalculo.TypedM;
 import com.calclogic.lambdacalculo.TypedS;
+import com.calclogic.lambdacalculo.Var;
 import com.calclogic.service.ResuelveManager;
 import com.calclogic.service.SimboloManager;
 import com.calclogic.parse.CombUtilities;
@@ -51,11 +55,51 @@ public class WeakeningStrengtheningLeftMethodImpl extends TransitivityFromLeftMe
      * @throws com.calclogic.lambdacalculo.TypeVerificationException
      */
     @Override
-    protected Term parityLeibniz(Term leibniz, Term nabla) throws TypeVerificationException {      
-        Term t = leibniz.traducBD();
+    protected Term parityLeibniz(Term leibniz, Term nabla) throws TypeVerificationException {    
+        Term t = leibniz.deleteLambdAtZScope(((Bracket)leibniz).x).bracketAbsBD(((Bracket)leibniz).x);//leibniz.traducBD(); 
+        int ind = 0;
+        
         while (t instanceof App) {
             Term nabla2 = nabla; // si no entra en ninguna guardia aborta el TApp(nabla,nabla)
-            if (((App)t).q instanceof Const && ((Const)((App)t).q).getId() == 7 ) {
+            
+            // este es el caso del cuantificador cuerpo
+            if (t instanceof App && ((App)t).q instanceof App && 
+                     ((App)((App)t).q).p instanceof App &&
+                     ((App)((App)((App)t).q).p).p instanceof Const &&
+                     ((App)((App)((App)t).q).p).q instanceof Const
+                    ) {
+                if (((Const)((App)((App)((App)t).q).p).p).getId() == 62 &&
+                    ((ind=((Const)((App)((App)((App)t).q).p).q).getId()) == 5 || ind==4)    ) {
+
+                    Term root = ((App)nabla.type()).q.body();
+                    Var x = ((Bracket)((App)((App)t).q).q).x;
+                    nabla = new TypedM(11,x.indice,nabla,nabla.type().traducBD().toString(),"AdminTeoremas");
+                    if (ind == 5)
+                       nabla2 = wsuc2(((App)((App)root).p).q, ((App)root).q,    
+                                             (Const)((App)((App)root).p).p, ((App)((App)t).q).q );
+                    else if (ind == 4)
+                       nabla2 = wsec2(((App)((App)root).p).q, ((App)root).q,    
+                                             (Const)((App)((App)root).p).p, ((App)((App)t).q).q );
+                }
+                t = ((App)t).p;
+            }
+            // este es el caso del cuantificador rango
+            else if (t instanceof App && ((App)t).q instanceof App && 
+                     ((App)((App)t).q).p instanceof Const &&
+                     ((App)((App)t).q).q instanceof Const
+                    ) {
+                if (((Const)((App)((App)t).q).p).getId() == 62 &&
+                    ((ind=((Const)((App)((App)t).q).q).getId()) == 5 || ind==4)   ) {
+                    
+                    Term root = ((App)nabla.type()).q.body();
+                    Var x = ((Bracket)((App)((App)t).p).q).x;
+                    nabla = new TypedM(11,x.indice,nabla,nabla.type().traducBD().toString(),"AdminTeoremas");
+                    nabla2 = wsub2(((App)((App)t).p).q, ((App)root).q,    
+                                             (Const)((App)((App)root).p).p, ((App)((App)root).p).q);
+                }
+                t = ((App)((App)t).p).p;
+            }
+            else if (((App)t).q instanceof Const && ((Const)((App)t).q).getId() == 7 ) {
                 Term root = ((App)nabla.type()).q.body();
                 nabla2 = neg(((App)root).q, ((App)((App)root).p).q, 
                                              (Const)((App)((App)root).p).p);
@@ -169,6 +213,42 @@ public class WeakeningStrengtheningLeftMethodImpl extends TransitivityFromLeftMe
         String R = r.toString();                                              //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccbb,b)} c_{3} c_{2} (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)} c_{2} c_{2})
         String wsl2 = "I^{[x_{114}, x_{113}, x_{112} := "+R+", "+Q+", "+P+"]}A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccbb,b)} "+op+" "+op2+" (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)} c_{2} c_{2})}";
         
+        return CombUtilities.getTerm(wsl2,"AdminTeoremas",TypedA.sm_);
+    }
+    
+    private Term wsuc2(Term p, Term q, Const op, Term r) {
+
+        String op2 = (op.getId() == 2?"c_{2}":"c_{3}");
+        String x = ((Bracket)r).x.toString();
+        String P = p.toString();
+        String Q = q.toString();
+        String R = r.toString();                                              //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccbb,b)} c_{3} c_{2} (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)} c_{2} c_{2})
+        String wsl2 = "I^{[x_{82}, "+(op.getId()==2?"x_{80}":"x_{81}")+", "+(op.getId()==2?"x_{81}":"x_{80}")+" := "+R+", \\lambda "+x+". "+P+", \\lambda "+x+". "+Q+"]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(ccbbb,bb)} (\\Phi_{(bb,b)} "+op+") \\Phi_{b} "+op+" (\\Phi_{(bbbb,bb)} c_{2}) (\\Phi_{(cccbbbb,b)} (c_{62} c_{5} (\\Phi_{K} c_{8})) \\Phi_{b}) (c_{62} c_{5}) \\Phi_{b} (c_{62} c_{5}) \\Phi_{b})}";
+
+        return CombUtilities.getTerm(wsl2,"AdminTeoremas",TypedA.sm_);
+    }
+    
+    private Term wsub2(Term r, Term q, Const op, Term p) {
+
+        String op2 = (op.getId() == 2?"c_{3}":"c_{2}");
+        String x = ((Bracket)r).x.toString();
+        String P = p.toString();
+        String Q = q.toString();//
+        String R = r.toString();                                            //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccccbb,bb)} \\Phi_{b} \\Phi_{b} "+op2+" (\\Phi_{(bbcbb,bb)} c_{2}) (c_{62} c_{5}) \\Phi_{b} (c_{62} c_{5} (\\Phi_{K} c_{8})) \\Phi_{cccc(bbbb,b)} (\\Phi_{(bb,b)} "+op+") (c_{62} c_{5}) \\Phi_{b})
+        String wsl2 = "I^{["+(op.getId()==2?"x_{80}":"x_{81}")+", x_{82}, "+(op.getId()==2?"x_{81}":"x_{80}")+" := \\lambda "+x+". "+P+", "+R+", \\lambda "+x+". "+Q+"]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(cccccbb,bb)} \\Phi_{b} \\Phi_{b} "+op2+" (\\Phi_{(bbcbb,bb)} c_{2}) (c_{62} c_{5}) \\Phi_{b} (c_{62} c_{5} (\\Phi_{K} c_{8})) \\Phi_{cccc(bbbb,b)} (\\Phi_{(bb,b)} "+op+") (c_{62} c_{5}) \\Phi_{b})}}";
+
+        return CombUtilities.getTerm(wsl2,"AdminTeoremas",TypedA.sm_);
+    }
+    
+    private Term wsec2(Term p, Term q, Const op, Term r) {
+
+        String op2 = (op.getId() == 2?"c_{2}":"c_{3}");
+        String x = ((Bracket)r).x.toString();
+        String P = p.toString();
+        String Q = q.toString();
+        String R = r.toString();                                              //= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{c(ccbb,b)} c_{3} c_{2} (\\Phi_{(bbb,b)} c_{2}) \\Phi_{(cbbb,b)} c_{2} c_{2})
+        String wsl2 = "I^{[x_{82}, "+(op.getId()==2?"x_{80}":"x_{81}")+", "+(op.getId()==2?"x_{81}":"x_{80}")+" := "+R+", \\lambda "+x+". "+P+", \\lambda "+x+". "+Q+"]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{cc(ccbbb,bb)} (\\Phi_{(bb,b)} "+op+") \\Phi_{b} "+op+" (\\Phi_{(bbbb,bb)} c_{2}) (\\Phi_{(cccbbbb,b)} (c_{62} c_{5} (\\Phi_{K} c_{8})) \\Phi_{b}) (c_{62} c_{4}) \\Phi_{b} (c_{62} c_{4}) \\Phi_{b})}";
+
         return CombUtilities.getTerm(wsl2,"AdminTeoremas",TypedA.sm_);
     }
     

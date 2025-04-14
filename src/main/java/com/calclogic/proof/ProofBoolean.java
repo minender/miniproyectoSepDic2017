@@ -49,6 +49,7 @@ public class ProofBoolean {
                         (methodStr=((Const)method).getCon()).equals("ND") || 
                         methodStr.equals("EO") || 
                         methodStr.equals("OE") ||
+                        methodStr.equals("EE") ||
                         methodStr.equals("CO") || 
                         methodStr.equals("CR") || 
                         methodStr.equals("AI") || 
@@ -66,6 +67,7 @@ public class ProofBoolean {
                         (methodStr=((Const)m1).getCon()).equals("ND") || 
                         methodStr.equals("EO") || 
                         methodStr.equals("OE") ||
+                        methodStr.equals("EE") ||
                         methodStr.equals("CO") || 
                         methodStr.equals("CR") ||
                         methodStr.equals("GE") || 
@@ -145,6 +147,7 @@ public class ProofBoolean {
                     methodStr.equals("MI") ||
                     methodStr.equals("EO") || 
                     methodStr.equals("OE") ||
+                    methodStr.equals("EE") ||
                     methodStr.equals("GE") ||
                     methodStr.equals("WI") ||
                     methodStr.equals("CA");

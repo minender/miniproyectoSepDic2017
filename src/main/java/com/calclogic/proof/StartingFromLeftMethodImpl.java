@@ -244,12 +244,19 @@ public class StartingFromLeftMethodImpl extends GenericProofMethodImpl implement
             entry = false;
         }*/
         if (st instanceof TypedM) {
-            if (((TypedM) st).getNumber() == 7) {
+            if (((TypedM) st).getNumber() == 7 ) {
                 Term typedMProof = ((App)((App)((TypedM)st).getProof()).p).q;
                 if (!(typedMProof instanceof TypedA))
                     typedMProof = ((App)typedMProof).q;
                 newStep = op+"~~~~~~\\langle \\text{st}~("+teo+",~"+((TypedA)typedMProof).getNSt()+")"+inst+leib+"\\rangle";
-            }else
+            }
+            else if (((TypedM) st).getNumber() == 11) {
+                Term typedMProof = ((App)((App)((TypedM)st).getProof()).p).q;
+                if (!(typedMProof instanceof TypedA))
+                    typedMProof = ((App)typedMProof).q;
+                newStep = op+"~~~~~~\\langle \\text{st}~("+teo+")"+inst+leib+"\\rangle";         
+            }
+            else
                 newStep = op+"~~~~~~\\langle \\text{st}~("+teo+")~\\text{and mt}~("+((TypedM) st).getNumber()+")"+inst+leib+"\\rangle";
         }else {
             //teo = theo.getNumeroteorema();

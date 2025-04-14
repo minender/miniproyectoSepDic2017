@@ -17,24 +17,28 @@ public class ParInd extends Indice{
         i1=new ListaInd();
         i2=new ListaInd();
         orden=0;
+        maxNesting = 1;
     }
     
     public ParInd(Indice i,Indice j)
     {
         orden=0;
-        if(i==null)
+        if(i==null) 
             i1=new ListaInd();
         else
         {
             i1=new ListaInd(i);
             orden=i.orden;
         }
-        if(j==null)
+        if(j==null) {
             i2=new ListaInd();
+            maxNesting = (i==null?1:i.maxNesting+1);
+        }
         else
         {
             i2=new ListaInd(j);
             orden+=j.orden;
+            maxNesting = Math.max(j.maxNesting,(i==null?0:i.maxNesting)+1);
         }
     }
     
@@ -48,12 +52,15 @@ public class ParInd extends Indice{
             i1=i;
             orden=i.orden;
         }
-        if(j==null)
+        if(j==null) {
             i2=new ListaInd();
+            maxNesting = (i==null?1:i.maxNesting+1);
+        }
         else
         {
             i2=j;
             orden+=j.orden;
+            maxNesting = Math.max(j.maxNesting,(i==null?0:i.maxNesting)+1);
         }
     }
     
@@ -61,12 +68,14 @@ public class ParInd extends Indice{
     {
         i1.empilarIndice(i);
         orden+=i.orden;
+        maxNesting = Math.max(i.maxNesting+1, i2.maxNesting);
     }
     
     public void empilarIndDer(Indice i)
     {
         i2.empilarIndice(i);
         orden+=i.orden;
+        maxNesting = Math.max(this.maxNesting, i.maxNesting);
     }
     
     public String toString()

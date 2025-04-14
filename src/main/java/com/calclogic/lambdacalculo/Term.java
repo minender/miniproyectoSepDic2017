@@ -107,6 +107,8 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract List<Term> contandotraducBD();
     
+    public abstract Term deleteLambdAtZScope(Var z);
+    
     public abstract Term bracketAbsBD(Var x);
     
     public abstract Term invBD();
