@@ -126,6 +126,10 @@ public class Const extends Term
         return this;
     }
     
+    public Term sustWithoutClone(Var x,Term t) {
+        return this;
+    }
+    
     @Override
     public Term etaReduc() {
         return this;
@@ -182,6 +186,11 @@ public class Const extends Term
     }
     
     public int fresh(int n, int[] max)
+    {
+        return n;
+    }
+    
+    public int absoluteFresh(int n, int[] max)
     {
         return n;
     }

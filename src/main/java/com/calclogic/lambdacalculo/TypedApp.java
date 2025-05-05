@@ -206,12 +206,17 @@ public class TypedApp extends App implements TypedTerm{
                 Term right = ((App)((App)qType).p).q;
                 Term left = ((App)qType).q;
                 Term aux = left;
+                int boundVarIndex = -1;
                 int i = 0;
                 while ( aux instanceof Bracket ) {
                     Var var = ((Bracket)aux).x;
                     Var v = (i<((Sust)pType).vars.size()?((Sust)pType).vars.get(i):null);
                     if (v != null && var.indice == v.indice) {
                         Term t = ((Sust)pType).terms.get(i);
+                        if (t instanceof Bracket && boundVarIndex == -1 )
+                            boundVarIndex = ((Bracket)t).x.indice;
+                        else if (t instanceof Bracket && boundVarIndex != ((Bracket)t).x.indice )
+                            boundVarIndex = -2;
                         right = new App(right,t);
                         left = new App(left,(Term)t.clone());
                         i++;
@@ -223,14 +228,20 @@ public class TypedApp extends App implements TypedTerm{
                     aux = ((Bracket)aux).t;
                 }
                 String vars;
-                if (q instanceof TypedA)
-                   vars = ";"+((TypedA)q).variables_.split(";")[0];
+                vars = ((TypedA)q).variables_.split(";")[0];
+                if (q instanceof TypedA) 
+                    if (boundVarIndex > 0 && vars.matches("x|(x,)+x"))
+                    //Esto es para que se use la variable sugerida por el user
+                       vars = ";"+vars.replace('x', (char)boundVarIndex);
+                    else
+                       vars = ";"+vars;
                 else 
                    vars = ";"+q.type().freeVarsFromAbstractedEq();
-                Term result=new App(new App(new Const(0,"="),right),left).evaluar(vars).abstractEq(null);
+                Term result=new App(new App(new Const(0,"="),right),left).evaluar(vars);
                 String freeVars = result.stFreeVars();
                 String bndVars = result.getBoundVarsComma();
                 vars = bndVars + ";" + freeVars;
+                result=result.abstractEq(null);
                 result = CombUtilities.getTerm(result.traducBD().toString(), null, TypedA.sm_).evaluar(vars);
                 type_ = result;
                 return type_;

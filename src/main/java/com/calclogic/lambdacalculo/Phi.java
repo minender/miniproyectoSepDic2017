@@ -49,6 +49,10 @@ public class Phi extends Term{
         return this; 
     }
     
+    public Term sustWithoutClone(Var x,Term t) {
+        return this;
+    }
+    
     public Term type(){
         return type_;
     }
@@ -126,7 +130,9 @@ public class Phi extends Term{
                         if (j==0&& offset==0) {
                             if (A[0] instanceof Var) {
                                 A[0] = new App(x,A[0]);// new Var(i));
-                                ((App)A[1]).q = A[0]; 
+                                for (int k=1;k<=i-stInd;k++)  
+                                  A[k] = A[k].sustWithoutClone((Var)((App)A[0]).q, A[0]);
+                                //((App)A[1]).q = A[0]; 
                                 startWithC = true;
                             }
                             else if (A[0] instanceof App) {
@@ -172,7 +178,7 @@ public class Phi extends Term{
                         if (((ParInd)stack.lastElement().tope()).i2.orden == 0)
                             lastResult[lastResultIndex] = null;
                         else if (aux == null) 
-                            x.q = new Var(i+1);
+                            x.q = new Var(i+1);//tal vez puedes usar la misma var apuntador de lastResult
                     } else if (((ParInd)stack.lastElement().tope()).i1 == currentList){
                         // finish lista
                         isEmptyFList = currentList.orden == 0;
@@ -190,7 +196,7 @@ public class Phi extends Term{
                               Equation eq = new Equation(((App)aux2).q,lastR);
                               Sust s = eq.mgu(false);
                               int l = (isEmptyFList?i-stInd+2:i);
-                              for (int k=0;k<=l;k++) 
+                              for (int k=0;k<=l;k++)
                                   A[k] = A[k].sustParall(s);
                               //A[i+1] = A[i+1].sustParall(s);
                               aux = ((App)((App)aux2).p).q;
@@ -199,13 +205,15 @@ public class Phi extends Term{
                               Var var = new Var(((Var)aux2).indice);
                               Term term = new App(new App(new Const("->"),aux2),lastR);
                               int l = (isEmptyFList?i-stInd+2:i);
-                              for (int k=0;k<=l;k++) 
+                              for (int k=0;k<=l;k++)  
                                   A[k] = A[k].sust(var, term);
                               aux = aux2;
                           }
                         }
                         else {
-                           if (i-stInd+2 > n && stack.isEmpty()) {
+                           if (i-stInd+2 > n && stack.isEmpty()) { //se puede poner un solo if sin else
+                                  //primero pones el cuerpo del else que siempre se ejecuta pones el if
+                                  //con cuerpo x.q=new Var(i+1)
                               x.q = new App(new App(new Const(-3,"->"),new Var(i+1)),(lastR==null?A[0]:lastR));
                               //x = new App(new Const(-3,"->"),null);
                            }
@@ -288,6 +296,11 @@ public class Phi extends Term{
     }
     
     public int fresh(int n, int[] max)
+    {
+        return n;
+    }
+    
+    public int absoluteFresh(int n, int[] max)
     {
         return n;
     }

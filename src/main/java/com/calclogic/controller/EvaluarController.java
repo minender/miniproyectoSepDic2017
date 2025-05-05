@@ -112,15 +112,30 @@ public class EvaluarController {
         //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} c_{43} c_{45}) (c_{54} (c_{54} c_{51} c_{51}) c_{51})})", "federico", TypedA.sm_);
         //Term t = CombUtilities.getTerm("M_{9}^{1} (A^{c_{55} (c_{54} c_{51} c_{45}) (c_{54} (c_{54} c_{51} c_{51}) c_{51})})", "federico", TypedA.sm_);
         //S (L^{\\lambda x_{122}.c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda x_{120}.x_{122}) (\\lambda x_{120}.x_{80} x_{120})} (I^{[x_{112} := (c_{15} x_{101} x_{120})]} (M_{3} (A^{= (\\Phi_{K} T) (\\Phi_{(bb,)} c_{4} c_{7})})))) (I^{[x_{81},x_{82} := (\\lambda x_{120}.c_{7} (c_{15} x_{101} x_{120})),(\\lambda x_{120}.c_{15} x_{101} x_{120})]} A^{= (\\Phi_{ccbbb} \\Phi_{b} \\Phi_{b} (\\Phi_{cc(bbbb,b)} \\Phi_{b} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{bcbb} c_{5}) (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{b}) (\\Phi_{cccbb} \\Phi_{b} \\Phi_{cbb} (c_{62} (\\Phi_{bb} \\Phi_{b} c_{5})) \\Phi_{ccbb} (\\Phi_{(bb,b)} c_{4}))}) (L^{\\lambda x_{122}.c_{5} (c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda x_{120}.c_{7} (c_{15} x_{101} x_{120})) (\\lambda x_{120}.x_{80} x_{120})) x_{122}} (I^{[x_{69},x_{115} := x_{101},(\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121})]} A^{= (\\Phi_{b} (\\Phi_{bb} \\Phi_{K})) (\\Phi_{ccbbb} c_{15} \\Phi_{b} (\\Phi_{cbbb} c_{62}) \\Phi_{ccb} \\Phi_{b})}))
-        Term t = CombUtilities.getTerm("\\Phi_{(bbc(cbc,),cbbb(c,bc(cbc,)))}", "AdminTeoremas", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("\\Phi_{(bbc(cbc,),cbbb(c,bc(cbc,)))}", "AdminTeoremas", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("(I^{[x_{69},x_{101},x_{102} := (\\lambda x_{-126}.c_{2} (c_{2} (x_{80} x_{120}) (x_{82} x_{120})) x_{-126}),(c_{62} c_{5} (\\lambda x_{120}.x_{82} x_{120}) (\\lambda x_{120}.x_{80} x_{120})),(c_{62} c_{5} (\\lambda x_{120}.c_{8}) (\\lambda x_{120}.c_{2} (x_{80} x_{120}) (x_{82} x_{120})))]} A^{= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(ccb,)} c_{2} (\\Phi_{(bbb,cb)} c_{2}) (\\Phi_{c(cbbb,)} c_{1}))}) (M_{1}^{1} (A^{= (\\Phi_{bb} (\\Phi_{bb} (c_{62} c_{5} (\\Phi_{K} c_{8}))) (\\Phi_{(bb,b)} c_{2})) (\\Phi_{ccbb} \\Phi_{b} (c_{62} c_{5}) \\Phi_{cbb} \\Phi_{b})}))", "AdminTeoremas", TypedA.sm_);
+        //Term t = CombUtilities.getTerm("= (\\Phi_{K} (\\Phi_{K} (\\Phi_{K} T))) (\\Phi_{(c(cc(cccc(cc(bb,b),b),b),),)} c_{2} c_{2} (\\Phi_{(b(b(bbc,cbb),(bbc,bb)),(bbb,cbb))} c_{2} c_{2} c_{2}) (c_{62} c_{5}) \\Phi_{b} c_{2} (c_{62} c_{5} (\\Phi_{K} c_{8})) c_{1} (c_{62} c_{5} (\\Phi_{K} c_{8})) (\\Phi_{cccccccc((cccc(bbb,),bb),)} \\Phi_{b} (c_{62} c_{5})) \\Phi_{b} (\\Phi_{(bb,b)} c_{2}) (\\Phi_{(bb,b)} c_{2}) \\Phi_{b})", "AdminTeoremas", TypedA.sm_);  
+        //Term t = CombUtilities.getTerm("\\Phi_{(c(cc(cccc(cc(bb,b),b),b),),)} c_{2} c_{2} (\\Phi_{(b(b(bbc,cbb),(bbc,bb)),(bbb,cbb))} c_{2} c_{2} c_{2}) (c_{62} c_{5}) \\Phi_{b} c_{2} (c_{62} c_{5} (\\Phi_{K} c_{8})) c_{1} (c_{62} c_{5} (\\Phi_{K} c_{8})) (\\Phi_{cccccccc((cccc(bbb,),bb),)} \\Phi_{b} (c_{62} c_{5})) \\Phi_{b} (\\Phi_{(bb,b)} c_{2}) (\\Phi_{(bb,b)} c_{2}) \\Phi_{b})", "AdminTeoremas", TypedA.sm_);
         
-        System.out.println(t.type());
-
+        //System.out.println(t.type());
+//      1          2          3     4         5          6      7
+//(x6->x4->x7)->(x5->x6)->(x1->x5)->x3->(x2->x3->x4)->(x1->x2)->x1->x7
+//x1(x2(x3x7))(x5(x6x7)x4)
+//x14->x13->x12->x11->x10->x9->x8->x7->x6->(x5->x4->x6->x7->x3->x8->x9->x10->x11->x2->x12->x13->x1->x14->x1->x15)->(x1->x5)->(x1->x4)->(x1->x3)->(x1->x2)->x1->x15
+//x10(x11z)(x12z)x9x8(x13z)x7x6x5x4(x14z)x3x2zx1z
+//        1               2                3             4       5   6        7                  8                 9            10      11    12        13         14           15        16      17      18            19              20                                                                                                                                                                         
+//(x19->x7->x20)->(x18->x12->x19)->(x17->x15->x18)->(x10->x17)->x1->x14->(x13->x14->x15)->((x1->x10)->x13)->(x11->x9->x12)->(x10->x11)->x1->(x8->x9)->(x1->x8)->(x6->x4->x7)->(x5->x6)->(x1->x5)->x3->(x2->x3->x4)->((x1->x10)->x2)->(x1->x10)->x20
+//        1               2                3             4       5   6        7                  8                 9            10      11    12          13              14            15          16          17      18              19            20            
+//(x19->x7->x20)->(x18->x12->x19)->(x17->x15->x18)->(x10->x17)->x1->x14->(x13->x14->x15)->((x1->x10)->x13)->(x11->x9->x12)->(x10->x11)->x1->(x8->x9)->((x1->x10)->x8)->(x6->x4->x7)->(x5->x6)->((x1->x10)->x5)->x3->(x2->x3->x4)->((x1->x10)->x2)->(x1->x10)->x20
+//x1(x2(x3(x4(x20x5))(x7(x8x20)x6))(x9(x10(x20x11))(x12(x13x20))))(x14(x15(x16x20))(x18(x19x20)x17))
+        
+//x17->x16->x15->x14->x13->x12->x11->x10->x9->x8->x7->x6->(x5->x1->x6->x7->x8->x9->x3->x1->x10->x11->x12->x13->x14->x15->x16->x17->x18)->(x4->x5)->(x1->x4)->(x2->x3)->(x1->x2)->x1->x18
+//x13(x14(x15x18))x18x12x11x10x9(x16(x17x18))x18x8x7x6x5x4x3x2x1x19
         map.addAttribute("insertFormula",new InsertFormula());
 
         return "insertFormula";
     }
-   
+
     @RequestMapping(value = "/{username}/applicativeToLatex", method = RequestMethod.POST)
     public String pruebaPredicado(@Valid InsertFormula insertFormula, BindingResult bindingResult,
                                   @PathVariable String username, ModelMap map) {

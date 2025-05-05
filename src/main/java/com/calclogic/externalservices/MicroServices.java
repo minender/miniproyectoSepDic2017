@@ -12,6 +12,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -20,9 +21,13 @@ import org.apache.http.util.EntityUtils;
 public class MicroServices {
     
     // URL in which there is the server that transforms a string into HTML format
-    private static final String URL_LATEX_TO_HTML = "http://localhost:83/example";
+    private static /*final*/ String URL_LATEX_TO_HTML; //= "http://localhost:83/example";
     //private static final String URL_LATEX_TO_HTML = "http://nodejs:83/example";
 
+    public static void setURL_LATEX_TO_HTML(String url_latex_to_html) {
+        URL_LATEX_TO_HTML = url_latex_to_html;
+    } 
+    
     /**
      * Transforms a string into another string
      *

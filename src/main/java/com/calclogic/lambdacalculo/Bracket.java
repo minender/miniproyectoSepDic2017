@@ -77,6 +77,10 @@ public class Bracket extends Term{
         return new Bracket(this.x,this.t.sust(x, t));
     }
     
+    public Term sustWithoutClone(Var x,Term t) {
+        return new Bracket(this.x,this.t.sustWithoutClone(x, t));
+    }
+    
     public Term type()
     {
         return type_;
@@ -180,6 +184,20 @@ public class Bracket extends Term{
     public int fresh(int n, int[] max)
     {
         return (x.indice == n?n:t.fresh(n,max));
+    }
+    
+    public int absoluteFresh(int n, int[] max)
+    {
+        max[0] = Math.max(x.indice, max[0]);
+        if (x.indice == n) {
+            t.absoluteFresh(n, max);
+            if (max[0] == 114)
+                max[0] = 115;
+            return max[0]+1;
+        }
+        else {
+            return t.absoluteFresh(n,max);
+        }
     }
     
     public Tipo esRedex()

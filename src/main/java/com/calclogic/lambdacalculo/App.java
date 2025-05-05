@@ -121,6 +121,10 @@ public class App extends Term{
         return new App(p.sust(x, t),q.sust(x,t2));
     }
     
+    public Term sustWithoutClone(Var x,Term t) {
+        return new App(p.sustWithoutClone(x, t),q.sustWithoutClone(x,t));
+    }
+    
     public Term bracketAbsSH(Var x){
         boolean occup=p.occur(x);
         boolean occuq=q.occur(x);
@@ -336,6 +340,17 @@ public class App extends Term{
     {
         int i = p.fresh(n,max);
         int j = q.fresh(n,max);
+        if (i == n && j == n)
+            return n;
+        else
+            return max[0]+1;
+        //return q.fresh(p.fresh(n));
+    }
+    
+    public int absoluteFresh(int n, int[] max)
+    {
+        int i = p.absoluteFresh(n,max);
+        int j = q.absoluteFresh(n,max);
         if (i == n && j == n)
             return n;
         else
@@ -683,16 +698,22 @@ public class App extends Term{
                     ((Bracket)stk.get(stk.size()-2)).x.indice != ((Bracket)stk.get(stk.size()-3)).x.indice 
                    ) 
                 {
-                 int boundVId = ((Bracket)stk.get(stk.size()-2)).x.indice;
-                 int[] max = new int[1];
-                 if (((Bracket)stk.get(stk.size()-2)).t.fresh(boundVId,max) != boundVId || 
-                     ((Bracket)stk.get(stk.size()-3)).t.fresh(boundVId,max) != boundVId
-                    )
-                    boundVId = max[0]+1;
-                 //boundVId = new App(((Bracket)stk.get(stk.size()-2)).t,((Bracket)stk.get(stk.size()-3)).t).fresh(boundVId,new int[1]);
-                 // this change the id of all occurrences of x, because x would be a pointer
-                 ((Bracket)stk.get(stk.size()-2)).x.indice = boundVId;
-                 ((Bracket)stk.get(stk.size()-3)).x.indice = boundVId;
+                 int quantOp = ((Const)stk.get(stk.size()-1)).id;
+                 int boundVId = ((Bracket)stk.get(stk.size()-3)).x.indice;
+                 if ((quantOp==4 || quantOp==5) && ((Bracket)stk.get(stk.size()-2)).t instanceof Const 
+                      && ((Const)((Bracket)stk.get(stk.size()-2)).t).id == 8)
+                     ((Bracket)stk.get(stk.size()-2)).x.indice = boundVId;
+                  else {
+                    int[] max = new int[1];
+                    if (((Bracket)stk.get(stk.size()-2)).t.absoluteFresh(boundVId,max) != boundVId || 
+                      ((Bracket)stk.get(stk.size()-3)).t.absoluteFresh(boundVId,max) != boundVId
+                     )
+                      boundVId = max[0]+1;
+                    //boundVId = new App(((Bracket)stk.get(stk.size()-2)).t,((Bracket)stk.get(stk.size()-3)).t).fresh(boundVId,new int[1]);
+                    // this change the id of all occurrences of x, because x would be a pointer
+                    ((Bracket)stk.get(stk.size()-2)).x.indice = boundVId;
+                    ((Bracket)stk.get(stk.size()-3)).x.indice = boundVId;
+                  }
                 }
             }
         }

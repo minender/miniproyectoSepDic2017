@@ -119,6 +119,8 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract Term sust(Var x,Term t);
     
+    public abstract Term sustWithoutClone(Var x,Term t);
+    
     public abstract Term sustParall(List<Var>  Vars, List<Term> varsTerm);
     
     public Term sustParall(Sust sus) {
@@ -140,6 +142,8 @@ public abstract class Term implements Cloneable, Serializable{
     public abstract boolean occur(Var x);
     
     public abstract int fresh(int n, int[] max);
+    
+    public abstract int absoluteFresh(int n, int[] max);
     
     public abstract String position(Var x);
     
@@ -1515,9 +1519,14 @@ public abstract class Term implements Cloneable, Serializable{
             // aunque pogas la lista de variables ligadas sugeridas correctamente
             int nVar1 = (((App)((App) this).p).q.nPhi()!=0?((App)((App) this).p).q.nPhi() - li_free.size():0);
             int nVar2 = (((App) this).q.nPhi()!=0?((App) this).q.nPhi() - li_free.size():0);
-            List<Var> li2 = li_free;
-            li2.addAll(li_bound.subList(0, nVar1));
+            List<Var> li2 = new ArrayList<Var>(); 
             li2.addAll(li_free);
+            li2.addAll(li_bound.subList(0, nVar1));
+            //List<Var> li_freeAux = new ArrayList<Var>();
+            for (int i=0; i<li_free.size(); i++) 
+                //li_freeAux.add(i, (Var)li_free.get(i).clone());
+                li2.add((Var)li_free.get(i).clone());
+            //li2.addAll(li_freeAux);
             li2.addAll(li_bound.subList(nVar1,nVar1+nVar2));
             return evaluar(li2);
         }

@@ -75,6 +75,13 @@ public class Var extends Term{
             return this;
     }
     
+    public Term sustWithoutClone(Var x,Term t) {
+        if(indice==x.indice)
+            return t;
+        else
+            return this;
+    }
+    
     @Override
     public Term etaReduc() {
         return this;
@@ -138,6 +145,14 @@ public class Var extends Term{
     }
     
     public int fresh(int n, int[] max)
+    {
+        max[0] = Math.max(indice, max[0]);
+        if (max[0] == 114)
+            max[0] = 115;
+        return (n!=indice?n:max[0]+1);
+    }
+    
+    public int absoluteFresh(int n, int[] max)
     {
         max[0] = Math.max(indice, max[0]);
         if (max[0] == 114)
@@ -378,7 +393,7 @@ public class Var extends Term{
     }
     
     @Override
-    protected Object clone() throws CloneNotSupportedException{
+    protected Object clone() {
         return new Var(indice);
     }
 

@@ -141,11 +141,11 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
             finalProof = new TypedApp(new TypedS(),finalProof);
             finalProof = new TypedApp(finalProof,axiomTree);
             // esto es (forall x|:P.x=>Q)=(forall x|:!P.x\/Q)
-            str1 = "L^{\\lambda x_{-126}.c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda "+x+".c_{8}) (\\lambda "+x+".x_{-126})} ";
+            str1 = "L^{\\lambda x_{-126}.c_{62} c_{5} (\\lambda "+x+".c_{8}) (\\lambda "+x+".x_{-126})} ";
             str1 +="(I^{[x_{113},x_{112} := "+Q+","+P+"]} A^{= (\\Phi_{cbb} c_{7} \\Phi_{bb} c_{4}) (\\Phi_{bb} \\Phi_{b} c_{2})})";
             tree = CombUtilities.getTerm(str1,user,TypedA.sm_);
             // esto es (forall x|:!P.x\/Q)=(forall x|:Q\/!P.x)
-            str1 = "(L^{\\lambda x_{-126}.c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda "+x+".c_{8}) (\\lambda "+x+".x_{-126})} ";
+            str1 = "(L^{\\lambda x_{-126}.c_{62} c_{5} (\\lambda "+x+".c_{8}) (\\lambda "+x+".x_{-126})} ";
             str1 +="(I^{[x_{112},x_{113} := (c_{7} ("+P+")),"+Q+"]} A^{= (\\Phi_{bb} \\Phi_{b} c_{4}) (\\Phi_{cb} c_{4} \\Phi_{cb})}))";
             axiomTree = CombUtilities.getTerm(str1,user,TypedA.sm_);
             tree = new TypedApp(tree,axiomTree);
@@ -155,7 +155,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
             axiomTree = CombUtilities.getTerm(str1,user,TypedA.sm_);
             tree = new TypedApp(tree,axiomTree);
             // esto es Q\/(forall x|:!P.x)=(forall x|:!P.x)\/Q
-            str1 = "(I^{[x_{112},x_{113} := "+Q+",(c_{62} (\\lambda x_{120}.\\lambda x_{121}.c_{5} x_{120} x_{121}) (\\lambda "+x+".c_{8}) (\\lambda "+x+".c_{7} ("+P+")))]} ";
+            str1 = "(I^{[x_{112},x_{113} := "+Q+",(c_{62} c_{5} (\\lambda "+x+".c_{8}) (\\lambda "+x+".c_{7} ("+P+")))]} ";
             str1 += "A^{= (\\Phi_{bb} \\Phi_{b} c_{4}) (\\Phi_{cb} c_{4} \\Phi_{cb})})";
             axiomTree = CombUtilities.getTerm(str1,user,TypedA.sm_);
             tree = new TypedApp(tree,axiomTree);

@@ -21,6 +21,8 @@
  
     <context:annotation-config />
     <context:component-scan base-package="com.calclogic.controller" />
+    <context:property-placeholder location="/WEB-INF/jdbc.properties" order="1" ignore-unresolvable="true"/>
+    <context:property-placeholder location="/WEB-INF/nodejs.properties" order="2" ignore-unresolvable="true"/>
     <mvc:resources mapping="/static/**" location="/resources/"/>
     <mvc:default-servlet-handler />
     <mvc:annotation-driven />
@@ -163,7 +165,6 @@
     <bean id="transitivityFL" class="com.calclogic.proof.TransitivityFromLeftMethodImpl"></bean>
     <bean id="transitivityFR" class="com.calclogic.proof.TransitivityFromRightMethodImpl"></bean>
     <bean id="weakeningStrengtheningL" class="com.calclogic.proof.WeakeningStrengtheningLeftMethodImpl"></bean>
-
     <bean id="staticContextInitializer" class="com.calclogic.lambdacalculo.StaticContextInitializer"></bean>
  
     <tx:annotation-driven />

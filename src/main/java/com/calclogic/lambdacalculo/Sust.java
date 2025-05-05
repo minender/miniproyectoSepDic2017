@@ -56,6 +56,10 @@ public class Sust extends Term{
         return this;
     }  
     
+    public Term sustWithoutClone(Var x,Term t) {
+        return this;
+    }
+    
     public Term type()
     {
         return null;
@@ -111,6 +115,11 @@ public class Sust extends Term{
     }
     
     public int fresh(int n, int[] max)
+    {
+        return n;
+    }
+    
+    public int absoluteFresh(int n, int[] max)
     {
         return n;
     }

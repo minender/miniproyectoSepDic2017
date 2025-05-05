@@ -162,8 +162,8 @@ public class GeneralizationImpl extends GenericProofMethodImpl implements Genera
             Term aux = ((App)((App)((App)formulaBeingProved).q.body()).p).q.body();
             boolean withoutRange = aux instanceof Const && ((Const)aux).getId() == 8;
             Var x = ((Bracket)((App)((App)formulaBeingProved).q.body()).q).x;
-            Term tree = CombUtilities.getTerm("I^{[x_{82} := (\\lambda x_{120}.c_{8})]} A^{= (\\Phi_{K} c_{8}) (\\Phi_{cbb} (\\Phi_{K} c_{8}) (c_{62} c_{5}) \\Phi_{b})}",user,TypedA.sm_);
-            String str1 = "L^{\\lambda x_{-126}.c_{62} c_{5} (\\Phi_{K} c_{8}) (\\lambda "+x+".x_{-126})} (M_{3} ("+proof+"))";
+            Term tree = CombUtilities.getTerm("I^{[x_{82} := (\\lambda "+x+".c_{8})]} A^{= (\\Phi_{K} c_{8}) (\\Phi_{cbb} (\\Phi_{K} c_{8}) (c_{62} c_{5}) \\Phi_{b})}",user,TypedA.sm_);
+            String str1 = "L^{\\lambda x_{-126}.c_{62} c_{5} (\\lambda "+x+". c_{8}) (\\lambda "+x+".x_{-126})} (M_{3} ("+proof+"))";
             Term finalProof = CombUtilities.getTerm(str1,user,TypedA.sm_);
             String str2 = "A^{= T c_{8}}";
             Term axiomTree = CombUtilities.getTerm(str2,user,TypedA.sm_);
