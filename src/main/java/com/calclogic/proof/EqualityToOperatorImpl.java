@@ -46,7 +46,7 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula, Term proof){
+    public Term initFormula(Term beginFormula, Term proof, String usr){
         // this convert formulas like lamb x.t1=lamb x.t2 into t1==t2
         return new App(new App(new Const(0, "="),new Const(-1,"T")), beginFormula.setToPrint(simboloManager)).abstractEq(null);
     }
@@ -59,7 +59,7 @@ public class EqualityToOperatorImpl extends GenericProofMethodImpl implements Eq
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement, Term beginFormula){
+    public String header(String statement, Term beginFormula, String usr){
         return ""+statement;
     }
 

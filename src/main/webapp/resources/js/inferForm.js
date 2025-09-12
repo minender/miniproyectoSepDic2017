@@ -17,14 +17,14 @@ function setViewState(elegirMetodo) {
     let arrayHide = [];
     let arrayValues = [];
 
-    // The value '1' is for when the user must select a demonstration method, so the list of theorems
+    // The value '1' is for when the user must select a proof method, so the list of theorems
     // must not be rendered
     if (elegirMetodo=='1') {
         arrayShow = ["metodosDiv", "stSustLeibDiv", "jaxButtonsDiv", "BtnLimpiar", "BtnInferir"];
         arrayHide = ["teoremas", "inferForm"];
         arrayValues = [["metodosDemostracion", "0"], ["selectTeoInicial", "1"]];
     } 
-    // The value '2' is for when the user has selected a demostration method but still has to select another
+    // The value '2' is for when the user has selected a proof method but still has to select another
     // one because the previous was not atomic. 
     else if (elegirMetodo=='2') {
         arrayShow = ["metodosDiv", "inferForm"];
@@ -32,7 +32,7 @@ function setViewState(elegirMetodo) {
         arrayValues = [["metodosDemostracion", "0"], ["selectTeoInicial", "1"]];
     } 
     // The rest is for when the user still has to select the theorem to be proved or when the
-    // demostration is advanced, so he can make inferences, can go back a step, and does not 
+    // proof is advanced, so he can make inferences, can go back a step, and does not 
     // need to select a demonstration method.
     else {
         arrayShow = ["teoremas", "inferForm", "stSustLeibDiv", "jaxButtonsDiv", "BtnLimpiar", "BtnInferir"];
@@ -147,7 +147,13 @@ async function proofMethodAjax(method, teoid=null, lado=null){
                 $("#metodosDiv").show();
                 completeSuccess = false;
             }
-            else{
+            else if(newData.errorParser2 === '1') {
+                let message = "Please, select the side of "+teoid;
+                $('#instantiationModal').children().children().children().children()[0].innerText = message;
+                $('#showInstantiation').html('$'+newData.errorParser3+'$');
+                MathJax.Hub.Typeset();
+                $('#instantiationModal').modal('show');
+            }else{
                 $('#formula').html(newData.historial);
                 MathJax.Hub.Typeset();
 
@@ -165,7 +171,32 @@ async function proofMethodAjax(method, teoid=null, lado=null){
 
                             $("#currentTeo").hide();
                             break;
+                        case "DT": // Direct method
 
+                            // This makes the current theorem no longer be clickable
+                            $(".teoIdName").css({"cursor":"","color":""});
+                            $(".operator").css({"cursor":"pointer","color":"#08c"});
+
+                            $("#currentTeo").hide();
+                            break;
+                        case "SL": 
+                            // This makes the current theorem no longer be clickable
+                            $(".teoIdName").css({"cursor":"","color":""});
+                            $(".operator").css({"cursor":"pointer","color":"#08c"});
+
+                            $("#currentTeo").hide();
+                            break;
+                        case "SR": 
+                            // This makes the current theorem no longer be clickable
+                            $(".teoIdName").css({"cursor":"","color":""});
+                            $(".operator").css({"cursor":"pointer","color":"#08c"});
+
+                            $("#currentTeo").hide();
+                            break;
+                        case "EL":
+                            $('#showInstantiation').html('');
+                            $('#instantiationModal').modal('hide');
+                            break;
                         case "AI": // And introduction method
                         case "MI": // Mutual implication method
                         case "CA": // Case analysis method
@@ -186,7 +217,8 @@ async function proofMethodAjax(method, teoid=null, lado=null){
                     }
                 }
                 // In the direct method case we want to show again the theorems list so the user can select one of them
-                else if (methodSeparated[0] === "DS") {
+                else if (methodSeparated[0] === "DS" || methodSeparated[0] === "MP" ||
+                         methodSeparated[0] === "EL" || methodSeparated[0] === "ER") {
                     $("#teoremas").show();
                 }
             }
@@ -314,6 +346,15 @@ function clickTeoremaInicial(teoid){
         var selectTeoInicial = $("#selectTeoInicial").val();
         if (selectTeoInicial==="1"){
             proofMethodAjax("DT", teoid);
+        }
+        else if (selectTeoInicial==="2"){
+            proofMethodAjax("MP", teoid);
+        }
+        else if (selectTeoInicial==="3"){
+            proofMethodAjax("EL", teoid);
+        }
+        else if (selectTeoInicial==="4"){
+            proofMethodAjax("ER", teoid);
         }
     };
 }

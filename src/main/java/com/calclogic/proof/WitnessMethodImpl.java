@@ -63,7 +63,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula, Term proof){
+    public Term initFormula(Term beginFormula, Term proof, String usr){
         Term t = changeDummyForFreshVar(beginFormula);
         Term P = ((App)((App)((App)((App)t).p).q.body()).q.body()).q;
         Term Q = ((App)((App)((App)((App)((App)t).p).q.body()).q.body()).p).q;
@@ -83,7 +83,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement, Term beginFormula){
+    public String header(String statement, Term beginFormula, String usr){
         Term t = changeDummyForFreshVar(beginFormula);
         Var x = ((Bracket)((App)((App)((App)t).p).q.body()).q).x;
         return "By witness method, the following must be proved considering "+(char)x.indice+" as witness:<br>"+statement+"<br>Sub Proof:<br>";
@@ -198,7 +198,7 @@ public class WitnessMethodImpl extends GenericProofMethodImpl implements Witness
      * @return String with the closing comment of the proof
      */
     @Override
-    public String closingComment(Term proof, Term beginFormula) {
+    public String closingComment(Term proof, Term beginFormula, String usr) {
         return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "", null)+"$";
     }
     

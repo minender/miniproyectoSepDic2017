@@ -108,7 +108,7 @@ public class I extends Term {
         return n;
     }
     
-    public int absoluteFresh(int n, int[] max)
+    public int absoluteFresh(int n, int[] max, int ignore)
     {
         return n;
     }

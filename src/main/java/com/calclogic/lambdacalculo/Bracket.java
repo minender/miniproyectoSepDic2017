@@ -186,17 +186,18 @@ public class Bracket extends Term{
         return (x.indice == n?n:t.fresh(n,max));
     }
     
-    public int absoluteFresh(int n, int[] max)
+    public int absoluteFresh(int n, int[] max, int ignore)
     {
-        max[0] = Math.max(x.indice, max[0]);
-        if (x.indice == n) {
-            t.absoluteFresh(n, max);
+        if (x.indice != ignore)
+           max[0] = Math.max(x.indice, max[0]);
+        if (x.indice != ignore && x.indice == n) {
+            t.absoluteFresh(n, max, ignore);
             if (max[0] == 114)
                 max[0] = 115;
             return max[0]+1;
         }
         else {
-            return t.absoluteFresh(n,max);
+            return t.absoluteFresh(n,max,ignore);
         }
     }
     

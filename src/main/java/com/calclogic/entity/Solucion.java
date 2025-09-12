@@ -211,8 +211,8 @@ public class Solucion implements java.io.Serializable {
         return false;
     }
     
-    public void deleteFinishStack(Term methodTerm, Term statement, Term caseAn) {
-        Term[] T = proofCrudOperations.getCurrentMethodStack(typedTerm, methodTerm, statement, caseAn);
+    public void deleteFinishStack(Term methodTerm, Term statement, Term caseAn, String usr) {
+        Term[] T = proofCrudOperations.getCurrentMethodStack(typedTerm, methodTerm, statement, caseAn,usr);
         if ( T != null && T[0] instanceof TypedTerm/*T[0].type()!=null*/ 
                 && T[0].type().traducBD().equals(T[2].traducBD()) 
            ) 

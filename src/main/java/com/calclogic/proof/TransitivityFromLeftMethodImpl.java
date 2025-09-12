@@ -44,7 +44,7 @@ public class TransitivityFromLeftMethodImpl extends StartingFromLeftMethodImpl i
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo, Term formulaBeingProved){
+    public String header(String nTeo, Term formulaBeingProved, String usr){
         return "By transitivity method<br>";
     }
 

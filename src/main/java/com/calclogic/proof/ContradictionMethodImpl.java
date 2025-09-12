@@ -35,7 +35,7 @@ public class ContradictionMethodImpl extends GenericProofMethodImpl implements C
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula, Term proof){
+    public Term initFormula(Term beginFormula, Term proof, String usr){
         // This is saying: ¬formula => false = T, but the notation must be prefix and the first operand goes to the right.
         // So, here what is really expressed is: (=> false) (¬formula) = T.
         
@@ -53,7 +53,7 @@ public class ContradictionMethodImpl extends GenericProofMethodImpl implements C
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement, Term beginFormula){
+    public String header(String statement, Term beginFormula, String usr){
         return "By contradiction method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
@@ -107,7 +107,7 @@ public class ContradictionMethodImpl extends GenericProofMethodImpl implements C
      * @return String with the closing comment of the proof
      */
     @Override
-    public String closingComment(Term proof, Term beginFormula) {
+    public String closingComment(Term proof, Term beginFormula, String usr) {
         return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "",null)+"$";
     }
     

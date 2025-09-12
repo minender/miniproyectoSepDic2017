@@ -46,6 +46,12 @@ public class CrudOperationsImpl implements CrudOperations {
     @Autowired
     private CounterReciprocalMethod counterReciprocal;
     @Autowired
+    private ModusPonensMethod modusPonens;
+    @Autowired
+    private EquanimityFromLeftMethod equanimityFL;
+    @Autowired
+    private EquanimityFromRightMethod equanimityFR;
+    @Autowired
     private DirectMethodFromStatement directMethodFS;
     @Autowired
     private DirectMethodFromTheorem directMethodFT;
@@ -84,6 +90,8 @@ public class CrudOperationsImpl implements CrudOperations {
     @Override
     @Transactional
     public GenericProofMethod returnProofMethodObject(String method) {
+        if (method.split(" ").length == 1)
+            method = method.substring(0, 2);
         switch (method){
             case "DS":
                 return directMethodFS;
@@ -111,6 +119,12 @@ public class CrudOperationsImpl implements CrudOperations {
                 return counterReciprocal;
             case "CO":
                 return contradiction;
+            case "MP":
+                return modusPonens;
+            case "EL":
+                return equanimityFL;
+            case "ER":
+                return equanimityFR;
             case "AI":
                 return andIntroduction;
             case "MI":
@@ -140,7 +154,7 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term initStatement(Term beginFormula, Term method, Term caseAnalysis){
+    public Term initStatement(Term beginFormula, Term method, Term caseAnalysis, String usr){
         if (method instanceof Const){ // Base methods
             return beginFormula;
         }
@@ -149,7 +163,10 @@ public class CrudOperationsImpl implements CrudOperations {
             GenericProofMethod objectMethod = returnProofMethodObject(strMethod);
 
             if (objectMethod.getIsRecursiveMethod()){
-                beginFormula = objectMethod.initFormula(beginFormula,caseAnalysis);
+                boolean hasDBid = objectMethod instanceof ModusPonensMethodImpl || 
+                                  objectMethod instanceof EquanimityFromLeftMethodImpl ||
+                                  objectMethod instanceof EquanimityFromRightMethodImpl;
+                beginFormula = objectMethod.initFormula(beginFormula,caseAnalysis,(hasDBid?((Const)((App)method).p).getId()+":"+usr:usr) );
                 if ("B".equals(objectMethod.getGroupMethod())){ // Branched recursive methods
                     if (beginFormula.containT())
                         beginFormula = ((App)beginFormula).q.body();
@@ -163,7 +180,7 @@ public class CrudOperationsImpl implements CrudOperations {
             } else{
                 return null; // When no possibility matched. 
             }
-            return initStatement(beginFormula, ((App)method).q, caseAnalysis);
+            return initStatement(beginFormula, ((App)method).q, caseAnalysis, usr);
         }
     }
 
@@ -256,7 +273,7 @@ public class CrudOperationsImpl implements CrudOperations {
      */
     @Override
     @Transactional
-    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement, Term caseAn) {
+    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement, Term caseAn, String usr) {
         Term auxMethod = method;
         Term[] T = new Term[3];
         Term statementCopy = statement;
@@ -284,10 +301,13 @@ public class CrudOperationsImpl implements CrudOperations {
                 statement = new App(new App(new Const(0,"="),((App)((App)statement).p).q.body()),
                                      ((App)((App)((App)statement).q.body()).p).q).abstractEq(null);
                 typedTerm = ((TypedM)((App)((App)((App)((App)typedTerm).p).q).q).q).getSubProof();
-                return getCurrentMethodStack(typedTerm, ((App)auxMethod).q, statement, caseAn);
+                return getCurrentMethodStack(typedTerm, ((App)auxMethod).q, statement, caseAn, usr);
             } else {
                 GenericProofMethod objectMethod = returnProofMethodObject(((App)auxMethod).p.toString());
-                statement = objectMethod.initFormula(statement,caseAn);
+                boolean hasDBid = objectMethod instanceof ModusPonensMethodImpl || 
+                                  objectMethod instanceof EquanimityFromLeftMethodImpl ||
+                                  objectMethod instanceof EquanimityFromRightMethodImpl;
+                statement = objectMethod.initFormula(statement,caseAn, (hasDBid?((Const)((App)auxMethod).p).getId()+":"+usr:usr));
                 auxMethod = ((App)auxMethod).q;
             }
         }
@@ -404,10 +424,10 @@ public class CrudOperationsImpl implements CrudOperations {
      * @return The id of the main operator.
      */
     @Override
-    public int binaryOperatorId(Term formula, Term methodTerm, Term caseAnalysis){
+    public int binaryOperatorId(Term formula, Term methodTerm, Term caseAnalysis, String usr){
         try{
             if (methodTerm != null){
-                formula = initStatement(formula, methodTerm, caseAnalysis);
+                formula = initStatement(formula, methodTerm, caseAnalysis, usr);
             }
             // In applicative notation, the expression "P operator Q" is written as "(operator Q) P",
             // so the attribute 'p' is "(operator Q)" and p.p is "operator". 
@@ -436,8 +456,15 @@ public class CrudOperationsImpl implements CrudOperations {
     @Transactional
     public Term updateMethod(String currentMethod, String newMethod) {
         
+        Const newConst;
+        String sub = newMethod.substring(0, 2);
+        if (sub.equals("MP") || sub.equals("EL") || sub.equals("ER"))
+          newConst = new Const(Integer.parseInt(newMethod.substring(2, newMethod.length())),sub);
+        else
+          newConst = new Const(newMethod);
+        
         if (currentMethod.equals(""))
-            return new Const(newMethod);
+            return newConst;
         else {
             Term methodTerm = ProofMethodUtilities.getTerm(currentMethod);
             Term t = methodTerm;
@@ -452,17 +479,17 @@ public class CrudOperationsImpl implements CrudOperations {
                aux = ((App)aux).q;
             }
             if (aux == null)
-               methodTerm = new App(methodTerm, new Const(newMethod));
+               methodTerm = new App(methodTerm, newConst);
             else if (aux instanceof Const && ProofBoolean.isWaitingMethod(aux)) 
-               ((App)t).q = new App(aux, new Const(newMethod));
+               ((App)t).q = new App(aux, newConst);
             else { 
                 /*if (father == methodTerm && isWaitingMethod(t))
                   methodTerm = new App(methodTerm, new Const("DS"));
                 else */
                 if (father == t)
-                    methodTerm = new App(methodTerm, new Const(newMethod));
+                    methodTerm = new App(methodTerm, newConst);
                 else
-                    ((App)father).q = new App(t, new Const(newMethod));
+                    ((App)father).q = new App(t, newConst);
             }
                   
             return methodTerm;      
@@ -654,10 +681,10 @@ public class CrudOperationsImpl implements CrudOperations {
     public Term eraseMethod(String currentMethod) {
         // revisa en las llamadas a este metodo si se ahorra algo al recibir String 
         // en lugar de Term
-        if (currentMethod.length() <= 3)
+        Term currMethodTerm = ProofMethodUtilities.getTerm(currentMethod);
+        if (currMethodTerm instanceof Const)
             return null;
         else {
-            Term currMethodTerm = ProofMethodUtilities.getTerm(currentMethod);
             Term father = currMethodTerm;
             Term q = ((App)father).q;
             Term aux;

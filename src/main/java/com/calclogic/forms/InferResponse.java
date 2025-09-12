@@ -22,7 +22,10 @@ import com.calclogic.parse.TermUtilities;
 import com.calclogic.proof.CaseAnalysisMethodImpl;
 import com.calclogic.proof.CrudOperations;
 import com.calclogic.proof.EqualityToOperator;
+import com.calclogic.proof.EquanimityFromLeftMethodImpl;
+import com.calclogic.proof.EquanimityFromRightMethodImpl;
 import com.calclogic.proof.GenericProofMethod;
+import com.calclogic.proof.ModusPonensMethodImpl;
 import com.calclogic.proof.OperatorToEquality;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -192,7 +195,10 @@ public class InferResponse extends GenericResponse{
     private void setLinearRecursiveMethodProof(String user, Term typedTerm, String header, String clickable, Term methodTerm,
             Boolean valida, Boolean labeled, Term formula, Term caseA, String nTeo, GenericProofMethod objectMethod)
     {
-        Term newFormula = objectMethod.initFormula(formula,(objectMethod instanceof CaseAnalysisMethodImpl?caseA:typedTerm));
+        boolean hasDBid = objectMethod instanceof ModusPonensMethodImpl || 
+                                  objectMethod instanceof EquanimityFromLeftMethodImpl ||
+                                  objectMethod instanceof EquanimityFromRightMethodImpl;
+        Term newFormula = objectMethod.initFormula(formula,(objectMethod instanceof CaseAnalysisMethodImpl?caseA:typedTerm),(hasDBid?nTeo+":"+user:user) );
         String statement;
         try {
             statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false, simboloManager) + "$");
@@ -205,10 +211,10 @@ public class InferResponse extends GenericResponse{
         String closingComment = "";
         // By <current> method, the following must be proved: <statement> 
         if (!(objectMethod instanceof OperatorToEquality || objectMethod instanceof EqualityToOperator))
-            header += objectMethod.header(statement, formula);
+            header += objectMethod.header((hasDBid?nTeo+":"+statement:statement), formula, user);
         if (methodTerm instanceof App) {
             if ( typedTerm!=null && typedTerm instanceof TypedTerm/*typedTerm.type()!=null*/ && typedTerm.type().traducBD().equals(formula.traducBD())){
-              closingComment = objectMethod.closingComment(typedTerm, formula);
+              closingComment = objectMethod.closingComment(typedTerm, formula, (hasDBid?nTeo+":"+user:user));
               if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 4)
                 typedTerm = ((App)((TypedM)((App)((App)((App)((App)((App)((TypedM)typedTerm).getProof()).q).q).q).p).q).getProof()).p;
               else if (typedTerm instanceof TypedM && ((TypedM)typedTerm).getNumber() == 1)
@@ -248,7 +254,7 @@ public class InferResponse extends GenericResponse{
             Term newFormula = ((App)aux).q; // First branch
             newFormula = new App(new App(new Const(0,"="),((App)((App)formula).p).q.body()),newFormula).abstractEq(null);
             statement = centeredBlock("$" + clickableST(user, newFormula, clickable, methodTerm, false, simboloManager) + "$");
-            header += objectMethod.header("", formula) + objectMethod.subProofInit(statement);
+            header += objectMethod.header("", formula, user) + objectMethod.subProofInit(statement);
 
             if (methodTerm instanceof Const){
                 historial = header;
@@ -257,7 +263,6 @@ public class InferResponse extends GenericResponse{
             else if ( ((App)methodTerm).p instanceof Const  ) {
                 privateGenerarHistorial(user, newFormula, header, nTeo, typedTerm, valida, labeled, 
                                             ((App)methodTerm).q, caseA, clickable, false);
-
                 if (typedTerm == null || !(typedTerm instanceof TypedTerm)/*typedTerm.type()==null*/ 
                         || !typedTerm.type().equals(newFormula)){
                     if (typedTerm != null)
@@ -429,11 +434,13 @@ public class InferResponse extends GenericResponse{
 
         strMethod = strMethod.substring(0, 2);
         GenericProofMethod objectMethod = proofCrudOperations.returnProofMethodObject(strMethod);
+        if (strMethod.equals("MP") || strMethod.equals("EL") || strMethod.equals("ER"))
+           nTeo = (methodTerm instanceof Const?((Const)methodTerm).getId()+"":((Const)((App)methodTerm).p).getId()+"" );
 
         boolean recursive = objectMethod.getIsRecursiveMethod();
 
         // If the method is recursive, the header will be built in the "setRecursiveMethod"
-        header += (!recursive) ? objectMethod.header(nTeo, formula) : "";
+        header += (!recursive) ? objectMethod.header(nTeo, formula, user) : "";
 
         // PROVISIONAL <--- ESTO DEBE SER BORRADO
         Boolean naturalSide, naturalDirect;
@@ -476,10 +483,14 @@ public class InferResponse extends GenericResponse{
         if (recursive){
             if ("B".equals(objectMethod.getGroupMethod())){
                 // ******* I AM NOT SURE IF THIS LINE WILL ALWAYS REMAIN HERE
-                Term editedFormula = objectMethod.initFormula(formula,(objectMethod instanceof CaseAnalysisMethodImpl?caseA:typedTerm));
+                Term editedFormula = objectMethod.initFormula(formula,(objectMethod instanceof CaseAnalysisMethodImpl?caseA:typedTerm),user);
 
                 setBranchedRecursiveMethodProof(user, typedTerm, header, clickable, 
-                    methodTerm, valida, labeled, editedFormula,caseA, nTeo, objectMethod);        
+                    methodTerm, valida, labeled, editedFormula,caseA, nTeo, objectMethod);
+                String closingComment = "";
+                if (type != null && type.traducBD().equals(editedFormula.traducBD()))
+                    closingComment = objectMethod.closingComment(typedTerm, editedFormula, user);
+                this.setHistorial(historial + closingComment);
             }
             else {
                 setLinearRecursiveMethodProof(user, typedTerm, header, clickable, 

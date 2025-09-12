@@ -152,12 +152,13 @@ public class Var extends Term{
         return (n!=indice?n:max[0]+1);
     }
     
-    public int absoluteFresh(int n, int[] max)
+    public int absoluteFresh(int n, int[] max, int ignore)
     {
-        max[0] = Math.max(indice, max[0]);
+        if (indice != ignore)
+          max[0] = Math.max(indice, max[0]);
         if (max[0] == 114)
             max[0] = 115;
-        return (n!=indice?n:max[0]+1);
+        return (ignore==indice || n!=indice?n:max[0]+1);
     }
     
     public Term findLambdaXDotZ(Var z) {

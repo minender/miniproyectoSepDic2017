@@ -34,8 +34,8 @@ public class AndIntroductionMethodImpl extends GenericProofMethodImpl implements
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement, Term beginFormula){
-        return "By proof by parts method:<br><br>";
+    public String header(String statement, Term beginFormula, String usr){
+        return "By proof by parts method the following subproofs must be proved:<br><br>";
     }
 
     /**
@@ -91,5 +91,16 @@ public class AndIntroductionMethodImpl extends GenericProofMethodImpl implements
         Term leibniz = ((App)((App)((App)originalTerm).p).q).p;
 
         return new TypedApp(new TypedApp(firstStAndTrue,new TypedApp(leibniz,auxiliarTree)),firstProof);
+    }
+    
+    /**
+     * This function returns the closing comment of the proof i.e. the conclusion of the proof
+     * 
+     * @param proof: The current proof
+     * @return String with the closing comment of the proof
+     */
+    @Override
+    public String closingComment(Term proof, Term beginFormula, String usr) {
+        return "Using And Introduction: $\\therefore~"+proof.type().toStringLaTeX(simboloManager, "",null)+"$";
     }
 }

@@ -41,6 +41,9 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     
     @Autowired
     protected SimboloManager simboloManager;
+    
+    @Autowired
+    protected ResuelveManager resuelveManager;
 
     /**
      * Establishes the necessary initial class variables according
@@ -81,9 +84,9 @@ public class GenericProofMethodImpl implements GenericProofMethod{
     }
 
     private void setIsRecursiveMethod(String method){
-        if (method.equals("CR") || method.equals("CO") || method.equals("AI") || method.equals("GE") ||
-            method.equals("CA") || method.equals("MI") || method.equals("EO") || method.equals("OE") ||
-            method.equals("EE") || method.equals("WI")){
+        if (method.equals("CR") || method.equals("CO") || method.equals("MP") || method.equals("AI") ||
+            method.equals("GE") || method.equals("CA") || method.equals("MI") || method.equals("EO") ||
+            method.equals("OE") || method.equals("EE") || method.equals("WI")){
             this.isRecursiveMethod = true;
         }
     }
@@ -105,7 +108,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
      *         according to the proof method used
      */
     @Override
-    public Term initFormula(Term beginFormula, Term proof){
+    public Term initFormula(Term beginFormula, Term proof, String usr){
 
         return beginFormula;
     }
@@ -120,7 +123,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String phrase, Term beginFormula){
+    public String header(String phrase, Term beginFormula, String usr){
         return "";
     }
 
@@ -444,7 +447,7 @@ public class GenericProofMethodImpl implements GenericProofMethod{
      * @param proof: The current proof
      * @return String with the closing comment of the proof
      */
-    public String closingComment(Term proof, Term beginFormula) {
+    public String closingComment(Term proof, Term beginFormula, String usr) {
         return "";
     }
     

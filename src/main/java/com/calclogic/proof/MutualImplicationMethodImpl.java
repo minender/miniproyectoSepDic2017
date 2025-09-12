@@ -34,7 +34,7 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula, Term proof){
+    public Term initFormula(Term beginFormula, Term proof, String usr){
         // "beginFormula" is of the form [L == R]
         Term aux = ((App)beginFormula).q.body();
         Term prevLeftSide = ((App)aux).q; // L
@@ -55,7 +55,7 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement, Term beginFormula){
+    public String header(String statement, Term beginFormula, String usr){
         return "By mutual implication method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
@@ -112,7 +112,7 @@ public class MutualImplicationMethodImpl extends GenericProofMethodImpl implemen
      * @return String with the closing comment of the proof
      */
     @Override
-    public String closingComment(Term proof, Term beginFormula) {
+    public String closingComment(Term proof, Term beginFormula, String usr) {
         return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "", null)+"$";
     }
     

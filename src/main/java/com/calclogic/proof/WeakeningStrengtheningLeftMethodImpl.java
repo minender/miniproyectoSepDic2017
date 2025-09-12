@@ -40,8 +40,16 @@ public class WeakeningStrengtheningLeftMethodImpl extends TransitivityFromLeftMe
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo, Term formulaBeingProved){
-        return "By weakening method<br>";
+    public String header(String nTeo, Term formulaBeingProved, String usr){
+        String word = "";
+        if (formulaBeingProved instanceof App && ((App)formulaBeingProved).q.body() instanceof App && 
+            ((App)((App)formulaBeingProved).q.body()).p instanceof App && 
+            ((App)((App)((App)formulaBeingProved).q.body()).p).p instanceof Const &&
+            ((Const)((App)((App)((App)formulaBeingProved).q.body()).p).p).getId() == 2)
+            word = "weakening";
+        else
+            word = "strengthening";
+        return "By "+word+" method<br>";
     }
 
     /**

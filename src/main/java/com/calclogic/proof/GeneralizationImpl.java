@@ -42,7 +42,7 @@ public class GeneralizationImpl extends GenericProofMethodImpl implements Genera
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula, Term proof){
+    public Term initFormula(Term beginFormula, Term proof, String usr){
         // Quitas al paratodo y dejas solo el cuerpo del para todo
         Term aux = ((App)((App)((App)beginFormula).q.body()).p).q.body();
         if (aux instanceof Const && ((Const)aux).getId() == 8)
@@ -60,7 +60,7 @@ public class GeneralizationImpl extends GenericProofMethodImpl implements Genera
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement, Term beginFormula){
+    public String header(String statement, Term beginFormula, String usr){
         Var x = ((Bracket)((App)((App)beginFormula).q.body()).q).x;
         return "By generalization method, the following must be proved considering an arbitrary "+x.toStringLaTeX(null, null,null)+":<br>"+statement+"<br>Sub Proof:<br>";
     }
@@ -191,7 +191,7 @@ public class GeneralizationImpl extends GenericProofMethodImpl implements Genera
      * @return String with the closing comment of the proof
      */
     @Override
-    public String closingComment(Term proof, Term beginFormula) {
+    public String closingComment(Term proof, Term beginFormula, String usr) {
         Var x = ((Bracket)((App)((App)beginFormula).q.body()).q).x;
         return "since "+(char)x.indice+" was arbitrary, then the statement can be generalized $\\therefore~"+proof.type().toStringLaTeX(simboloManager, "", null)+"$";
     }

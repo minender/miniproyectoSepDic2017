@@ -78,7 +78,7 @@ public class CaseAnalysisMethodImpl extends GenericProofMethodImpl implements Ca
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement, Term formulaBeingProved){
+    public String header(String statement, Term formulaBeingProved, String usr){
         return "By case analysis method, the following must be proved:<br>"+statement+"Sub Proof:<br>";
     }
 
@@ -102,7 +102,7 @@ public class CaseAnalysisMethodImpl extends GenericProofMethodImpl implements Ca
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula, Term proof){
+    public Term initFormula(Term beginFormula, Term proof, String usr){
         if (proof instanceof TypedTerm)
           return proof.type();
         else
@@ -272,7 +272,7 @@ public class CaseAnalysisMethodImpl extends GenericProofMethodImpl implements Ca
      * @return String with the closing comment of the proof
      */
     @Override
-    public String closingComment(Term proof, Term beginFormula) {
+    public String closingComment(Term proof, Term beginFormula, String usr) {
         return "$\\therefore~"+proof.type().toStringLaTeX(simboloManager, "",null)+"$";
     }
     

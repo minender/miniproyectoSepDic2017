@@ -75,6 +75,19 @@
                     }
                 });
                 
+                $('#showInstantiation').on('click','.teoremaClick',async function(event){
+                    if (clickInTheoremAllowed){
+                        clickInTheoremAllowed = false;
+                        var select = document.getElementById('metodosDemostracion');
+                        var methodToken = select.value; // this could be "SL" or "TL"
+                        // The "this.id" refers to the side, that could be "d" for "derecho" or "i" for "izquierdo"
+                        await proofMethodAjax(methodToken, 
+                        $('#instantiationModal').children().children().children().children()[0].innerText.substring(27)
+                        , this.id);
+                        clickInTheoremAllowed = true;
+                    }
+                });
+                
                 var p1=[];
                 var p2=[];
                 var idt1;
@@ -203,18 +216,20 @@
                     <!-- Algunos métodos sólo deberían estar visibles después de que el usuario los desbloquee haciendo las demostraciones necesarias -->
                     <select class="form-control" id="metodosDemostracion">
                         <option value="0">Select a method</option>
+                        <option value="CA">Case analysis</option>
+                        <option value="CO">Contradiction</option>
+                        <option value="CR">Counter-reciprocal</option>
                         <option value="DS">Direct method</option>
+                        <option value="EL">Equanimity</option>
+                        <option value="GE">Generalization</option>
+                        <option value="MP">Modus ponens</option>
+                        <option value="MI">Mutual implication</option>
+                        <option value="AI">Proof by parts</option>
                         <option value="SL">Starting from one side</option>
+                        <option value="WR">Strengthening</option>
                         <option value="TL">Transitivity</option>
                         <option value="WL">Weakening</option>
-                        <option value="WR">Strengthening</option>
                         <!--<option value="DE">Deduction</option>-->
-                        <option value="CO">Proof by contradiction</option>
-                        <option value="CR">Counter-reciprocal</option>
-                        <option value="AI">Proof by parts</option>
-                        <option value="MI">Mutual implication</option>
-                        <option value="CA">Case analysis</option>
-                        <option value="GE">Generalization</option>
                         <option value="WI">Witness</option>
                     </select>
                 </div>

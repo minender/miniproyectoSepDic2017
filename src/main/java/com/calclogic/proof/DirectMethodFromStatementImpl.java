@@ -36,7 +36,7 @@ public class DirectMethodFromStatementImpl extends StartingFromLeftMethodImpl im
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo, Term beginFormula){
+    public String header(String nTeo, Term beginFormula, String usr){
         return "By direct method<br>";
     }
 
@@ -52,7 +52,7 @@ public class DirectMethodFromStatementImpl extends StartingFromLeftMethodImpl im
      *         according to the demonstrarion method used
      */
     @Override
-    public Term initFormula(Term beginFormula, Term proof){
+    public Term initFormula(Term beginFormula, Term proof, String usr){
         return beginFormula;
     }
     

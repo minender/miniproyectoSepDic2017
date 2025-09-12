@@ -65,7 +65,9 @@
         ND: "Natural Deduction",
         TL: "Transitivity",
         CO: "Contradiction",
-        CR: "Counter-reciprocal",     
+        CR: "Counter-reciprocal",
+        MP: "Modus ponens",
+        EL: "Equanimity",
         AI: "Proof by parts",
         MI: "Mutual implication",
         CA: "Case analysis",
@@ -117,7 +119,7 @@
 
     /*
         Accepts the confirmation prompted to the user, takes an action depending
-        on the proog method previously selected.
+        on the proof method previously selected.
     */
     async function accept() {
         if (buttonsEnabled){
@@ -165,6 +167,36 @@
                     break;
                 case "CR": // Counter-reciprocal method
                     message = "Please, select another method to do the sub-proof.";
+                    break;
+                case "MP": // Counter-reciprocal method
+                    $("#selectTeoInicial").val("2");
+                    $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
+                    $(".operator").css({"cursor":"","color":""});
+                    message = 'Please, select the implication with which modus ponens will be used.';
+
+                    // If the AJAX is called from here, we must put the current expression as clickable.
+                    // The other case will be called from the view "infer.jsp"
+                    method = "MP Clickable";
+                    break;
+                case "EL": // Counter-reciprocal method
+                    $("#selectTeoInicial").val("3");
+                    $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
+                    $(".operator").css({"cursor":"","color":""});
+                    message = 'Please, select the equivalence with which equanimity will be used.';
+
+                    // If the AJAX is called from here, we must put the current expression as clickable.
+                    // The other case will be called from the view "infer.jsp"
+                    method = "EL Clickable";
+                    break;
+                case "ER": // Counter-reciprocal method
+                    $("#selectTeoInicial").val("4");
+                    $(".teoIdName").css({"cursor":"pointer","color":"#08c"});
+                    $(".operator").css({"cursor":"","color":""});
+                    message = 'Please, select the equivalence with which equanimity will be used.';
+
+                    // If the AJAX is called from here, we must put the current expression as clickable.
+                    // The other case will be called from the view "infer.jsp"
+                    method = "ER Clickable";
                     break;
                 case "WL": // Weakening method
                     break;

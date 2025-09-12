@@ -1,4 +1,4 @@
-// Generated from ProofMethod.g4 by ANTLR 4.8
+// Generated from .\ProofMethod.g4 by ANTLR 4.8
 
 
 package com.calclogic.parse;

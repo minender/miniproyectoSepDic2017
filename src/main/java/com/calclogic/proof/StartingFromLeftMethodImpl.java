@@ -38,7 +38,7 @@ public class StartingFromLeftMethodImpl extends GenericProofMethodImpl implement
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo, Term beginFormula){
+    public String header(String nTeo, Term beginFormula, String usr){
         return "By starting from one side";
     }
 
@@ -81,7 +81,7 @@ public class StartingFromLeftMethodImpl extends GenericProofMethodImpl implement
             }
             ultInfType = iter.type();
             Term aux = ((App)((App)iter.type()).p).q.body();       
-            lastline = (solved?aux.toStringLaTeX(s,"",null)+closingComment(typedTerm)+"$":aux.toStringLaTeXLabeled(s));
+            lastline = (solved?aux.toStringLaTeX(s,"",null)+closingComment(typedTerm,null,user)+"$":aux.toStringLaTeXLabeled(s));
         }
         // Case when direct method is applied and the starting point is the expression to be proved
         else { 
@@ -298,7 +298,8 @@ public class StartingFromLeftMethodImpl extends GenericProofMethodImpl implement
      * @param proof: The current proof
      * @return String with the closing comment of the proof
      */
-    public String closingComment(Term proof) {
+    @Override
+    public String closingComment(Term proof, Term beginFormula, String usr) {
         return  "\\\\ ~ \\\\ \\therefore~"+proof.type().toStringLaTeX(simboloManager, "", null)+" ";
     }
     

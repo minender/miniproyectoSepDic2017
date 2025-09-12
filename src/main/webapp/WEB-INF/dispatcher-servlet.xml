@@ -151,6 +151,9 @@
     <bean id="caseAnalysis" class="com.calclogic.proof.CaseAnalysisMethodImpl"></bean>
     <bean id="contradiction" class="com.calclogic.proof.ContradictionMethodImpl"></bean>
     <bean id="counterReciprocal" class="com.calclogic.proof.CounterReciprocalMethodImpl"></bean>
+    <bean id="modusPonens" class="com.calclogic.proof.ModusPonensMethodImpl"></bean>
+    <bean id="equanimityFL" class="com.calclogic.proof.EquanimityFromLeftMethodImpl"></bean>
+    <bean id="equanimityFR" class="com.calclogic.proof.EquanimityFromRightMethodImpl"></bean>
     <bean id="directMethodFS" class="com.calclogic.proof.DirectMethodFromStatementImpl"></bean>
     <bean id="directMethodFT" class="com.calclogic.proof.DirectMethodFromTheoremImpl"></bean>
     <bean id="equalityToOp" class="com.calclogic.proof.EqualityToOperatorImpl"></bean>

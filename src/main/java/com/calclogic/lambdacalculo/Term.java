@@ -124,7 +124,10 @@ public abstract class Term implements Cloneable, Serializable{
     public abstract Term sustParall(List<Var>  Vars, List<Term> varsTerm);
     
     public Term sustParall(Sust sus) {
-        return sustParall(sus.vars, sus.terms);
+        if (sus.vars.isEmpty())
+            return this;
+        else      
+            return sustParall(sus.vars, sus.terms);
     }
     
     public abstract int setAlias(int currentAlia);
@@ -143,7 +146,7 @@ public abstract class Term implements Cloneable, Serializable{
     
     public abstract int fresh(int n, int[] max);
     
-    public abstract int absoluteFresh(int n, int[] max);
+    public abstract int absoluteFresh(int n, int[] max, int ignore);
     
     public abstract String position(Var x);
     
@@ -1551,6 +1554,8 @@ public abstract class Term implements Cloneable, Serializable{
             }catch (TypeVerificationException e){e.printStackTrace();}*/
             Sust sus = eq.mgu(/*null,*/ true);
             //if (sus != null)
+            //System.out.println(sus);
+            //System.out.println(type1);
             type1 = type1.sustParall(sus);
             /*((App)this).q.type_ = type1;
             ((App)((App)this).p).q.type_ = type1;

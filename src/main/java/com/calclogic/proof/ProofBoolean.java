@@ -52,6 +52,7 @@ public class ProofBoolean {
                         methodStr.equals("EE") ||
                         methodStr.equals("CO") || 
                         methodStr.equals("CR") || 
+                        methodStr.equals("MP") ||
                         methodStr.equals("AI") || 
                         methodStr.equals("MI") || 
                         methodStr.equals("CA") || 
@@ -70,6 +71,7 @@ public class ProofBoolean {
                         methodStr.equals("EE") ||
                         methodStr.equals("CO") || 
                         methodStr.equals("CR") ||
+                        methodStr.equals("MP") ||
                         methodStr.equals("GE") || 
                         methodStr.equals("WI") || 
                         methodStr.equals("MI")
@@ -144,6 +146,7 @@ public class ProofBoolean {
             String methodStr;
             return (methodStr=((Const)method).getCon()).equals("CO") || 
                     methodStr.equals("CR") ||
+                    methodStr.equals("MP") ||
                     methodStr.equals("MI") ||
                     methodStr.equals("EO") || 
                     methodStr.equals("OE") ||
@@ -260,7 +263,7 @@ public class ProofBoolean {
                                                   CrudOperations crudOp, Term caseAn) 
     {
         theorem = new TypedA(theorem,user).type();
-        Term t1 = crudOp.initStatement(theorem, method, caseAn);
+        Term t1 = crudOp.initStatement(theorem, method, caseAn, user);
         Term t2 = crudOp.getSubProof(typedTerm, method, true).type();
         
         return t1.traducBD().equals(t2.traducBD());

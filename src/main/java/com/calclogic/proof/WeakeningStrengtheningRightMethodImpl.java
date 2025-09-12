@@ -32,8 +32,16 @@ public class WeakeningStrengtheningRightMethodImpl extends WeakeningStrengthenin
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String nTeo, Term beginFormula){
-        return "By strengthening method<br>";
+    public String header(String nTeo, Term beginFormula, String usr){
+        String word = "";
+        if (beginFormula instanceof App && ((App)beginFormula).q.body() instanceof App && 
+            ((App)((App)beginFormula).q.body()).p instanceof App && 
+            ((App)((App)((App)beginFormula).q.body()).p).p instanceof Const &&
+            ((Const)((App)((App)((App)beginFormula).q.body()).p).p).getId() == 2)
+            word = "strengthening";
+        else
+            word = "weakening";
+        return "By "+word+" method<br>";
     }
     
     /**

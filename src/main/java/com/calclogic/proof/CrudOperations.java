@@ -35,7 +35,7 @@ public interface CrudOperations {
      *                term had the information about what is the current sub proof
      * @return Term that represent the statement to be proved in the current sub proof.
      */
-    public Term initStatement(Term beginFormula, Term method, Term caseAnalysis);
+    public Term initStatement(Term beginFormula, Term method, Term caseAnalysis, String usr);
 
     public Term currentMethod(Term method);
 
@@ -82,7 +82,7 @@ public interface CrudOperations {
      *         CO (OE SL) in T[1], the sub proof that corresponds to the method T[1] write in 
      *         T[0] and the initStatement in T[2]
      */
-    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement, Term caseAn);
+    public Term[] getCurrentMethodStack(Term typedTerm, Term method, Term statement, Term caseAn, String usr);
     
     /**
      * This method returns the sub Term of typedTerm that represent the derivation tree 
@@ -122,7 +122,7 @@ public interface CrudOperations {
      * @param methodTerm: Tree of methods that the user has selected to do the proof
      * @return The id of the main operator.
      */
-    public int binaryOperatorId(Term formula, Term methodTerm, Term caseAnalysis);
+    public int binaryOperatorId(Term formula, Term methodTerm, Term caseAnalysis, String usr);
 
     /**
      * This method adds a proof method for currentMethod to get a new compose method. 

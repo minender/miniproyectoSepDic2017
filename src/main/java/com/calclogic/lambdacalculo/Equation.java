@@ -78,26 +78,39 @@ public class Equation {
                     transform = true;
                     break;
                 }*/
-                else if (eq.t1 instanceof Bracket && eq.t2 instanceof Bracket && 
-                         ((Bracket)eq.t1).x.indice==((Bracket)eq.t2).x.indice ) {
+                else if (eq.t1 instanceof Bracket && eq.t2 instanceof Bracket //&& 
+                         /*((Bracket)eq.t1).x.indice==((Bracket)eq.t2).x.indice*/ ) {
                     set.remove(eq);
+                    if (((Bracket)eq.t1).x.indice!=((Bracket)eq.t2).x.indice) {
+                      int x = ((Bracket)eq.t1).fresh(((Bracket)eq.t2).x.indice,new int[1]);
+                      ((Bracket)eq.t1).x.indice = x;
+                      if (x != ((Bracket)eq.t2).x.indice)
+                          ((Bracket)eq.t2).t=((Bracket)eq.t2).t.sust(((Bracket)eq.t2).x, new Var(x));
+                    }
                     (new Equation(((Bracket)eq.t1).t,((Bracket)eq.t2).t)).union(set);
                     transform = true;
                     break;
                 }
-                else if ((uf1 = eq.t1.unfold())!=null && (uf2 = eq.t2.unfold())!=null &&
+                else if ((uf1 = eq.t1.unfold())!=null && (uf2 = eq.t2.unfold())!=null &&(
                           uf1.size()==uf2.size() && 
                           (uf1.lastElement().equals(uf2.lastElement()) || 
                            (uf1.lastElement() instanceof Var && uf2.lastElement()instanceof Var)
-                          )
+                          ) ||
+                          (uf1.size()==2 && uf1.lastElement() instanceof Var && uf1.elementAt(0) instanceof Var)
+                           )
                         ){
                     set.remove(eq);
-                    if (uf1.lastElement() instanceof Var && uf2.lastElement() instanceof Var){
+                    boolean iter = true;
+                    if (uf1.size()==2 && uf1.lastElement() instanceof Var && uf1.elementAt(0) instanceof Var) {
+                       (new Equation(uf1.pop(),eq.t2)).union(set);
+                       iter = false;
+                    }
+                    else if (uf1.lastElement() instanceof Var && uf2.lastElement() instanceof Var){
                        (new Equation(uf1.pop(),uf2.pop())).union(set);
                     }else {
                        uf1.pop(); uf2.pop();
                     }
-                    while (!uf1.empty()) 
+                    while (iter && !uf1.empty()) 
                          (new Equation(uf1.pop(),uf2.pop())).union(set);
                     transform = true;
                     break;
@@ -147,6 +160,7 @@ public class Equation {
         }
         if (!bothSides) {
             t2 = t2.inverseVars();
+
         }
         ArrayList<Var> vars = new ArrayList<Var>();
         List<Term> terms = new ArrayList<Term>();

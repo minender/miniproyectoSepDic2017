@@ -139,7 +139,7 @@ public class Phi extends Term{
                                 aux = (App)A[0];
                             }
                         }
-                        else 
+                        else                                     //no hace falta el caso y.q=((App)aux).q
                             y.q = (!(aux instanceof App)?new App(x,new Var(i)):((App)aux).q);
                     }
                     if (!(aux instanceof App))
@@ -300,7 +300,7 @@ public class Phi extends Term{
         return n;
     }
     
-    public int absoluteFresh(int n, int[] max)
+    public int absoluteFresh(int n, int[] max, int ignore)
     {
         return n;
     }

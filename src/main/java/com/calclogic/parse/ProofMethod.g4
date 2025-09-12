@@ -42,6 +42,9 @@ method_base returns [Term value]:
        | DE {$value = new Const("DE");}
        | CO {$value = new Const("CO");}
        | CR {$value = new Const("CR");}
+       | MP DIGITS {$value = new Const(Integer.parseInt($DIGITS.text),"MP");}
+       | EL DIGITS {$value = new Const(Integer.parseInt($DIGITS.text),"EL");}
+       | ER DIGITS {$value = new Const(Integer.parseInt($DIGITS.text),"ER");}
        | AI {$value = new Const("AI");}
        | MI {$value = new Const("MI");}
        | CA {$value = new Const("CA");}
@@ -52,6 +55,7 @@ method_base returns [Term value]:
 /*
  * Lexer Rules
  */
+DIGITS : ('-'|)( '1'..'9' [0-9]* | '0' );
 
 DS: 'DS';
 
@@ -80,6 +84,12 @@ DE: 'DE';
 CO: 'CO';
 
 CR: 'CR';
+
+MP: 'MP';
+
+EL: 'EL';
+
+ER: 'ER';
 
 AI: 'AI';
 

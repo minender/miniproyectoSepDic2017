@@ -44,7 +44,7 @@ public class OperatorToEqualityImpl extends GenericProofMethodImpl implements Op
      * @return Term that represents the statement to be proved in the current sub proof.
      */
     @Override
-    public Term initFormula(Term beginFormula, Term proof){
+    public Term initFormula(Term beginFormula, Term proof, String usr){
         // this convert formulas like lamb x.t1=lamb x.t2 into t1==t2
         Term aux = ((App)beginFormula).q.body();
         Term right = ((App)((App)aux).p).q;
@@ -65,7 +65,7 @@ public class OperatorToEqualityImpl extends GenericProofMethodImpl implements Op
      * @return The header message to be added to the proof
      */
     @Override
-    public String header(String statement, Term beginFormula){
+    public String header(String statement, Term beginFormula, String usr){
         return ""+statement;
     }
 
@@ -82,8 +82,8 @@ public class OperatorToEqualityImpl extends GenericProofMethodImpl implements Op
     public Term finishedLinearRecursiveMethodProof(String user, Term formulaBeingProved, Term proof)
     {
         try {
-            return new TypedM(1, 1, proof, proof.type().traducBD().toString(), user);
-
+            int op = ((Const)((App)((App)((App)formulaBeingProved).q.body()).p).p).getId();
+            return new TypedM((op==1?1:2),op, proof, proof.type().traducBD().toString(), user);
         } catch (TypeVerificationException e)  {
             Logger.getLogger(GenericProofMethod.class.getName()).log(Level.SEVERE, null, e); 
         }

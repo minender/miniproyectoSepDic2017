@@ -347,10 +347,10 @@ public class App extends Term{
         //return q.fresh(p.fresh(n));
     }
     
-    public int absoluteFresh(int n, int[] max)
+    public int absoluteFresh(int n, int[] max, int ignore)
     {
-        int i = p.absoluteFresh(n,max);
-        int j = q.absoluteFresh(n,max);
+        int i = p.absoluteFresh(n,max,ignore);
+        int j = q.absoluteFresh(n,max,ignore);
         if (i == n && j == n)
             return n;
         else
@@ -697,18 +697,23 @@ public class App extends Term{
                     stk.get(stk.size()-2) instanceof Bracket && stk.get(stk.size()-3) instanceof Bracket && 
                     ((Bracket)stk.get(stk.size()-2)).x.indice != ((Bracket)stk.get(stk.size()-3)).x.indice 
                    ) 
-                {
+                {System.out.println(p);System.out.println(q);
                  int quantOp = ((Const)stk.get(stk.size()-1)).id;
-                 int boundVId = ((Bracket)stk.get(stk.size()-3)).x.indice;
+                 int boundVId = 
+                 Math.max(((Bracket)stk.get(stk.size()-2)).x.indice,((Bracket)stk.get(stk.size()-3)).x.indice);
+                 System.out.println(boundVId);
                  if ((quantOp==4 || quantOp==5) && ((Bracket)stk.get(stk.size()-2)).t instanceof Const 
                       && ((Const)((Bracket)stk.get(stk.size()-2)).t).id == 8)
                      ((Bracket)stk.get(stk.size()-2)).x.indice = boundVId;
                   else {
                     int[] max = new int[1];
-                    if (((Bracket)stk.get(stk.size()-2)).t.absoluteFresh(boundVId,max) != boundVId || 
-                      ((Bracket)stk.get(stk.size()-3)).t.absoluteFresh(boundVId,max) != boundVId
+                    int dummy1 = ((Bracket)stk.get(stk.size()-2)).x.indice;
+                    int dummy2 = ((Bracket)stk.get(stk.size()-3)).x.indice;
+                    if (((Bracket)stk.get(stk.size()-2)).t.absoluteFresh(boundVId,max,dummy1) != boundVId || 
+                       ((Bracket)stk.get(stk.size()-3)).t.absoluteFresh(boundVId,max,dummy2) != boundVId
                      )
-                      boundVId = max[0]+1;
+                      //if (max[0]!=boundVId&&max[0]!=((Bracket)stk.get(stk.size()-2)).x.indice)
+                         boundVId = max[0]+1;
                     //boundVId = new App(((Bracket)stk.get(stk.size()-2)).t,((Bracket)stk.get(stk.size()-3)).t).fresh(boundVId,new int[1]);
                     // this change the id of all occurrences of x, because x would be a pointer
                     ((Bracket)stk.get(stk.size()-2)).x.indice = boundVId;

@@ -190,7 +190,7 @@ public class Const extends Term
         return n;
     }
     
-    public int absoluteFresh(int n, int[] max)
+    public int absoluteFresh(int n, int[] max, int ignore)
     {
         return n;
     }
@@ -263,11 +263,14 @@ public class Const extends Term
     
     public String toStringAll()
     {
-        //Term typ = this.type();
-        if (!(this instanceof TypedTerm)/*typ == null*/|| con.equals("S")) //|| con.equals("U"))
+        if ((!(this instanceof TypedTerm)&& !(con.equals("MP") || con.equals("EL") || con.equals("ER"))) 
+                || con.equals("S")
+           )
             return con;
-        else
+        else if (this instanceof TypedTerm)
             return con+"^{"+((TypedTerm)this).getCombDBType()+"}";
+        else
+            return con+id;
     }
         
     @Override
